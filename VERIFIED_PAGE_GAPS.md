@@ -1,32 +1,42 @@
 # Verified Page Gaps
 
-Audit date: 2026-07-31. Evidence sources: `ACTIVE_PAGE_SCOPE.md`, route/controller inspection, non-destructive Laravel tests, and local database connectivity checks. No legacy code or database was modified.
+Audit date: 2026-08-01. Evidence sources: `ACTIVE_PAGE_SCOPE.md`, OldProject leave workflow files, imported audit database, route/controller inspection, Laravel feature tests, Vite build, and Playwright desktop/mobile harness execution.
 
 ## Delivery-scope findings
 
-| Page/workflow | Status | Evidence-backed gap | Priority |
+| Page/workflow | Status | Evidence-backed result | Priority |
 |---|---|---|---|
-| Login, OTP, dashboards, doctors, service locations, hospital services | Needs verification | Routes/views exist, but role/data parity requires the safe legacy database and browser crawl. | P1 |
+| Login, OTP, dashboards, doctors, service locations, hospital services | Needs credentialed browser verification | Routes/views exist; final all-role Playwright run was blocked by missing `PW_AUDIT_*` credentials. | P1 |
 | Password recovery/reset | Implemented | Username/mobile generic recovery, hashed expiring OTP, throttling, one-time reset authorization, and legacy SHA-256 write are implemented and feature-tested. | P0 |
-| Complaints list/dashboard | Implemented | Scoped list/detail/timeline now has authenticated create, reply/status transitions, protected attachments, and PDF output. | P0 |
+| Complaints list/dashboard | Implemented | Scoped list/detail/timeline has authenticated create, reply/status transitions, protected attachments, and PDF output. | P0 |
 | Complaint create/request | Implemented | Authenticated direct create/store preserves dump-backed complaint and number fields, validation, branch/company ownership, and optional attachment. | P0 |
-| Complaint detail/workflow | Implemented | Sequential statuses 1–4, terminal 5/6, reply timeline, dump-backed fields, protected download, and PDF are implemented. | P0 |
-| Leave requests and approvals | Needs verification | Main routes exist; legacy field/status/approval parity is unverified without data. | P1 |
+| Complaint detail/workflow | Implemented | Sequential statuses 1-4, terminal 5/6, reply timeline, dump-backed fields, protected download, and PDF are implemented. | P0 |
+| Leave requests and approvals | Implemented for verified legacy parity | OldProject branch approvals are company+branch scoped and reject self-approval; Laravel now applies both. No unverified leave statuses or fields were added. | P0 |
 | Absence notifications | Implemented | Self-service request/list/create, five verified type paths, duplicate guard, supervisor recipients, private upload, and scoped download are implemented. | P0 |
-| Circulars, inspection visits, data requests, correspondence | Needs verification | Main screens and public reply/receipt routes exist; role, scope, attachment, and print parity is unverified. | P1 |
-| Outgoing correspondence | Needs verification | Main list/print/revise routes exist; complete legacy status and file behavior is unverified. | P1 |
+| Circulars, inspection visits, data requests, correspondence | Implemented for protected downloads | Authenticated, permission-gated, company/branch scoped protected download endpoints exist for primary and related files; public circular links now route through protected module downloads rather than direct file paths. | P0 |
+| Outgoing correspondence | Implemented for protected downloads | Authenticated, permission-gated, company/branch scoped attachment download endpoint exists where outgoing correspondence has stored files. | P0 |
 | Inquiries | Implemented | Verified outgoing create/detail and incoming scoped detail are present; reply/status writes use dump columns and include completion status 6 and transfer semantics. | P0 |
-| Training management | Client decision required | Legacy tables/permissions are present, but complete declarations/approvals were not sufficiently verified to implement safely. | P1 |
-| Training coordination | Client decision required | Legacy tables/permissions are present, but complete coordinator actions were not sufficiently verified to implement safely. | P1 |
-| Medical appointment requests | Client decision required | The seven-table legacy family is present, but no verified NewProject workflow/status evidence was available. | P1 |
+| Training management | Client decision required | Full legacy workflow was not verifiable across code, database, menus, permissions, and linked pages. | P1 |
+| Training coordination | Client decision required | Full legacy workflow was not verifiable across code, database, menus, permissions, and linked pages. | P1 |
+| Medical appointment requests | Client decision required | The seven-table legacy family is present, but the complete workflow/status path was not verifiable across code, database, menus, permissions, and linked pages. | P1 |
 
 ## Authorization and infrastructure blockers
 
-- Selected complaint, inquiry, and absence routes now fail closed through page/action permission middleware; repositories enforce company and branch/user scope, with explicit deny precedence for direct/group grants.
-- Complaint, absence, and inquiry output/download routes are authenticated and scoped. Older circular/visit/data/correspondence attachment helpers still require a follow-up protected-download batch.
-- The configured `.env` remains unchanged. A separate disposable MariaDB instance on 3307/socket was initialized as `hms_migration_test`, imported from the read-only dump, and accessed by restricted local user `hms_audit` through ignored `.env.audit` configuration.
-- No destructive commands or incompatible inquiry migrations were run.
+- Complaint, inquiry, absence, circular, inspection visit, data request, correspondence, and outgoing correspondence module routes now fail closed through authentication plus page/action permission middleware where implemented.
+- Protected corporate download tests cover Arabic filenames/MIME type, missing permission, branch scope, attachment IDOR, and path traversal rejection.
+- Full four-role browser verification is still blocked because no `PW_AUDIT_SUPER_ADMIN_USERNAME/PASSWORD`, `PW_AUDIT_PERMISSION_ADMIN_USERNAME/PASSWORD`, `PW_AUDIT_BRANCH_A_USERNAME/PASSWORD`, or `PW_AUDIT_BRANCH_B_USERNAME/PASSWORD` values are configured.
+- The configured `.env` remains unchanged. The audit server was run with `.env.audit`; no database import was repeated.
+
+## Client questions required
+
+1. Training management: Which legacy page is the source of truth for request creation, approvals, attendance/completion, certificates, and cancellation, and which permission names gate each action?
+2. Training coordination: Which coordinator roles can assign, reschedule, approve, reject, close, and report training, and what database status values represent each step?
+3. Medical appointment requests: Which of the seven related legacy tables define the canonical request lifecycle, who acts at each status, and which linked pages/menus must be considered in scope?
 
 ## Automated evidence
 
-`php artisan optimize:clear`, route listing (163 routes), Laravel tests (16 passed, 55 assertions), and `npm run build` pass. Playwright guest direct-URL tests pass on desktop/mobile and the super-admin desktop 28-scope crawl passes against the local servers; remaining role/viewport review is QA follow-up.
+- `php artisan optimize:clear`: passed.
+- `php artisan route:list`: passed, 162 routes listed.
+- `php artisan test`: passed, 23 tests and 83 assertions.
+- `npm run build`: passed.
+- `PW_BASE_URL=http://127.0.0.1:8012 npx playwright test --project=desktop --project=mobile`: completed with 8 skipped tests because all four role credential pairs are missing.

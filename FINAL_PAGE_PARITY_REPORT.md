@@ -2,36 +2,46 @@
 
 ## Current result
 
-This is an implementation-stage parity report. The project is **not yet delivery-ready** because P1 client decisions and the remaining attachment/role crawl are outstanding.
+This is the final implementation report for the requested remaining blockers. Code-level blockers for protected downloads and verified leave parity are complete. Delivery is still **CLIENT DECISION / QA CREDENTIALS REQUIRED** because the all-role Playwright verification could not run without audit credentials, and three workflows remain intentionally unimplemented pending client confirmation.
 
 | Measure | Count |
 |---|---:|
 | Active legacy main pages discovered | 115 |
 | Candidate client delivery pages | 28 |
-| Candidate pages complete at code level | 17 |
-| Candidate pages needing verification | 6 |
-| Candidate pages partial | 1 |
+| Candidate pages complete at code level | 23 |
+| Candidate pages needing credentialed browser verification | 2 |
 | Candidate pages client decision required | 3 |
 | Active pages outside candidate scope requiring client decision | 75 |
 
 The 1,865 PHP files/endpoints are classified in `ACTIVE_PAGE_SCOPE.md`; handlers, AJAX, print/PDF, includes, and child actions are dependencies rather than additional main pages.
 
-## Exact unresolved delivery pages
+## Completed blocker results
 
-Remaining: complete role/viewport parity crawl; protected download controllers for circulars, visits, data requests, and correspondence; final permission-grant matrix; training management, training coordination, and medical appointment requests pending client decision and workflow evidence.
+- Protected downloads completed for circulars, inspection visits, data requests, correspondence, and outgoing correspondence where stored files exist.
+- Download endpoints enforce authentication, page/action permission middleware, company scope, branch scope, parent/child attachment ownership, path traversal rejection, safe 404/403 behavior, Arabic filename preservation, and detected MIME type.
+- Public circular formal links no longer expose direct public file paths; they point to protected module download routes.
+- Leave parity recheck found and fixed only verified gaps: branch scope on listing/detail and self-approval denial for branch approvers.
+- Training management, training coordination, and medical appointment requests were not implemented because full legacy workflow evidence is not verifiable yet.
 
 ## Verification
 
-- Laravel feature/unit suite: **16 passed, 55 assertions**.
+- Laravel feature/unit suite: **23 passed, 83 assertions**.
 - `php artisan optimize:clear`: passed.
-- `php artisan route:list`: passed (139 routes listed).
+- `php artisan route:list`: passed, **162 routes listed**.
 - `npm run build`: passed.
-- Playwright: guest direct-URL protection passed on desktop/mobile; super-admin desktop 28-scope crawl passed. Remaining audit roles are conditional on grant matrix and require follow-up review.
-- Database: configured `.env` was not changed. Disposable `hms_migration_test` is imported on local 3307/socket with restricted `hms_audit`; PW_AUDIT records were used for write checks.
+- Playwright: desktop/mobile suite command passed, but all 8 audit-role runs were skipped because `PW_AUDIT_*_USERNAME` and `PW_AUDIT_*_PASSWORD` are not configured. No role can be claimed browser-verified from this run.
+- Database: configured `.env` was not changed. The existing `.env.audit` local audit configuration was used for the temporary Laravel server; database import was not repeated.
+
+## Client decisions required
+
+1. Training management: Confirm the source legacy pages/tables, exact statuses, approval actors, cancellation behavior, certificate/attendance outputs, and permissions for every action.
+2. Training coordination: Confirm coordinator role boundaries, assignment/reschedule/close workflow, reporting outputs, status IDs, and menu permission names.
+3. Medical appointment requests: Confirm the canonical lifecycle across the seven related tables, required linked pages, each actor's allowed actions, status mapping, notification behavior, and print/export requirements.
 
 ## Git
 
-Branch: `autonomous-delivery-sprint`  
-Latest commit: `b035752 scope active legacy business pages`
+Branch: `autonomous-delivery-sprint`
 
-Parity percentage is **not claimable** until the remaining role/viewport and protected-download checks complete. The project remains **NOT DELIVERY-READY** pending those checks and the three client decisions.
+Latest implementation commit before this documentation update: `58864fd Protect circular public attachment links`
+
+Final delivery status: **not fully delivery-ready until audit credentials are provided and the three client decisions are answered**.
