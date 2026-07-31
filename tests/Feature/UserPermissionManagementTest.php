@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Services\Dashboard\NavigationService;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
@@ -69,6 +70,19 @@ class UserPermissionManagementTest extends TestCase
         DB::table('user_permission')->insert(['userid' => 1, 'pageid' => 0, 'page' => 'super_only', 'permit' => '2']);
         $payload = $this->payload(2, ['users', 'user_groups_permissins'], ['groupid' => 6]);
         $this->withSession($this->sessionFor(2, 5))->put('/modules/system-administration/users/2', $payload)->assertForbidden();
+    }
+
+    public function test_user_management_navigation_uses_the_same_permission_admin_gate(): void
+    {
+        $this->startSession();
+        session($this->sessionFor(2, 5));
+        $authorizedRoutes = collect(app(NavigationService::class)->sidebar())->pluck('route');
+        $this->assertTrue($authorizedRoutes->contains('modules.system-admin.users.index'));
+
+        session()->flush();
+        session($this->sessionFor(3));
+        $standardRoutes = collect(app(NavigationService::class)->sidebar())->pluck('route');
+        $this->assertFalse($standardRoutes->contains('modules.system-admin.users.index'));
     }
 
     public function test_final_active_super_administrator_is_protected(): void

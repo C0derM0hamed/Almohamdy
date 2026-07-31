@@ -260,6 +260,14 @@ return [
                     ],
                 ],
             ],
+            [
+                'label_key' => 'system_admin_users',
+                'route' => 'modules.system-admin.users.index',
+                'icon' => 'bi-people',
+                'active_prefix' => 'modules.system-admin.users.',
+                'subtitle_key' => 'system_administration.users.scope_notice',
+                'permission_admin_only' => true,
+            ],
         ],
     ],
 

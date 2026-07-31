@@ -60,6 +60,7 @@ return [
         'system_admin_overview' => 'Overview',
         'system_admin_services' => 'Hospital Services',
         'system_admin_doctors' => 'Doctors Directory',
+        'system_admin_users' => 'Users and Permissions',
     ],
 
     'widgets' => [

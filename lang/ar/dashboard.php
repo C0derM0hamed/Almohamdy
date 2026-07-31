@@ -60,6 +60,7 @@ return [
         'system_admin_overview' => 'نظرة عامة',
         'system_admin_services' => 'خدمات المستشفى',
         'system_admin_doctors' => 'دليل الأطباء',
+        'system_admin_users' => 'المستخدمون والصلاحيات',
     ],
 
     'widgets' => [

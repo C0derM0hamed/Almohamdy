@@ -127,6 +127,10 @@ class NavigationService
             return false;
         }
 
+        if (! empty($item['permission_admin_only']) && ! $this->permissions->canManageUsers()) {
+            return false;
+        }
+
         $routeParams = $item['route_params'] ?? [];
 
         if (is_array($routeParams) && $routeParams !== []) {
@@ -207,6 +211,10 @@ class NavigationService
             return null;
         }
 
+        if (! empty($item['permission_admin_only']) && ! $this->permissions->canManageUsers()) {
+            return null;
+        }
+
         $routeParams = is_array($item['route_params'] ?? null) ? $item['route_params'] : [];
         $isActive = $this->itemMatchesRoute($item, $currentRoute);
 
@@ -233,6 +241,10 @@ class NavigationService
         }
 
         if (! empty($item['admin_only']) && ! $this->permissions->isAdmin()) {
+            return null;
+        }
+
+        if (! empty($item['permission_admin_only']) && ! $this->permissions->canManageUsers()) {
             return null;
         }
 
