@@ -8,10 +8,12 @@ use App\Http\Requests\GovernmentCirculars\GovernmentCircularIndexRequest;
 use App\Http\Requests\GovernmentCirculars\StoreGovernmentCircularRequest;
 use App\Http\Requests\GovernmentCirculars\UpdateGovernmentCircularStatusRequest;
 use App\Services\GovernmentCirculars\GovernmentCircularService;
+use App\Support\ProtectedFileDownload;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 use InvalidArgumentException;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class GovernmentCircularController extends Controller
 {
@@ -19,6 +21,7 @@ class GovernmentCircularController extends Controller
 
     public function __construct(
         private readonly GovernmentCircularService $circulars,
+        private readonly ProtectedFileDownload $downloads,
     ) {}
 
     public function index(GovernmentCircularIndexRequest $request): View
@@ -88,7 +91,9 @@ class GovernmentCircularController extends Controller
             'statusLabel' => $this->circulars->statusLabel($record),
             'statusColor' => $this->circulars->statusColor($record),
             'updatableStatuses' => $this->circulars->updatableStatusOptions((int) $record->status),
-            'attachmentUrl' => $this->circulars->attachmentUrl($record->circulars_file),
+            'attachmentUrl' => filled($record->circulars_file)
+                ? route('modules.government-circulars.download', $record->id)
+                : null,
             'recipientsCount' => $reports->count(),
             'departmentsCount' => $this->circulars->departmentSummary($circular)->count(),
             'formalPageUrl' => $this->circulars->formalPageUrl(
@@ -98,6 +103,28 @@ class GovernmentCircularController extends Controller
             ),
             'homeRoute' => $this->homeRouteName(),
         ]);
+    }
+
+    public function download(int $circular): BinaryFileResponse
+    {
+        $record = $this->circulars->findForDetail($circular);
+
+        abort_if($record === null, 404);
+
+        return $this->downloads->download($record->circulars_file, $record->subject);
+    }
+
+    public function downloadAttachment(int $circular, int $attachment): BinaryFileResponse
+    {
+        $record = $this->circulars->findForDetail($circular);
+
+        abort_if($record === null, 404);
+
+        $file = $record->attachments->firstWhere('id', $attachment);
+
+        abort_if($file === null, 404);
+
+        return $this->downloads->download($file->circulars_file, $record->subject);
     }
 
     public function updateStatus(UpdateGovernmentCircularStatusRequest $request, int $circular): RedirectResponse

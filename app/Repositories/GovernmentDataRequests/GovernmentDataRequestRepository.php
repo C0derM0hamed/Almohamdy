@@ -14,6 +14,7 @@ use App\Models\GovernmentDataRequestReceivingMethod;
 use App\Models\GovernmentDataRequestStatus;
 use App\Models\GovernmentDataRequestTimeline;
 use App\Models\GovernmentDataRequestView;
+use App\Support\BranchScope;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
@@ -23,7 +24,7 @@ class GovernmentDataRequestRepository
 {
     public function scopedQuery(): Builder
     {
-        return GovernmentDataRequest::query()->select([
+        $query = GovernmentDataRequest::query()->select([
             'id',
             'id_siction',
             'id_subsiction',
@@ -42,7 +43,10 @@ class GovernmentDataRequestRepository
             'c',
             'becuse',
             'AnswerText',
-        ]);
+        ])
+            ->where('companies_groups_id', (int) session('companies_groups_id', 0));
+
+        return BranchScope::apply($query);
     }
 
     /**
@@ -96,6 +100,9 @@ class GovernmentDataRequestRepository
     {
         $counts = DB::table('g_data')
             ->select('status', DB::raw('COUNT(*) as total'))
+            ->where('companies_groups_id', (int) session('companies_groups_id', 0))
+            ->when((int) session('hr_user_level', 0) !== 3 && (int) session('hr_branch_id', 0) > 0,
+                fn ($query) => $query->where('branch_id', (int) session('hr_branch_id')))
             ->groupBy('status')
             ->pluck('total', 'status');
 

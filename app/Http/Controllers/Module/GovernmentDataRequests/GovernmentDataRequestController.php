@@ -8,9 +8,11 @@ use App\Http\Requests\GovernmentDataRequests\GovernmentDataRequestIndexRequest;
 use App\Http\Requests\GovernmentDataRequests\StoreGovernmentDataRequestRequest;
 use App\Http\Requests\GovernmentDataRequests\UpdateGovernmentDataRequestStatusRequest;
 use App\Services\GovernmentDataRequests\GovernmentDataRequestService;
+use App\Support\ProtectedFileDownload;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 use InvalidArgumentException;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class GovernmentDataRequestController extends Controller
 {
@@ -18,6 +20,7 @@ class GovernmentDataRequestController extends Controller
 
     public function __construct(
         private readonly GovernmentDataRequestService $requests,
+        private readonly ProtectedFileDownload $downloads,
     ) {}
 
     public function index(GovernmentDataRequestIndexRequest $request): View
@@ -70,14 +73,40 @@ class GovernmentDataRequestController extends Controller
             'updatableStatuses' => $this->requests->updatableStatusOptions((int) $record->status),
             'recipientsCount' => (int) ($record->recipients_count ?? 0),
             'attachmentUrls' => $record->mailFiles->mapWithKeys(
-                fn ($file) => [$file->id => $this->requests->fileUrl($file->file)]
+                fn ($file) => [$file->id => route('modules.data-requests.attachments.download', [$record->id, $file->id])]
             ),
             'noticeUrls' => $record->answerFiles->mapWithKeys(
-                fn ($file) => [$file->id => $this->requests->fileUrl($file->file)]
+                fn ($file) => [$file->id => route('modules.data-requests.answers.download', [$record->id, $file->id])]
             ),
             'departmentReplyUrl' => $this->requests->departmentReplyUrl($record),
             'homeRoute' => $this->homeRouteName(),
         ]);
+    }
+
+    public function downloadAttachment(int $dataRequest, int $attachment): BinaryFileResponse
+    {
+        $record = $this->requests->findForDetail($dataRequest);
+
+        abort_if($record === null, 404);
+
+        $file = $record->mailFiles->firstWhere('id', $attachment);
+
+        abort_if($file === null, 404);
+
+        return $this->downloads->download($file->file, $file->displayLabel(), ['report_file']);
+    }
+
+    public function downloadAnswer(int $dataRequest, int $answer): BinaryFileResponse
+    {
+        $record = $this->requests->findForDetail($dataRequest);
+
+        abort_if($record === null, 404);
+
+        $file = $record->answerFiles->firstWhere('id', $answer);
+
+        abort_if($file === null, 404);
+
+        return $this->downloads->download($file->file, $file->displayLabel(), ['report_file']);
     }
 
     public function receipt(int $dataRequest): View

@@ -9,9 +9,11 @@ use App\Http\Requests\GovernmentInspectionVisits\StoreGovernmentInspectionVisitA
 use App\Http\Requests\GovernmentInspectionVisits\StoreGovernmentInspectionVisitRequest;
 use App\Http\Requests\GovernmentInspectionVisits\UpdateGovernmentInspectionVisitStatusRequest;
 use App\Services\GovernmentInspectionVisits\GovernmentInspectionVisitService;
+use App\Support\ProtectedFileDownload;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 use InvalidArgumentException;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class GovernmentInspectionVisitController extends Controller
 {
@@ -19,6 +21,7 @@ class GovernmentInspectionVisitController extends Controller
 
     public function __construct(
         private readonly GovernmentInspectionVisitService $visits,
+        private readonly ProtectedFileDownload $downloads,
     ) {}
 
     public function index(GovernmentInspectionVisitIndexRequest $request): View
@@ -78,10 +81,10 @@ class GovernmentInspectionVisitController extends Controller
             'updatableStatuses' => $this->visits->updatableStatusOptions((int) $record->status),
             'recipientsCount' => (int) ($record->recipients_count ?? 0),
             'attachmentUrls' => $record->attachments->mapWithKeys(
-                fn ($attachment) => [$attachment->id => $this->visits->fileUrl($attachment->file_name)]
+                fn ($attachment) => [$attachment->id => route('modules.inspection-visits.attachments.download', [$record->id, $attachment->id])]
             ),
             'noticeUrls' => $record->replySubmissions->mapWithKeys(
-                fn ($submission) => [$submission->id => $this->visits->fileUrl($submission->file_name)]
+                fn ($submission) => [$submission->id => route('modules.inspection-visits.notices.download', [$record->id, $submission->id])]
             ),
             'departmentReplyUrl' => $this->visits->departmentReplyUrl(
                 $record,
@@ -90,6 +93,32 @@ class GovernmentInspectionVisitController extends Controller
             ),
             'homeRoute' => $this->homeRouteName(),
         ]);
+    }
+
+    public function downloadAttachment(int $visit, int $attachment): BinaryFileResponse
+    {
+        $record = $this->visits->findForDetail($visit);
+
+        abort_if($record === null, 404);
+
+        $file = $record->attachments->firstWhere('id', $attachment);
+
+        abort_if($file === null, 404);
+
+        return $this->downloads->download($file->file_name, $file->displayLabel(), ['files']);
+    }
+
+    public function downloadNotice(int $visit, int $submission): BinaryFileResponse
+    {
+        $record = $this->visits->findForDetail($visit);
+
+        abort_if($record === null, 404);
+
+        $file = $record->replySubmissions->firstWhere('id', $submission);
+
+        abort_if($file === null, 404);
+
+        return $this->downloads->download($file->file_name, __('inspection_visits.notices.title'), ['files']);
     }
 
     public function receipt(int $visit): View

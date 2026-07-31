@@ -123,6 +123,10 @@ class NavigationService
             return false;
         }
 
+        if (! $this->hasConfiguredPermission($item)) {
+            return false;
+        }
+
         if (! empty($item['admin_only']) && ! $this->permissions->isAdmin()) {
             return false;
         }
@@ -204,6 +208,10 @@ class NavigationService
 
         if ($this->requiresWorkAbsenceView($routeName)
             && ! $this->permissions->can(WorkAbsenceNotificationPermissions::VIEW)) {
+            return null;
+        }
+
+        if (! $this->hasConfiguredPermission($item)) {
             return null;
         }
 
@@ -305,6 +313,16 @@ class NavigationService
     private function requiresWorkAbsenceView(string $routeName): bool
     {
         return str_starts_with($routeName, 'modules.work-absence.');
+    }
+
+    /**
+     * @param  array<string, mixed>  $item
+     */
+    private function hasConfiguredPermission(array $item): bool
+    {
+        $permission = trim((string) ($item['permission'] ?? ''));
+
+        return $permission === '' || $this->permissions->can($permission);
     }
 
     /**

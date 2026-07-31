@@ -16,6 +16,7 @@ use App\Models\GovernmentInspectionVisitReplySubmission;
 use App\Models\GovernmentInspectionVisitReturned;
 use App\Models\GovernmentInspectionVisitTimeline;
 use App\Models\GovernmentInspectionVisitType;
+use App\Support\BranchScope;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
@@ -46,9 +47,11 @@ class GovernmentInspectionVisitRepository
 
     public function scopedQuery(): Builder
     {
-        return GovernmentInspectionVisit::query()
+        $query = GovernmentInspectionVisit::query()
             ->select(self::LIST_COLUMNS)
             ->where('companies_groups_id', (int) session('companies_groups_id', 0));
+
+        return BranchScope::apply($query);
     }
 
     /**
@@ -111,6 +114,8 @@ class GovernmentInspectionVisitRepository
         $counts = DB::table('government_inspection_visits')
             ->select('status', DB::raw('COUNT(*) as total'))
             ->where('companies_groups_id', $companyId)
+            ->when((int) session('hr_user_level', 0) !== 3 && (int) session('hr_branch_id', 0) > 0,
+                fn ($query) => $query->where('branch_id', (int) session('hr_branch_id')))
             ->groupBy('status')
             ->pluck('total', 'status');
 

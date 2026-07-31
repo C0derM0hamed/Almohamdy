@@ -8,9 +8,11 @@ use App\Http\Requests\CorporateCommunications\CorporateCommunicationOutgoingLett
 use App\Http\Requests\CorporateCommunications\StoreCorporateCommunicationOutgoingLetterRequest;
 use App\Http\Requests\CorporateCommunications\UpdateCorporateCommunicationOutgoingLetterStatusRequest;
 use App\Services\CorporateCommunications\CorporateCommunicationOutgoingLetterService;
+use App\Support\ProtectedFileDownload;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 use InvalidArgumentException;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class CorporateCommunicationOutgoingLetterController extends Controller
 {
@@ -18,6 +20,7 @@ class CorporateCommunicationOutgoingLetterController extends Controller
 
     public function __construct(
         private readonly CorporateCommunicationOutgoingLetterService $letters,
+        private readonly ProtectedFileDownload $downloads,
     ) {}
 
     public function index(CorporateCommunicationOutgoingLetterIndexRequest $request): View
@@ -69,11 +72,24 @@ class CorporateCommunicationOutgoingLetterController extends Controller
             'statusColor' => $this->letters->statusColor($record),
             'updatableStatuses' => $this->letters->updatableStatusOptions((int) $record->status),
             'attachmentUrls' => $record->attachments->mapWithKeys(
-                fn ($file) => [$file->id => $this->letters->fileUrl($file->file)]
+                fn ($file) => [$file->id => route('modules.outgoing-correspondence.attachments.download', [$record->id, $file->id])]
             ),
             'departmentReviseUrl' => $this->letters->departmentReviseUrl($record),
             'homeRoute' => $this->homeRouteName(),
         ]);
+    }
+
+    public function downloadAttachment(int $letter, int $attachment): BinaryFileResponse
+    {
+        $record = $this->letters->findForDetail($letter);
+
+        abort_if($record === null, 404);
+
+        $file = $record->attachments->firstWhere('id', $attachment);
+
+        abort_if($file === null, 404);
+
+        return $this->downloads->download($file->file, $file->displayLabel(), ['government_reporting']);
     }
 
     public function print(int $letter): View

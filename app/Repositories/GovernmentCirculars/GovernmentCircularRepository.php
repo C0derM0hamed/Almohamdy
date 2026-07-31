@@ -12,6 +12,7 @@ use App\Models\GovernmentCircularReceivingMechanism;
 use App\Models\GovernmentCircularSection;
 use App\Models\GovernmentCircularSectionAdministrator;
 use App\Models\GovernmentCircularStatus;
+use App\Support\BranchScope;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
@@ -45,9 +46,11 @@ class GovernmentCircularRepository
 
     public function scopedQuery(): Builder
     {
-        return GovernmentCircular::query()
+        $query = GovernmentCircular::query()
             ->select(self::LIST_COLUMNS)
             ->where('companies_groups_id', (int) session('companies_groups_id', 0));
+
+        return BranchScope::apply($query);
     }
 
     public function paginateFiltered(

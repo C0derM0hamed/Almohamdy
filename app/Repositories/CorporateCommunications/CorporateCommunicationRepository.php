@@ -14,6 +14,7 @@ use App\Models\GovernmentCircularIssuingAuthority;
 use App\Models\GovernmentCircularReceivingMechanism;
 use App\Models\GovernmentCircularSection;
 use App\Models\GovernmentCircularSectionAdministrator;
+use App\Support\BranchScope;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
@@ -25,8 +26,10 @@ class CorporateCommunicationRepository
     {
         $groupId = (int) session('companies_groups_id', 0);
 
-        return CorporateCommunication::query()
+        $query = CorporateCommunication::query()
             ->when($groupId > 0, fn (Builder $q) => $q->where('companies_groups_id', $groupId));
+
+        return BranchScope::apply($query);
     }
 
     /**
@@ -87,6 +90,8 @@ class CorporateCommunicationRepository
         $countsQuery = DB::table('corporate_communications')
             ->select('status', DB::raw('COUNT(*) as total'))
             ->when($groupId > 0, fn ($q) => $q->where('companies_groups_id', $groupId))
+            ->when((int) session('hr_user_level', 0) !== 3 && (int) session('hr_branch_id', 0) > 0,
+                fn ($q) => $q->where('branch_id', (int) session('hr_branch_id')))
             ->groupBy('status');
 
         $counts = $countsQuery->pluck('total', 'status');

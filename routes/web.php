@@ -40,6 +40,7 @@ use App\Http\Controllers\PublicForms\DataRequestDepartmentReplyController;
 use App\Http\Controllers\PublicForms\CorrespondenceDepartmentReplyController;
 use App\Http\Controllers\PublicForms\OutgoingLetterReviseController;
 use App\Http\Controllers\PublicForms\GovernmentCircularFormalController;
+use App\Support\CorporateCommunications\CorporateCommunicationPermissions;
 use App\Support\EmployeeLeave\EmployeeLeavePermissions;
 use App\Support\WorkAbsenceNotification\WorkAbsenceNotificationPermissions;
 use Illuminate\Support\Facades\Route;
@@ -301,10 +302,17 @@ Route::middleware('auth.session')->group(function () {
         });
         Route::get('/corporate-communication', [CorporateCommunicationDashboardController::class, 'index'])
             ->name('corporate-communication.dashboard');
-        Route::prefix('government-circulars')->name('government-circulars.')->group(function () {
+        Route::prefix('government-circulars')->name('government-circulars.')
+            ->middleware('permission:'.CorporateCommunicationPermissions::GOVERNMENT_CIRCULARS)->group(function () {
             Route::get('/', [GovernmentCircularController::class, 'index'])->name('index');
             Route::get('/create', [GovernmentCircularController::class, 'create'])->name('create');
             Route::post('/', [GovernmentCircularController::class, 'store'])->name('store');
+            Route::get('/{circular}/download', [GovernmentCircularController::class, 'download'])
+                ->name('download')
+                ->whereNumber('circular');
+            Route::get('/{circular}/attachments/{attachment}/download', [GovernmentCircularController::class, 'downloadAttachment'])
+                ->name('attachments.download')
+                ->whereNumber(['circular', 'attachment']);
             Route::get('/{circular}/receipt', [GovernmentCircularController::class, 'receipt'])
                 ->name('receipt')
                 ->whereNumber('circular');
@@ -318,10 +326,17 @@ Route::middleware('auth.session')->group(function () {
                 ->name('show')
                 ->whereNumber('circular');
         });
-        Route::prefix('inspection-visits')->name('inspection-visits.')->group(function () {
+        Route::prefix('inspection-visits')->name('inspection-visits.')
+            ->middleware('permission:'.CorporateCommunicationPermissions::INSPECTION_VISITS)->group(function () {
             Route::get('/', [GovernmentInspectionVisitController::class, 'index'])->name('index');
             Route::get('/create', [GovernmentInspectionVisitController::class, 'create'])->name('create');
             Route::post('/', [GovernmentInspectionVisitController::class, 'store'])->name('store');
+            Route::get('/{visit}/attachments/{attachment}/download', [GovernmentInspectionVisitController::class, 'downloadAttachment'])
+                ->name('attachments.download')
+                ->whereNumber(['visit', 'attachment']);
+            Route::get('/{visit}/notices/{submission}/download', [GovernmentInspectionVisitController::class, 'downloadNotice'])
+                ->name('notices.download')
+                ->whereNumber(['visit', 'submission']);
             Route::get('/{visit}/receipt', [GovernmentInspectionVisitController::class, 'receipt'])
                 ->name('receipt')
                 ->whereNumber('visit');
@@ -335,10 +350,17 @@ Route::middleware('auth.session')->group(function () {
                 ->name('show')
                 ->whereNumber('visit');
         });
-        Route::prefix('data-requests')->name('data-requests.')->group(function () {
+        Route::prefix('data-requests')->name('data-requests.')
+            ->middleware('permission:'.CorporateCommunicationPermissions::DATA_REQUESTS)->group(function () {
             Route::get('/', [GovernmentDataRequestController::class, 'index'])->name('index');
             Route::get('/create', [GovernmentDataRequestController::class, 'create'])->name('create');
             Route::post('/', [GovernmentDataRequestController::class, 'store'])->name('store');
+            Route::get('/{dataRequest}/attachments/{attachment}/download', [GovernmentDataRequestController::class, 'downloadAttachment'])
+                ->name('attachments.download')
+                ->whereNumber(['dataRequest', 'attachment']);
+            Route::get('/{dataRequest}/answers/{answer}/download', [GovernmentDataRequestController::class, 'downloadAnswer'])
+                ->name('answers.download')
+                ->whereNumber(['dataRequest', 'answer']);
             Route::get('/{dataRequest}/receipt', [GovernmentDataRequestController::class, 'receipt'])
                 ->name('receipt')
                 ->whereNumber('dataRequest');
@@ -349,10 +371,14 @@ Route::middleware('auth.session')->group(function () {
                 ->name('show')
                 ->whereNumber('dataRequest');
         });
-        Route::prefix('correspondence')->name('correspondence.')->group(function () {
+        Route::prefix('correspondence')->name('correspondence.')
+            ->middleware('permission:'.CorporateCommunicationPermissions::CORRESPONDENCE)->group(function () {
             Route::get('/', [CorporateCommunicationController::class, 'index'])->name('index');
             Route::get('/create', [CorporateCommunicationController::class, 'create'])->name('create');
             Route::post('/', [CorporateCommunicationController::class, 'store'])->name('store');
+            Route::get('/{correspondence}/attachments/{attachment}/download', [CorporateCommunicationController::class, 'downloadAttachment'])
+                ->name('attachments.download')
+                ->whereNumber(['correspondence', 'attachment']);
             Route::get('/{correspondence}/receipt', [CorporateCommunicationController::class, 'receipt'])
                 ->name('receipt')
                 ->whereNumber('correspondence');
@@ -363,10 +389,14 @@ Route::middleware('auth.session')->group(function () {
                 ->name('show')
                 ->whereNumber('correspondence');
         });
-        Route::prefix('outgoing-correspondence')->name('outgoing-correspondence.')->group(function () {
+        Route::prefix('outgoing-correspondence')->name('outgoing-correspondence.')
+            ->middleware('permission:'.CorporateCommunicationPermissions::OUTGOING_CORRESPONDENCE)->group(function () {
             Route::get('/', [CorporateCommunicationOutgoingLetterController::class, 'index'])->name('index');
             Route::get('/create', [CorporateCommunicationOutgoingLetterController::class, 'create'])->name('create');
             Route::post('/', [CorporateCommunicationOutgoingLetterController::class, 'store'])->name('store');
+            Route::get('/{letter}/attachments/{attachment}/download', [CorporateCommunicationOutgoingLetterController::class, 'downloadAttachment'])
+                ->name('attachments.download')
+                ->whereNumber(['letter', 'attachment']);
             Route::post('/{letter}/status', [CorporateCommunicationOutgoingLetterController::class, 'updateStatus'])
                 ->name('status')
                 ->whereNumber('letter');

@@ -12,6 +12,7 @@ use App\Models\CorporateCommunicationSector;
 use App\Models\CorporateCommunicationSenderTitle;
 use App\Models\GovernmentCircularIssuingAuthority;
 use App\Models\GovernmentCircularReceivingMechanism;
+use App\Support\BranchScope;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
@@ -23,8 +24,10 @@ class CorporateCommunicationOutgoingLetterRepository
     {
         $groupId = (int) session('companies_groups_id', 0);
 
-        return CorporateCommunicationOutgoingLetter::query()
+        $query = CorporateCommunicationOutgoingLetter::query()
             ->when($groupId > 0, fn (Builder $q) => $q->where('companies_groups_id', $groupId));
+
+        return BranchScope::apply($query);
     }
 
     /**
@@ -83,6 +86,8 @@ class CorporateCommunicationOutgoingLetterRepository
         $counts = DB::table('corporate_communications_outgoing_letters')
             ->select('status', DB::raw('COUNT(*) as total'))
             ->when($groupId > 0, fn ($q) => $q->where('companies_groups_id', $groupId))
+            ->when((int) session('hr_user_level', 0) !== 3 && (int) session('hr_branch_id', 0) > 0,
+                fn ($q) => $q->where('branch_id', (int) session('hr_branch_id')))
             ->groupBy('status')
             ->pluck('total', 'status');
 

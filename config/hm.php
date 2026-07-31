@@ -183,6 +183,7 @@ return [
                         'icon' => 'bi-file-earmark-text',
                         'active_prefix' => 'modules.government-circulars.',
                         'subtitle_key' => 'government_circulars.subtitle',
+                        'permission' => \App\Support\CorporateCommunications\CorporateCommunicationPermissions::GOVERNMENT_CIRCULARS,
                     ],
                     [
                         'label_key' => 'inspection_visits',
@@ -190,6 +191,7 @@ return [
                         'icon' => 'bi-clipboard2-check',
                         'active_prefix' => 'modules.inspection-visits.',
                         'subtitle_key' => 'inspection_visits.subtitle',
+                        'permission' => \App\Support\CorporateCommunications\CorporateCommunicationPermissions::INSPECTION_VISITS,
                     ],
                     [
                         'label_key' => 'data_requests',
@@ -197,6 +199,7 @@ return [
                         'icon' => 'bi-database',
                         'active_prefix' => 'modules.data-requests.',
                         'subtitle_key' => 'data_requests.subtitle',
+                        'permission' => \App\Support\CorporateCommunications\CorporateCommunicationPermissions::DATA_REQUESTS,
                     ],
                     [
                         'label_key' => 'correspondence',
@@ -204,6 +207,7 @@ return [
                         'icon' => 'bi-envelope-open',
                         'active_prefix' => 'modules.correspondence.',
                         'subtitle_key' => 'correspondence.subtitle',
+                        'permission' => \App\Support\CorporateCommunications\CorporateCommunicationPermissions::CORRESPONDENCE,
                     ],
                     [
                         'label_key' => 'outgoing_correspondence',
@@ -211,6 +215,7 @@ return [
                         'icon' => 'bi-envelope-paper',
                         'active_prefix' => 'modules.outgoing-correspondence.',
                         'subtitle_key' => 'outgoing_correspondence.subtitle',
+                        'permission' => \App\Support\CorporateCommunications\CorporateCommunicationPermissions::OUTGOING_CORRESPONDENCE,
                     ],
                 ],
             ],

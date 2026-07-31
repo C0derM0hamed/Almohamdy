@@ -8,9 +8,11 @@ use App\Http\Requests\CorporateCommunications\CorporateCommunicationIndexRequest
 use App\Http\Requests\CorporateCommunications\StoreCorporateCommunicationRequest;
 use App\Http\Requests\CorporateCommunications\UpdateCorporateCommunicationStatusRequest;
 use App\Services\CorporateCommunications\CorporateCommunicationService;
+use App\Support\ProtectedFileDownload;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 use InvalidArgumentException;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class CorporateCommunicationController extends Controller
 {
@@ -18,6 +20,7 @@ class CorporateCommunicationController extends Controller
 
     public function __construct(
         private readonly CorporateCommunicationService $communications,
+        private readonly ProtectedFileDownload $downloads,
     ) {}
 
     public function index(CorporateCommunicationIndexRequest $request): View
@@ -71,11 +74,24 @@ class CorporateCommunicationController extends Controller
             'updatableStatuses' => $this->communications->updatableStatusOptions((int) $record->status),
             'recipientsCount' => (int) ($record->recipients_count ?? 0),
             'attachmentUrls' => $record->attachments->mapWithKeys(
-                fn ($file) => [$file->id => $this->communications->fileUrl($file->file)]
+                fn ($file) => [$file->id => route('modules.correspondence.attachments.download', [$record->id, $file->id])]
             ),
             'departmentReplyUrl' => $this->communications->departmentReplyUrl($record),
             'homeRoute' => $this->homeRouteName(),
         ]);
+    }
+
+    public function downloadAttachment(int $correspondence, int $attachment): BinaryFileResponse
+    {
+        $record = $this->communications->findForDetail($correspondence);
+
+        abort_if($record === null, 404);
+
+        $file = $record->attachments->firstWhere('id', $attachment);
+
+        abort_if($file === null, 404);
+
+        return $this->downloads->download($file->file, $file->displayLabel(), ['government_reporting']);
     }
 
     public function receipt(int $correspondence): View
