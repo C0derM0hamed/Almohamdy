@@ -14,6 +14,13 @@ return [
         'demo_mode' => (bool) env('HM_OTP_DEMO_MODE', true),
     ],
 
+    'password_recovery' => [
+        'otp_length' => 6,
+        'expiry_seconds' => 120,
+        'max_attempts' => 5,
+        'authorization_seconds' => 300,
+    ],
+
     'permissions' => [
         'bypass' => (bool) env('HM_PERMISSIONS_BYPASS', false),
         'admin_levels' => [3],
@@ -458,12 +465,13 @@ return [
         'per_page' => (int) env('HM_INQUIRIES_PER_PAGE', 15),
         'new_status_ids' => [999999, 1, 0],
         'forward_status_id' => 999999,
-        'update_status_ids' => [3, 4, 5, 999999],
+        'update_status_ids' => [3, 4, 5, 6, 999999],
         'stat_statuses' => [
             'new' => [999999, 1, 0],
             'in_progress' => [3],
             'contacted' => [4],
             'contacted_not_booked' => [5],
+            'completed' => [6],
         ],
         // Branch id => destination department (branch) ids for incoming list when scoped.
         'branch_incoming_sections' => [

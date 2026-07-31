@@ -81,7 +81,17 @@ Route::get('/login', [LoginController::class, 'showLogin'])->middleware('prevent
 Route::post('/login', [LoginController::class, 'login'])->middleware('prevent.cache');
 
 Route::get('/password/forgot', [PasswordRecoveryController::class, 'show'])->name('password.forgot');
-Route::post('/password/forgot', [PasswordRecoveryController::class, 'send'])->name('password.send');
+Route::post('/password/forgot', [PasswordRecoveryController::class, 'send'])
+    ->middleware('throttle:5,1')
+    ->name('password.send');
+Route::get('/password/otp', [PasswordRecoveryController::class, 'showOtp'])->name('password.otp.show');
+Route::post('/password/otp', [PasswordRecoveryController::class, 'verifyOtp'])
+    ->middleware('throttle:10,1')
+    ->name('password.otp.verify');
+Route::get('/password/reset', [PasswordRecoveryController::class, 'showReset'])->name('password.reset.show');
+Route::post('/password/reset', [PasswordRecoveryController::class, 'reset'])
+    ->middleware('throttle:5,1')
+    ->name('password.reset.store');
 
 Route::get('/otp/cancel', [OtpController::class, 'cancel'])->name('otp.cancel')->middleware('prevent.cache');
 
@@ -238,7 +248,7 @@ Route::middleware('auth.session')->group(function () {
                 ->middleware('permission:'.EmployeeLeavePermissions::HR_PROCESS)
                 ->whereNumber('leave');
         });
-        Route::prefix('work-absence-notification')->name('work-absence.')->group(function () {
+        Route::prefix('work-absence-notification')->name('work-absence.')->middleware('permission:absence_notification_service')->group(function () {
             Route::middleware('permission:'.WorkAbsenceNotificationPermissions::VIEW)->group(function () {
                 Route::get('/', [WorkAbsenceNotificationDashboardController::class, 'index'])->name('dashboard');
                 Route::get('/notifications', [WorkAbsenceNotificationController::class, 'index'])->name('notifications.index');
@@ -246,6 +256,12 @@ Route::middleware('auth.session')->group(function () {
                     ->name('notifications.show')
                     ->whereNumber('notification');
             });
+
+            Route::get('/requests', [WorkAbsenceNotificationController::class, 'requests'])->name('requests.index');
+            Route::get('/requests/create', [WorkAbsenceNotificationController::class, 'createRequest'])->name('requests.create');
+            Route::post('/requests', [WorkAbsenceNotificationController::class, 'storeRequest'])->name('requests.store');
+            Route::get('/requests/{notification}/certificate', [WorkAbsenceNotificationController::class, 'downloadAttachment'])
+                ->name('requests.attachment')->whereNumber('notification');
 
             Route::get('/notifications/export', [WorkAbsenceNotificationController::class, 'export'])
                 ->middleware('permission:'.WorkAbsenceNotificationPermissions::EXPORT)
@@ -267,9 +283,15 @@ Route::middleware('auth.session')->group(function () {
                 ->whereNumber('notification');
         });
         Route::get('/complaints', [ComplaintsDashboardController::class, 'index'])
-            ->name('complaints');
-        Route::prefix('complaints')->name('complaints.')->group(function () {
+            ->name('complaints')->middleware('permission:complaints');
+        Route::prefix('complaints')->name('complaints.')->middleware('permission:complaints')->group(function () {
             Route::get('/list', [ComplaintController::class, 'index'])->name('index');
+            Route::get('/create', [ComplaintController::class, 'create'])->name('create')->middleware('permission:complaints_create');
+            Route::post('/', [ComplaintController::class, 'store'])->name('store')->middleware('permission:complaints_create');
+            Route::get('/{complaint}/pdf', [ComplaintController::class, 'pdf'])->name('pdf')->middleware('permission:complaints_print')->whereNumber('complaint');
+            Route::get('/{complaint}/replies/{reply}/attachment', [ComplaintController::class, 'attachment'])
+                ->name('attachment')->middleware('permission:complaints_attachment')->whereNumber(['complaint', 'reply']);
+            Route::post('/{complaint}/reply', [ComplaintController::class, 'reply'])->name('reply')->middleware('permission:complaints_reply')->whereNumber('complaint');
             Route::get('/{complaint}/timeline', [ComplaintController::class, 'timeline'])
                 ->name('timeline')
                 ->whereNumber('complaint');
@@ -355,9 +377,15 @@ Route::middleware('auth.session')->group(function () {
                 ->name('show')
                 ->whereNumber('letter');
         });
-        Route::prefix('inquiries')->name('inquiries.')->group(function () {
+        Route::prefix('inquiries')->name('inquiries.')->middleware('permission:inquiries_and_services')->group(function () {
             Route::get('/outgoing', [InquiryAndServiceController::class, 'index'])->name('outgoing.index');
+            Route::get('/outgoing/create', [InquiryAndServiceController::class, 'create'])->name('outgoing.create')->middleware('permission:inquiries_create');
+            Route::post('/outgoing', [InquiryAndServiceController::class, 'store'])->name('outgoing.store')->middleware('permission:inquiries_create');
             Route::get('/incoming', [InquiryAndServiceController::class, 'index'])->name('incoming.index');
+            Route::get('/{direction}/{inquiry}', [InquiryAndServiceController::class, 'show'])
+                ->name('show')
+                ->whereIn('direction', ['outgoing', 'incoming'])
+                ->whereNumber('inquiry');
             Route::get('/{direction}/{inquiry}/timeline', [InquiryAndServiceController::class, 'timeline'])
                 ->name('timeline')
                 ->whereIn('direction', ['outgoing', 'incoming'])
@@ -368,6 +396,7 @@ Route::middleware('auth.session')->group(function () {
                 ->whereNumber('inquiry');
             Route::post('/{direction}/{inquiry}/status', [InquiryAndServiceController::class, 'updateStatus'])
                 ->name('status')
+                ->middleware('permission:inquiries_reply')
                 ->whereIn('direction', ['outgoing', 'incoming'])
                 ->whereNumber('inquiry');
         });

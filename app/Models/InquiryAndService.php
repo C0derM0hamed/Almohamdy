@@ -18,6 +18,22 @@ class InquiryAndService extends Model
 
     const CREATED_AT = 'created_at';
 
+    protected $fillable = [
+        'date',
+        'branch_id',
+        'job_title_sender',
+        'enquirer',
+        'inquired_section',
+        'mobile',
+        'inquiry_id',
+        'inquiry_details',
+        'created_by',
+        'created_at',
+        'companies_groups_id',
+        'status',
+        'job_title',
+    ];
+
     public function inquiredSection(): BelongsTo
     {
         return $this->belongsTo(Branch::class, 'inquired_section');

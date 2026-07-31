@@ -7,18 +7,25 @@ use App\Models\AbsenceNotificationServiceActionType;
 use App\Models\AbsenceNotificationServiceMemo;
 use App\Models\AbsenceNotificationServiceType;
 use App\Repositories\WorkAbsenceNotification\AbsenceNotificationRepository;
+use App\Services\Auth\PermissionService;
+use App\Support\WorkAbsenceNotification\WorkAbsenceNotificationPermissions;
 use Carbon\Carbon;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class WorkAbsenceNotificationService
 {
+    private const CERTIFICATE_DIRECTORY = 'absence-notification-certificates';
     public function __construct(
         private readonly AbsenceNotificationRepository $repository,
         private readonly AbsenceNotificationWorkflowResolver $workflowResolver,
         private readonly AbsenceNotificationTimelineBuilder $timelineBuilder,
         private readonly AbsenceNotificationMemoService $memoService,
+        private readonly PermissionService $permissions,
     ) {}
 
     /**
@@ -388,5 +395,72 @@ class WorkAbsenceNotificationService
     public function recipientStatistics(AbsenceNotificationService $notification): array
     {
         return $this->memoService->recipientStatistics($notification);
+    }
+
+    public function listOwnedRequests(): LengthAwarePaginator
+    {
+        return $this->repository->paginateOwned((int) config('hm.work_absence_notification.per_page', 15));
+    }
+
+    public function createRequestOptions(): array
+    {
+        return [
+            'types' => $this->repository->notificationTypeOptions()->whereIn('id', [1, 2, 3, 4, 5]),
+            'deathCategories' => $this->repository->deathLeaveCategories(),
+        ];
+    }
+
+    public function submitRequest(array $data, ?UploadedFile $file = null): AbsenceNotificationService
+    {
+        $userId = (int) session('hr_user_id', 0);
+        $branchId = (int) session('hr_branch_id', 0);
+        $companyId = (int) session('companies_groups_id', 0);
+        if ($this->repository->hasRecent($userId, time() - 8 * 3600)) {
+            throw ValidationException::withMessages(['memo_types_id' => __('work_absence_notification.errors.duplicate_recent')]);
+        }
+
+        $type = (int) $data['memo_types_id'];
+        if ($type === 4) {
+            $days = $this->repository->deathLeaveDays((int) $data['deceased_relationship']);
+            if ($days === null) {
+                throw ValidationException::withMessages(['deceased_relationship' => __('validation.exists', ['attribute' => 'deceased_relationship'])]);
+            }
+            $data['end_date'] = Carbon::parse($data['begin_date'])->addDays(max(0, $days - 1))->toDateString();
+        }
+        $storedFile = null;
+        try {
+            if ($file !== null) {
+                $storedFile = $file->storeAs(self::CERTIFICATE_DIRECTORY, 'absence_'.Str::uuid().'.'.$file->guessExtension(), 'local');
+            }
+            $attributes = array_merge($data, [
+                'branch_id' => $branchId, 'companies_groups_id' => $companyId, 'user_id' => $userId,
+                'date' => (string) time(), 'sms_tocken' => 'memo'.bin2hex(random_bytes(24)),
+                'sick_leave_file' => $storedFile ? basename($storedFile) : null,
+            ]);
+            $notification = $this->repository->createRequest($attributes, $this->repository->supervisorRecipientIds($branchId, $companyId));
+            return $notification;
+        } catch (\Throwable $e) {
+            if ($storedFile !== null) Storage::disk('local')->delete($storedFile);
+            throw $e;
+        }
+    }
+
+    public function attachmentForUser(int $id): array
+    {
+        $notification = $this->repository->findOwned($id);
+        $userId = (int) session('hr_user_id', 0);
+        if ($notification === null) {
+            $notification = $this->repository->findForDetail($id);
+            if ($notification === null || ((int) $notification->user_id !== $userId && ! $this->repository->isRecipient($id, $userId) && ! $this->permissions->can(WorkAbsenceNotificationPermissions::VIEW))) {
+                abort(403);
+            }
+        }
+        $name = $notification->attachmentFileName();
+        abort_if($name === '', 404);
+        $private = self::CERTIFICATE_DIRECTORY.'/'.$name;
+        if (Storage::disk('local')->exists($private)) return [Storage::disk('local')->path($private), $name];
+        $legacy = public_path('absence_notification_service_files/'.$name);
+        abort_unless(is_file($legacy), 404);
+        return [$legacy, $name];
     }
 }

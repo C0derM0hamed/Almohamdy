@@ -535,8 +535,8 @@
             <span class="wan-info-card__icon wan-info-card__icon--attachment" aria-hidden="true"><i class="bi bi-paperclip"></i></span>
             <h2>{{ __('work_absence_notification.sections.attachment_info') }}</h2>
         </div>
-        @if ($notification->attachmentUrl())
-            <a href="{{ $notification->attachmentUrl() }}" class="hm-wan-doc-link" target="_blank" rel="noopener noreferrer">
+        @if ($notification->hasAttachment())
+            <a href="{{ $notification->protectedAttachmentUrl() }}" class="hm-wan-doc-link" target="_blank" rel="noopener noreferrer">
                 <i class="bi bi-download" aria-hidden="true"></i>
                 {{ __('work_absence_notification.download_attachment') }}
             </a>

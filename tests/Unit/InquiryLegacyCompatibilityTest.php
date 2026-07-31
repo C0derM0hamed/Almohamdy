@@ -81,7 +81,7 @@ class InquiryLegacyCompatibilityTest extends TestCase
     public function test_only_verified_legacy_statuses_are_offered(): void
     {
         $this->assertSame(
-            [3, 4, 5, 999999],
+            [3, 4, 5, 6, 999999],
             array_column((new InquiryAndServiceRepository)->updateStatusOptions(), 'id'),
         );
     }
@@ -108,7 +108,7 @@ class InquiryLegacyCompatibilityTest extends TestCase
             $this->assertTrue($service->canUpdateStatus($inquiry));
         }
 
-        $closedInquiry = (new InquiryAndService)->forceFill(['status' => 4]);
+        $closedInquiry = (new InquiryAndService)->forceFill(['status' => 6]);
         $this->assertFalse($service->canUpdateStatus($closedInquiry));
     }
 }

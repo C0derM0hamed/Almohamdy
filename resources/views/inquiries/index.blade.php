@@ -46,7 +46,15 @@
                 </div>
                 <h1 id="inqPageTitle">{{ $pageTitle }}</h1>
             </div>
-            <div class="inq-page-hero-art" aria-hidden="true"></div>
+            <div class="d-flex align-items-center gap-3">
+                @if ($direction === 'outgoing' && in_array((int) session('companies_groups_id'), [1, 3], true))
+                    <a href="{{ route('modules.inquiries.outgoing.create') }}" class="btn btn-primary">
+                        <i class="bi bi-plus-lg" aria-hidden="true"></i>
+                        {{ __('inquiries.new_inquiry') }}
+                    </a>
+                @endif
+                <div class="inq-page-hero-art" aria-hidden="true"></div>
+            </div>
         </section>
 
         <div class="inq-stat-grid">
@@ -195,7 +203,9 @@
                                             </span>
                                         </td>
                                         <td class="hm-inq-table__cell hm-inq-table__cell--name">
-                                            <span class="hm-inq-patient">{{ $item->enquirerDisplayName() }}</span>
+                                            <a href="{{ route('modules.inquiries.show', ['direction' => $direction, 'inquiry' => $item->id]) }}" class="hm-inq-patient">
+                                                {{ $item->enquirerDisplayName() }}
+                                            </a>
                                         </td>
                                         <td class="hm-inq-table__cell hm-inq-table__cell--mobile">
                                             <span class="hm-inq-mobile">{{ $item->mobile ?: '—' }}</span>

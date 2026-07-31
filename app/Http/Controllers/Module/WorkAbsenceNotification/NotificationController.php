@@ -9,12 +9,14 @@ use App\Http\Requests\WorkAbsenceNotification\CreateMemoRequest;
 use App\Http\Requests\WorkAbsenceNotification\NotificationExportRequest;
 use App\Http\Requests\WorkAbsenceNotification\NotificationIndexRequest;
 use App\Http\Requests\WorkAbsenceNotification\ProcessNotificationActionRequest;
+use App\Http\Requests\WorkAbsenceNotification\StoreAbsenceNotificationRequest;
 use App\Services\WorkAbsenceNotification\AbsenceNotificationExportService;
 use App\Services\WorkAbsenceNotification\AbsenceNotificationWorkflowResolver;
 use App\Services\WorkAbsenceNotification\WorkAbsenceNotificationService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\StreamedResponse;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class NotificationController extends Controller
 {
@@ -122,5 +124,30 @@ class NotificationController extends Controller
         return redirect()
             ->route('modules.work-absence.notifications.show', $notification)
             ->with('success', __('work_absence_notification.memo.success'));
+    }
+
+    public function requests(): View
+    {
+        return view('work-absence-notification.requests.index', [
+            'notifications' => $this->notificationService->listOwnedRequests(),
+            'homeRoute' => $this->homeRouteName(),
+        ]);
+    }
+
+    public function createRequest(): View
+    {
+        return view('work-absence-notification.requests.create', $this->notificationService->createRequestOptions() + ['homeRoute' => $this->homeRouteName()]);
+    }
+
+    public function storeRequest(StoreAbsenceNotificationRequest $request): RedirectResponse
+    {
+        $this->notificationService->submitRequest($request->requestData(), $request->file('sick_leave_file'));
+        return redirect()->route('modules.work-absence.requests.index')->with('success', __('work_absence_notification.request.success'));
+    }
+
+    public function downloadAttachment(int $notification): BinaryFileResponse
+    {
+        [$path, $name] = $this->notificationService->attachmentForUser($notification);
+        return response()->download($path, $name);
     }
 }

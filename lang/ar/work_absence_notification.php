@@ -249,5 +249,7 @@ return [
     'no_memo_history' => 'لا يوجد سجل مذكرات.',
     'no_history' => 'لا توجد تحديثات للحالة بعد.',
     'back_to_list' => 'العودة إلى القائمة',
+    'errors' => ['duplicate_recent' => 'تم تقديم طلب غياب خلال آخر ٨ ساعات.'],
+    'request' => ['title'=>'طلبات الغياب الخاصة بي','create'=>'طلب غياب جديد','type'=>'النوع','begin'=>'تاريخ البداية','end'=>'تاريخ النهاية','status'=>'الحالة','attachment'=>'المرفق','empty'=>'لا توجد طلبات.','relationship'=>'صلة القرابة','deceased_relationship'=>'نوع الوفاة','medical_authority'=>'الجهة الطبية','days'=>'أيام الغياب','reason'=>'السبب','document'=>'الشهادة','no_document'=>'لا','has_document'=>'نعم','ack'=>'أقر بصحة البيانات.','submit'=>'إرسال','success'=>'تم إرسال طلب الغياب.'],
 
 ];

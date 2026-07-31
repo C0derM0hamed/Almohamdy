@@ -5,6 +5,7 @@ namespace App\Repositories;
 use App\Models\User;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class UserRepository
 {
@@ -55,6 +56,37 @@ class UserRepository
             ->whereKey($hrId)
             ->where('activated', '1')
             ->first();
+    }
+
+    public function findActiveByUsernameAndMobile(string $username, string $mobile): ?User
+    {
+        return User::query()
+            ->select(['hr_id', 'hr_username', 'mobile', 'activated'])
+            ->where('hr_username', $username)
+            ->where('mobile', $mobile)
+            ->where('activated', '1')
+            ->first();
+    }
+
+    public function resetLegacyPassword(int $hrId, string $password): bool
+    {
+        if ($hrId <= 0
+            || ! Schema::hasTable('ra_users')
+            || ! Schema::hasColumns('ra_users', ['hr_id', 'hr_password'])) {
+            return false;
+        }
+
+        $values = ['hr_password' => hash('sha256', $password)];
+
+        if (Schema::hasColumn('ra_users', 'lastPassChange')) {
+            $values['lastPassChange'] = (string) time();
+        }
+
+        return DB::table('ra_users')
+            ->where('hr_id', $hrId)
+            ->where('activated', '1')
+            ->limit(1)
+            ->update($values) === 1;
     }
 
     public function isUserLoginLocked(?User $user): bool

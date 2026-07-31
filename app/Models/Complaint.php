@@ -15,6 +15,15 @@ class Complaint extends Model
 
     public $timestamps = true;
 
+    protected $fillable = [
+        'complaints_numbers_id', 'date', 'branch_id', 'complainant_name', 'file_number',
+        'branches_departments_id', 'defendant', 'priority', 'details', 'created_by',
+        'companies_groups_id', 'type', 'publish', 'third_party_id', 'sub_third_party_id',
+        'main_section', 'subsection', 'status', 'mobile', 'id_no', 'patient_name',
+        'event_date', 'lang', 'lang_local', 'patient_name_en', 'patient_name_ar',
+        'complainant_name_en', 'complainant_name_ar', 'updated_by', 'updated_at',
+    ];
+
     const CREATED_AT = 'created_at';
 
     const UPDATED_AT = 'updated_at';

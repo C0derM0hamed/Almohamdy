@@ -136,7 +136,7 @@
                                         <td>
                                             @if ($item->hasAttachment())
                                                 <a
-                                                    href="{{ $item->attachmentUrl() }}"
+                                                    href="{{ $item->protectedAttachmentUrl() }}"
                                                     class="wan-doc-link"
                                                     target="_blank"
                                                     rel="noopener noreferrer"

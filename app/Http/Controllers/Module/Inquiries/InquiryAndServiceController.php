@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Module\Inquiries;
 use App\Http\Controllers\Concerns\ResolvesDashboardView;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Inquiries\InquiryIndexRequest;
+use App\Http\Requests\Inquiries\StoreInquiryRequest;
 use App\Http\Requests\Inquiries\UpdateInquiryStatusRequest;
 use App\Services\Inquiries\InquiryAndServiceService;
 use App\Services\Inquiries\InquiryPdfService;
@@ -51,6 +52,48 @@ class InquiryAndServiceController extends Controller
             'departmentOptions' => $this->inquiryService->departmentOptions(),
             'forwardStatusId' => (int) config('hm.inquiries.forward_status_id', 999999),
             'senderName' => $this->userDisplayName() ?: (string) session('hr_username', ''),
+            'homeRoute' => $this->homeRouteName(),
+        ]);
+    }
+
+    public function create(): View
+    {
+        abort_unless(in_array((int) session('companies_groups_id'), [1, 3], true), 403);
+
+        return view('inquiries.create', [
+            'departmentOptions' => $this->inquiryService->departmentOptions(),
+            'jobTitleOptions' => $this->inquiryService->jobTitleOptions(),
+            'inquiryTypeOptions' => $this->inquiryService->inquiryTypeOptions(),
+            'homeRoute' => $this->homeRouteName(),
+        ]);
+    }
+
+    public function store(StoreInquiryRequest $request): RedirectResponse
+    {
+        $inquiry = $this->inquiryService->create($request->payload());
+
+        return redirect()
+            ->route('modules.inquiries.show', ['direction' => 'outgoing', 'inquiry' => $inquiry->id])
+            ->with('success', __('inquiries.create_success'));
+    }
+
+    public function show(string $direction, int $inquiry): View
+    {
+        $normalizedDirection = $direction === 'incoming' ? 'incoming' : 'outgoing';
+        $record = $this->inquiryService->findForDetail($inquiry, $normalizedDirection);
+
+        abort_if($record === null, 404);
+
+        return view('inquiries.show', [
+            'direction' => $normalizedDirection,
+            'inquiry' => $record,
+            'timeline' => $this->inquiryService->timelineEvents($record),
+            'statusLabel' => $this->inquiryService->statusLabel($record),
+            'statusColor' => $this->inquiryService->statusColor($record),
+            'canUpdateStatus' => $normalizedDirection === 'incoming' && $this->inquiryService->canUpdateStatus($record),
+            'updateStatusOptions' => $this->inquiryService->updateStatusOptions(),
+            'departmentOptions' => $this->inquiryService->departmentOptions(),
+            'forwardStatusId' => (int) config('hm.inquiries.forward_status_id', 999999),
             'homeRoute' => $this->homeRouteName(),
         ]);
     }

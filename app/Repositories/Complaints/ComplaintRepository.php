@@ -8,6 +8,7 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Collection;
 
 class ComplaintRepository
 {
@@ -66,6 +67,8 @@ class ComplaintRepository
         return Complaint::query()
             ->select(self::LIST_COLUMNS)
             ->where('companies_groups_id', (int) session('companies_groups_id', 0))
+            ->when((int) session('hr_user_level', 0) !== 3 && (int) session('hr_branch_id', 0) > 0,
+                fn (Builder $query) => $query->where('branch_id', (int) session('hr_branch_id')))
             ->where('publish', 1)
             ->where('status', '!=', 9)
             ->where(function (Builder $query) {
@@ -210,6 +213,8 @@ class ComplaintRepository
         return Complaint::query()
             ->select(self::DETAIL_COLUMNS)
             ->where('companies_groups_id', (int) session('companies_groups_id', 0))
+            ->when((int) session('hr_user_level', 0) !== 3 && (int) session('hr_branch_id', 0) > 0,
+                fn (Builder $query) => $query->where('branch_id', (int) session('hr_branch_id')))
             ->where('publish', 1)
             ->where('status', '!=', 9)
             ->where(function (Builder $query) {
@@ -221,6 +226,59 @@ class ComplaintRepository
                 'department:id,name_en,name_ar',
                 'currentStatus:id,name_en,name_ar,info',
             ])
+            ->first();
+    }
+
+    public function departmentOptions(): Collection
+    {
+        return BranchDepartment::query()
+            ->select(['id', 'name_en', 'name_ar'])
+            ->where('publish', 1)
+            ->orderBy('name_en')
+            ->get();
+    }
+
+    public function create(array $payload): Complaint
+    {
+        return DB::transaction(function () use ($payload): Complaint {
+            $number = DB::table('complaints_numbers')->insertGetId([
+                'companies_groups_id' => (int) session('companies_groups_id'),
+                'branch_id' => (int) session('hr_branch_id'),
+                'mobile' => $payload['mobile'] ?: null,
+                'created_by' => (int) session('hr_user_id'),
+                'status' => 0,
+                'created_at' => now(),
+            ]);
+
+            return Complaint::query()->create([
+                ...$payload,
+                'complaints_numbers_id' => $number,
+                'date' => (string) now()->timestamp,
+                'event_date' => ! empty($payload['event_date']) ? (string) strtotime($payload['event_date']) : null,
+                'branch_id' => (int) session('hr_branch_id'),
+                'created_by' => (int) session('hr_user_id'),
+                'companies_groups_id' => (int) session('companies_groups_id'),
+                'publish' => 1,
+                'priority' => 1,
+                'status' => 0,
+                'third_party_id' => 0,
+                'sub_third_party_id' => 0,
+                'main_section' => 0,
+                'subsection' => 0,
+                'lang' => app()->getLocale(),
+                'lang_local' => app()->getLocale(),
+            ]);
+        });
+    }
+
+    public function findReplyForDownload(int $complaintId, int $replyId): ?ComplaintReply
+    {
+        return ComplaintReply::query()
+            ->whereKey($replyId)
+            ->where('complaints_id', $complaintId)
+            ->whereHas('complaint', fn ($query) => $query
+                ->where('companies_groups_id', (int) session('companies_groups_id'))
+                ->where('branch_id', (int) session('hr_branch_id')))
             ->first();
     }
 }

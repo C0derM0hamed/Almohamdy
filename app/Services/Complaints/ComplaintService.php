@@ -10,6 +10,9 @@ use App\Repositories\Complaints\ComplaintRepository;
 use App\Repositories\Complaints\ComplaintStatusRepository;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Validation\ValidationException;
 
 class ComplaintService
 {
@@ -86,6 +89,60 @@ class ComplaintService
     {
         return $this->complaintRepository->findForDetail($id);
     }
+
+    public function departmentOptions(): Collection { return $this->complaintRepository->departmentOptions(); }
+
+    public function create(array $payload, ?UploadedFile $attachment = null): Complaint
+    {
+        $complaint = $this->complaintRepository->create($payload);
+
+        if ($attachment) {
+            $path = $attachment->store('complaints/'.$complaint->id, 'local');
+            $reply = new ComplaintReply([
+                'complaints_id' => $complaint->id,
+                'complaint_status_id' => 1,
+                'details' => $payload['details'],
+                'created_by' => (int) session('hr_user_id'),
+                'file_name' => $path,
+            ]);
+            $reply->save();
+        }
+
+        return $complaint;
+    }
+
+    public function addReply(Complaint $complaint, int $statusId, array $payload, ?UploadedFile $attachment = null): ComplaintReply
+    {
+        $current = (int) $complaint->status;
+        if (in_array($current, [5, 6], true)) {
+            throw ValidationException::withMessages(['status_id' => __('complaints.workflow.terminal')]);
+        }
+        if ($statusId >= 2 && $statusId <= 4 && $current > 0 && $statusId !== $current + 1) {
+            throw ValidationException::withMessages(['status_id' => __('complaints.workflow.sequential')]);
+        }
+        if ($statusId === 1 && $current !== 0) {
+            throw ValidationException::withMessages(['status_id' => __('complaints.workflow.repeated')]);
+        }
+
+        return DB::transaction(function () use ($complaint, $statusId, $payload, $attachment): ComplaintReply {
+            $filePath = $attachment?->store('complaints/'.$complaint->id, 'local');
+            $reply = ComplaintReply::query()->create([
+                'complaints_id' => $complaint->id,
+                'complaint_status_id' => $statusId,
+                'details' => $payload['details'] ?? null,
+                'created_by' => (int) session('hr_user_id'),
+                'file_name' => $filePath,
+            ]);
+            $update = ['status' => $statusId, 'updated_by' => (int) session('hr_user_id'), 'updated_at' => now()];
+            if (array_key_exists('status_other', $payload)) $update['status_other'] = $payload['status_other'];
+            if (array_key_exists('satis', $payload)) $update['Satis'] = $payload['satis'];
+            if (array_key_exists('right2', $payload)) $update['right2'] = $payload['right2'];
+            Complaint::query()->whereKey($complaint->id)->update($update);
+            return $reply;
+        });
+    }
+
+    public function replyForDownload(int $complaintId, int $replyId): ?ComplaintReply { return $this->complaintRepository->findReplyForDownload($complaintId, $replyId); }
 
     /**
      * @return Collection<int, ComplaintStatus>

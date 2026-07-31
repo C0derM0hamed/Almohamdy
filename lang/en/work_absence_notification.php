@@ -249,5 +249,7 @@ return [
     'no_memo_history' => 'No memo history recorded.',
     'no_history' => 'No status updates yet.',
     'back_to_list' => 'Back to notifications',
+    'errors' => ['duplicate_recent' => 'You already submitted an absence request within the last 8 hours.'],
+    'request' => ['title'=>'My absence requests','create'=>'New absence request','type'=>'Type','begin'=>'Begin date','end'=>'End date','status'=>'Status','attachment'=>'Certificate','empty'=>'No requests found.','relationship'=>'Relationship','deceased_relationship'=>'Bereavement category','medical_authority'=>'Medical authority','days'=>'Absence days','reason'=>'Reason','document'=>'Certificate','no_document'=>'No','has_document'=>'Yes','ack'=>'I confirm the information is correct.','submit'=>'Submit','success'=>'Absence request submitted.'],
 
 ];

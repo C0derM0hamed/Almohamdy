@@ -4,11 +4,15 @@ namespace App\Repositories\WorkAbsenceNotification;
 
 use App\Models\AbsenceNotificationService;
 use App\Models\AbsenceNotificationServiceActionType;
+use App\Models\AbsenceNotificationServiceDeathLeaveCategory;
 use App\Models\AbsenceNotificationServiceType;
+use App\Models\AbsenceNotificationServiceSendTo;
+use App\Models\User;
 use App\Services\WorkAbsenceNotification\AbsenceNotificationWorkflowResolver;
 use Carbon\Carbon;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Collection;
 
 class AbsenceNotificationRepository
@@ -112,6 +116,9 @@ class AbsenceNotificationRepository
 
         if ($companyGroupId > 0) {
             $query->where('companies_groups_id', $companyGroupId);
+        }
+        if ((int) session('hr_user_level', 0) !== 3 && (int) session('hr_branch_id', 0) > 0) {
+            $query->where('branch_id', (int) session('hr_branch_id'));
         }
 
         return $query;
@@ -335,6 +342,7 @@ class AbsenceNotificationRepository
         return AbsenceNotificationService::query()
             ->select(self::DETAIL_COLUMNS)
             ->when($companyGroupId > 0, fn (Builder $q) => $q->where('companies_groups_id', $companyGroupId))
+            ->when((int) session('hr_user_level', 0) !== 3 && (int) session('hr_branch_id', 0) > 0, fn (Builder $q) => $q->where('branch_id', (int) session('hr_branch_id')))
             ->whereKey($id)
             ->with([
                 'employee:hr_id,hr_first_name,hr_last_name,hr_username,hr_email_address,mobile,job_title',
@@ -358,6 +366,7 @@ class AbsenceNotificationRepository
         return AbsenceNotificationService::query()
             ->select(self::PROCESSING_COLUMNS)
             ->when($companyGroupId > 0, fn (Builder $q) => $q->where('companies_groups_id', $companyGroupId))
+            ->when((int) session('hr_user_level', 0) !== 3 && (int) session('hr_branch_id', 0) > 0, fn (Builder $q) => $q->where('branch_id', (int) session('hr_branch_id')))
             ->whereKey($id)
             ->first();
     }
@@ -368,6 +377,7 @@ class AbsenceNotificationRepository
 
         return AbsenceNotificationService::query()
             ->when($companyGroupId > 0, fn (Builder $q) => $q->where('companies_groups_id', $companyGroupId))
+            ->when((int) session('hr_user_level', 0) !== 3 && (int) session('hr_branch_id', 0) > 0, fn (Builder $q) => $q->where('branch_id', (int) session('hr_branch_id')))
             ->whereKey($id)
             ->update([
                 'action_type' => $actionTypeId,
@@ -382,6 +392,7 @@ class AbsenceNotificationRepository
 
         return AbsenceNotificationService::query()
             ->when($companyGroupId > 0, fn (Builder $q) => $q->where('companies_groups_id', $companyGroupId))
+            ->when((int) session('hr_user_level', 0) !== 3 && (int) session('hr_branch_id', 0) > 0, fn (Builder $q) => $q->where('branch_id', (int) session('hr_branch_id')))
             ->whereKey($id)
             ->update([
                 'activated_by' => $activatedBy,
@@ -411,5 +422,63 @@ class AbsenceNotificationRepository
             ->orderBy('ranking')
             ->orderBy('id')
             ->get();
+    }
+
+    public function paginateOwned(int $perPage = 15): LengthAwarePaginator
+    {
+        return AbsenceNotificationService::query()
+            ->select(self::LIST_COLUMNS)
+            ->where('user_id', (int) session('hr_user_id', 0))
+            ->where('companies_groups_id', (int) session('companies_groups_id', 0))
+            ->with(['notificationType:id,name_en,name_ar', 'actionType:id,name_en,name_ar'])
+            ->orderByDesc('id')->paginate($perPage)->withQueryString();
+    }
+
+    public function findOwned(int $id): ?AbsenceNotificationService
+    {
+        return AbsenceNotificationService::query()->select(self::DETAIL_COLUMNS)
+            ->whereKey($id)->where('user_id', (int) session('hr_user_id', 0))
+            ->where('companies_groups_id', (int) session('companies_groups_id', 0))->first();
+    }
+
+    public function hasRecent(int $userId, int $since): bool
+    {
+        return AbsenceNotificationService::query()->where('user_id', $userId)
+            ->where('date', '>=', (string) $since)->exists();
+    }
+
+    /** @return list<int> */
+    public function supervisorRecipientIds(int $branchId, int $companyId): array
+    {
+        return User::query()->where('branch_id', $branchId)->where('companies_groups_id', $companyId)
+            ->where('activated', 1)->whereIn('hr_user_level', [1, 2, 4])->pluck('hr_id')->map(fn ($id) => (int) $id)->all();
+    }
+
+    public function createRequest(array $attributes, array $recipientIds): AbsenceNotificationService
+    {
+        return DB::transaction(function () use ($attributes, $recipientIds): AbsenceNotificationService {
+            $notification = AbsenceNotificationService::create($attributes);
+            foreach (array_unique(array_map('intval', $recipientIds)) as $userId) {
+                AbsenceNotificationServiceSendTo::create(['memo_id' => $notification->id, 'user_id' => $userId]);
+            }
+            return $notification;
+        });
+    }
+
+    /** @return Collection<int, AbsenceNotificationServiceDeathLeaveCategory> */
+    public function deathLeaveCategories(): Collection
+    {
+        return AbsenceNotificationServiceDeathLeaveCategory::query()->where('publish', 1)->orderBy('id')->get(['id', 'name_en', 'name_ar', 'days']);
+    }
+
+    public function deathLeaveDays(int $id): ?int
+    {
+        $days = AbsenceNotificationServiceDeathLeaveCategory::query()->whereKey($id)->where('publish', 1)->value('days');
+        return $days === null ? null : (int) $days;
+    }
+
+    public function isRecipient(int $notificationId, int $userId): bool
+    {
+        return AbsenceNotificationServiceSendTo::query()->where('memo_id', $notificationId)->where('user_id', $userId)->exists();
     }
 }

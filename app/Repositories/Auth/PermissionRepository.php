@@ -15,35 +15,30 @@ class PermissionRepository
             return [];
         }
 
-        $bindings = [];
-        $parts = [];
+        $direct = $userId > 0
+            ? DB::table('user_permission')->where('userid', $userId)->get(['page', 'permit'])
+            : collect();
+        $group = $groupId > 0
+            ? DB::table('user_groups_permission')->where('groupid', $groupId)->get(['page', 'permit'])
+            : collect();
 
-        if ($userId > 0) {
-            $parts[] = 'SELECT page FROM user_permission WHERE userid = ? AND permit NOT IN (?, ?)';
-            $bindings[] = $userId;
-            $bindings[] = '';
-            $bindings[] = '0';
-        }
+        $directByPage = $direct->groupBy(fn ($row) => trim((string) $row->page));
+        $groupByPage = $group->groupBy(fn ($row) => trim((string) $row->page));
+        $pages = $directByPage->keys()->merge($groupByPage->keys())->filter(fn ($page) => $page !== '')->unique();
+        $allowed = [];
 
-        if ($groupId > 0) {
-            $parts[] = 'SELECT page FROM user_groups_permission WHERE groupid = ? AND permit NOT IN (?, ?)';
-            $bindings[] = $groupId;
-            $bindings[] = '';
-            $bindings[] = '0';
-        }
+        foreach ($pages as $page) {
+            $directRows = $directByPage->get($page, collect());
+            $groupRows = $groupByPage->get($page, collect());
+            $rows = $directRows->isNotEmpty() ? $directRows : $groupRows;
+            $hasDeny = $rows->contains(fn ($row) => (string) $row->permit === '1');
+            $hasAllow = $rows->contains(fn ($row) => (string) $row->permit === '2');
 
-        $rows = DB::select(implode(' UNION ALL ', $parts), $bindings);
-
-        $permissions = [];
-
-        foreach ($rows as $row) {
-            $page = trim((string) ($row->page ?? ''));
-
-            if ($page !== '') {
-                $permissions[$page] = $page;
+            if (! $hasDeny && $hasAllow) {
+                $allowed[] = $page;
             }
         }
 
-        return array_values($permissions);
+        return $allowed;
     }
 }

@@ -6,6 +6,8 @@ use App\Models\Branch;
 use App\Models\InquiryAndService;
 use App\Models\InquiryAndServiceReply;
 use App\Models\InquiryAndServiceStatus;
+use App\Models\Inquiry;
+use App\Models\JobTitle;
 use Carbon\Carbon;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
@@ -67,6 +69,10 @@ class InquiryAndServiceRepository
         if ($direction === 'outgoing') {
             if ($branchId > 0) {
                 $query->where('branch_id', $branchId);
+            }
+            if (! in_array((int) session('hr_user_level', 0), [1, 2, 3, 4], true)
+                && (int) session('job_title', 0) > 0) {
+                $query->where('job_title_sender', (int) session('job_title'));
             }
         } else {
             $sectionIds = $this->incomingSectionIds($branchId);
@@ -229,6 +235,44 @@ class InquiryAndServiceRepository
             ->get();
     }
 
+    /** @return Collection<int, Inquiry> */
+    public function inquiryTypeOptions(): Collection
+    {
+        return Inquiry::query()
+            ->select(['id', 'name_en', 'name_ar'])
+            ->where('publish', 1)
+            ->orderBy('name_en')
+            ->get();
+    }
+
+    /** @return Collection<int, JobTitle> */
+    public function jobTitleOptions(): Collection
+    {
+        return JobTitle::query()
+            ->select(['id', 'branch_id', 'name_en', 'name_ar'])
+            ->where('publish', 1)
+            ->orderBy('branch_id')
+            ->orderBy('name_en')
+            ->get();
+    }
+
+    /**
+     * @param array{enquirer:string,mobile:string,inquired_section:int,job_title:int,inquiry_id:int,inquiry_details:?string} $payload
+     */
+    public function create(array $payload): InquiryAndService
+    {
+        return InquiryAndService::query()->create([
+            ...$payload,
+            'date' => (string) now()->timestamp,
+            'branch_id' => (int) session('hr_branch_id'),
+            'job_title_sender' => (int) session('job_title', 0) ?: null,
+            'created_by' => (int) session('hr_user_id'),
+            'created_at' => now(),
+            'companies_groups_id' => (int) session('companies_groups_id'),
+            'status' => 999999,
+        ]);
+    }
+
     public function findForDetail(int $id, string $direction): ?InquiryAndService
     {
         return $this->scopedQuery($direction)
@@ -330,6 +374,13 @@ class InquiryAndServiceRepository
         $inquiry->refresh();
 
         return $inquiry;
+    }
+
+    public function hasStatusReply(InquiryAndService $inquiry, int $statusId): bool
+    {
+        return $inquiry->replies()
+            ->where('inquiry_status_id', $statusId)
+            ->exists();
     }
 
     public function departmentLabel(int $departmentId): string

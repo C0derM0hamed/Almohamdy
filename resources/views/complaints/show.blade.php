@@ -33,10 +33,10 @@
             </div>
 
             <div class="cp-detail-head__actions">
-                <button type="button" class="cp-btn cp-btn--outline" onclick="window.print()">
+                <a class="cp-btn cp-btn--outline" href="{{ route('modules.complaints.pdf', $complaint->id) }}">
                     <i class="bi bi-printer" aria-hidden="true"></i>
                     {{ __('complaints.print') }}
-                </button>
+                </a>
             </div>
         </header>
 
@@ -130,6 +130,19 @@
         </article>
 
         @include('complaints.partials.timeline-horizontal', ['timeline' => $timeline])
+
+        @if (session('success')) <div class="alert alert-success">{{ session('success') }}</div> @endif
+        @if ($errors->any()) <div class="alert alert-danger">@foreach($errors->all() as $error)<div>{{ $error }}</div>@endforeach</div> @endif
+        @if ((int) $complaint->status !== 5 && (int) $complaint->status !== 6)
+            <section class="cp-info-card mt-4">
+                <h2>{{ __('complaints.reply_title') }}</h2>
+                <form method="POST" action="{{ route('modules.complaints.reply', $complaint->id) }}" enctype="multipart/form-data">
+                    @csrf
+                    <div class="row g-3"><div class="col-md-6"><label class="form-label" for="status_id">{{ __('complaints.fields.status') }}</label><select class="form-select" id="status_id" name="status_id" required><option value="">—</option>@foreach($statusOptions as $status)<option value="{{ $status->id }}">{{ $status->localizedName() }}</option>@endforeach</select></div><div class="col-12"><label class="form-label" for="reply_details">{{ __('complaints.fields.reply') }}</label><textarea class="form-control" id="reply_details" name="details" rows="4" required></textarea></div><div class="col-12"><label class="form-label" for="reply_attachment">{{ __('complaints.fields.attachment') }}</label><input id="reply_attachment" type="file" name="attachment" class="form-control" accept=".jpg,.jpeg,.png,.gif,.pdf"></div></div>
+                    <button class="cp-btn cp-btn--primary mt-3" type="submit">{{ __('complaints.save') }}</button>
+                </form>
+            </section>
+        @endif
 
         <div class="cp-detail-actions">
             <a href="{{ route('modules.complaints') }}" class="cp-btn cp-btn--outline">

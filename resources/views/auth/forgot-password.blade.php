@@ -36,26 +36,45 @@
             @csrf
 
             <div class="form-group">
-                <label for="email" class="form-label">{{ __('password_recovery.email') }}</label>
+                <label for="username" class="form-label">{{ __('password_recovery.username') }}</label>
                 <input
-                    type="email"
-                    id="email"
-                    name="email"
-                    value="{{ old('email') }}"
-                    class="form-control @error('email') is-invalid @enderror"
-                    placeholder="{{ __('password_recovery.email_placeholder') }}"
+                    type="text"
+                    id="username"
+                    name="username"
+                    value="{{ old('username') }}"
+                    class="form-control @error('username') is-invalid @enderror"
+                    placeholder="{{ __('password_recovery.username_placeholder') }}"
                     required
                     autofocus
-                    autocomplete="email"
+                    autocomplete="username"
                     dir="{{ $isRtl ? 'rtl' : 'ltr' }}"
                 >
-                @error('email')
+                @error('username')
+                    <div class="invalid-feedback d-block">{{ $message }}</div>
+                @enderror
+            </div>
+
+            <div class="form-group">
+                <label for="mobile" class="form-label">{{ __('password_recovery.mobile') }}</label>
+                <input
+                    type="tel"
+                    id="mobile"
+                    name="mobile"
+                    value="{{ old('mobile') }}"
+                    class="form-control @error('mobile') is-invalid @enderror"
+                    placeholder="{{ __('password_recovery.mobile_placeholder') }}"
+                    required
+                    autocomplete="tel"
+                    inputmode="tel"
+                    dir="ltr"
+                >
+                @error('mobile')
                     <div class="invalid-feedback d-block">{{ $message }}</div>
                 @enderror
             </div>
 
             <div class="d-grid gap-2">
-                <button type="submit" class="btn btn-primary">{{ __('password_recovery.send_link') }}</button>
+                <button type="submit" class="btn btn-primary">{{ __('password_recovery.send_otp') }}</button>
                 <a href="{{ url('/login') }}" class="btn btn-link">{{ __('password_recovery.back_to_login') }}</a>
             </div>
         </form>

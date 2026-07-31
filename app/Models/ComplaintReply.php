@@ -14,6 +14,12 @@ class ComplaintReply extends Model
 
     public $timestamps = true;
 
+    protected $fillable = [
+        'complaints_id', 'complaint_status_id', 'defendant', 'defendant_job',
+        'file_number', 'section_id', 'details', 'date_sent', 'date_reply',
+        'created_by', 'created_at', 'file_name',
+    ];
+
     const CREATED_AT = 'created_at';
 
     const UPDATED_AT = null;

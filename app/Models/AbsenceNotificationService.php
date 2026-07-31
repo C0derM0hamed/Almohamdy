@@ -16,7 +16,23 @@ class AbsenceNotificationService extends Model
 
     public $timestamps = false;
 
-    protected $guarded = [];
+    /** @var list<string> */
+    protected $fillable = [
+        'branch_id',
+        'companies_groups_id',
+        'user_id',
+        'memo_types_id',
+        'date',
+        'sms_tocken',
+        'begin_date',
+        'end_date',
+        'sick_leave_file',
+        'relationship',
+        'deceased_relationship',
+        'medical_authority',
+        'absence_days',
+        'absence_reason',
+    ];
 
     /**
      * @return array<string, string>
@@ -201,6 +217,13 @@ class AbsenceNotificationService extends Model
         $path = str_starts_with($file, '/') ? $file : '/'.$file;
 
         return asset(ltrim($path, '/'));
+    }
+
+    public function protectedAttachmentUrl(): ?string
+    {
+        return $this->hasAttachment()
+            ? route('modules.work-absence.requests.attachment', $this->id)
+            : null;
     }
 
     public function createdAtCarbon(): ?Carbon

@@ -27,6 +27,13 @@ return [
     'view_list' => 'Back to list',
     'print' => 'Print',
     'add_status' => 'Add status',
+    'create_title' => 'Create outgoing inquiry',
+    'create_subtitle' => 'Create an inquiry and send it to the responsible department.',
+    'create_success' => 'Inquiry created successfully.',
+    'details_title' => 'Inquiry details #:id',
+    'other' => 'Other inquiry',
+    'save' => 'Save',
+    'cancel' => 'Cancel',
 
     'nav' => [
         'outgoing' => 'Outgoing inquiries',
@@ -99,6 +106,7 @@ return [
         'success' => 'Inquiry status updated successfully.',
         'error' => 'Unable to update the inquiry status. Please try again.',
         'locked' => 'This status can no longer be changed. Only New or Under Review inquiries can be updated.',
+        'repeated' => 'This status has already been recorded for this inquiry.',
     ],
 
     'form_fields' => [
@@ -107,6 +115,7 @@ return [
         'department' => 'Department sent to',
         'inquiry_type' => 'Inquiry type',
         'details' => 'Details',
+        'recipient_job_title' => 'Recipient job title',
         'date' => 'Date',
         'status' => 'Status',
     ],

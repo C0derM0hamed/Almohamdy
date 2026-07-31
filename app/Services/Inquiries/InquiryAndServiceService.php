@@ -74,6 +74,22 @@ class InquiryAndServiceService
         return $this->repository->departmentOptions();
     }
 
+    public function inquiryTypeOptions(): Collection
+    {
+        return $this->repository->inquiryTypeOptions();
+    }
+
+    public function jobTitleOptions(): Collection
+    {
+        return $this->repository->jobTitleOptions();
+    }
+
+    /** @param array<string,mixed> $payload */
+    public function create(array $payload): InquiryAndService
+    {
+        return $this->repository->create($payload);
+    }
+
     public function findForDetail(int $id, string $direction): ?InquiryAndService
     {
         return $this->repository->findForDetail($id, $direction);
@@ -132,8 +148,7 @@ class InquiryAndServiceService
 
     public function canUpdateStatus(InquiryAndService $inquiry): bool
     {
-        // The legacy receiver hides Add Status only after successful contact.
-        return (int) $inquiry->status !== 4;
+        return (int) $inquiry->status !== 6;
     }
 
     /**
@@ -155,6 +170,12 @@ class InquiryAndServiceService
         $forwardStatusId = (int) config('hm.inquiries.forward_status_id', 999999);
         $statusId = (int) $payload['status_id'];
         $isForward = $statusId === $forwardStatusId;
+
+        if (! $isForward && $this->repository->hasStatusReply($inquiry, $statusId)) {
+            throw ValidationException::withMessages([
+                'status_id' => [__('inquiries.status_form.repeated')],
+            ]);
+        }
 
         if ($isForward) {
             $departmentId = (int) ($payload['department_id'] ?? 0);

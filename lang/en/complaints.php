@@ -3,6 +3,7 @@
 return [
 
     'title' => 'Complaints',
+    'subtitle' => 'Overview of complaints and follow-up workflows.',
     'dashboard' => 'Complaints dashboard',
     'dashboard_subtitle' => 'Overview of complaint status and quick access to the list.',
     'filters_title' => 'Filter complaints',
@@ -25,6 +26,14 @@ return [
     'no_complaints' => 'No complaints found.',
     'no_results' => 'No complaints match your filters.',
     'no_timeline' => 'No timeline events recorded for this complaint.',
+    'create_title' => 'Create complaint',
+    'create_subtitle' => 'Register a new complaint using the verified fields.',
+    'create_success' => 'Complaint created successfully.',
+    'reply_title' => 'Add reply and status',
+    'reply_success' => 'Reply saved and complaint status updated.',
+    'save' => 'Save',
+    'cancel' => 'Cancel',
+    'workflow' => ['terminal' => 'Completed and closed complaints cannot be changed.', 'sequential' => 'Complaint statuses must be recorded sequentially.', 'repeated' => 'This status has already been recorded.'],
 
     'stats' => [
         'total' => 'Total complaints',
@@ -82,6 +91,10 @@ return [
         'result' => 'Result',
         'employee_investigation' => 'Employee investigation',
         'status' => 'Current status',
+        'id_no' => 'National ID',
+        'event_date' => 'Event date',
+        'attachment' => 'Attachment',
+        'reply' => 'Reply',
     ],
 
     'status' => [
