@@ -262,33 +262,6 @@ class GovernmentCircularService
         return $circular?->currentStatus?->badgeColor() ?: '#64748b';
     }
 
-    public function attachmentUrl(?string $path): ?string
-    {
-        if ($path === null || trim($path) === '') {
-            return null;
-        }
-
-        if (str_starts_with($path, 'http://') || str_starts_with($path, 'https://')) {
-            return $path;
-        }
-
-        if (Storage::disk('public')->exists($path)) {
-            return Storage::disk('public')->url($path);
-        }
-
-        $normalized = ltrim(str_replace('\\', '/', $path), './');
-
-        if (Storage::disk('public')->exists($normalized)) {
-            return Storage::disk('public')->url($normalized);
-        }
-
-        if (is_file(public_path($normalized))) {
-            return asset($normalized);
-        }
-
-        return asset(ltrim($normalized, '/'));
-    }
-
     public const CHANNEL_SMS = 1;
 
     public const CHANNEL_EMAIL = 2;
@@ -314,14 +287,14 @@ class GovernmentCircularService
         $attachmentUrls = [];
 
         if (filled($circular->circulars_file)) {
-            $url = $this->attachmentUrl($circular->circulars_file);
-            if ($url !== null) {
-                $attachmentUrls[] = $url;
-            }
+            $attachmentUrls[] = route('modules.government-circulars.download', $circular->id);
         }
 
         foreach ($circular->attachments as $attachment) {
-            $url = $this->attachmentUrl($attachment->circulars_file ?? null);
+            $url = filled($attachment->circulars_file ?? null)
+                ? route('modules.government-circulars.attachments.download', [$circular->id, $attachment->id])
+                : null;
+
             if ($url !== null && ! in_array($url, $attachmentUrls, true)) {
                 $attachmentUrls[] = $url;
             }
