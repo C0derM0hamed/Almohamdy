@@ -7,6 +7,7 @@ use App\Models\ClientVacationBranchReply;
 use App\Models\ClientVacationHrReply;
 use App\Models\EmployeeVacation;
 use App\Services\EmployeeLeave\LeaveStatusResolver;
+use App\Support\BranchScope;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
@@ -67,7 +68,7 @@ class LeaveRequestRepository
             $query->where('companies_groups_id', $companyGroupId);
         }
 
-        return $query;
+        return BranchScope::apply($query);
     }
 
     /**
@@ -147,6 +148,8 @@ class LeaveRequestRepository
         return EmployeeVacation::query()
             ->select(self::DETAIL_COLUMNS)
             ->when($companyGroupId > 0, fn (Builder $q) => $q->where('companies_groups_id', $companyGroupId))
+            ->when((int) session('hr_user_level', 0) !== 3 && (int) session('hr_branch_id', 0) > 0,
+                fn (Builder $q) => $q->where('branch_id', (int) session('hr_branch_id')))
             ->whereKey($id)
             ->with([
                 'employee:id,br_user_full_name,br_user_mobile,br_user_username',

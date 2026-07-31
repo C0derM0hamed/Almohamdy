@@ -45,6 +45,10 @@ class LeaveStatusResolver
 
     public function canProcessBranch(EmployeeVacation $vacation): bool
     {
+        if ((int) $vacation->emp_id === (int) session('hr_user_id', 0)) {
+            return false;
+        }
+
         $branchReply = $this->latestBranchReply($vacation);
 
         return $branchReply !== null
