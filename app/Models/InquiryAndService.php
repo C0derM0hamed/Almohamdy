@@ -23,11 +23,6 @@ class InquiryAndService extends Model
         return $this->belongsTo(Branch::class, 'inquired_section');
     }
 
-    public function assignee(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'assigned_to', 'hr_id');
-    }
-
     public function inquiryType(): BelongsTo
     {
         return $this->belongsTo(Inquiry::class, 'inquiry_id');

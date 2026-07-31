@@ -308,13 +308,8 @@
         aria-labelledby="inqStatusModalLabel"
         aria-hidden="true"
         data-forward-status-id="{{ $forwardStatusId }}"
-        data-users-url="{{ str_replace('/0/', '/__DEPARTMENT__/', route('modules.inquiries.department-users', ['department' => 0])) }}"
-        data-label-loading="{{ __('inquiries.status_form.employee_loading') }}"
-        data-label-empty="{{ __('inquiries.status_form.employee_empty') }}"
         data-label-error="{{ __('inquiries.status_form.error') }}"
-        data-label-employee-placeholder="{{ __('inquiries.status_form.employee_placeholder') }}"
         data-label-department-required="{{ __('inquiries.status_form.department_required') }}"
-        data-label-employee-required="{{ __('inquiries.status_form.employee_required') }}"
     >
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content">
@@ -362,24 +357,7 @@
                                 </select>
                             </div>
 
-                            <div class="inq-status-field d-none" id="inqStatusAssignmentWrap">
-                                <span class="inq-status-field__label">{{ __('inquiries.status_form.assignment') }}</span>
-                                <div class="inq-assignment-options">
-                                    <label class="inq-assignment-option">
-                                        <input type="radio" name="assignment_type" value="department" checked>
-                                        <span>{{ __('inquiries.status_form.assign_department') }}</span>
-                                    </label>
-                                    <label class="inq-assignment-option">
-                                        <input type="radio" name="assignment_type" value="employee">
-                                        <span>{{ __('inquiries.status_form.assign_employee') }}</span>
-                                    </label>
-                                </div>
-                            </div>
-
-                            <div class="inq-status-field d-none" id="inqStatusEmployeeWrap">
-                                <label for="inq_employee_id">{{ __('inquiries.status_form.employee') }}</label>
-                                <select id="inq_employee_id" name="employee_id" class="form-select"></select>
-                            </div>
+                            <input type="hidden" name="assignment_type" value="department">
 
                             <div class="inq-status-field inq-status-field--full">
                                 <label for="inq_notes">{{ __('inquiries.status_form.notes') }}</label>

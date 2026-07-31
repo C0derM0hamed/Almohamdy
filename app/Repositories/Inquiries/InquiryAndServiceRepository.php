@@ -6,7 +6,6 @@ use App\Models\Branch;
 use App\Models\InquiryAndService;
 use App\Models\InquiryAndServiceReply;
 use App\Models\InquiryAndServiceStatus;
-use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
@@ -28,7 +27,6 @@ class InquiryAndServiceRepository
         'inquiry_id',
         'inquiry_details',
         'status',
-        'assigned_to',
         'companies_groups_id',
         'created_at',
     ];
@@ -46,7 +44,6 @@ class InquiryAndServiceRepository
         'inquiry_id',
         'inquiry_details',
         'status',
-        'assigned_to',
         'companies_groups_id',
         'created_by',
         'created_at',
@@ -65,12 +62,7 @@ class InquiryAndServiceRepository
             $query->where('companies_groups_id', $companyGroupId);
         }
 
-        if (! config('hm.inquiries.scope_by_branch', false)) {
-            return $query;
-        }
-
         $branchId = (int) session('hr_branch_id', 0);
-        $userId = (int) (session('hr_user_id') ?: session('hr_id', 0));
 
         if ($direction === 'outgoing') {
             if ($branchId > 0) {
@@ -85,13 +77,6 @@ class InquiryAndServiceRepository
                 $query->where('inquired_section', $branchId);
             }
 
-            // Shared inbox: unassigned, or assigned to the current employee.
-            if ($userId > 0) {
-                $query->where(function (Builder $builder) use ($userId) {
-                    $builder->whereNull('assigned_to')
-                        ->orWhere('assigned_to', $userId);
-                });
-            }
         }
 
         return $query;
@@ -193,7 +178,7 @@ class InquiryAndServiceRepository
             ->when($mobile !== '', fn (Builder $builder) => $builder->where('mobile', 'like', '%'.$mobile.'%'))
             ->when($statusId !== null, function (Builder $builder) use ($statusId) {
                 if ($statusId === 999999) {
-                    $builder->whereIn('status', config('hm.inquiries.new_status_ids', [999999, 1]));
+                    $builder->whereIn('status', config('hm.inquiries.new_status_ids', [999999, 1, 0]));
                 } else {
                     $builder->where('status', $statusId);
                 }
@@ -219,7 +204,7 @@ class InquiryAndServiceRepository
      */
     public function updateStatusOptions(): array
     {
-        $ids = array_map('intval', config('hm.inquiries.update_status_ids', [3, 4, 5, 999999, 6]));
+        $ids = array_map('intval', config('hm.inquiries.update_status_ids', [3, 4, 5, 999999]));
         $options = [];
 
         foreach ($ids as $id) {
@@ -244,27 +229,6 @@ class InquiryAndServiceRepository
             ->get();
     }
 
-    /**
-     * @return Collection<int, User>
-     */
-    public function activeUsersForDepartment(int $departmentId): Collection
-    {
-        if ($departmentId <= 0) {
-            return collect();
-        }
-
-        $companyGroupId = (int) session('companies_groups_id', 0);
-
-        return User::query()
-            ->select(['hr_id', 'hr_first_name', 'hr_last_name', 'hr_username', 'branch_id'])
-            ->where('activated', '1')
-            ->where('branch_id', $departmentId)
-            ->when($companyGroupId > 0, fn (Builder $builder) => $builder->where('companies_groups_id', $companyGroupId))
-            ->orderBy('hr_first_name')
-            ->orderBy('hr_last_name')
-            ->get();
-    }
-
     public function findForDetail(int $id, string $direction): ?InquiryAndService
     {
         return $this->scopedQuery($direction)
@@ -275,7 +239,6 @@ class InquiryAndServiceRepository
                 'inquiryType:id,name_en,name_ar,publish',
                 'currentStatus:id,name_en,name_ar,info',
                 'senderBranch:id,name_en,name_ar',
-                'assignee:hr_id,hr_first_name,hr_last_name,hr_username',
                 'replies' => fn ($query) => $query
                     ->select([
                         'id',
@@ -317,7 +280,6 @@ class InquiryAndServiceRepository
      *     notes:string,
      *     department_id:?int,
      *     assignment_type:?string,
-     *     employee_id:?int,
      *     timeline_message:string
      * }  $payload
      */
@@ -331,18 +293,12 @@ class InquiryAndServiceRepository
         $newDepartmentId = $isForward
             ? (int) ($payload['department_id'] ?? 0)
             : (int) $inquiry->inquired_section;
-        $assignedTo = null;
-
-        if ($isForward && ($payload['assignment_type'] ?? null) === 'employee') {
-            $assignedTo = (int) ($payload['employee_id'] ?? 0) ?: null;
-        }
 
         DB::transaction(function () use (
             $inquiry,
             $statusId,
             $isForward,
             $newDepartmentId,
-            $assignedTo,
             $payload,
             $userId,
             $branchId,
@@ -353,7 +309,6 @@ class InquiryAndServiceRepository
 
             if ($isForward) {
                 $update['inquired_section'] = $newDepartmentId;
-                $update['assigned_to'] = $assignedTo;
             }
 
             InquiryAndService::query()
@@ -392,7 +347,7 @@ class InquiryAndServiceRepository
 
     public function statusLabelById(int $statusId): string
     {
-        if (in_array($statusId, config('hm.inquiries.new_status_ids', [999999, 1]), true)) {
+        if (in_array($statusId, config('hm.inquiries.new_status_ids', [999999, 1, 0]), true)) {
             return __('inquiries.status.new');
         }
 

@@ -122,11 +122,4 @@ class InquiryAndServiceController extends Controller
             )
             ->with('success', __('inquiries.status_form.success'));
     }
-
-    public function departmentUsers(int $department): JsonResponse
-    {
-        return response()->json([
-            'users' => $this->inquiryService->activeUsersForDepartment($department),
-        ]);
-    }
 }

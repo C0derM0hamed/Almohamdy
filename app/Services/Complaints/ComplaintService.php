@@ -126,17 +126,10 @@ class ComplaintService
      */
     public function timeline(int $complaintId): array
     {
-        $seenStatusIds = [];
         $events = [];
 
         foreach ($this->replyRepository->repliesForComplaint($complaintId) as $reply) {
             $statusId = (int) $reply->complaint_status_id;
-
-            if (in_array($statusId, $seenStatusIds, true)) {
-                continue;
-            }
-
-            $seenStatusIds[] = $statusId;
 
             $events[] = [
                 'reply' => $reply,

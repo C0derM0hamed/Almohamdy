@@ -10,8 +10,6 @@ class UpdateInquiryStatusRequest extends FormRequest
 {
     public const ASSIGNMENT_DEPARTMENT = 'department';
 
-    public const ASSIGNMENT_EMPLOYEE = 'employee';
-
     public function authorize(): bool
     {
         return true;
@@ -31,7 +29,7 @@ class UpdateInquiryStatusRequest extends FormRequest
     public function rules(): array
     {
         $forwardStatusId = (int) config('hm.inquiries.forward_status_id', 999999);
-        $allowedStatuses = array_map('intval', config('hm.inquiries.update_status_ids', [3, 4, 5, 999999, 6]));
+        $allowedStatuses = array_map('intval', config('hm.inquiries.update_status_ids', [3, 4, 5, 999999]));
 
         return [
             'status_id' => ['required', 'integer', Rule::in($allowedStatuses)],
@@ -46,14 +44,7 @@ class UpdateInquiryStatusRequest extends FormRequest
                 Rule::requiredIf(fn () => (int) $this->input('status_id') === $forwardStatusId),
                 'nullable',
                 'string',
-                Rule::in([self::ASSIGNMENT_DEPARTMENT, self::ASSIGNMENT_EMPLOYEE]),
-            ],
-            'employee_id' => [
-                Rule::requiredIf(fn () => (int) $this->input('status_id') === $forwardStatusId
-                    && $this->input('assignment_type') === self::ASSIGNMENT_EMPLOYEE),
-                'nullable',
-                'integer',
-                'min:1',
+                Rule::in([self::ASSIGNMENT_DEPARTMENT]),
             ],
         ];
     }
@@ -71,10 +62,6 @@ class UpdateInquiryStatusRequest extends FormRequest
                 $validator->errors()->add('department_id', __('inquiries.status_form.department_required'));
             }
 
-            if ($this->input('assignment_type') === self::ASSIGNMENT_EMPLOYEE
-                && (int) $this->input('employee_id') <= 0) {
-                $validator->errors()->add('employee_id', __('inquiries.status_form.employee_required'));
-            }
         });
     }
 
@@ -84,7 +71,6 @@ class UpdateInquiryStatusRequest extends FormRequest
      *     notes:string,
      *     department_id:?int,
      *     assignment_type:?string,
-     *     employee_id:?int
      * }
      */
     public function payload(): array
@@ -98,9 +84,6 @@ class UpdateInquiryStatusRequest extends FormRequest
             'notes' => trim((string) $this->input('notes', '')),
             'department_id' => $isForward ? (int) $this->input('department_id') : null,
             'assignment_type' => $isForward ? (string) $this->input('assignment_type') : null,
-            'employee_id' => $isForward && $this->input('assignment_type') === self::ASSIGNMENT_EMPLOYEE
-                ? (int) $this->input('employee_id')
-                : null,
         ];
     }
 }

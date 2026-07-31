@@ -22,6 +22,7 @@ use App\Http\Controllers\Module\HospitalServices\PrivateRoomController;
 use App\Http\Controllers\Module\HospitalServices\ServiceSectionController;
 use App\Http\Controllers\Module\SystemAdministration\DashboardController as SystemAdministrationDashboardController;
 use App\Http\Controllers\Module\SystemAdministration\ServicePackageController as SystemAdministrationServicePackageController;
+use App\Http\Controllers\Module\SystemAdministration\UserPermissionController;
 use App\Http\Controllers\Module\GovernmentCirculars\GovernmentCircularController;
 use App\Http\Controllers\Module\GovernmentInspectionVisits\GovernmentInspectionVisitController;
 use App\Http\Controllers\Module\GovernmentDataRequests\GovernmentDataRequestController;
@@ -31,7 +32,6 @@ use App\Http\Controllers\Module\CorporateCommunications\CorporateCommunicationOu
 use App\Http\Controllers\Module\Complaints\ComplaintController;
 use App\Http\Controllers\Module\Complaints\ComplaintsDashboardController;
 use App\Http\Controllers\Module\Inquiries\InquiryAndServiceController;
-use App\Http\Controllers\Module\ModulePlaceholderController;
 use App\Http\Controllers\Module\ServiceLocations\ServiceLocationController;
 use App\Http\Controllers\Module\WorkAbsenceNotification\DashboardController as WorkAbsenceNotificationDashboardController;
 use App\Http\Controllers\Module\WorkAbsenceNotification\NotificationController as WorkAbsenceNotificationController;
@@ -132,6 +132,14 @@ Route::middleware('auth.session')->group(function () {
                 ->name('packages.destroy')
                 ->whereNumber('package');
         });
+        Route::prefix('system-administration/users')->name('system-admin.users.')->middleware('permission.admin')->group(function () {
+            Route::get('/', [UserPermissionController::class, 'index'])->name('index');
+            Route::get('/create', [UserPermissionController::class, 'create'])->name('create');
+            Route::post('/', [UserPermissionController::class, 'store'])->name('store');
+            Route::get('/{user}', [UserPermissionController::class, 'show'])->name('show')->whereNumber('user');
+            Route::get('/{user}/edit', [UserPermissionController::class, 'edit'])->name('edit')->whereNumber('user');
+            Route::put('/{user}', [UserPermissionController::class, 'update'])->name('update')->whereNumber('user');
+        });
         Route::prefix('doctors-directory-admin')->name('doctors-admin.')->middleware('admin')->group(function () {
             Route::get('/', [DoctorsDirectoryAdminDashboardController::class, 'index'])->name('dashboard');
             Route::get('/specialities', [DoctorsDirectoryAdminSpecialityController::class, 'index'])->name('specialities.index');
@@ -213,12 +221,6 @@ Route::middleware('auth.session')->group(function () {
         });
         Route::get('/employee-services', [EmployeeServicesDashboardController::class, 'index'])
             ->name('employee-services');
-        Route::get('/employee-services/training-management', [ModulePlaceholderController::class, 'show'])
-            ->defaults('moduleKey', 'training_management')
-            ->name('employee-services.training-management');
-        Route::get('/employee-services/training-coordination', [ModulePlaceholderController::class, 'show'])
-            ->defaults('moduleKey', 'training_coordination')
-            ->name('employee-services.training-coordination');
         Route::prefix('employee-leave')->name('leave.')->group(function () {
             Route::get('/', [LeaveDashboardController::class, 'index'])->name('dashboard');
             Route::get('/requests', [LeaveRequestController::class, 'index'])->name('requests.index');
@@ -356,9 +358,6 @@ Route::middleware('auth.session')->group(function () {
         Route::prefix('inquiries')->name('inquiries.')->group(function () {
             Route::get('/outgoing', [InquiryAndServiceController::class, 'index'])->name('outgoing.index');
             Route::get('/incoming', [InquiryAndServiceController::class, 'index'])->name('incoming.index');
-            Route::get('/departments/{department}/users', [InquiryAndServiceController::class, 'departmentUsers'])
-                ->name('department-users')
-                ->whereNumber('department');
             Route::get('/{direction}/{inquiry}/timeline', [InquiryAndServiceController::class, 'timeline'])
                 ->name('timeline')
                 ->whereIn('direction', ['outgoing', 'incoming'])
@@ -372,8 +371,5 @@ Route::middleware('auth.session')->group(function () {
                 ->whereIn('direction', ['outgoing', 'incoming'])
                 ->whereNumber('inquiry');
         });
-        Route::get('/appointment-requests', [ModulePlaceholderController::class, 'show'])
-            ->defaults('moduleKey', 'appointment_requests')
-            ->name('appointment-requests');
     });
 });

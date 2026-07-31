@@ -23,6 +23,8 @@ class User extends Model
         'hr_password',
         'hr_user_level',
         'branch_id',
+        'companies_groups_id',
+        'groupid',
         'mobile',
         'activated',
     ];

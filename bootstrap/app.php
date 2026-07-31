@@ -21,6 +21,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'otp.pending' => \App\Http\Middleware\EnsureOtpPending::class,
             'permission' => \App\Http\Middleware\EnsurePermission::class,
             'admin' => \App\Http\Middleware\EnsureAdmin::class,
+            'permission.admin' => \App\Http\Middleware\EnsurePermissionAdministrator::class,
             'prevent.cache' => \App\Http\Middleware\PreventPageCaching::class,
         ]);
     })

@@ -29,7 +29,7 @@ class InquiryIndexRequest extends FormRequest
             ->statusOptions()
             ->pluck('id')
             ->map(fn ($id) => (int) $id)
-            ->merge(config('hm.inquiries.new_status_ids', [999999, 1]))
+            ->merge(config('hm.inquiries.new_status_ids', [999999, 1, 0]))
             ->unique()
             ->values()
             ->all();

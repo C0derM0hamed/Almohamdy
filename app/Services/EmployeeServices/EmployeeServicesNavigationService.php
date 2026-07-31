@@ -35,18 +35,13 @@ class EmployeeServicesNavigationService
             $labelKey = (string) ($card['label_key'] ?? '');
             $descriptionKey = 'employee_services.card_descriptions.'.$labelKey;
             $description = __($descriptionKey);
-            $comingSoon = in_array($routeName, [
-                'modules.employee-services.training-management',
-                'modules.employee-services.training-coordination',
-            ], true);
-
             $cards[] = new DashboardCard(
                 title: __('employee_services.cards.'.$labelKey),
                 url: route($routeName),
                 icon: (string) ($card['icon'] ?? 'bi-grid'),
                 route: $routeName,
                 description: $description === $descriptionKey ? '' : $description,
-                badge: $comingSoon ? __('employee_services.coming_soon_badge') : '',
+                badge: '',
             );
         }
 

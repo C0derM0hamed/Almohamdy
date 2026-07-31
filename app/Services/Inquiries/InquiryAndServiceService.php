@@ -2,12 +2,9 @@
 
 namespace App\Services\Inquiries;
 
-use App\Http\Requests\Inquiries\UpdateInquiryStatusRequest;
 use App\Models\InquiryAndService;
 use App\Models\InquiryAndServiceStatus;
-use App\Models\User;
 use App\Repositories\Inquiries\InquiryAndServiceRepository;
-use App\Support\Inquiries\InquiryUserNameResolver;
 use Carbon\Carbon;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
@@ -77,20 +74,6 @@ class InquiryAndServiceService
         return $this->repository->departmentOptions();
     }
 
-    /**
-     * @return list<array{id:int,name:string}>
-     */
-    public function activeUsersForDepartment(int $departmentId): array
-    {
-        return $this->repository->activeUsersForDepartment($departmentId)
-            ->map(fn (User $user) => [
-                'id' => (int) $user->hr_id,
-                'name' => $user->displayName(),
-            ])
-            ->values()
-            ->all();
-    }
-
     public function findForDetail(int $id, string $direction): ?InquiryAndService
     {
         return $this->repository->findForDetail($id, $direction);
@@ -116,7 +99,7 @@ class InquiryAndServiceService
 
     public function isNewStatus(int $statusId): bool
     {
-        return in_array($statusId, config('hm.inquiries.new_status_ids', [999999, 1]), true);
+        return in_array($statusId, config('hm.inquiries.new_status_ids', [999999, 1, 0]), true);
     }
 
     public function resolveStatusFilter(?string $statKey): ?int
@@ -149,19 +132,8 @@ class InquiryAndServiceService
 
     public function canUpdateStatus(InquiryAndService $inquiry): bool
     {
-        $statusId = (int) $inquiry->status;
-
-        if ($statusId === 3) {
-            return true;
-        }
-
-        if (! $this->isNewStatus($statusId)) {
-            return false;
-        }
-
-        // Legacy status 999999 represents both New and Forwarded. A matching
-        // timeline reply distinguishes a forwarded (locked) inquiry from New.
-        return ! $this->repository->hasForwardedStatusUpdate($inquiry);
+        // The legacy receiver hides Add Status only after successful contact.
+        return (int) $inquiry->status !== 4;
     }
 
     /**
@@ -170,7 +142,6 @@ class InquiryAndServiceService
      *     notes:string,
      *     department_id:?int,
      *     assignment_type:?string,
-     *     employee_id:?int
      * }  $payload
      */
     public function updateStatus(InquiryAndService $inquiry, array $payload): InquiryAndService
@@ -196,41 +167,21 @@ class InquiryAndServiceService
                 ]);
             }
 
-            if (($payload['assignment_type'] ?? null) === UpdateInquiryStatusRequest::ASSIGNMENT_EMPLOYEE) {
-                $employeeId = (int) ($payload['employee_id'] ?? 0);
-                $allowed = $this->repository->activeUsersForDepartment($departmentId)
-                    ->contains(fn (User $user) => (int) $user->hr_id === $employeeId);
-
-                if (! $allowed) {
-                    throw ValidationException::withMessages([
-                        'employee_id' => [__('inquiries.status_form.employee_invalid')],
-                    ]);
-                }
-            }
         }
 
         $previousStatusId = (int) $inquiry->status;
         $previousDepartmentId = (int) $inquiry->inquired_section;
-        $previousAssigneeId = $inquiry->assigned_to !== null ? (int) $inquiry->assigned_to : null;
-
         $newDepartmentId = $isForward
             ? (int) $payload['department_id']
             : $previousDepartmentId;
 
-        $newAssigneeId = null;
         $assignmentType = $payload['assignment_type'] ?? null;
-
-        if ($isForward && $assignmentType === UpdateInquiryStatusRequest::ASSIGNMENT_EMPLOYEE) {
-            $newAssigneeId = (int) $payload['employee_id'];
-        }
 
         $timelineMessage = $this->buildTimelineAuditMessage(
             previousStatusId: $previousStatusId,
             newStatusId: $statusId,
             previousDepartmentId: $previousDepartmentId,
             newDepartmentId: $newDepartmentId,
-            previousAssigneeId: $previousAssigneeId,
-            newAssigneeId: $newAssigneeId,
             assignmentType: $isForward ? (string) $assignmentType : null,
             notes: (string) ($payload['notes'] ?? ''),
             isForward: $isForward,
@@ -247,8 +198,6 @@ class InquiryAndServiceService
         int $newStatusId,
         int $previousDepartmentId,
         int $newDepartmentId,
-        ?int $previousAssigneeId,
-        ?int $newAssigneeId,
         ?string $assignmentType,
         string $notes,
         bool $isForward,
@@ -265,22 +214,7 @@ class InquiryAndServiceService
         ];
 
         if ($isForward) {
-            if ($assignmentType === UpdateInquiryStatusRequest::ASSIGNMENT_EMPLOYEE && $newAssigneeId) {
-                $parts[] = __('inquiries.timeline_audit.assignee_employee', [
-                    'name' => InquiryUserNameResolver::resolve($newAssigneeId),
-                ]);
-            } else {
-                $parts[] = __('inquiries.timeline_audit.assignee_department');
-            }
-        } elseif ($previousAssigneeId !== $newAssigneeId) {
-            $parts[] = __('inquiries.timeline_audit.assignee', [
-                'from' => $previousAssigneeId
-                    ? InquiryUserNameResolver::resolve($previousAssigneeId)
-                    : __('inquiries.timeline_audit.entire_department'),
-                'to' => $newAssigneeId
-                    ? InquiryUserNameResolver::resolve($newAssigneeId)
-                    : __('inquiries.timeline_audit.entire_department'),
-            ]);
+            $parts[] = __('inquiries.timeline_audit.assignee_department');
         }
 
         if ($notes !== '') {

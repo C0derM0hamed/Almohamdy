@@ -7,6 +7,10 @@ use Illuminate\Auth\Access\AuthorizationException;
 
 class PermissionService
 {
+    public const MANAGE_USERS = 'users';
+
+    public const MANAGE_PERMISSIONS = 'user_groups_permissins';
+
     public function __construct(
         private readonly PermissionRepository $repository,
     ) {}
@@ -31,6 +35,12 @@ class PermissionService
         }
 
         return $this->hasAdminGrantAll();
+    }
+
+    public function canManageUsers(): bool
+    {
+        return $this->isAdmin()
+            || ($this->can(self::MANAGE_USERS) && $this->can(self::MANAGE_PERMISSIONS));
     }
 
     public function authorize(string $permission): void

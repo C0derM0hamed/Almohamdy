@@ -94,4 +94,16 @@ return [
         'doctors_directory' => 'Manage specialities, departments, and doctors.',
     ],
 
+    'users' => [
+        'title' => 'Users and permissions', 'create' => 'Create user', 'edit' => 'Edit user', 'details' => 'User details',
+        'name' => 'Name', 'username' => 'Username', 'level' => 'Account type', 'scope' => 'Company / branch',
+        'company' => 'Company', 'branch' => 'Branch', 'group' => 'Group', 'status' => 'Status', 'active' => 'Active',
+        'inactive' => 'Inactive', 'empty' => 'No users are available in your scope.', 'scope_notice' => 'Only accounts within your permitted administrative scope are shown.',
+        'no_group' => 'No group', 'direct_permissions' => 'Direct permissions', 'inherited_permissions' => 'Inherited permissions',
+        'effective_permissions' => 'Effective permission preview', 'none' => 'None', 'save' => 'Save', 'saved' => 'The user and permissions were saved.', 'cancel' => 'Cancel',
+        'levels' => ['0' => 'Standard user', '1' => 'Branch user', '2' => 'Supervisor', '3' => 'Super Administrator', '4' => 'System user'],
+        'fields' => ['hr_first_name' => 'First name', 'hr_last_name' => 'Last name', 'hr_email_address' => 'Email', 'hr_username' => 'Username', 'mobile' => 'Mobile', 'password' => 'Password', 'password_confirmation' => 'Confirm password'],
+        'errors' => ['unauthorized' => 'You are not authorized to manage users.', 'out_of_scope' => 'The user or scope is outside your authority.', 'self_security_change' => 'You cannot change your own level, scope, group, or status.', 'final_super_admin' => 'The final active Super Administrator cannot be disabled or demoted.', 'invalid_permission' => 'An unknown permission was submitted.', 'privilege_escalation' => 'You cannot grant a permission you do not hold.'],
+    ],
+
 ];

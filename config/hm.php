@@ -226,20 +226,6 @@ return [
                         'active_prefix' => 'modules.work-absence.dashboard',
                         'subtitle_key' => 'employee_services.card_descriptions.managing_absence_notices',
                     ],
-                    [
-                        'label_key' => 'employee_services_training_management',
-                        'route' => 'modules.employee-services.training-management',
-                        'icon' => 'bi-mortarboard',
-                        'active_prefix' => 'modules.employee-services.training-management',
-                        'subtitle_key' => 'employee_services.card_descriptions.training_management',
-                    ],
-                    [
-                        'label_key' => 'employee_services_training_coordination',
-                        'route' => 'modules.employee-services.training-coordination',
-                        'icon' => 'bi-diagram-3',
-                        'active_prefix' => 'modules.employee-services.training-coordination',
-                        'subtitle_key' => 'employee_services.card_descriptions.training_coordination',
-                    ],
                 ],
             ],
             [
@@ -462,18 +448,14 @@ return [
 
     'inquiries' => [
         'per_page' => (int) env('HM_INQUIRIES_PER_PAGE', 15),
-        // When true, outgoing list is limited to session hr_branch_id.
-        'scope_by_branch' => (bool) env('HM_INQUIRIES_SCOPE_BY_BRANCH', false),
-        'new_status_ids' => [999999, 1],
+        'new_status_ids' => [999999, 1, 0],
         'forward_status_id' => 999999,
-        'completed_status_id' => 6,
-        'update_status_ids' => [3, 4, 5, 999999, 6],
+        'update_status_ids' => [3, 4, 5, 999999],
         'stat_statuses' => [
-            'new' => [999999, 1],
+            'new' => [999999, 1, 0],
             'in_progress' => [3],
             'contacted' => [4],
             'contacted_not_booked' => [5],
-            'completed' => [6],
         ],
         // Branch id => destination department (branch) ids for incoming list when scoped.
         'branch_incoming_sections' => [
@@ -493,16 +475,6 @@ return [
                 'label_key' => 'managing_absence_notices',
                 'route' => 'modules.work-absence.dashboard',
                 'icon' => 'bi-clipboard-check',
-            ],
-            [
-                'label_key' => 'training_management',
-                'route' => 'modules.employee-services.training-management',
-                'icon' => 'bi-mortarboard',
-            ],
-            [
-                'label_key' => 'training_coordination',
-                'route' => 'modules.employee-services.training-coordination',
-                'icon' => 'bi-diagram-3',
             ],
         ],
     ],
