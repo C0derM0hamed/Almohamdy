@@ -278,7 +278,8 @@ class ComplaintRepository
             ->where('complaints_id', $complaintId)
             ->whereHas('complaint', fn ($query) => $query
                 ->where('companies_groups_id', (int) session('companies_groups_id'))
-                ->where('branch_id', (int) session('hr_branch_id')))
+                ->when((int) session('hr_user_level', 0) !== 3 && (int) session('hr_branch_id', 0) > 0,
+                    fn ($scoped) => $scoped->where('branch_id', (int) session('hr_branch_id'))))
             ->first();
     }
 }
