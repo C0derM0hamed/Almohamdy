@@ -1,0 +1,102 @@
+/* Corporate Communication — Hope UI 2.0 service hub + list polish */
+
+.hm-cc .hm-cc-hero {
+    border: 1px solid #e9ecef;
+    border-radius: 0.5rem;
+    box-shadow: 0 10px 30px 0 rgba(17, 38, 146, 0.05);
+}
+
+.hm-cc .hm-cc-hero .card-title {
+    font-size: 1.375rem;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    color: #232d42;
+}
+
+.hm-cc .hm-cc-service-card {
+    border: 1px solid #e9ecef;
+    border-radius: 0.5rem;
+    box-shadow: 0 10px 30px 0 rgba(17, 38, 146, 0.05);
+    transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+    color: inherit;
+}
+
+.hm-cc .hm-cc-service-card:hover {
+    border-color: #3a57e8;
+    box-shadow: 0 12px 28px rgba(58, 87, 232, 0.12);
+    transform: translateY(-2px);
+}
+
+.hm-cc .hm-cc-service-card__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 3rem;
+    height: 3rem;
+    flex-shrink: 0;
+    font-size: 1.35rem;
+    background: rgba(58, 87, 232, 0.1) !important;
+}
+
+.hm-cc .hm-cc-service-card__arrow {
+    font-size: 1.1rem;
+    opacity: 0.75;
+}
+
+.hm-cc .hs-dash-search {
+    max-width: 28rem;
+}
+
+/* Align CC module wrappers with Hope UI token set */
+.hm-gc,
+.hm-iv {
+    --hs-blue: #3a57e8;
+    --hs-navy: #232d42;
+    --hs-text: #232d42;
+    --hs-muted: #6c757d;
+    --hs-line: #e9ecef;
+}
+
+.hm-gc .btn-primary,
+.hm-iv .btn-primary {
+    background-color: #3a57e8;
+    border-color: #3a57e8;
+}
+
+.hm-gc .btn-primary:hover,
+.hm-iv .btn-primary:hover {
+    background-color: #2e46ba;
+    border-color: #2e46ba;
+}
+
+.hm-gc .btn-outline-primary,
+.hm-iv .btn-outline-primary {
+    color: #3a57e8;
+    border-color: #3a57e8;
+}
+
+.hm-gc .btn-outline-primary:hover,
+.hm-iv .btn-outline-primary:hover {
+    background-color: #3a57e8;
+    border-color: #3a57e8;
+    color: #fff;
+}
+
+.hm-gc .btn-outline-secondary,
+.hm-iv .btn-outline-secondary {
+    border-radius: 0.35rem;
+}
+
+.hm-gc .alert,
+.hm-iv .alert {
+    border-radius: 0.5rem;
+}
+
+/* Hope-style section titles inside panels */
+.hm-gc .gc-panel > h2,
+.hm-gc .gc-panel > .gc-panel__title {
+    margin: 0 0 1rem;
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: #232d42;
+}

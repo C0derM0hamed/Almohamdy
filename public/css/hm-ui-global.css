@@ -1,0 +1,159 @@
+/* HM Global UI — Hope UI fluid layout, alerts, modals (all modules) */
+
+:root {
+    --hm-content-max: 100%;
+    --hm-shell-pad: clamp(0.5rem, 0.8vw, 0.85rem);
+    --hm-ui-line: #e8eef7;
+    --hm-ui-shadow: 0 14px 34px rgba(16, 35, 63, 0.07);
+    --hm-ui-radius: 18px;
+    --hm-ui-navy: #0f2545;
+}
+
+.hm-container {
+    max-width: 100%;
+    width: 100%;
+    padding-inline: var(--hm-shell-pad);
+}
+
+.hm-content {
+    padding: 0 0 1.5rem;
+}
+
+@media (min-width: 992px) {
+    .hm-content {
+        padding: 0 0 1.75rem;
+    }
+}
+
+/* Bigger Hope-style page chrome */
+.hm-page-title {
+    font-size: clamp(1.65rem, 2.1vw, 2.05rem);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    color: var(--hm-ui-navy);
+}
+
+.hm-page-subtitle {
+    font-size: 1rem;
+    margin-top: 0.35rem;
+}
+
+.hm-section-header {
+    margin-bottom: 1.35rem;
+}
+
+.hm-section-title {
+    font-size: 1.2rem;
+    font-weight: 800;
+}
+
+.hm-card {
+    border-radius: var(--hm-ui-radius);
+    border-color: var(--hm-ui-line);
+    box-shadow: var(--hm-ui-shadow);
+}
+
+.hm-breadcrumb.mb-3,
+.hm-breadcrumb {
+    margin-bottom: 1.15rem !important;
+}
+
+.hm-breadcrumb__trail,
+.hm-breadcrumb .breadcrumb {
+    min-height: 58px;
+    border-radius: var(--hm-ui-radius);
+    box-shadow: var(--hm-ui-shadow);
+}
+
+/* Unified alerts — Hope UI tokens in hm-hope-overlays.css */
+
+/* Unified modal / overlay shells — see hm-hope-overlays.css for Hope UI styling */
+.hm-leave-modal-page,
+.hm-doctors-admin-modal-page,
+.cp-timeline-modal,
+.hm-clinician-modal-page {
+    z-index: 1080;
+}
+
+.hm-service-photo-lightbox__backdrop {
+    background: rgba(7, 27, 61, 0.72) !important;
+}
+
+/* Full-width module shells */
+.hm-hs,
+.hm-cp,
+.hm-wan,
+.hm-dd,
+.hm-sl,
+.hm-dda,
+.hm-inq,
+.hm-inq-page,
+.hm-el,
+.hm-es,
+.hm-leave-dashboard,
+.hm-doctors-admin-dashboard,
+.hm-wan-dashboard,
+.hm-employee-services-dashboard {
+    width: 100%;
+}
+
+.hm-dd .dd-container,
+.hm-dd .dd-branch-grid {
+    max-width: 100%;
+}
+
+/* Tables & filters — bigger touch targets */
+.hm-filter-card,
+.hm-search-form,
+.hm-wan-table-wrap,
+.hm-services-table-wrap {
+    border-radius: var(--hm-ui-radius);
+    box-shadow: var(--hm-ui-shadow);
+}
+
+.hm-btn,
+.btn.hm-btn {
+    min-height: 2.75rem;
+    padding: 0.65rem 1.35rem;
+    border-radius: 12px;
+    font-weight: 700;
+}
+
+.hm-stat-card {
+    border-radius: var(--hm-ui-radius);
+}
+
+/* Empty states */
+.hm-empty-state {
+    border-radius: var(--hm-ui-radius);
+    box-shadow: var(--hm-ui-shadow);
+    border: 1px solid var(--hm-ui-line);
+}
+
+/* Hide decorative hero placeholders on the right across all modules */
+.sl-page-hero-art,
+.inq-page-hero-art,
+.dd-hospital-art,
+.hs-page-hero-art,
+.hs-dash-hero-art,
+.dda-page-hero-art,
+.el-page-hero-art,
+.wan-detail-head__art,
+.cp-detail-head__art,
+.hm-wan .wan-page-hero-art,
+.hm-hero__icon {
+    display: none !important;
+}
+
+.sl-page-hero,
+.inq-page-hero,
+.hs-page-hero,
+.hs-dash-hero,
+.dda-page-hero,
+.el-page-hero {
+    grid-template-columns: 1fr !important;
+}
+
+.hm-dd .dd-hero {
+    justify-content: flex-start;
+}

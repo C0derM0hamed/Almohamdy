@@ -1,0 +1,52 @@
+---
+description: HM Hospital Management — architecture, performance, DB, security, auth
+alwaysApply: true
+---
+
+# HM Project Rules
+
+## Architecture
+
+- Laravel 12, PHP 8.2, existing MySQL database
+- Do NOT create migrations unless explicitly requested
+- Do NOT modify database schema
+
+## Performance
+
+- Never create N+1 queries; always eager load with `with()`
+- Never use `Model::all()` on production tables
+- Always paginate listing pages
+- Use `select()` for required columns only
+- Use `exists()` instead of `count()` when checking existence only
+
+## Database
+
+- Respect existing indexes
+- Before suggesting a new index, verify one already exists
+- On large tables, avoid wildcard `SELECT *`
+
+## Code Structure
+
+- Thin controllers; business logic in Services
+- Repositories for complex queries
+- Form Requests for validation
+- No raw SQL unless necessary
+
+## Security
+
+- Regenerate session after login
+- CSRF on all state-changing forms
+- Authorization middleware on protected routes
+- Never expose `hr_password`
+
+## Authentication
+
+- Legacy password hash: `hash('sha256', $password)` compared to `ra_users.hr_password`
+- Login by `hr_username` OR `hr_email_address`
+- Require `activated = 1`
+- OTP required before final login (credentials → OTP step → session complete)
+
+## Legacy Reference
+
+- Table: `ra_users`, PK: `hr_id`
+- Session user stored after full auth; hide password from serialization

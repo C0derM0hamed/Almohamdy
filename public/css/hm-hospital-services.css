@@ -1,0 +1,717 @@
+/* Hospital Services module — extends HM design system */
+
+.hm-services-dashboard .hm-opd-bars--uniform .hm-opd-bar {
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.hm-services-dashboard .hm-opd-bar__label {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+    word-break: break-word;
+    max-width: 100%;
+}
+
+.hm-services-dashboard .hm-opd-bar__meta {
+    display: block;
+    font-size: 0.78rem;
+    font-weight: 600;
+    opacity: 0.9;
+    white-space: nowrap;
+}
+
+.hm-services-dashboard__grid {
+    align-items: stretch;
+    overflow: visible;
+}
+
+.hm-services-dashboard .hm-opd-bars--uniform {
+    grid-auto-rows: 6.75rem;
+}
+
+.hm-services-nav-group--flyout {
+    position: relative;
+    min-height: 6.75rem;
+    height: 100%;
+    overflow: visible;
+    z-index: 1;
+}
+
+.hm-services-nav-group--flyout:hover,
+.hm-services-nav-group--flyout:focus-within {
+    z-index: 40;
+}
+
+.hm-services-nav-group--flyout .hm-opd-bar.is-group {
+    width: 100%;
+    height: 100%;
+    min-height: 6.75rem;
+    flex-direction: column;
+    gap: 0.35rem;
+    cursor: default;
+}
+
+.hm-services-nav-group--flyout .hm-opd-bar.is-group:hover,
+.hm-services-nav-group--flyout .hm-opd-bar.is-group:focus-visible {
+    transform: translateY(-1px);
+    filter: brightness(1.04);
+}
+
+.hm-services-nav-group__chevron {
+    font-size: 0.82rem;
+    opacity: 0.9;
+}
+
+.hm-services-nav-flyout {
+    position: absolute;
+    top: 0;
+    inset-inline-end: calc(100% + 0.45rem);
+    min-width: 16.5rem;
+    display: none;
+    flex-direction: column;
+    background: #fff;
+    border: 1px solid #d8e2f0;
+    border-radius: var(--hm-radius-sm, 0.5rem);
+    box-shadow: 0 10px 28px rgba(15, 23, 42, 0.14);
+    overflow: hidden;
+    z-index: 30;
+    padding: 0.35rem 0;
+}
+
+[dir='ltr'] .hm-services-nav-flyout {
+    inset-inline-end: auto;
+    inset-inline-start: calc(100% + 0.45rem);
+}
+
+.hm-services-nav-group--flyout:hover .hm-services-nav-flyout,
+.hm-services-nav-group--flyout:focus-within .hm-services-nav-flyout {
+    display: flex;
+}
+
+.hm-services-nav-flyout__item {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    padding: 0.7rem 0.9rem;
+    color: var(--hm-text, #232d42);
+    text-decoration: none;
+    font-size: 0.86rem;
+    font-weight: 600;
+    transition: background 0.15s ease, color 0.15s ease;
+}
+
+.hm-services-nav-flyout__item:hover,
+.hm-services-nav-flyout__item:focus-visible {
+    background: #f8fafc;
+    color: var(--hm-primary, #3a57e8);
+}
+
+.hm-services-nav-flyout__item.is-empty {
+    opacity: 0.72;
+}
+
+.hm-services-nav-flyout__bullet {
+    flex: 0 0 0.45rem;
+    width: 0.45rem;
+    height: 0.45rem;
+    border-radius: 50%;
+    background: #94a3b8;
+}
+
+.hm-services-nav-flyout__label {
+    flex: 1;
+    min-width: 0;
+    line-height: 1.35;
+}
+
+.hm-services-nav-flyout__meta {
+    font-size: 0.72rem;
+    color: var(--hm-muted, #8a92a6);
+    white-space: nowrap;
+}
+
+@media (max-width: 991.98px) {
+    .hm-services-nav-flyout {
+        position: static;
+        inset: auto;
+        display: flex;
+        min-width: 0;
+        margin-top: 0.45rem;
+        box-shadow: none;
+        border-radius: 0.45rem;
+    }
+
+    .hm-services-nav-group--flyout {
+        display: flex;
+        flex-direction: column;
+        grid-column: auto;
+        height: auto;
+        min-height: unset;
+    }
+
+    .hm-services-nav-group--flyout .hm-opd-bar.is-group {
+        min-height: 4.5rem;
+        height: auto;
+    }
+}
+
+.hm-services-page--section .hm-section-header--services {
+    background: #f1f5f9;
+    border-radius: var(--hm-radius, 16px);
+    padding: 1rem 1.25rem;
+}
+
+.hm-services-card-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1.35rem;
+}
+
+/* ── Service package cards ── */
+
+.hm-service-package-card {
+    border: none;
+    border-radius: 1rem;
+    background: #fff;
+    box-shadow: 0 2px 12px rgba(37, 95, 184, 0.07), 0 1px 3px rgba(15, 23, 42, 0.04);
+    overflow: hidden;
+    transition: box-shadow 0.22s ease, transform 0.22s ease;
+}
+
+.hm-service-package-card:hover {
+    box-shadow: 0 12px 32px rgba(37, 95, 184, 0.14), 0 4px 12px rgba(15, 23, 42, 0.06);
+    transform: translateY(-3px);
+    border-color: transparent;
+}
+
+.hm-service-package-card .hm-clinician-card__expand {
+    top: 0.85rem;
+    inset-inline-end: 0.85rem;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 0.5rem;
+    background: rgba(255, 255, 255, 0.18);
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    color: #fff;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    z-index: 2;
+}
+
+.hm-service-package-card .hm-clinician-card__expand:hover,
+.hm-service-package-card .hm-clinician-card__expand:focus-visible {
+    background: rgba(255, 255, 255, 0.32);
+    color: #fff;
+    border-color: rgba(255, 255, 255, 0.45);
+}
+
+.hm-service-card__surface {
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+}
+
+.hm-service-card__header {
+    position: relative;
+    padding: 1.15rem 1.2rem 1rem;
+    padding-inline-end: 3rem;
+    background: linear-gradient(135deg, #2f6fd6 0%, #255fb8 55%, #1e4f9e 100%);
+    color: #fff;
+}
+
+.hm-service-card__header::after {
+    content: '';
+    position: absolute;
+    inset-inline-end: -1.5rem;
+    bottom: -1.5rem;
+    width: 5rem;
+    height: 5rem;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.06);
+    pointer-events: none;
+}
+
+.hm-service-card__title {
+    margin: 0 0 0.55rem;
+    font-size: 0.95rem;
+    font-weight: 700;
+    line-height: 1.45;
+    color: #fff;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    overflow: hidden;
+}
+
+.hm-service-card__code {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.22rem 0.6rem;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.16);
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    font-size: 0.74rem;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    color: rgba(255, 255, 255, 0.95);
+}
+
+.hm-service-card__code .bi {
+    font-size: 0.72rem;
+    opacity: 0.85;
+}
+
+.hm-service-card__body {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    flex: 1;
+    padding: 0;
+}
+
+.hm-service-card__price-block {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.85rem 1.2rem;
+    background: linear-gradient(180deg, #f0f6ff 0%, #f8fafc 100%);
+    border-bottom: 1px solid #e8eef5;
+}
+
+.hm-service-card__price-label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #64748b;
+}
+
+.hm-service-card__price-value {
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: #255fb8;
+    letter-spacing: -0.01em;
+    white-space: nowrap;
+}
+
+.hm-service-card__row {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.7rem;
+    padding: 0.75rem 1.2rem;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.hm-service-card__row-icon {
+    flex: 0 0 1.65rem;
+    width: 1.65rem;
+    height: 1.65rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.45rem;
+    background: #eef4fd;
+    color: #255fb8;
+    font-size: 0.82rem;
+    margin-top: 0.1rem;
+}
+
+.hm-service-card__row-content {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+}
+
+.hm-service-card__row-label {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.hm-service-card__row-value {
+    font-size: 0.86rem;
+    font-weight: 600;
+    color: var(--hm-text, #232d42);
+    line-height: 1.5;
+}
+
+.hm-service-card__row-value--rich {
+    font-weight: 500;
+    color: #475569;
+}
+
+.hm-service-card__badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    margin: 0.85rem 1.2rem 0;
+    padding: 0.45rem 0.75rem;
+    border-radius: 999px;
+    background: #eef4fd;
+    color: #255fb8;
+    font-size: 0.82rem;
+    font-weight: 600;
+    align-self: flex-start;
+}
+
+.hm-service-card__badge .bi {
+    font-size: 0.88rem;
+}
+
+.hm-service-card__note {
+    margin-top: auto;
+    padding: 0.75rem 1.2rem 1rem;
+    background: #fafbfd;
+    border-top: 1px solid #f1f5f9;
+}
+
+.hm-service-card__note-label {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    margin-bottom: 0.35rem;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.hm-service-card__note-label .bi {
+    font-size: 0.78rem;
+}
+
+.hm-service-card__note-text {
+    font-size: 0.82rem;
+    line-height: 1.55;
+    color: #64748b;
+}
+
+.hm-service-card__discounts {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.65rem;
+    padding: 1rem 1.2rem 1.1rem;
+}
+
+.hm-service-card__discount {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    padding: 0.65rem 0.75rem;
+    border-radius: 0.65rem;
+    background: #f8fafc;
+    border: 1px solid #eef2f7;
+    text-align: center;
+}
+
+.hm-service-card__discount-label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: #94a3b8;
+    line-height: 1.3;
+}
+
+.hm-service-card__discount-value {
+    font-size: 0.92rem;
+    font-weight: 800;
+    color: #255fb8;
+}
+
+/* Modal popup variant */
+.hm-clinician-popup-card .hm-service-card__header {
+    display: none;
+}
+
+.hm-clinician-popup-card .hm-service-card__title {
+    -webkit-line-clamp: unset;
+    overflow: visible;
+}
+
+.hm-clinician-popup-card .hm-service-card__row-value--rich,
+.hm-clinician-popup-card .hm-service-card__note-text {
+    max-height: none;
+}
+
+.hm-service-package-card--rooms {
+    display: flex;
+    flex-direction: column;
+}
+
+.hm-service-card__photos {
+    padding: 0 1.2rem 1rem;
+}
+
+.hm-service-card__photos--preview {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.hm-service-card__photos--preview .hm-service-card__photos-head {
+    width: 100%;
+    justify-content: center;
+}
+
+.hm-service-card__photos-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-bottom: 0.65rem;
+}
+
+.hm-service-card__photos-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.hm-service-card__photos-count {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: #64748b;
+}
+
+.hm-service-card__photo-preview,
+.hm-service-card__photo-item {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    border-radius: 0.75rem;
+    border: 1px solid #e2e8f0;
+    background: #f8fafc;
+}
+
+.hm-service-card__photo-trigger {
+    cursor: zoom-in;
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.hm-service-card__photo-trigger:hover,
+.hm-service-card__photo-trigger:focus-visible {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.12);
+}
+
+.hm-service-card__photo-zoom-hint {
+    position: absolute;
+    inset-inline-end: 0.55rem;
+    bottom: 0.55rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.85rem;
+    height: 1.85rem;
+    border-radius: 999px;
+    background: rgba(15, 23, 42, 0.72);
+    color: #fff;
+    font-size: 0.95rem;
+    pointer-events: none;
+}
+
+.hm-service-card__photo-preview {
+    aspect-ratio: 16 / 10;
+}
+
+.hm-service-card__photo-img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.hm-service-card__photo-fallback {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    width: 100%;
+    height: 100%;
+    min-height: 7rem;
+    padding: 1rem;
+    color: #94a3b8;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-align: center;
+}
+
+.hm-service-card__photo-fallback .bi {
+    font-size: 1.35rem;
+}
+
+.hm-service-card__photos--preview .hm-service-card__photo-preview {
+    width: 100%;
+    max-width: 14rem;
+    margin-inline: auto;
+    max-height: 11rem;
+}
+
+.hm-service-card__photos-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.75rem;
+}
+
+.hm-service-card__photos--gallery .hm-service-card__photos-grid {
+    grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
+}
+
+.hm-service-card__photo-item {
+    aspect-ratio: 4 / 3;
+}
+
+.hm-clinician-popup-card .hm-service-card__photos--gallery {
+    padding-bottom: 1.2rem;
+}
+
+.hm-service-photo-lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 12050;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.25rem;
+}
+
+.hm-service-photo-lightbox[hidden] {
+    display: none !important;
+}
+
+.hm-service-photo-lightbox__backdrop {
+    position: absolute;
+    inset: 0;
+    border: 0;
+    background: rgba(15, 23, 42, 0.82);
+}
+
+.hm-service-photo-lightbox__center {
+    position: relative;
+    z-index: 1;
+    width: min(96vw, 72rem);
+    max-height: 92vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.hm-service-photo-lightbox__img {
+    display: block;
+    width: auto;
+    max-width: 100%;
+    max-height: 92vh;
+    margin-inline: auto;
+    border-radius: 0.85rem;
+    box-shadow: 0 18px 48px rgba(15, 23, 42, 0.35);
+    object-fit: contain;
+    background: #fff;
+}
+
+.hm-service-photo-lightbox__close {
+    position: absolute;
+    top: -0.35rem;
+    inset-inline-end: -0.35rem;
+    z-index: 2;
+    width: 2.2rem;
+    height: 2.2rem;
+    border-radius: 999px;
+    background: #fff;
+    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.18);
+}
+
+body.hm-service-photo-lightbox-open {
+    overflow: hidden;
+}
+
+@media (max-width: 767.98px) {
+    .hm-service-card__photos-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 1199.98px) {
+    .hm-services-card-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 767.98px) {
+    .hm-services-dashboard .hm-opd-bars--uniform {
+        grid-auto-rows: 6.25rem;
+    }
+
+    .hm-services-card-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.hm-services-table-wrap {
+    background: #fff;
+    border: 1px solid rgba(226, 232, 240, 0.9);
+    border-radius: var(--hm-radius, 16px);
+    box-shadow: var(--hm-shadow-sm, 0 2px 8px rgba(15, 23, 42, 0.06));
+    overflow: hidden;
+}
+
+.hm-services-table {
+    width: 100%;
+    margin: 0;
+    border-collapse: collapse;
+    font-size: 0.88rem;
+}
+
+.hm-services-table thead th {
+    background: #f8fafc;
+    color: var(--hm-muted, #8a92a6);
+    font-weight: 600;
+    padding: 0.85rem 1rem;
+    text-align: start;
+    border-bottom: 1px solid #eef2f7;
+    white-space: nowrap;
+}
+
+.hm-services-table tbody td {
+    padding: 0.85rem 1rem;
+    border-bottom: 1px solid #f1f5f9;
+    color: var(--hm-text, #232d42);
+    vertical-align: middle;
+}
+
+.hm-services-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.hm-services-table tbody tr:hover {
+    background: #fafbfd;
+}
+
+@media (max-width: 767.98px) {
+    .hm-services-table-wrap {
+        overflow-x: auto;
+    }
+
+    .hm-services-table {
+        min-width: 640px;
+    }
+
+    .hm-services-table--agreements {
+        min-width: 900px;
+    }
+}

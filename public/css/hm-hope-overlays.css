@@ -1,0 +1,326 @@
+/* Hope UI — unified modals, popups, alerts (all modules) */
+
+:root {
+    --hm-overlay-bg: rgba(7, 27, 61, 0.55);
+    --hm-overlay-radius: 16px;
+    --hm-overlay-shadow: 0 24px 64px rgba(7, 27, 61, 0.22);
+    --hm-overlay-line: #e9ecef;
+    --hm-overlay-muted: #5c6578;
+    --hm-overlay-text: #232d42;
+}
+
+/* ── Shared modal shell ── */
+.hm-hope-modal__header,
+.hm-clinician-popup-card__head,
+.hm-doctors-admin-modal__header,
+.hm-leave-modal__header,
+.cp-timeline-modal__head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 1.1rem 1.25rem;
+    border-bottom: 1px solid var(--hm-overlay-line);
+    background: #fff;
+    text-align: start;
+}
+
+.hm-hope-modal__header-main,
+.hm-clinician-popup-card__head-copy {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    min-width: 0;
+    flex: 1 1 auto;
+}
+
+.hm-hope-modal__titles {
+    min-width: 0;
+    flex: 1 1 auto;
+}
+
+.hm-hope-modal__eyebrow,
+.hm-clinician-popup-card__eyebrow {
+    display: block;
+    margin-bottom: 0.25rem;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--hm-overlay-muted);
+}
+
+.hm-hope-modal__title,
+.hm-clinician-popup-card__title,
+.hm-doctors-admin-modal__title,
+.hm-leave-modal__title,
+.cp-timeline-modal__head h2 {
+    margin: 0;
+    font-size: 1.05rem;
+    font-weight: 700;
+    line-height: 1.4;
+    color: var(--hm-overlay-text);
+    text-align: start;
+}
+
+.hm-clinician-popup-card__title {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    flex-wrap: wrap;
+}
+
+.hm-hope-modal__icon,
+.hm-clinician-popup-card__title-icon,
+.hm-leave-modal__icon {
+    width: 2.25rem;
+    height: 2.25rem;
+    display: inline-grid;
+    place-items: center;
+    flex-shrink: 0;
+    border-radius: 10px;
+    background: var(--bs-primary-bg-subtle, #eef1ff);
+    color: var(--bs-primary, #3a57e8);
+    font-size: 1rem;
+}
+
+.hm-hope-modal__close,
+.hm-clinician-popup-card__close-icon,
+.hm-doctors-admin-modal__close,
+.hm-leave-modal__close,
+.cp-timeline-modal__close {
+    display: inline-grid;
+    place-items: center;
+    width: 2rem;
+    height: 2rem;
+    flex-shrink: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    color: #6c757d;
+    opacity: 1;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+}
+
+.hm-hope-modal__close:hover,
+.hm-clinician-popup-card__close-icon:hover,
+.hm-doctors-admin-modal__close:hover,
+.hm-leave-modal__close:hover,
+.cp-timeline-modal__close:hover {
+    background: #f4f6fa;
+    color: var(--bs-primary, #3a57e8);
+}
+
+.hm-hope-modal__body,
+.hm-clinician-popup-card__body,
+.hm-doctors-admin-modal__body,
+.hm-leave-modal__body,
+.cp-timeline-modal__body {
+    padding: 1rem 1.25rem;
+    color: var(--hm-overlay-text);
+    line-height: 1.65;
+    text-align: start;
+}
+
+.hm-hope-modal__footer,
+.hm-clinician-popup-card__footer {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 0.65rem;
+    padding: 0.85rem 1.25rem;
+    border-top: 1px solid var(--hm-overlay-line);
+    background: #f8f9fb;
+}
+
+.hm-hope-modal__footer .btn,
+.hm-clinician-popup-card__footer .btn,
+.hm-clinician-popup-card__close-btn {
+    min-width: 6.5rem;
+    min-height: 2.5rem;
+    padding: 0.5rem 1.25rem;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+/* Clinician / doctor detail popup card */
+.hm-clinician-popup-card,
+.hm-doctors-admin-modal,
+.hm-leave-modal,
+.cp-timeline-modal__dialog {
+    border: 1px solid var(--hm-overlay-line) !important;
+    border-radius: var(--hm-overlay-radius) !important;
+    background: #fff !important;
+    box-shadow: var(--hm-overlay-shadow) !important;
+    overflow: hidden;
+}
+
+.hm-clinician-popup-card {
+    width: min(100%, 34rem);
+}
+
+.hm-clinician-popup-card__accent,
+.hm-doctors-admin-modal__accent,
+.hm-leave-modal__accent {
+    height: 3px;
+    background: var(--bs-primary, #3a57e8);
+}
+
+.hm-clinician-popup-card--detail .hm-clinician-popup-card__text {
+    max-height: min(50vh, 20rem);
+    overflow-y: auto;
+    padding: 0.9rem 1rem;
+    border: 1px solid #e8edf5;
+    border-radius: 10px;
+    background: #f8f9fb;
+    font-size: 0.92rem;
+    line-height: 1.7;
+    color: var(--hm-overlay-text);
+    text-align: start;
+    direction: inherit;
+    word-break: break-word;
+}
+
+.hm-clinician-popup-card__text p,
+.hm-clinician-popup-card__text li {
+    text-align: start;
+}
+
+.hm-clinician-modal__empty {
+    margin: 0;
+    padding: 1.25rem;
+    text-align: center;
+    color: var(--hm-overlay-muted);
+    font-size: 0.9rem;
+}
+
+/* Modal page overlays */
+.hm-clinician-modal-page,
+.hm-doctors-admin-modal-page,
+.hm-leave-modal-page,
+.cp-timeline-modal {
+    padding: 1rem;
+}
+
+.hm-clinician-modal-backdrop,
+.hm-doctors-admin-modal-backdrop,
+.hm-leave-modal-backdrop,
+.cp-timeline-modal__backdrop {
+    background: var(--hm-overlay-bg) !important;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+}
+
+.hm-clinician-modal-center,
+.hm-doctors-admin-modal-center,
+.hm-leave-modal-center {
+    max-width: 36rem;
+}
+
+/* ── Hope UI alerts (global) ── */
+.hm-alert,
+.hm-auth-alert,
+.alert {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.65rem;
+    padding: 0.85rem 1rem;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    line-height: 1.5;
+    border: 1px solid transparent;
+    text-align: start;
+}
+
+.hm-alert-success,
+.alert-success,
+.hm-auth-alert--success {
+    background: #e8f7ee !important;
+    border-color: #c3e6cb !important;
+    color: #1aa053 !important;
+}
+
+.hm-alert-danger,
+.alert-danger,
+.hm-auth-alert--danger {
+    background: #fceeed !important;
+    border-color: #f5c6cb !important;
+    color: #c03221 !important;
+}
+
+.hm-alert-warning,
+.alert-warning {
+    background: #fff4e8 !important;
+    border-color: #ffe0b2 !important;
+    color: #f16a1b !important;
+}
+
+.hm-alert-info,
+.alert-info {
+    background: #e6f9fa !important;
+    border-color: #b8e8eb !important;
+    color: #079aa2 !important;
+}
+
+.alert-primary {
+    background: #eef1ff !important;
+    border-color: #c5d0ff !important;
+    color: #3a57e8 !important;
+}
+
+/* Flash / session messages */
+.main-content .alert {
+    margin-bottom: 1rem;
+}
+
+/* RTL overlays */
+html[dir="rtl"] .hm-hope-modal__header,
+html[dir="rtl"] .hm-clinician-popup-card__head,
+html[dir="rtl"] .hm-doctors-admin-modal__header,
+html[dir="rtl"] .hm-leave-modal__header,
+html[dir="rtl"] .cp-timeline-modal__head {
+    flex-direction: row;
+    text-align: start;
+}
+
+html[dir="rtl"] .hm-hope-modal__header-main,
+html[dir="rtl"] .hm-clinician-popup-card__head-copy {
+    flex-direction: row;
+}
+
+html[dir="rtl"] .hm-hope-modal__title,
+html[dir="rtl"] .hm-clinician-popup-card__title,
+html[dir="rtl"] .hm-clinician-popup-card__text,
+html[dir="rtl"] .hm-clinician-popup-card__text p {
+    text-align: start;
+}
+
+html[dir="rtl"] .hm-hope-modal__footer,
+html[dir="rtl"] .hm-clinician-popup-card__footer {
+    justify-content: flex-start;
+}
+
+@media (max-width: 575.98px) {
+    .hm-clinician-modal-page,
+    .hm-doctors-admin-modal-page,
+    .hm-leave-modal-page,
+    .cp-timeline-modal {
+        padding: 0.65rem;
+    }
+
+    .hm-hope-modal__header,
+    .hm-clinician-popup-card__head,
+    .hm-clinician-popup-card__body,
+    .hm-clinician-popup-card__footer {
+        padding-inline: 1rem;
+    }
+
+    .hm-clinician-popup-card {
+        width: 100%;
+    }
+}

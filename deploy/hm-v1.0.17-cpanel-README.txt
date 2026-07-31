@@ -1,0 +1,85 @@
+﻿HM cPanel incremental deployment package
+======================================
+Base version on server: v1.0.11
+Package version:        v1.0.17
+Generated:              2026-07-03 21:08:10
+
+Files in ZIP (changed since v1.0.11): 61
+New files:    23
+Modified:     38
+Removed:      0
+
+Upload steps (cPanel File Manager)
+----------------------------------
+1. Upload hm-v1.0.17-cpanel.zip to your Laravel app root (same folder as artisan).
+2. Extract the ZIP and overwrite existing files.
+3. In server .env set: HM_APP_VERSION=1.0.17
+4. Clear caches (Terminal or SSH):
+   php artisan view:clear
+   php artisan route:clear
+   php artisan config:clear
+5. Hard-refresh the browser (Ctrl+F5).
+6. Confirm login page shows v1.0.17.
+
+Changed files:
+ - app/Console/Commands/PruneMirroredSuwaidiBranchAssignments.php
+ - app/Console/Commands/RepairClinicianPlaceholderNames.php
+ - app/Data/DoctorsDirectoryNavigationCard.php
+ - app/Data/HospitalBranchCard.php
+ - app/Data/SearchableSelectOption.php
+ - app/Http/Controllers/Module/DoctorsDirectory/DoctorController.php
+ - app/Http/Controllers/Module/DoctorsDirectory/SpecialityController.php
+ - app/Http/Controllers/Module/HospitalServices/HospitalServicesDashboardController.php
+ - app/Http/Controllers/Module/HospitalServices/ServiceSectionController.php
+ - app/Http/Requests/DoctorsDirectory/DoctorIndexRequest.php
+ - app/Models/Clinician.php
+ - app/Models/ClinicianHospital.php
+ - app/Models/CompanyGroup.php
+ - app/Models/Country.php
+ - app/Models/OutpatientClinic.php
+ - app/Models/ServicePackage.php
+ - app/Models/ServiceSection.php
+ - app/Models/Speciality.php
+ - app/Providers/AppServiceProvider.php
+ - app/Repositories/DoctorsDirectory/DoctorRepository.php
+ - app/Repositories/DoctorsDirectory/SpecialityRepository.php
+ - app/Repositories/HospitalServices/ServiceSectionRepository.php
+ - app/Services/DoctorsDirectory/DoctorService.php
+ - app/Services/DoctorsDirectory/SpecialityService.php
+ - app/Services/HospitalServices/HospitalServiceCatalogService.php
+ - app/Support/DoctorsDirectory/SpecialityDescription.php
+ - app/Support/HmAssets.php
+ - app/Support/LocaleText.php
+ - config/hm.php
+ - lang/ar/dashboard.php
+ - lang/ar/doctors_directory.php
+ - lang/ar/hospital_services.php
+ - lang/en/dashboard.php
+ - lang/en/doctors_directory.php
+ - lang/en/hospital_services.php
+ - public/css/hm-app.css
+ - public/css/hm-auth.css
+ - public/css/hm-components.css
+ - public/css/hm-doctors-directory.css
+ - public/css/hm-fonts.css
+ - public/css/hm-hospital-services.css
+ - public/js/hm-department-search.js
+ - public/js/hm-doctor-card-modal.js
+ - public/js/hm-searchable-select.js
+ - public/js/hm-speciality-search.js
+ - resources/views/doctors-directory/doctors/index.blade.php
+ - resources/views/doctors-directory/doctors/show.blade.php
+ - resources/views/doctors-directory/partials/clinician-card-header.blade.php
+ - resources/views/doctors-directory/partials/clinician-card-table.blade.php
+ - resources/views/doctors-directory/partials/clinician-popup-row.blade.php
+ - resources/views/doctors-directory/specialities/departments.blade.php
+ - resources/views/doctors-directory/specialities/index.blade.php
+ - resources/views/doctors-directory/specialities/show.blade.php
+ - resources/views/hospital-services/dashboard.blade.php
+ - resources/views/hospital-services/partials/service-package-card.blade.php
+ - resources/views/hospital-services/partials/service-package-card-table.blade.php
+ - resources/views/hospital-services/sections/show.blade.php
+ - resources/views/layouts/app.blade.php
+ - resources/views/layouts/auth.blade.php
+ - resources/views/partials/hm-searchable-select.blade.php
+ - routes/web.php

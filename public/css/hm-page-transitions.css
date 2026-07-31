@@ -1,0 +1,224 @@
+/* HM — refined page transitions */
+
+:root {
+    --hm-page-enter-duration: 0.62s;
+    --hm-page-leave-duration: 0.28s;
+    --hm-page-stagger-step: 32ms;
+    --hm-page-ease: cubic-bezier(0.22, 1, 0.36, 1);
+    --hm-page-ease-leave: cubic-bezier(0.4, 0, 1, 1);
+    --hm-page-brand: #3a57e8;
+}
+
+/* First visit: show content immediately (no flash) */
+html.hm-page-instant .hm-page-root {
+    opacity: 1;
+    transform: none;
+    filter: none;
+}
+
+/* After in-app navigation: soft content dissolve */
+html:not(.hm-page-instant) .hm-page-root {
+    opacity: 0;
+    transform: translate3d(0, 14px, 0);
+    filter: blur(5px);
+}
+
+.hm-page-root {
+    transition:
+        opacity var(--hm-page-enter-duration) var(--hm-page-ease),
+        transform var(--hm-page-enter-duration) var(--hm-page-ease),
+        filter calc(var(--hm-page-enter-duration) * 0.85) var(--hm-page-ease);
+    will-change: opacity, transform, filter;
+}
+
+body.hm-page-enter-active .hm-page-root {
+    opacity: 1;
+    transform: none;
+    filter: blur(0);
+}
+
+body.hm-page-leaving .hm-page-root {
+    opacity: 0;
+    transform: translate3d(0, -10px, 0);
+    filter: blur(3px);
+    transition-duration: var(--hm-page-leave-duration);
+    transition-timing-function: var(--hm-page-ease-leave);
+}
+
+/* Progress rail — content area only (sidebar stays crisp) */
+.hm-page-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9998;
+    pointer-events: none;
+    opacity: 0;
+}
+
+.hm-page-overlay__veil {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background: linear-gradient(
+        180deg,
+        rgba(245, 246, 250, 0.42) 0%,
+        rgba(245, 246, 250, 0.18) 38%,
+        transparent 100%
+    );
+    opacity: 0;
+    transition: opacity var(--hm-page-leave-duration) ease;
+}
+
+body.hm-app-body .hm-page-overlay__veil {
+    left: var(--hm-sidebar-width, 19rem);
+}
+
+body.hm-app-body.hm-sidebar-collapsed .hm-page-overlay__veil {
+    left: var(--hm-sidebar-mini-width, 5rem);
+}
+
+html[dir="rtl"] body.hm-app-body .hm-page-overlay__veil {
+    left: 0;
+    right: var(--hm-sidebar-width, 19rem);
+}
+
+html[dir="rtl"] body.hm-app-body.hm-sidebar-collapsed .hm-page-overlay__veil {
+    right: var(--hm-sidebar-mini-width, 5rem);
+}
+
+.hm-page-overlay__bar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    overflow: hidden;
+    opacity: 0;
+}
+
+body.hm-app-body .hm-page-overlay__bar {
+    left: var(--hm-sidebar-width, 19rem);
+}
+
+body.hm-app-body.hm-sidebar-collapsed .hm-page-overlay__bar {
+    left: var(--hm-sidebar-mini-width, 5rem);
+}
+
+html[dir="rtl"] body.hm-app-body .hm-page-overlay__bar {
+    left: 0;
+    right: var(--hm-sidebar-width, 19rem);
+}
+
+html[dir="rtl"] body.hm-app-body.hm-sidebar-collapsed .hm-page-overlay__bar {
+    right: var(--hm-sidebar-mini-width, 5rem);
+}
+
+.hm-page-overlay__bar::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        90deg,
+        transparent 0%,
+        var(--hm-page-brand) 35%,
+        #6b7dff 65%,
+        transparent 100%
+    );
+    transform: translateX(-100%);
+}
+
+body.hm-page-leaving .hm-page-overlay {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+body.hm-page-leaving .hm-page-overlay__veil {
+    opacity: 1;
+}
+
+body.hm-page-leaving .hm-page-overlay__bar {
+    opacity: 1;
+}
+
+body.hm-page-leaving .hm-page-overlay__bar::before {
+    animation: hmPageBarSweep 0.42s var(--hm-page-ease-leave) forwards;
+}
+
+body.hm-page-enter-active .hm-page-overlay__bar {
+    opacity: 1;
+}
+
+body.hm-page-enter-active .hm-page-overlay__bar::before {
+    animation: hmPageBarFinish 0.72s var(--hm-page-ease) forwards;
+}
+
+@keyframes hmPageBarSweep {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(0%); }
+}
+
+@keyframes hmPageBarFinish {
+    0% { transform: translateX(-35%); opacity: 1; }
+    70% { transform: translateX(0%); opacity: 1; }
+    100% { transform: translateX(8%); opacity: 0; }
+}
+
+/* Staggered blocks — primary enter motion */
+.hm-reveal {
+    opacity: 0;
+    transform: translate3d(0, 18px, 0);
+    animation: hmRevealIn 0.58s var(--hm-page-ease) forwards;
+    animation-delay: calc(90ms + (var(--hm-stagger, 0) * var(--hm-page-stagger-step)));
+}
+
+@keyframes hmRevealIn {
+    0% {
+        opacity: 0;
+        transform: translate3d(0, 18px, 0);
+    }
+    100% {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+/* Dashboard module cards — lift on hover */
+.hm-hope-module-link .hm-hope-module-card {
+    transition:
+        transform 0.34s var(--hm-page-ease),
+        box-shadow 0.34s var(--hm-page-ease),
+        border-color 0.25s ease;
+}
+
+.hm-hope-module-link:hover .hm-hope-module-card {
+    transform: translateY(-5px);
+    box-shadow: 0 18px 36px rgba(58, 87, 232, 0.14);
+}
+
+@media (max-width: 991.98px) {
+    body.hm-app-body .hm-page-overlay__veil,
+    body.hm-app-body .hm-page-overlay__bar {
+        left: 0;
+    }
+
+    html[dir="rtl"] body.hm-app-body .hm-page-overlay__veil,
+    html[dir="rtl"] body.hm-app-body .hm-page-overlay__bar {
+        right: 0;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .hm-page-root,
+    .hm-reveal {
+        animation: none !important;
+        transition: none !important;
+        transform: none !important;
+        filter: none !important;
+        opacity: 1 !important;
+    }
+
+    .hm-page-overlay {
+        display: none;
+    }
+}

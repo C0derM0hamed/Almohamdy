@@ -1,0 +1,107 @@
+﻿HM cPanel incremental deployment package
+======================================
+Base version on server: v1.0.17
+Package version:        v1.0.18
+Generated:              2026-07-03 23:10:26
+
+Files in ZIP (changed since v1.0.17): 83
+New files:    56
+Modified:     27
+Removed:      0
+
+Upload steps (cPanel File Manager)
+----------------------------------
+1. Upload hm-v1.0.18-cpanel.zip to your Laravel app root (same folder as artisan).
+2. Extract the ZIP and overwrite existing files.
+3. In server .env set: HM_APP_VERSION=1.0.18
+4. Clear caches (Terminal or SSH):
+   php artisan view:clear
+   php artisan route:clear
+   php artisan config:clear
+5. Hard-refresh the browser (Ctrl+F5).
+6. Confirm login page shows v1.0.18.
+
+Changed files:
+ - app/Http/Controllers/Module/Inquiries/InquiryAndServiceController.php
+ - app/Http/Controllers/Module/ModulePlaceholderController.php
+ - app/Http/Requests/Inquiries/InquiryIndexRequest.php
+ - app/Models/AbsenceNotificationService.php
+ - app/Models/Branch.php
+ - app/Models/Inquiry.php
+ - app/Models/InquiryAndService.php
+ - app/Models/InquiryAndServiceReply.php
+ - app/Models/InquiryAndServiceStatus.php
+ - app/Models/ServicePackage.php
+ - app/Models/ServicePackageAttachment.php
+ - app/Repositories/HospitalServices/ServiceSectionRepository.php
+ - app/Repositories/Inquiries/InquiryAndServiceRepository.php
+ - app/Repositories/WorkAbsenceNotification/AbsenceNotificationRepository.php
+ - app/Services/EmployeeServices/EmployeeServicesNavigationService.php
+ - app/Services/HospitalServices/HospitalServiceCatalogService.php
+ - app/Services/Inquiries/InquiryAndServiceService.php
+ - app/Services/Inquiries/InquiryPdfService.php
+ - app/Services/Inquiries/InquiryTimelineService.php
+ - app/Support/Inquiries/InquiryPdfFontRegistry.php
+ - app/Support/Inquiries/InquiryUserNameResolver.php
+ - composer.json
+ - composer.lock
+ - config/hm.php
+ - lang/ar/dashboard.php
+ - lang/ar/employee_services.php
+ - lang/ar/hospital_services.php
+ - lang/ar/inquiries.php
+ - lang/ar/work_absence_notification.php
+ - lang/en/dashboard.php
+ - lang/en/employee_services.php
+ - lang/en/hospital_services.php
+ - lang/en/inquiries.php
+ - lang/en/work_absence_notification.php
+ - public/css/hm-hospital-services.css
+ - public/css/hm-inquiries.css
+ - public/css/hm-work-absence-notification.css
+ - public/files/1040661650931662.JPG
+ - public/files/1315221650933517.JPG
+ - public/files/1484201650931703.JPG
+ - public/files/2445031650933022.JPG
+ - public/files/2668641650933068.JPG
+ - public/files/2741441650933433.JPG
+ - public/files/2985811650933452.JPG
+ - public/files/3177891650886726.JPG
+ - public/files/3506071650933415.JPG
+ - public/files/3853771650933129.JPG
+ - public/files/3885471650933384.JPG
+ - public/files/4123551650931518.JPG
+ - public/files/4179131650933316.JPG
+ - public/files/4202821650931534.JPG
+ - public/files/5132111650886744.JPG
+ - public/files/5554181650933085.JPG
+ - public/files/5889781650933279.JPG
+ - public/files/5958581650931678.JPG
+ - public/files/6576711650933193.JPG
+ - public/files/7004281650933107.JPG
+ - public/files/7438291650931600.JPG
+ - public/files/7862521650933150.JPG
+ - public/files/8211141650933257.JPG
+ - public/files/8278271650932997.JPG
+ - public/files/8426061650931690.JPG
+ - public/files/8631221650933497.JPG
+ - public/files/8722001650933475.JPG
+ - public/files/8827951650933051.JPG
+ - public/files/9508171650886712.JPG
+ - public/files/9750671650933174.JPG
+ - public/fonts/noto-kufi-arabic/NotoKufiArabic-Bold.ttf
+ - public/fonts/noto-kufi-arabic/NotoKufiArabic-Regular.ttf
+ - public/images/rooms/private-room.png
+ - public/images/rooms/royal-suite.png
+ - public/images/rooms/royal-suite-companion.png
+ - public/images/rooms/suite.png
+ - public/js/hm-service-photo-lightbox.js
+ - resources/views/hospital-services/partials/service-package-card.blade.php
+ - resources/views/hospital-services/partials/service-package-card-table.blade.php
+ - resources/views/hospital-services/partials/service-package-photos.blade.php
+ - resources/views/hospital-services/sections/show.blade.php
+ - resources/views/inquiries/index.blade.php
+ - resources/views/inquiries/pdf/report.blade.php
+ - resources/views/inquiries/timeline.blade.php
+ - resources/views/work-absence-notification/notifications/index.blade.php
+ - routes/web.php

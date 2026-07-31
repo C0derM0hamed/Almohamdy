@@ -1,0 +1,17 @@
+﻿HM cPanel vendor supplement (v1.0.18)
+======================================
+Use this ZIP when the server has no Composer command (jailshell).
+
+Upload steps
+------------
+1. Upload hm-v1.0.18-vendor-cpanel.zip to your Laravel app root (same folder as artisan).
+2. Extract the ZIP and overwrite existing files under vendor/.
+3. Ensure storage/app/mpdf-tmp exists and is writable (755 or 775).
+4. Clear caches:
+   php artisan config:clear
+   php artisan route:clear
+   php artisan view:clear
+5. Test inquiry PDF download from the timeline page.
+
+Alternative (if Composer is available via PHP):
+  php /path/to/composer.phar install --no-dev --optimize-autoloader

@@ -1,0 +1,888 @@
+/* HM bridge — Hope UI shell + existing module styles */
+
+:root {
+    --hm-primary: #3a57e8;
+    --hm-primary-soft: #eef1ff;
+    --hm-body-bg: #f5f6fa;
+    --hm-sidebar-width: 19rem;
+    --hm-content-pad-x: clamp(0.65rem, 1vw, 1rem);
+    --hm-content-pad-y: 1rem;
+}
+
+body.hm-app-body {
+    background: var(--hm-body-bg);
+    --sidebar-width: var(--hm-sidebar-width);
+    color: #232d42;
+}
+
+/* LTR — sidebar on left */
+html[dir="ltr"] .sidebar,
+html:not([dir="rtl"]) .sidebar {
+    left: 0 !important;
+    right: auto !important;
+}
+
+html[dir="ltr"] .sidebar + .main-content,
+html:not([dir="rtl"]) .sidebar + .main-content {
+    margin-left: var(--hm-sidebar-width);
+    margin-right: 0;
+}
+
+/* RTL — sidebar on right */
+html[dir="rtl"] .sidebar {
+    left: auto !important;
+    right: 0 !important;
+}
+
+html[dir="rtl"] .sidebar + .main-content {
+    margin-right: var(--hm-sidebar-width) !important;
+    margin-left: 0 !important;
+}
+
+@media (min-width: 992px) {
+    html[dir="rtl"] body.hm-app-body .sidebar + .main-content,
+    html[dir="rtl"] body.hm-app-body .sidebar.sidebar-default + .main-content,
+    html[dir="rtl"] body.hm-app-body .sidebar.sidebar-base + .main-content,
+    html[dir="rtl"] body.hm-app-body .sidebar.sidebar-default.sidebar-base + .main-content {
+        margin-right: var(--hm-sidebar-width) !important;
+        margin-left: 0 !important;
+    }
+}
+
+/* Sidebar — wider + readable labels + scrollable nav */
+.sidebar {
+    width: var(--hm-sidebar-width);
+    max-width: var(--hm-sidebar-width);
+    display: flex !important;
+    flex-direction: column !important;
+    height: 100vh !important;
+    max-height: 100dvh !important;
+    overflow: hidden !important;
+}
+
+.sidebar .sidebar-header {
+    flex: 0 0 auto !important;
+}
+
+/*
+ * Scroll lives on .sidebar-body. flex-basis:0 + min-height:0 constrain
+ * height to the viewport so overflow scrolls (instead of being clipped).
+ */
+.sidebar .sidebar-body,
+.sidebar .sidebar-body.data-scrollbar,
+body.hm-app-body .sidebar .sidebar-body.data-scrollbar {
+    flex: 1 1 0% !important;
+    min-height: 0 !important;
+    max-height: calc(100vh - 4.75rem) !important;
+    max-height: calc(100dvh - 4.75rem) !important;
+    height: 0 !important;
+    overflow-x: hidden !important;
+    overflow-y: scroll !important;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+    padding-inline: 0.65rem;
+    padding-bottom: 2rem !important;
+}
+
+/* Native scrollbar — keep last items reachable when SmoothScrollbar is unused */
+.sidebar .sidebar-body {
+    scrollbar-gutter: stable;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(58, 87, 232, 0.45) transparent;
+}
+
+.sidebar .sidebar-body::-webkit-scrollbar {
+    width: 6px;
+}
+
+.sidebar .sidebar-body::-webkit-scrollbar-thumb {
+    background: rgba(58, 87, 232, 0.35);
+    border-radius: 999px;
+}
+
+.sidebar .sidebar-body::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.sidebar .sidebar-list,
+.sidebar .navbar-nav.iq-main-menu {
+    padding-bottom: 0.5rem;
+}
+
+.sidebar .nav-link {
+    align-items: flex-start;
+    gap: 0.35rem;
+    padding: 0.55rem 0.85rem;
+    min-height: 2.5rem;
+}
+
+.sidebar .nav-link .item-name {
+    flex: 1 1 auto;
+    min-width: 0;
+    white-space: normal;
+    overflow: visible;
+    text-overflow: unset;
+    line-height: 1.35;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #3d4658;
+    margin-inline-start: 0.65rem;
+    margin-left: 0.65rem;
+    opacity: 1 !important;
+    transform: none !important;
+}
+
+.sidebar .nav-link:not(.active) .item-name {
+    color: #3d4658;
+}
+
+.sidebar .nav-link.active .item-name {
+    color: #fff;
+}
+
+.sidebar .nav-link.static-item .default-icon {
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    color: #8a92a6;
+}
+
+/* Keep full sidebar labels on laptop widths (Hope UI auto-mini below 1025px) */
+@media (min-width: 992px) {
+    body.hm-app-body .sidebar.sidebar-default.sidebar-base.sidebar-mini.on-resize {
+        --sidebar-width: var(--hm-sidebar-width);
+        width: var(--hm-sidebar-width);
+        max-width: var(--hm-sidebar-width);
+    }
+
+    body.hm-app-body .sidebar.sidebar-default.sidebar-base.sidebar-mini.on-resize .nav-item .nav-link:not(.static-item) span.item-name {
+        transform: none !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+        display: inline !important;
+    }
+
+    body.hm-app-body .sidebar.sidebar-default.sidebar-base.sidebar-mini.on-resize + .main-content {
+        --sidebar-width: var(--hm-sidebar-width);
+        margin-left: var(--hm-sidebar-width);
+        margin-right: 0;
+    }
+
+    html[dir="rtl"] body.hm-app-body .sidebar.sidebar-default.sidebar-base.sidebar-mini.on-resize + .main-content {
+        margin-right: var(--hm-sidebar-width);
+        margin-left: 0;
+    }
+}
+
+/* HM logo in Hope UI sidebar */
+.hm-hope-logo img {
+    height: 34px;
+    width: auto;
+    max-width: 100%;
+    object-fit: contain;
+}
+
+.hm-hope-logo .logo-main {
+    display: flex;
+    align-items: center;
+}
+
+.hm-hope-logo .logo-normal,
+.hm-hope-logo .logo-mini {
+    display: block;
+}
+
+.sidebar .hm-hope-logo .logo-mini {
+    display: none;
+}
+
+body.sidebar-mini .sidebar .hm-hope-logo .logo-normal {
+    display: none;
+}
+
+body.sidebar-mini .sidebar .hm-hope-logo .logo-mini {
+    display: block;
+}
+
+/* Align module design tokens with Hope UI primary */
+.hm-hs,
+.hm-wan,
+.hm-cp,
+.hm-dda {
+    --hs-blue: var(--bs-primary, #3a57e8);
+    --hs-blue-2: #0f4cc8;
+    --hs-navy: #071b3d;
+}
+
+.sidebar .hm-sidebar-context {
+    padding: 1rem 1.35rem 0.85rem;
+    margin: 0 0.85rem 0.5rem;
+    border-radius: 12px;
+    background: #f4f7ff;
+    border: 1px solid #e8edff;
+}
+
+.sidebar .hm-sidebar-context__title {
+    margin: 0;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #232d42;
+    line-height: 1.35;
+}
+
+.sidebar .hm-sidebar-context__subtitle {
+    margin: 0.35rem 0 0;
+    font-size: 0.78rem;
+    color: #5c6578;
+    line-height: 1.45;
+}
+
+/* Bootstrap icons inside Hope UI nav */
+.sidebar .nav-link > .icon > .bi {
+    font-size: 1.1rem;
+    line-height: 1;
+    color: inherit;
+}
+
+.sidebar .nav-link.active > .icon > .bi,
+.sidebar .nav-link:hover > .icon > .bi {
+    color: inherit;
+}
+
+/* Navbar — hide duplicate brand on desktop */
+@media (min-width: 1200px) {
+    .iq-navbar .navbar-brand.hm-navbar-brand-mobile {
+        display: none;
+    }
+}
+
+@media (max-width: 1199.98px) {
+    .iq-navbar .navbar-brand.hm-navbar-brand-mobile .logo-title {
+        display: none;
+    }
+}
+
+/* HM lang switch in Hope UI navbar */
+.hm-hope-lang {
+    display: inline-flex;
+    align-items: center;
+    border: 1px solid #e9ecef;
+    border-radius: 999px;
+    overflow: hidden;
+    background: #fff;
+}
+
+.hm-hope-lang a {
+    padding: 0.35rem 0.75rem;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: #6b7280;
+    text-decoration: none;
+    line-height: 1.2;
+}
+
+.hm-hope-lang a.is-active {
+    background: var(--bs-primary);
+    color: #fff;
+}
+
+/* HM dropdowns inside Hope UI navbar */
+.iq-navbar .hm-dropdown-menu {
+    min-width: 14rem;
+    border: 1px solid #e9ecef;
+    border-radius: 12px;
+    box-shadow: 0 12px 28px rgba(16, 35, 63, 0.12);
+    padding: 0.35rem 0;
+}
+
+.iq-navbar .hm-dropdown-menu__header {
+    padding: 0.65rem 1rem;
+    font-size: 0.75rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #8a92a6;
+    border-bottom: 1px solid #eef2f7;
+}
+
+.iq-navbar .hm-dropdown-menu__item,
+.iq-navbar .hm-dropdown-menu__empty {
+    padding: 0.65rem 1rem;
+    font-size: 0.88rem;
+    color: #4b5563;
+}
+
+.iq-navbar .hm-user-dropdown__header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.85rem 1rem;
+    border-bottom: 1px solid #eef2f7;
+}
+
+.iq-navbar .hm-user-dropdown__avatar {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    background: var(--bs-primary);
+    color: #fff;
+    font-weight: 800;
+    font-size: 0.85rem;
+}
+
+.iq-navbar .hm-user-dropdown__name {
+    margin: 0;
+    font-weight: 700;
+    color: #232d42;
+    font-size: 0.9rem;
+}
+
+.iq-navbar .hm-user-dropdown__role {
+    margin: 0.15rem 0 0;
+    font-size: 0.75rem;
+    color: #8a92a6;
+}
+
+.iq-navbar .hm-user-dropdown__item {
+    width: 100%;
+    border: 0;
+    background: transparent;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.7rem 1rem;
+    color: #dc3545;
+    font-weight: 600;
+    text-align: start;
+}
+
+.iq-navbar .hm-user-dropdown__item:hover {
+    background: #fff5f5;
+}
+
+.iq-navbar .hm-navbar__badge {
+    position: absolute;
+    top: 2px;
+    inset-inline-end: 2px;
+    min-width: 1.1rem;
+    height: 1.1rem;
+    padding: 0 0.25rem;
+    border-radius: 999px;
+    background: #dc3545;
+    color: #fff;
+    font-size: 0.65rem;
+    font-weight: 800;
+    display: grid;
+    place-items: center;
+}
+
+.iq-navbar .nav-link.hm-notify-btn {
+    position: relative;
+    padding: 0.35rem 0.5rem;
+}
+
+/* Content area — edge-to-edge modules, minimal side gutters */
+.main-content .content-inner,
+.main-content .hm-content-inner {
+    width: 100%;
+    max-width: 100%;
+    padding: var(--hm-content-pad-y) var(--hm-content-pad-x) 1.5rem;
+}
+
+.main-content .content-inner .hm-container,
+.main-content .content-inner > .hm-hs,
+.main-content .content-inner > .hm-wan,
+.main-content .content-inner > .hm-cp,
+.main-content .content-inner > .hm-dda,
+.main-content .content-inner > .hm-dd,
+.main-content .content-inner > .hm-es,
+.main-content .content-inner > .hm-sl,
+.main-content .content-inner > .hm-inq,
+.main-content .content-inner > .hm-el,
+.main-content .content-inner > .hm-hope-dashboard {
+    width: 100%;
+    max-width: 100%;
+}
+
+/* Improve default text contrast in modules */
+.main-content p,
+.main-content .hs-page-subtitle,
+.main-content .dd-hero-info p,
+.main-content .hm-page-subtitle {
+    color: #4b5563;
+}
+
+.main-content .text-muted,
+.main-content small.text-muted {
+    color: #5c6578 !important;
+}
+
+/* Footer */
+.hm-hope-footer {
+    margin-top: auto;
+    padding: 1.25rem 1.5rem;
+    border-top: 1px solid #e9ecef;
+    background: #fff;
+    color: #8a92a6;
+    font-size: 0.82rem;
+    text-align: center;
+}
+
+/* Hide Hope UI customizer gear */
+.btn-setting,
+#offcanvasExample {
+    display: none !important;
+}
+
+/* Loader — always dismiss (Hope UI loader can block the whole screen) */
+body.hm-shell-ready #loading,
+body.hm-shell-ready .loader.simple-loader {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+}
+
+#loading {
+    background: #fff;
+}
+
+/* Main dashboard — Hope UI cards */
+.hm-hope-dashboard .hm-hope-welcome {
+    background: linear-gradient(135deg, #fff 0%, #f4f7ff 100%);
+    border: 1px solid #e8edff !important;
+}
+
+.hm-hope-dashboard .hm-hope-welcome__icon {
+    width: 3.5rem;
+    height: 3.5rem;
+    border-radius: 14px;
+    display: grid;
+    place-items: center;
+    background: var(--bs-primary);
+    color: #fff;
+    font-size: 1.5rem;
+}
+
+.hm-hope-dashboard .hm-hope-stat-icon {
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 12px;
+    display: grid;
+    place-items: center;
+    font-size: 1.15rem;
+}
+
+.hm-hope-dashboard .hm-hope-stat-icon--primary {
+    background: #eef1ff;
+    color: var(--bs-primary);
+}
+
+.hm-hope-dashboard .hm-hope-stat-icon--success {
+    background: #e8f7ee;
+    color: #1aa053;
+}
+
+.hm-hope-dashboard .hm-hope-stat-icon--info {
+    background: #e6f9fa;
+    color: #08b1ba;
+}
+
+.hm-hope-dashboard .hm-hope-stat-icon--warning {
+    background: #fff4e8;
+    color: #f16a1b;
+}
+
+.hm-hope-module-card {
+    border: 1px solid #e9ecef;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+}
+
+.hm-hope-module-link:hover .hm-hope-module-card {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 28px rgba(16, 35, 63, 0.1);
+    border-color: #d8e2ff;
+}
+
+.hm-hope-module-card__icon {
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 12px;
+    display: grid;
+    place-items: center;
+    background: #eef1ff;
+    color: var(--bs-primary);
+    font-size: 1.2rem;
+}
+
+.hm-hope-module-card__arrow {
+    color: var(--bs-primary);
+    font-size: 1.1rem;
+}
+
+/* Module pages — no extra top banner */
+.hm-hope-banner {
+    position: relative;
+}
+
+.hm-hope-banner .iq-navbar {
+    box-shadow: none;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   RTL — sidebar on right, content offset from right.
+   ═══════════════════════════════════════════════════════════ */
+html[dir="rtl"] .sidebar .sidebar-body,
+html[dir="rtl"] .sidebar-base .sidebar-body {
+    padding-left: 0.65rem !important;
+    padding-right: 0.65rem !important;
+    overflow-x: hidden !important;
+    overflow-y: scroll !important;
+    max-height: calc(100vh - 4.75rem) !important;
+    max-height: calc(100dvh - 4.75rem) !important;
+}
+
+html[dir="rtl"] .sidebar-base:not(.sidebar-mini) .navbar-nav .nav-item:not(.static-item),
+html[dir="rtl"] .sidebar-base.navs-rounded:not(.sidebar-mini) .navbar-nav .nav-item:not(.static-item),
+html[dir="rtl"] .sidebar-base.navs-rounded-all:not(.sidebar-mini) .navbar-nav .nav-item:not(.static-item) {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+
+html[dir="rtl"] .sidebar .nav-link .item-name,
+html[dir="rtl"] .sidebar-base .sidebar-list .navbar-nav .nav-item .nav-link:not(.disabled) span.item-name {
+    margin-left: 0 !important;
+    margin-right: 0.65rem !important;
+    margin-inline-start: 0.65rem !important;
+    transform: none !important;
+    opacity: 1 !important;
+}
+
+/* Sidebar + main content — smooth mini-rail collapse (like Hope UI) */
+:root {
+    --hm-sidebar-mini-width: 5rem;
+}
+
+.sidebar {
+    transition:
+        width 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+        max-width 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.main-content {
+    transition:
+        margin-left 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+        margin-right 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Collapse to a slim icon rail (icons stay, labels hide) */
+html.hm-sidebar-is-collapsed .sidebar,
+body.hm-sidebar-collapsed .sidebar {
+    --sidebar-width: var(--hm-sidebar-mini-width) !important;
+    width: var(--hm-sidebar-mini-width) !important;
+    max-width: var(--hm-sidebar-mini-width) !important;
+    transform: none !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+    overflow: hidden !important;
+}
+
+/* Hide text labels when collapsed */
+html.hm-sidebar-is-collapsed .sidebar .nav-item .nav-link .item-name,
+body.hm-sidebar-collapsed .sidebar .nav-item .nav-link .item-name,
+html.hm-sidebar-is-collapsed .sidebar .nav-item .nav-link .right-icon,
+body.hm-sidebar-collapsed .sidebar .nav-item .nav-link .right-icon,
+html.hm-sidebar-is-collapsed .sidebar .nav-link.static-item .default-icon,
+body.hm-sidebar-collapsed .sidebar .nav-link.static-item .default-icon {
+    opacity: 0 !important;
+    visibility: hidden !important;
+    width: 0 !important;
+    overflow: hidden !important;
+    white-space: nowrap;
+    transition: opacity 0.18s ease;
+}
+
+/* Override RTL label rules when collapsed */
+html.hm-sidebar-is-collapsed .sidebar-base .sidebar-list .navbar-nav .nav-item .nav-link:not(.disabled) span.item-name,
+body.hm-sidebar-collapsed .sidebar-base .sidebar-list .navbar-nav .nav-item .nav-link:not(.disabled) span.item-name,
+html[dir="rtl"].hm-sidebar-is-collapsed .sidebar-base .sidebar-list .navbar-nav .nav-item .nav-link:not(.disabled) span.item-name,
+html[dir="rtl"] body.hm-sidebar-collapsed .sidebar-base .sidebar-list .navbar-nav .nav-item .nav-link:not(.disabled) span.item-name {
+    opacity: 0 !important;
+    visibility: hidden !important;
+    width: 0 !important;
+    margin: 0 !important;
+    overflow: hidden !important;
+}
+
+/* Hide the module context heading in the rail */
+html.hm-sidebar-is-collapsed .sidebar .hm-sidebar-context,
+body.hm-sidebar-collapsed .sidebar .hm-sidebar-context {
+    display: none !important;
+}
+
+/* Center icons in the rail */
+html.hm-sidebar-is-collapsed .sidebar .nav-item .nav-link,
+body.hm-sidebar-collapsed .sidebar .nav-item .nav-link {
+    justify-content: center;
+    padding: 0.3rem 0;
+    min-height: auto;
+    background: transparent !important;
+    box-shadow: none !important;
+    color: #6c757d;
+}
+
+html.hm-sidebar-is-collapsed .sidebar .nav-item .nav-link:hover:not(.active),
+body.hm-sidebar-collapsed .sidebar .nav-item .nav-link:hover:not(.active) {
+    background: transparent !important;
+    box-shadow: none !important;
+    color: var(--hm-primary);
+}
+
+html.hm-sidebar-is-collapsed .sidebar .nav-item .nav-link > .icon,
+body.hm-sidebar-collapsed .sidebar .nav-item .nav-link > .icon {
+    display: grid;
+    place-items: center;
+    width: 2.45rem;
+    height: 2.45rem;
+    margin: 0 !important;
+    border-radius: 0.7rem;
+    transition: background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+}
+
+html.hm-sidebar-is-collapsed .sidebar .nav-item .nav-link > .icon > .bi,
+body.hm-sidebar-collapsed .sidebar .nav-item .nav-link > .icon > .bi {
+    color: #6c757d;
+}
+
+html.hm-sidebar-is-collapsed .sidebar .nav-item .nav-link:hover:not(.active) > .icon,
+body.hm-sidebar-collapsed .sidebar .nav-item .nav-link:hover:not(.active) > .icon {
+    background: var(--hm-primary-soft);
+}
+
+html.hm-sidebar-is-collapsed .sidebar .nav-item .nav-link:hover:not(.active) > .icon > .bi,
+body.hm-sidebar-collapsed .sidebar .nav-item .nav-link:hover:not(.active) > .icon > .bi {
+    color: var(--hm-primary);
+}
+
+html.hm-sidebar-is-collapsed .sidebar .nav-item .nav-link.active,
+body.hm-sidebar-collapsed .sidebar .nav-item .nav-link.active {
+    background: transparent !important;
+    box-shadow: none !important;
+}
+
+html.hm-sidebar-is-collapsed .sidebar .nav-item .nav-link.active > .icon,
+body.hm-sidebar-collapsed .sidebar .nav-item .nav-link.active > .icon {
+    background: var(--hm-primary);
+    box-shadow: 0 8px 18px -10px rgba(58, 87, 232, 0.45);
+}
+
+html.hm-sidebar-is-collapsed .sidebar .nav-item .nav-link.active > .icon > .bi,
+body.hm-sidebar-collapsed .sidebar .nav-item .nav-link.active > .icon > .bi {
+    color: #fff;
+}
+
+html.hm-sidebar-is-collapsed .sidebar .sidebar-header,
+body.hm-sidebar-collapsed .sidebar .sidebar-header {
+    justify-content: center !important;
+    padding-inline: 0.35rem;
+}
+
+html.hm-sidebar-is-collapsed .sidebar .hm-hope-logo .logo-main,
+body.hm-sidebar-collapsed .sidebar .hm-hope-logo .logo-main {
+    justify-content: center;
+}
+
+html.hm-sidebar-is-collapsed .sidebar .nav-item:not(.static-item),
+body.hm-sidebar-collapsed .sidebar .nav-item:not(.static-item) {
+    margin-bottom: 0.2rem;
+}
+
+/* Static "Modules" label row collapses cleanly */
+html.hm-sidebar-is-collapsed .sidebar .nav-item.static-item,
+body.hm-sidebar-collapsed .sidebar .nav-item.static-item {
+    min-height: 0.5rem;
+}
+
+html.hm-sidebar-is-collapsed .sidebar .nav-item .nav-link svg,
+body.hm-sidebar-collapsed .sidebar .nav-item .nav-link svg {
+    margin: 0 !important;
+}
+html.hm-sidebar-is-collapsed .sidebar .hm-hope-logo .logo-normal,
+body.hm-sidebar-collapsed .sidebar .hm-hope-logo .logo-normal {
+    display: none !important;
+}
+
+html.hm-sidebar-is-collapsed .sidebar .hm-hope-logo .logo-mini,
+body.hm-sidebar-collapsed .sidebar .hm-hope-logo .logo-mini {
+    display: block !important;
+}
+
+/* Main content expands to the rail width */
+html.hm-sidebar-is-collapsed .sidebar + .main-content,
+body.hm-sidebar-collapsed .sidebar + .main-content,
+html.hm-sidebar-is-collapsed body.hm-app-body .sidebar + .main-content,
+body.hm-app-body.hm-sidebar-collapsed .sidebar + .main-content,
+html.hm-sidebar-is-collapsed body.hm-app-body .sidebar.sidebar-default.sidebar-base + .main-content,
+body.hm-app-body.hm-sidebar-collapsed .sidebar.sidebar-default.sidebar-base + .main-content,
+html.hm-sidebar-is-collapsed body.hm-app-body .sidebar.sidebar-default.sidebar-base.sidebar-mini.on-resize + .main-content,
+body.hm-app-body.hm-sidebar-collapsed .sidebar.sidebar-default.sidebar-base.sidebar-mini.on-resize + .main-content {
+    margin-left: var(--hm-sidebar-mini-width) !important;
+    margin-right: 0 !important;
+}
+
+html[dir="rtl"].hm-sidebar-is-collapsed .sidebar + .main-content,
+html[dir="rtl"] body.hm-sidebar-collapsed .sidebar + .main-content,
+html[dir="rtl"] body.hm-app-body.hm-sidebar-collapsed .sidebar + .main-content,
+html[dir="rtl"] body.hm-app-body.hm-sidebar-collapsed .sidebar.sidebar-default + .main-content,
+html[dir="rtl"] body.hm-app-body.hm-sidebar-collapsed .sidebar.sidebar-default.sidebar-base + .main-content,
+html[dir="rtl"] body.hm-app-body.hm-sidebar-collapsed .sidebar.sidebar-default.sidebar-base.sidebar-mini.on-resize + .main-content,
+html[dir="rtl"].hm-sidebar-is-collapsed body.hm-app-body .sidebar.sidebar-default.sidebar-base.sidebar-mini.on-resize + .main-content {
+    margin-left: 0 !important;
+    margin-right: var(--hm-sidebar-mini-width) !important;
+}
+
+body.hm-sidebar-collapsed,
+html.hm-sidebar-is-collapsed {
+    --hm-sidebar-width: var(--hm-sidebar-mini-width);
+}
+
+/* Navbar sidebar toggle — show / hide left menu */
+.sidebar .sidebar-toggle {
+    display: none !important;
+}
+
+.hm-navbar-sidebar-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    width: 2.35rem;
+    height: 2.35rem;
+    margin-inline-start: 0.65rem;
+    flex-shrink: 0;
+    padding: 0;
+    border: 0;
+    cursor: pointer;
+    background: var(--bs-primary);
+    color: #fff;
+    border-radius: 50rem;
+    box-shadow: 0 0.125rem 0.25rem rgba(58, 87, 232, 0.15);
+    transition: transform 0.25s ease, box-shadow 0.25s ease, background-color 0.25s ease;
+}
+
+.hm-navbar-sidebar-toggle:hover {
+    box-shadow: 0 0.25rem 0.55rem rgba(58, 87, 232, 0.28);
+    transform: translateY(-1px);
+}
+
+.hm-navbar-sidebar-toggle:active {
+    transform: translateY(0);
+}
+
+.hm-navbar-sidebar-toggle__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.15rem;
+    line-height: 1;
+    transition: opacity 0.2s ease, transform 0.25s ease;
+}
+
+.hm-navbar-sidebar-toggle__icon--closed {
+    position: absolute;
+    opacity: 0;
+    transform: scale(0.82);
+}
+
+.hm-navbar-sidebar-toggle.is-collapsed .hm-navbar-sidebar-toggle__icon--open {
+    opacity: 0;
+    transform: scale(0.82);
+}
+
+.hm-navbar-sidebar-toggle.is-collapsed .hm-navbar-sidebar-toggle__icon--closed {
+    opacity: 1;
+    transform: none;
+}
+
+.iq-navbar .hm-navbar-sidebar-toggle {
+    display: inline-flex !important;
+}
+
+html[dir="rtl"] .sidebar .navbar-brand {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+}
+
+html[dir="rtl"] .sidebar .nav-link > .icon {
+    order: 0;
+}
+
+html[dir="rtl"] .hm-hope-lang {
+    direction: ltr;
+}
+
+/* Nested sidebar: Main Section → Subsections (Hope UI .sub-nav) */
+.sidebar .nav-link .right-icon {
+    margin-inline-start: auto;
+    display: inline-flex;
+    align-items: center;
+    transition: transform 0.2s ease;
+}
+
+.sidebar .nav-link[aria-expanded="true"] .right-icon {
+    transform: rotate(180deg);
+}
+
+.sidebar .sub-nav {
+    list-style: none;
+    padding: 0.15rem 0 0.35rem;
+    margin: 0;
+}
+
+.sidebar .sub-nav .nav-item .nav-link {
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.65rem !important;
+    padding-inline-start: 1.1rem;
+    min-height: 2.35rem;
+}
+
+.sidebar .sub-nav .nav-item .nav-link > .icon {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    flex: 0 0 1.25rem !important;
+    width: 1.25rem !important;
+    min-width: 1.25rem !important;
+    margin: 0 !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+.sidebar .sub-nav .nav-item .nav-link > .icon > .bi {
+    display: inline-block !important;
+    font-size: 1rem !important;
+    line-height: 1 !important;
+    color: inherit !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+.sidebar .sub-nav .nav-item .nav-link .item-name {
+    font-size: 0.82rem;
+    font-weight: 550;
+}
+
+.sidebar .sub-nav .nav-item .nav-link.active > .icon,
+.sidebar .sub-nav .nav-item .nav-link.active > .icon > .bi {
+    color: inherit !important;
+    opacity: 1 !important;
+}
+
+html.hm-sidebar-is-collapsed .sidebar .sub-nav,
+body.hm-sidebar-collapsed .sidebar .sub-nav {
+    display: none !important;
+}

@@ -1,0 +1,72 @@
+/* Employee Services — module-specific additions on top of the shared .hm-hs system */
+
+.hm-es .es-card-badge {
+    position: absolute;
+    top: 16px;
+    inset-inline-end: 16px;
+    z-index: 2;
+    padding: 4px 12px;
+    border-radius: 999px;
+    background: #fff3e0;
+    border: 1px solid #ffd8a8;
+    color: #b5620a;
+    font-size: 11px;
+    font-weight: 850;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    box-shadow: 0 6px 14px rgba(181, 98, 10, 0.12);
+}
+
+.hm-es .es-coming-soon {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    min-height: 340px;
+    padding: 56px 32px;
+    border: 1px solid var(--hs-line);
+    border-radius: var(--hs-radius);
+    background: linear-gradient(135deg, #fff 0%, #f6f9ff 100%);
+    box-shadow: var(--hs-shadow);
+    text-align: center;
+}
+
+.hm-es .es-coming-soon__icon {
+    width: 86px;
+    height: 86px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: linear-gradient(180deg, #fff, #f1f5ff);
+    border: 1px solid #dbe5f5;
+    color: var(--hs-blue-2);
+    font-size: 2rem;
+    box-shadow: 0 14px 28px rgba(16, 35, 63, 0.08), inset 0 -8px 18px rgba(36, 86, 232, 0.06);
+}
+
+.hm-es .es-coming-soon__title {
+    margin: 0;
+    color: var(--hs-navy);
+    font-size: 1.35rem;
+    font-weight: 850;
+}
+
+.hm-es .es-coming-soon__text {
+    margin: 0;
+    color: var(--hs-muted);
+    font-size: 15px;
+}
+
+.hm-es .es-coming-soon__back {
+    margin-top: 8px;
+    text-decoration: none;
+}
+
+.hm-es .es-coming-soon__back .bi-arrow-left {
+    font-size: 1rem;
+}
+
+html[dir="rtl"] .hm-es .es-coming-soon__back .bi-arrow-left {
+    transform: scaleX(-1);
+}

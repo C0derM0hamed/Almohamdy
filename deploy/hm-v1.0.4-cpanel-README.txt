@@ -1,0 +1,52 @@
+﻿HM cPanel incremental deployment package
+======================================
+Base version on server: v1.0.3
+Package version:        v1.0.4
+Generated:              2026-07-02 21:59:59
+
+Files in ZIP (changed since v1.0.3): 28
+New files:    13
+Modified:     15
+Removed:      0
+
+Upload steps (cPanel File Manager)
+----------------------------------
+1. Upload hm-v1.0.4-cpanel.zip to your Laravel app root (same folder as artisan).
+2. Extract the ZIP and overwrite existing files.
+3. In server .env set: HM_APP_VERSION=1.0.4
+4. Clear caches (Terminal or SSH):
+   php artisan view:clear
+   php artisan route:clear
+   php artisan config:clear
+5. Hard-refresh the browser (Ctrl+F5).
+6. Confirm login page shows v1.0.4.
+
+Changed files:
+ - app/Data/ServiceLocationCard.php
+ - app/Data/ServiceLocationDepartmentCard.php
+ - app/Http/Controllers/Module/DoctorsDirectory/DoctorController.php
+ - app/Http/Controllers/Module/ServiceLocations/ServiceLocationController.php
+ - app/Repositories/DoctorsDirectory/DepartmentRepository.php
+ - app/Repositories/DoctorsDirectory/DoctorRepository.php
+ - app/Repositories/ServiceLocations/ServiceLocationRepository.php
+ - app/Services/DoctorsDirectory/DoctorService.php
+ - app/Services/ServiceLocations/ServiceLocationService.php
+ - app/Support/ServiceLocations/LocalizedLegacyText.php
+ - config/hm.php
+ - lang/ar/dashboard.php
+ - lang/ar/service_locations.php
+ - lang/en/dashboard.php
+ - lang/en/service_locations.php
+ - public/css/hm-app.css
+ - public/css/hm-fonts.css
+ - public/css/hm-service-locations.css
+ - resources/views/doctors-directory/doctors/index.blade.php
+ - resources/views/doctors-directory/doctors/show.blade.php
+ - resources/views/doctors-directory/specialities/departments.blade.php
+ - resources/views/doctors-directory/specialities/index.blade.php
+ - resources/views/layouts/partials/sidebar.blade.php
+ - resources/views/service-locations/floors.blade.php
+ - resources/views/service-locations/index.blade.php
+ - resources/views/service-locations/show.blade.php
+ - resources/views/service-locations/support-services.blade.php
+ - routes/web.php

@@ -1,0 +1,253 @@
+<?php
+
+return [
+
+    'title' => 'إشعارات التغيب عن العمل',
+    'dashboard' => 'لوحة إشعارات التغيب عن العمل',
+    'dashboard_subtitle' => 'نظرة عامة على طلبات إشعار التغيب عن العمل',
+    'notifications_list' => 'قائمة الإشعارات',
+    'notifications_list_subtitle' => 'استعراض ومراجعة طلبات إشعار التغيب',
+    'service_title' => 'خدمة إشعار التغيب عن العمل',
+    'service_subtitle' => 'بحث في إشعارات التغيب ومراجعة المستندات المرفقة',
+    'filters_title' => 'تصفية الإشعارات',
+    'new_notification' => 'إشعار جديد',
+    'total_records' => ':count سجل',
+    'notification_details' => 'تفاصيل إشعار التغيب عن العمل',
+    'detail_subtitle' => 'مراجعة معلومات طلب إشعار التغيب وإجراءات سير العمل.',
+    'employee_not_linked' => 'ملف الموظف غير متوفر لهذا المعرّف.',
+    'view_notifications' => 'عرض الإشعارات',
+
+    'summary' => [
+        'period' => 'فترة التغيب',
+    ],
+
+    'stats' => [
+        'total' => 'إجمالي الإشعارات',
+        'pending' => 'قيد الانتظار',
+        'action_taken' => 'تم اتخاذ إجراء',
+        'activated' => 'مفعّلة',
+        'this_month' => 'هذا الشهر',
+        'recipients_total' => 'إجمالي المستلمين',
+        'recipients_viewed' => 'تمت المشاهدة',
+        'recipients_pending_view' => 'بانتظار المشاهدة',
+    ],
+
+    'insights' => [
+        'all_time' => 'كل الوقت',
+        'of_total' => ':percent من الإجمالي',
+        'total' => 'الإجمالي',
+        'days_range' => ':days يوماً',
+    ],
+
+    'recipients' => [
+        'dashboard_section' => 'تتبع مستلمي المذكرات',
+        'section_title' => 'تتبع مستلمي المذكرات',
+        'statistics' => 'إحصائيات المستلمين',
+        'list' => 'قائمة المستلمين',
+        'status' => [
+            'viewed' => 'تمت المشاهدة',
+            'pending_view' => 'بانتظار المشاهدة',
+        ],
+        'fields' => [
+            'recipient' => 'المستلم',
+            'memo_type' => 'نوع المذكرة',
+            'memo_date' => 'تاريخ المذكرة',
+            'status' => 'الحالة',
+            'seen_at' => 'تاريخ المشاهدة',
+        ],
+        'no_recipients' => 'لا يوجد مستلمون للمذكرات.',
+    ],
+
+    'reports' => [
+        'section_title' => 'التقارير',
+        'pending_by_type' => 'قيد الانتظار حسب نوع الإشعار',
+        'action_taken_by_type' => 'تم اتخاذ إجراء حسب نوع الإشعار',
+        'activated_by_type' => 'مفعّلة حسب نوع الإشعار',
+        'last_30_days' => 'اتجاه آخر 30 يوماً',
+        'top_absence_reasons' => 'أهم أسباب التغيب',
+        'notification_type' => 'نوع الإشعار',
+        'absence_reason' => 'سبب التغيب',
+        'count' => 'العدد',
+        'date' => 'التاريخ',
+        'unknown_type' => 'نوع غير معروف',
+        'no_data' => 'لا توجد بيانات.',
+    ],
+
+    'charts' => [
+        'section_title' => 'الرسوم البيانية',
+        'last_30_days' => 'اتجاه آخر 30 يوماً',
+        'type_distribution' => 'توزيع أنواع الإشعارات',
+        'workflow_distribution' => 'توزيع حالات سير العمل',
+        'count' => 'العدد',
+        'notifications' => 'الإشعارات',
+    ],
+
+    'columns' => [
+        'request_id' => 'رقم الطلب',
+        'employee' => 'الموظف',
+        'notification_type' => 'نوع الإشعار',
+        'model' => 'النموذج',
+        'documents' => 'المستندات',
+        'absence_type' => 'نوع التغيب',
+        'release_date' => 'تاريخ الإصدار',
+        'begin_date' => 'تاريخ البداية',
+        'end_date' => 'تاريخ النهاية',
+        'absence_days' => 'أيام التغيب',
+        'action_type' => 'نوع الإجراء',
+        'workflow_status' => 'حالة سير العمل',
+        'created_date' => 'تاريخ التقديم',
+        'actions' => 'إجراءات',
+    ],
+
+    'status' => [
+        'pending' => 'قيد الانتظار',
+        'activated' => 'مفعّلة',
+        'action_taken' => 'تم اتخاذ إجراء',
+    ],
+
+    'fields' => [
+        'request_id' => 'رقم الطلب',
+        'employee' => 'الموظف',
+        'username' => 'اسم المستخدم',
+        'email' => 'البريد الإلكتروني',
+        'mobile' => 'الجوال',
+        'job_title' => 'المسمى الوظيفي',
+        'notification_type' => 'نوع الإشعار',
+        'begin_date' => 'تاريخ البداية',
+        'end_date' => 'تاريخ النهاية',
+        'absence_days' => 'أيام التغيب',
+        'created_date' => 'تاريخ التقديم',
+        'absence_reason' => 'سبب التغيب',
+        'medical_authority' => 'الجهة الطبية',
+        'relationship' => 'صلة القرابة',
+        'deceased_relationship' => 'صلة القرابة بالمتوفى',
+        'action_type' => 'نوع الإجراء',
+        'action_date' => 'تاريخ الإجراء',
+        'action_by' => 'تم الإجراء بواسطة',
+        'activated_by' => 'تم التفعيل بواسطة',
+        'activated_at' => 'تاريخ التفعيل',
+        'attachment' => 'مرفق الإجازة المرضية',
+        'sms_token' => 'رمز الرسائل',
+        'memo_type' => 'نوع المذكرة',
+        'memo_date' => 'تاريخ المذكرة',
+        'memo_recipients' => 'المستلمون',
+        'memo_notes' => 'ملاحظات',
+        'seen_at' => 'تاريخ المشاهدة',
+        'workflow_status' => 'حالة سير العمل',
+    ],
+
+    'sections' => [
+        'employee_info' => 'معلومات الموظف',
+        'notification_info' => 'تفاصيل الطلب',
+        'hr_processing' => 'معالجة الموارد البشرية',
+        'action_details' => 'تفاصيل الإجراء',
+        'activation' => 'التفعيل',
+        'activation_info' => 'معلومات التفعيل',
+        'memo_history' => 'سجل المذكرات',
+        'status_history' => 'سجل الحالة',
+        'attachment_info' => 'معلومات المرفق',
+        'memo_creation' => 'إنشاء مذكرة',
+        'supplementary_info' => 'تفاصيل إضافية',
+        'technical_details' => 'تفاصيل تقنية',
+    ],
+
+    'processing' => [
+        'action_type' => 'اختر نوع الإجراء',
+        'action_type_placeholder' => 'اختر إجراء الموارد البشرية…',
+        'submit' => 'تسجيل الإجراء',
+        'success' => 'تم تسجيل إجراء الموارد البشرية بنجاح.',
+    ],
+
+    'activation' => [
+        'submit' => 'تفعيل الإشعار',
+        'success' => 'تم تفعيل الإشعار بنجاح.',
+    ],
+
+    'errors' => [
+        'unauthorized' => 'غير مصرح لك بتنفيذ هذا الإجراء.',
+        'permission' => [
+            'work_absence_notification.view' => 'غير مصرح لك بعرض إشعارات التغيب عن العمل.',
+            'work_absence_notification.process' => 'غير مصرح لك بمعالجة إشعارات التغيب عن العمل.',
+            'work_absence_notification.activate' => 'غير مصرح لك بتفعيل إشعارات التغيب عن العمل.',
+            'work_absence_notification.export' => 'غير مصرح لك بتصدير إشعارات التغيب عن العمل.',
+        ],
+        'not_pending' => 'يمكن معالجة الإشعارات قيد الانتظار فقط.',
+        'not_action_taken' => 'يمكن تفعيل الإشعارات التي تم اتخاذ إجراء عليها فقط.',
+        'cannot_activate_pending' => 'يجب معالجة الإشعار قيد الانتظار قبل التفعيل.',
+        'already_activated' => 'تم تفعيل هذا الإشعار مسبقاً.',
+        'notification_not_found' => 'الإشعار غير موجود.',
+        'process_failed' => 'تعذر تسجيل الإجراء. يرجى المحاولة مرة أخرى.',
+        'activation_failed' => 'تعذر تفعيل الإشعار. يرجى المحاولة مرة أخرى.',
+    ],
+
+    'memo' => [
+        'errors' => [
+            'cannot_create' => 'يمكن إنشاء المذكرات فقط للإشعارات التي تم اتخاذ إجراء عليها.',
+            'create_failed' => 'تعذر إنشاء المذكرة. يرجى المحاولة مرة أخرى.',
+            'invalid_recipients' => 'واحد أو أكثر من المستلمين المحددين غير صالح أو غير نشط.',
+        ],
+        'fields' => [
+            'memo_type' => 'نوع المذكرة',
+            'recipient_ids' => 'المستلمون',
+            'begin_date' => 'تاريخ البداية',
+            'end_date' => 'تاريخ النهاية',
+            'notes' => 'ملاحظات',
+        ],
+        'memo_type_placeholder' => 'اختر نوع المذكرة…',
+        'recipients_hint' => 'حدد مستلماً واحداً أو أكثر سيستلمون هذه المذكرة.',
+        'notes_hint' => 'اختياري. الحد الأقصى :max حرفاً.',
+        'submit' => 'إنشاء مذكرة',
+        'success' => 'تم إنشاء المذكرة بنجاح.',
+    ],
+
+    'history' => [
+        'submission' => 'التقديم',
+        'hr' => 'معالجة الموارد البشرية',
+        'memo' => 'المذكرة',
+        'recipient' => 'المستلم',
+    ],
+
+    'timeline' => [
+        'submitted' => 'تم التقديم',
+        'action_processed' => 'تم معالجة الإجراء',
+        'notification_activated' => 'تم تفعيل الإشعار',
+        'memo_created' => 'تم إنشاء مذكرة',
+        'memo_recipients_assigned' => 'تم تعيين المستلمين',
+        'memo_recipients_count' => ':count مستلم',
+        'recipient_viewed' => 'شاهد المستلم',
+    ],
+
+    'audit' => [
+        'user' => 'المستخدم',
+        'datetime' => 'التاريخ والوقت',
+        'action_type' => 'نوع الإجراء',
+    ],
+
+    'filters' => [
+        'date_from' => 'من التاريخ',
+        'date_to' => 'إلى التاريخ',
+        'notification_type' => 'نوع الإشعار',
+        'notification_type_all' => 'الجميع',
+        'employee' => 'بحث باسم الموظف أو الرقم…',
+        'status' => 'جميع الحالات',
+        'status_all' => 'الكل',
+    ],
+
+    'search' => 'بحث',
+    'reset' => 'إعادة تعيين',
+
+    'export' => [
+        'button' => 'تصدير',
+        'csv' => 'CSV',
+        'excel' => 'Excel',
+    ],
+    'view' => 'عرض',
+    'download_attachment' => 'تحميل المرفق',
+    'no_attachment' => 'لا يوجد مرفق',
+    'no_results' => 'لا توجد إشعارات مطابقة للفلاتر.',
+    'no_notifications' => 'لا توجد إشعارات تغيب.',
+    'no_memo_history' => 'لا يوجد سجل مذكرات.',
+    'no_history' => 'لا توجد تحديثات للحالة بعد.',
+    'back_to_list' => 'العودة إلى القائمة',
+
+];

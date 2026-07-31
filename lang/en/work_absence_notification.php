@@ -1,0 +1,253 @@
+<?php
+
+return [
+
+    'title' => 'Work Absence Notifications',
+    'dashboard' => 'Work Absence Notifications Dashboard',
+    'dashboard_subtitle' => 'Overview of work absence notification requests',
+    'notifications_list' => 'Notifications List',
+    'notifications_list_subtitle' => 'Browse and review absence notification requests',
+    'service_title' => 'Absence from work notification service',
+    'service_subtitle' => 'Search absence notifications and review submitted documents',
+    'filters_title' => 'Filter notifications',
+    'new_notification' => 'New notification',
+    'total_records' => ':count records',
+    'notification_details' => 'Absence Notification Details',
+    'detail_subtitle' => 'Review absence notification request information and workflow actions.',
+    'employee_not_linked' => 'Employee profile is not available for this user ID.',
+    'view_notifications' => 'View Notifications',
+
+    'summary' => [
+        'period' => 'Absence period',
+    ],
+
+    'stats' => [
+        'total' => 'Total Notifications',
+        'pending' => 'Pending',
+        'action_taken' => 'Action Taken',
+        'activated' => 'Activated',
+        'this_month' => 'This Month',
+        'recipients_total' => 'Total Recipients',
+        'recipients_viewed' => 'Viewed',
+        'recipients_pending_view' => 'Pending View',
+    ],
+
+    'insights' => [
+        'all_time' => 'All time',
+        'of_total' => ':percent of total',
+        'total' => 'Total',
+        'days_range' => ':days Days',
+    ],
+
+    'recipients' => [
+        'dashboard_section' => 'Memo Recipient Tracking',
+        'section_title' => 'Memo Recipient Tracking',
+        'statistics' => 'Recipient Statistics',
+        'list' => 'Recipient List',
+        'status' => [
+            'viewed' => 'Viewed',
+            'pending_view' => 'Pending View',
+        ],
+        'fields' => [
+            'recipient' => 'Recipient',
+            'memo_type' => 'Memo Type',
+            'memo_date' => 'Memo Date',
+            'status' => 'Status',
+            'seen_at' => 'Seen At',
+        ],
+        'no_recipients' => 'No memo recipients recorded.',
+    ],
+
+    'reports' => [
+        'section_title' => 'Reporting',
+        'pending_by_type' => 'Pending by Notification Type',
+        'action_taken_by_type' => 'Action Taken by Notification Type',
+        'activated_by_type' => 'Activated by Notification Type',
+        'last_30_days' => 'Last 30 Days Trend',
+        'top_absence_reasons' => 'Top Absence Reasons',
+        'notification_type' => 'Notification Type',
+        'absence_reason' => 'Absence Reason',
+        'count' => 'Count',
+        'date' => 'Date',
+        'unknown_type' => 'Unknown type',
+        'no_data' => 'No data available.',
+    ],
+
+    'charts' => [
+        'section_title' => 'Charts',
+        'last_30_days' => 'Last 30 Days Trend',
+        'type_distribution' => 'Notification Type Distribution',
+        'workflow_distribution' => 'Workflow Status Distribution',
+        'count' => 'Count',
+        'notifications' => 'Notifications',
+    ],
+
+    'columns' => [
+        'request_id' => 'Request No',
+        'employee' => 'Employee',
+        'notification_type' => 'Notification Type',
+        'model' => 'Model',
+        'documents' => 'Documents',
+        'absence_type' => 'Type of absence',
+        'release_date' => 'Release date',
+        'begin_date' => 'Begin Date',
+        'end_date' => 'End Date',
+        'absence_days' => 'Absence Days',
+        'action_type' => 'Action Type',
+        'workflow_status' => 'Workflow Status',
+        'created_date' => 'Submitted At',
+        'actions' => 'Actions',
+    ],
+
+    'status' => [
+        'pending' => 'Pending',
+        'activated' => 'Activated',
+        'action_taken' => 'Action Taken',
+    ],
+
+    'fields' => [
+        'request_id' => 'Request No',
+        'employee' => 'Employee',
+        'username' => 'Username',
+        'email' => 'Email',
+        'mobile' => 'Mobile',
+        'job_title' => 'Job Title',
+        'notification_type' => 'Notification Type',
+        'begin_date' => 'Begin Date',
+        'end_date' => 'End Date',
+        'absence_days' => 'Absence Days',
+        'created_date' => 'Submitted At',
+        'absence_reason' => 'Absence Reason',
+        'medical_authority' => 'Medical Authority',
+        'relationship' => 'Relationship',
+        'deceased_relationship' => 'Deceased Relationship',
+        'action_type' => 'Action Type',
+        'action_date' => 'Action Date',
+        'action_by' => 'Action By',
+        'activated_by' => 'Activated By',
+        'activated_at' => 'Activated At',
+        'attachment' => 'Sick Leave Attachment',
+        'sms_token' => 'SMS Token',
+        'memo_type' => 'Memo Type',
+        'memo_date' => 'Memo Date',
+        'memo_recipients' => 'Recipients',
+        'memo_notes' => 'Notes',
+        'seen_at' => 'Seen At',
+        'workflow_status' => 'Workflow Status',
+    ],
+
+    'sections' => [
+        'employee_info' => 'Employee Information',
+        'notification_info' => 'Request Details',
+        'hr_processing' => 'HR Processing',
+        'action_details' => 'Action Details',
+        'activation' => 'Activation',
+        'activation_info' => 'Activation Information',
+        'memo_history' => 'Memo History',
+        'status_history' => 'Status History',
+        'attachment_info' => 'Attachment Information',
+        'memo_creation' => 'Create Memo',
+        'supplementary_info' => 'Additional details',
+        'technical_details' => 'Technical details',
+    ],
+
+    'processing' => [
+        'action_type' => 'Select action type',
+        'action_type_placeholder' => 'Choose an HR action…',
+        'submit' => 'Record action',
+        'success' => 'HR action recorded successfully.',
+    ],
+
+    'activation' => [
+        'submit' => 'Activate notification',
+        'success' => 'Notification activated successfully.',
+    ],
+
+    'errors' => [
+        'unauthorized' => 'You are not authorized to perform this action.',
+        'permission' => [
+            'work_absence_notification.view' => 'You are not authorized to view work absence notifications.',
+            'work_absence_notification.process' => 'You are not authorized to process work absence notifications.',
+            'work_absence_notification.activate' => 'You are not authorized to activate work absence notifications.',
+            'work_absence_notification.export' => 'You are not authorized to export work absence notifications.',
+        ],
+        'not_pending' => 'Only pending notifications can be processed.',
+        'not_action_taken' => 'Only action taken notifications can be activated.',
+        'cannot_activate_pending' => 'Pending notifications must be processed before activation.',
+        'already_activated' => 'This notification is already activated.',
+        'notification_not_found' => 'Notification not found.',
+        'process_failed' => 'Unable to record the HR action. Please try again.',
+        'activation_failed' => 'Unable to activate the notification. Please try again.',
+    ],
+
+    'memo' => [
+        'errors' => [
+            'cannot_create' => 'Memos can only be created for notifications with action taken status.',
+            'create_failed' => 'Unable to create the memo. Please try again.',
+            'invalid_recipients' => 'One or more selected recipients are invalid or inactive.',
+        ],
+        'fields' => [
+            'memo_type' => 'Memo Type',
+            'recipient_ids' => 'Recipients',
+            'begin_date' => 'Begin Date',
+            'end_date' => 'End Date',
+            'notes' => 'Notes',
+        ],
+        'memo_type_placeholder' => 'Choose a memo type…',
+        'recipients_hint' => 'Select one or more recipients who will receive this memo.',
+        'notes_hint' => 'Optional. Maximum :max characters.',
+        'submit' => 'Create memo',
+        'success' => 'Memo created successfully.',
+    ],
+
+    'history' => [
+        'submission' => 'Submission',
+        'hr' => 'HR processing',
+        'memo' => 'Memo',
+        'recipient' => 'Recipient',
+    ],
+
+    'timeline' => [
+        'submitted' => 'Submitted',
+        'action_processed' => 'Action Processed',
+        'notification_activated' => 'Notification Activated',
+        'memo_created' => 'Memo Created',
+        'memo_recipients_assigned' => 'Recipients Assigned',
+        'memo_recipients_count' => ':count recipient(s)',
+        'recipient_viewed' => 'Recipient Viewed',
+    ],
+
+    'audit' => [
+        'user' => 'User',
+        'datetime' => 'Date & Time',
+        'action_type' => 'Action Type',
+    ],
+
+    'filters' => [
+        'date_from' => 'From date',
+        'date_to' => 'To date',
+        'notification_type' => 'Notification type',
+        'notification_type_all' => 'All types',
+        'employee' => 'Search employee name or ID…',
+        'status' => 'All statuses',
+        'status_all' => 'All',
+    ],
+
+    'search' => 'Search',
+    'reset' => 'Reset',
+
+    'export' => [
+        'button' => 'Export',
+        'csv' => 'CSV',
+        'excel' => 'Excel',
+    ],
+    'view' => 'View',
+    'download_attachment' => 'Download attachment',
+    'no_attachment' => 'No attachment uploaded',
+    'no_results' => 'No notifications match your filters.',
+    'no_notifications' => 'No absence notifications found.',
+    'no_memo_history' => 'No memo history recorded.',
+    'no_history' => 'No status updates yet.',
+    'back_to_list' => 'Back to notifications',
+
+];

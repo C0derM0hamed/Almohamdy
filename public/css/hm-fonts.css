@@ -1,0 +1,184 @@
+/* Al Hammadi Hospitals — approved brand Arabic typeface (Noto Kufi Arabic, self-hosted) */
+
+@font-face {
+    font-family: 'Noto Kufi Arabic';
+    src: url('../fonts/noto-kufi-arabic/NotoKufiArabic-Thin.ttf') format('truetype');
+    font-weight: 100;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Noto Kufi Arabic';
+    src: url('../fonts/noto-kufi-arabic/NotoKufiArabic-ExtraLight.ttf') format('truetype');
+    font-weight: 200;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Noto Kufi Arabic';
+    src: url('../fonts/noto-kufi-arabic/NotoKufiArabic-Light.ttf') format('truetype');
+    font-weight: 300;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Noto Kufi Arabic';
+    src: url('../fonts/noto-kufi-arabic/NotoKufiArabic-Regular.ttf') format('truetype');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Noto Kufi Arabic';
+    src: url('../fonts/noto-kufi-arabic/NotoKufiArabic-Medium.ttf') format('truetype');
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Noto Kufi Arabic';
+    src: url('../fonts/noto-kufi-arabic/NotoKufiArabic-SemiBold.ttf') format('truetype');
+    font-weight: 600;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Noto Kufi Arabic';
+    src: url('../fonts/noto-kufi-arabic/NotoKufiArabic-Bold.ttf') format('truetype');
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Noto Kufi Arabic';
+    src: url('../fonts/noto-kufi-arabic/NotoKufiArabic-ExtraBold.ttf') format('truetype');
+    font-weight: 800;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Noto Kufi Arabic';
+    src: url('../fonts/noto-kufi-arabic/NotoKufiArabic-Black.ttf') format('truetype');
+    font-weight: 900;
+    font-style: normal;
+    font-display: swap;
+}
+
+:root {
+    --hm-font-family-ltr: 'Inter', 'Segoe UI', system-ui, sans-serif;
+    --hm-font-family-ar: 'Noto Kufi Arabic', 'Segoe UI', Tahoma, sans-serif;
+    --hm-font-family-mixed: 'Inter', var(--hm-font-family-ar), 'Segoe UI', system-ui, sans-serif;
+}
+
+html[dir='ltr'] {
+    --hm-font-family: var(--hm-font-family-mixed);
+}
+
+html[dir='rtl'] {
+    --hm-font-family: var(--hm-font-family-ar);
+    font-family: var(--hm-font-family-ar);
+}
+
+/* Arabic locale — apply Noto Kufi Arabic to EVERYTHING (app + Hope UI shell) */
+html[dir='rtl'] body,
+html[dir='rtl'] body * {
+    font-family: var(--hm-font-family-ar);
+}
+
+/* Form controls also inherit the Arabic typeface */
+html[dir='rtl'] :where(
+    input,
+    button,
+    select,
+    textarea,
+    optgroup,
+    .form-control,
+    .form-select,
+    .btn,
+    .hm-btn
+) {
+    font-family: var(--hm-font-family-ar);
+}
+
+html[dir='rtl'] .hm-page-title,
+html[dir='rtl'] .hm-sidebar__context-title,
+html[dir='rtl'] .hm-section-title,
+html[dir='rtl'] .hm-empty-state__title {
+    font-weight: 700;
+}
+
+/* Preserve icon fonts (Bootstrap Icons, Font Awesome, Remixicon, Material) */
+html[dir='rtl'] .bi,
+html[dir='rtl'] [class*=' bi-'],
+html[dir='rtl'] i[class^='bi-'],
+html[dir='rtl'] .bi::before,
+html[dir='rtl'] [class*=' bi-']::before,
+html[dir='rtl'] i[class^='bi-']::before {
+    font-family: 'bootstrap-icons' !important;
+}
+
+html[dir='rtl'] .fa,
+html[dir='rtl'] .fas,
+html[dir='rtl'] .far,
+html[dir='rtl'] .fab,
+html[dir='rtl'] .fal,
+html[dir='rtl'] [class^='fa-'],
+html[dir='rtl'] [class*=' fa-'],
+html[dir='rtl'] .fa::before,
+html[dir='rtl'] [class^='fa-']::before,
+html[dir='rtl'] [class*=' fa-']::before {
+    font-family: 'Font Awesome 6 Free', 'Font Awesome 6 Brands', 'FontAwesome' !important;
+}
+
+html[dir='rtl'] [class^='ri-'],
+html[dir='rtl'] [class*=' ri-'],
+html[dir='rtl'] [class^='ri-']::before,
+html[dir='rtl'] [class*=' ri-']::before {
+    font-family: 'remixicon' !important;
+}
+
+html[dir='rtl'] .material-symbols-outlined,
+html[dir='rtl'] .material-symbols-rounded,
+html[dir='rtl'] .material-icons {
+    font-family: 'Material Symbols Outlined', 'Material Symbols Rounded', 'Material Icons' !important;
+}
+
+/* Preserve monospace fonts */
+html[dir='rtl'] code,
+html[dir='rtl'] pre,
+html[dir='rtl'] kbd,
+html[dir='rtl'] samp,
+html[dir='rtl'] .font-monospace,
+html[dir='rtl'] .wan-info-row__value--mono {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace !important;
+}
+
+/* LTR UI — keep Inter for Latin, Noto Kufi Arabic for Arabic script in dynamic content */
+html[dir='ltr'] :where(
+    .hm-cp .cp-status,
+    .hm-cp--detail .cp-timeline-step__title,
+    .hm-cp--detail .cp-timeline-step__desc,
+    .cp-timeline-event__title,
+    .cp-timeline-event__desc,
+    .hm-hs .hs-svc-card__title,
+    .hm-hs .hs-svc-card__info-text,
+    .hm-wan .wan-breakdown__label,
+    .hm-wan .wan-legend__label,
+    .hm-dd .dd-description-card,
+    .hm-dd .dd-units-trigger,
+    .hm-dd .dd-units-panel
+) {
+    font-family: var(--hm-font-family-mixed);
+}
+
+.hm-text-ar {
+    font-family: var(--hm-font-family-ar);
+}

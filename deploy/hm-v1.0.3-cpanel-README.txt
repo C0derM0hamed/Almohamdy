@@ -1,0 +1,71 @@
+﻿HM cPanel incremental deployment package
+======================================
+Base version on server: v1.0.1
+Package version:        v1.0.3
+Generated:              2026-07-02 18:56:28
+
+Files in ZIP (changed since v1.0.1): 37
+New files:    15
+Modified:     22
+Removed:      8
+
+Upload steps (cPanel File Manager)
+----------------------------------
+1. Upload hm-v1.0.3-cpanel.zip to your Laravel app root (same folder as artisan).
+2. Extract the ZIP and overwrite existing files.
+3. In server .env set: HM_APP_VERSION=1.0.3
+4. Clear caches (Terminal or SSH):
+   php artisan view:clear
+   php artisan route:clear
+   php artisan config:clear
+5. Hard-refresh the browser (Ctrl+F5).
+6. Confirm login page shows v1.0.3.
+
+Changed files:
+ - app/Http/Controllers/Admin/DashboardController.php
+ - app/Http/Controllers/Auth/PasswordRecoveryController.php
+ - app/Http/Controllers/Branch/DashboardController.php
+ - app/Http/Controllers/Concerns/ResolvesDashboardView.php
+ - app/Http/Controllers/DashboardController.php
+ - app/Http/Middleware/EnsureOtpPending.php
+ - app/Services/Auth/OtpService.php
+ - app/Services/Dashboard/NavigationService.php
+ - config/hm.php
+ - lang/ar/login.php
+ - lang/ar/otp.php
+ - lang/ar/password_recovery.php
+ - lang/en/login.php
+ - lang/en/otp.php
+ - lang/en/password_recovery.php
+ - public/css/hm-app.css
+ - public/css/hm-auth.css
+ - public/css/hm-fonts.css
+ - public/images/brand/hh-icon.png
+ - public/images/brand/hh-icon-white.png
+ - public/images/brand/hh-logo.png
+ - public/images/brand/hh-logo-horizontal.png
+ - public/images/brand/hh-logo-horizontal-white.png
+ - public/images/brand/hh-logo-vertical.png
+ - public/images/brand/hh-logo-vertical-white.png
+ - public/images/brand/vision-2030.png
+ - public/js/hm-auth.js
+ - resources/views/auth/forgot-password.blade.php
+ - resources/views/auth/login.blade.php
+ - resources/views/auth/otp.blade.php
+ - resources/views/auth/partials/form-header.blade.php
+ - resources/views/auth/partials/split-brand.blade.php
+ - resources/views/auth/partials/verify-overlay.blade.php
+ - resources/views/layouts/auth.blade.php
+ - resources/views/layouts/partials/navbar.blade.php
+ - resources/views/layouts/partials/sidebar.blade.php
+ - routes/web.php
+
+Removed since v1.0.1 (optional cleanup):
+ - .editorconfig
+ - .env.example
+ - .gitattributes
+ - .gitignore
+ - package.json
+ - phpunit.xml
+ - README.md
+ - vite.config.js

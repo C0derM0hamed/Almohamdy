@@ -1,0 +1,218 @@
+.hm-print {
+    margin: 0;
+    background: #eef2f5;
+    font-family: "Noto Kufi Arabic", Tahoma, sans-serif;
+    color: #111827;
+}
+
+.hm-print__toolbar {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: center;
+    padding: 1rem;
+}
+
+.hm-print__toolbar button,
+.hm-print__toolbar a {
+    border: 1px solid #cbd5e1;
+    background: #fff;
+    color: #0f172a;
+    text-decoration: none;
+    padding: 0.45rem 0.9rem;
+    border-radius: 0.4rem;
+    cursor: pointer;
+    font: inherit;
+}
+
+.hm-print__sheet {
+    width: min(860px, calc(100% - 2rem));
+    margin: 0 auto 2rem;
+    background: #fff;
+    border: 1px solid #dbe3ea;
+    padding: 1.5rem 1.75rem;
+}
+
+.hm-print__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    border-bottom: 2px solid #0f766e;
+    padding-bottom: 0.85rem;
+    margin-bottom: 1.25rem;
+}
+
+.hm-print__header img {
+    height: 48px;
+}
+
+.hm-print__header h1 {
+    margin: 0;
+    font-size: 1.25rem;
+}
+
+.hm-print__header p {
+    margin: 0.2rem 0 0;
+    color: #64748b;
+}
+
+.hm-print__meta {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.75rem;
+    margin: 0 0 1.25rem;
+}
+
+.hm-print__meta dt {
+    font-size: 0.78rem;
+    color: #64748b;
+}
+
+.hm-print__meta dd {
+    margin: 0.15rem 0 0;
+    font-weight: 600;
+}
+
+.hm-print__full {
+    grid-column: 1 / -1;
+}
+
+.hm-print__body h2 {
+    font-size: 1rem;
+    margin: 0 0 0.5rem;
+}
+
+.hm-print__content {
+    white-space: pre-wrap;
+    line-height: 1.7;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.5rem;
+    padding: 1rem;
+}
+
+.hm-print-receipt table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.hm-print-receipt th,
+.hm-print-receipt td {
+    border: 1px solid #d1d5db;
+    padding: 0.45rem 0.55rem;
+    text-align: start;
+    font-size: 0.92rem;
+}
+
+@media print {
+    @page {
+        margin: 12mm;
+        size: auto;
+    }
+
+    .no-print,
+    #loading,
+    .loader,
+    .sidebar,
+    .hm-sidebar,
+    .hm-hope-banner,
+    .iq-navbar,
+    .navbar,
+    footer,
+    .footer,
+    .gc-breadcrumb,
+    .hm-navbar-sidebar-toggle,
+    .hm-page-overlay__veil,
+    .hm-page-overlay__bar {
+        display: none !important;
+    }
+
+    html,
+    body.hm-app-body {
+        background: #fff !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    body.hm-app-body .sidebar + .main-content,
+    body.hm-app-body .main-content,
+    html[dir="rtl"] body.hm-app-body .sidebar + .main-content,
+    html[dir="ltr"] body.hm-app-body .sidebar + .main-content {
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        left: 0 !important;
+        right: 0 !important;
+    }
+
+    .content-inner,
+    .hm-content-inner,
+    .hm-page-root {
+        margin: 0 !important;
+        padding: 0 !important;
+        max-width: 100% !important;
+    }
+
+    .hm-gc,
+    .hm-iv {
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    .gc-page-head {
+        margin-bottom: 0.75rem !important;
+    }
+
+    .gc-page-head .btn,
+    .gc-page-head .d-flex.gap-2 .btn,
+    .gc-page-head a.btn,
+    .gc-page-head button {
+        display: none !important;
+    }
+
+    .gc-panel {
+        box-shadow: none !important;
+        border: 1px solid #d1d5db !important;
+        break-inside: avoid;
+        page-break-inside: avoid;
+    }
+
+    .gc-table {
+        width: 100% !important;
+        border-collapse: collapse !important;
+    }
+
+    .gc-table th,
+    .gc-table td {
+        border: 1px solid #cbd5e1 !important;
+        padding: 0.4rem 0.5rem !important;
+        font-size: 11pt !important;
+        color: #000 !important;
+        background: #fff !important;
+    }
+
+    .gc-badge,
+    .badge {
+        border: 1px solid #94a3b8 !important;
+        color: #000 !important;
+        background: #fff !important;
+        box-shadow: none !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+
+    .hm-print {
+        background: #fff;
+    }
+
+    .hm-print__sheet {
+        width: 100%;
+        margin: 0;
+        border: 0;
+        padding: 0;
+    }
+
+    a[href]::after {
+        content: none !important;
+    }
+}

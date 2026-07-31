@@ -1,0 +1,51 @@
+﻿HM cPanel incremental deployment package
+======================================
+Base version on server: v1.0.1
+Package version:        v1.0.2
+Generated:              2026-07-02 18:18:40
+
+Files in ZIP (changed since v1.0.1): 17
+New files:    2
+Modified:     15
+Removed:      8
+
+Upload steps (cPanel File Manager)
+----------------------------------
+1. Upload hm-v1.0.2-cpanel.zip to your Laravel app root (same folder as artisan).
+2. Extract the ZIP and overwrite existing files.
+3. In server .env set: HM_APP_VERSION=1.0.2
+4. Clear caches (Terminal or SSH):
+   php artisan view:clear
+   php artisan route:clear
+   php artisan config:clear
+5. Hard-refresh the browser (Ctrl+F5).
+6. Confirm login page shows v1.0.2.
+
+Changed files:
+ - app/Http/Controllers/Admin/DashboardController.php
+ - app/Http/Controllers/Branch/DashboardController.php
+ - app/Http/Controllers/Concerns/ResolvesDashboardView.php
+ - app/Http/Controllers/DashboardController.php
+ - app/Http/Middleware/EnsureOtpPending.php
+ - app/Services/Auth/OtpService.php
+ - app/Services/Dashboard/NavigationService.php
+ - config/hm.php
+ - lang/ar/login.php
+ - lang/en/login.php
+ - public/css/hm-app.css
+ - public/css/hm-auth.css
+ - public/css/hm-fonts.css
+ - resources/views/auth/login.blade.php
+ - resources/views/auth/otp.blade.php
+ - resources/views/layouts/auth.blade.php
+ - resources/views/layouts/partials/navbar.blade.php
+
+Removed since v1.0.1 (optional cleanup):
+ - .editorconfig
+ - .env.example
+ - .gitattributes
+ - .gitignore
+ - package.json
+ - phpunit.xml
+ - README.md
+ - vite.config.js

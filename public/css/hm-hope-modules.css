@@ -1,0 +1,2036 @@
+/* Hope UI — global module restyle (loads after all module CSS) */
+
+:root {
+    --hm-hope-primary: var(--bs-primary, #3a57e8);
+    --hm-hope-text: #232d42;
+    --hm-hope-muted: #6c757d;
+    --hm-hope-line: #e9ecef;
+    --hm-hope-card-shadow: 0 10px 30px 0 rgba(17, 38, 146, 0.05);
+    --hm-hope-radius: 0.5rem;
+}
+
+/* Align all module tokens with Hope UI */
+.hm-hs,
+.hm-wan,
+.hm-cp,
+.hm-dda,
+.hm-dd,
+.hm-sl,
+.hm-inq,
+.hm-el,
+.hm-es {
+    --hs-blue: var(--hm-hope-primary);
+    --hs-blue-2: #2e46ba;
+    --hs-navy: var(--hm-hope-text);
+    --hs-text: var(--hm-hope-text);
+    --hs-muted: var(--hm-hope-muted);
+    --hs-line: var(--hm-hope-line);
+    --wan-primary: var(--hm-hope-primary);
+    --wan-navy: var(--hm-hope-text);
+    --wan-muted: var(--hm-hope-muted);
+    --wan-line: var(--hm-hope-line);
+    --dd-text: var(--hm-hope-text);
+    --dd-muted: var(--hm-hope-muted);
+    --dd-line: var(--hm-hope-line);
+    color: var(--hm-hope-text);
+}
+
+/* Hide decorative placeholder art everywhere */
+[class*="__art"]:not(.hm-hope-modal__icon),
+[class*="-hero-art"],
+[class*="-page-hero-art"],
+[class*="hospital-art"],
+.wan-detail-head__art,
+.hs-dash-hero-art,
+.dd-hospital-art,
+.hs-page-hero-art,
+.inq-page-hero-art,
+.dda-page-hero-art,
+.el-page-hero-art,
+.sl-page-hero-art,
+.cp-detail-head__art,
+.hm-hero__icon,
+.hm-hs.hm-wan--detail .wan-detail-head__art {
+    display: none !important;
+}
+
+/* ── Page heroes → Hope UI card header ── */
+.hm-hs .hs-dash-hero,
+.hm-hs .hs-page-hero,
+.hm-dd .dd-hero,
+.hm-cp .cp-detail-head,
+.hm-cp .cp-page-hero,
+.hm-dda .dda-page-hero,
+.hm-hs.hm-dda .hs-page-hero,
+.hm-inq .inq-page-hero,
+.hm-el .el-page-hero,
+.hm-sl .sl-page-hero,
+.hm-es .es-page-hero,
+.dd-detail-head {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    align-items: flex-start !important;
+    justify-content: space-between !important;
+    gap: 0.75rem !important;
+    grid-template-columns: 1fr !important;
+    margin-bottom: 1rem !important;
+    padding: 1rem 1.15rem !important;
+    border: 1px solid var(--hm-hope-line) !important;
+    border-radius: var(--hm-hope-radius) !important;
+    background: #fff !important;
+    box-shadow: var(--hm-hope-card-shadow) !important;
+    text-align: start;
+}
+
+.hm-hs.hm-wan--detail .wan-detail-head,
+.hm-wan--detail .wan-detail-head {
+    display: block !important;
+    grid-template-columns: 1fr !important;
+    gap: 0 !important;
+    margin-bottom: 1rem !important;
+    padding: 1rem 1.15rem !important;
+    border: 1px solid var(--hm-hope-line) !important;
+    border-radius: var(--hm-hope-radius) !important;
+    background: #fff !important;
+    background-image: none !important;
+    box-shadow: var(--hm-hope-card-shadow) !important;
+    text-align: start;
+}
+
+.hm-hs .hs-dash-hero h1,
+.hm-hs .hs-page-hero h1,
+.hm-hs.hm-wan--detail .wan-detail-head h1,
+.hm-wan--detail .wan-detail-head h1,
+.hm-dd .dd-hero h1,
+.hm-cp .cp-detail-head h1,
+.hm-dda .dda-page-hero h1,
+.hm-hs.hm-dda .hs-page-hero h1,
+.hm-inq .inq-page-hero h1,
+.hm-el .el-page-hero h1,
+.hm-sl .sl-page-hero h1,
+.dd-hero-info h1 {
+    margin: 0 0 0.35rem !important;
+    font-size: 1.375rem !important;
+    font-weight: 600 !important;
+    letter-spacing: -0.02em !important;
+    color: var(--hm-hope-text) !important;
+    line-height: 1.35 !important;
+}
+
+.hm-hs .hs-dash-hero p,
+.hm-hs .hs-page-hero p,
+.hm-hs.hm-wan--detail .wan-detail-head p,
+.hm-wan--detail .wan-detail-head p,
+.hm-dd .dd-hero p,
+.hm-cp .cp-detail-head p,
+.hm-dda .dda-page-hero p,
+.hm-hs.hm-dda .hs-page-hero p,
+.hm-inq .inq-page-hero p,
+.hm-el .el-page-hero p,
+.dd-hero-info p {
+    margin: 0 !important;
+    font-size: 0.9rem !important;
+    font-weight: 400 !important;
+    color: var(--hm-hope-muted) !important;
+    line-height: 1.55 !important;
+    max-width: none !important;
+}
+
+/* ── Breadcrumbs → Hope UI subtle bar ── */
+.hm-hs .hs-breadcrumb--bar,
+.hm-wan .wan-breadcrumb--bar,
+.hm-cp .cp-breadcrumb--bar,
+.hm-dda .dda-breadcrumb--bar,
+.hm-dd .dd-breadcrumb--bar,
+.hm-inq .inq-breadcrumb--bar,
+.hm-el .el-breadcrumb--bar,
+.hm-sl .sl-breadcrumb--bar {
+    min-height: auto !important;
+    padding: 0.75rem 1rem !important;
+    margin-bottom: 1rem !important;
+    border: 1px solid var(--hm-hope-line) !important;
+    border-radius: var(--hm-hope-radius) !important;
+    background: #fff !important;
+    box-shadow: var(--hm-hope-card-shadow) !important;
+    font-size: 0.8125rem !important;
+    font-weight: 500 !important;
+    color: var(--hm-hope-muted) !important;
+}
+
+.hm-hs .hs-chip,
+.hm-wan .wan-chip,
+.hm-cp .cp-chip,
+.hm-dda .dda-chip {
+    background: rgba(58, 87, 232, 0.1) !important;
+    border: 0 !important;
+    color: var(--hm-hope-primary) !important;
+    font-size: 0.75rem !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.03em !important;
+    text-transform: uppercase !important;
+}
+
+/* ── Cards & panels → Hope UI card ── */
+.hm-hs .hs-filter-card,
+.hm-hs .hs-list-panel,
+.hm-hs .hs-dash-card,
+.hm-wan .wan-filter-card,
+.hm-wan .wan-summary-card,
+.hm-wan .wan-panel,
+.hm-wan .wan-detail-panel,
+.hm-wan--detail .wan-info-card,
+.hm-wan--detail .hm-wan-detail-card,
+.hm-cp .cp-panel,
+.hm-cp--detail .cp-info-card,
+.hm-cp--detail .cp-timeline-card,
+.hm-cp .cp-filter-card,
+.hm-cp .cp-filters,
+.hm-cp .cp-filter-grid,
+.hm-dda .dda-filter-card,
+.hm-dda .dda-list-panel,
+.hm-dda .dda-form-section,
+.hm-dda .dda-form-actions,
+.hm-hs.hm-dda .hs-filter-card,
+.hm-hs.hm-dda .hs-list-panel,
+.hm-dd .dd-specialty-card,
+.hm-dd .dd-stat-card,
+.hm-dd .dd-filters,
+.hm-inq .inq-filter-card,
+.hm-inq .inq-list-panel,
+.hm-inq .inq-stat-card,
+.hm-inq .inq-table-panel,
+.hm-inq .inq-summary-card,
+.hm-inq .inq-timeline-card,
+.hm-el .el-stat-card,
+.hm-sl .sl-dash-card,
+.hm-hope-module-card,
+.hm-card,
+.hm-stat-card,
+.hm-module-tile__card {
+    border: 1px solid var(--hm-hope-line) !important;
+    border-radius: var(--hm-hope-radius) !important;
+    background: #fff !important;
+    box-shadow: var(--hm-hope-card-shadow) !important;
+}
+
+.hm-wan--detail .wan-summary-card {
+    padding: 1rem 1.15rem !important;
+}
+
+.hm-wan--detail .wan-summary-card small {
+    color: var(--hm-hope-muted) !important;
+    font-size: 0.75rem !important;
+    font-weight: 500 !important;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.hm-wan--detail .wan-summary-card strong {
+    color: var(--hm-hope-text) !important;
+    font-size: 0.95rem !important;
+    font-weight: 600 !important;
+}
+
+.hm-wan--detail .wan-detail-no {
+    background: var(--hm-hope-primary) !important;
+    border-radius: 0.35rem !important;
+    font-weight: 600 !important;
+    font-size: 0.8125rem !important;
+}
+
+/* ── Buttons → Hope UI Bootstrap buttons ── */
+.hm-hs .hs-btn,
+.hm-wan .hs-btn,
+.hm-cp .hs-btn,
+.hm-dda .hs-btn,
+.hm-dd .hs-btn,
+.hm-inq .hs-btn,
+.hm-el .hs-btn,
+.hm-sl .hs-btn,
+.btn.hm-btn {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 0.35rem !important;
+    min-height: 2.5rem !important;
+    padding: 0.5rem 1.15rem !important;
+    border-radius: 0.35rem !important;
+    font-size: 0.875rem !important;
+    font-weight: 500 !important;
+    line-height: 1.5 !important;
+    text-decoration: none !important;
+    transition: color 0.15s, background 0.15s, border-color 0.15s !important;
+}
+
+.hm-hs .hs-btn--primary,
+.hm-wan .hs-btn--primary,
+.hm-cp .hs-btn--primary,
+.hm-dda .hs-btn--primary,
+.btn.hm-btn--primary {
+    background: var(--hm-hope-primary) !important;
+    border: 1px solid var(--hm-hope-primary) !important;
+    color: #fff !important;
+}
+
+.hm-hs .hs-btn--primary:hover,
+.hm-wan .hs-btn--primary:hover,
+.btn.hm-btn--primary:hover {
+    background: #2e46ba !important;
+    border-color: #2e46ba !important;
+    color: #fff !important;
+}
+
+.hm-hs .hs-btn--ghost,
+.hm-wan .hs-btn--ghost,
+.btn.hm-btn--outline {
+    background: #fff !important;
+    border: 1px solid var(--hm-hope-primary) !important;
+    color: var(--hm-hope-primary) !important;
+}
+
+.hm-hs .hs-btn--ghost:hover,
+.btn.hm-btn--outline:hover {
+    background: rgba(58, 87, 232, 0.08) !important;
+}
+
+/* ── Tables → Hope UI table ── */
+.hm-hs .hm-services-table,
+.hm-hs .hm-services-table-wrap table,
+.hm-wan .wan-table,
+.hm-cp .cp-table,
+.hm-dda .hm-doctors-admin-table,
+.hm-inq .inq-table,
+.hm-clinician-table {
+    border-color: var(--hm-hope-line) !important;
+}
+
+.hm-hs .hm-services-table thead th,
+.hm-wan .wan-table thead th,
+.hm-cp .cp-table thead th,
+.hm-dda .hm-doctors-admin-table thead th {
+    background: #f8f9fa !important;
+    color: var(--hm-hope-text) !important;
+    font-weight: 600 !important;
+    font-size: 0.8125rem !important;
+    border-color: var(--hm-hope-line) !important;
+}
+
+.hm-hs .hm-services-table tbody td,
+.hm-wan .wan-table tbody td,
+.hm-cp .cp-table tbody td {
+    color: var(--hm-hope-text) !important;
+    font-size: 0.875rem !important;
+    border-color: var(--hm-hope-line) !important;
+    vertical-align: middle !important;
+}
+
+/* ── Form inputs → Hope UI (standalone fields only; not composite wraps) ── */
+.hm-hs .hs-field > input,
+.hm-hs .hs-field > select,
+.hm-hs .hs-field > textarea,
+.hm-wan .wan-filter-grid .hs-field > input,
+.hm-wan .wan-filter-grid .hs-field > select,
+.hm-cp .cp-field > input,
+.hm-cp .cp-field > select,
+.hm-dda .dda-field > input,
+.hm-dda .dda-field > select,
+.hm-dda .dda-filter-grid > .hs-field > input,
+.hm-dda .dda-filter-grid > .hs-field > select,
+.hm-dda .dda-filter-grid > input,
+.hm-dda .dda-filter-grid > select,
+.hm-inq .inq-field > input,
+.hm-inq .inq-field > select,
+.hm-el .el-field > input,
+.hm-el .el-field > select,
+.hm-clinician-filter-field__input {
+    height: 2.625rem !important;
+    border: 1px solid #ced4da !important;
+    border-radius: 0.35rem !important;
+    color: var(--hm-hope-text) !important;
+    font-size: 0.875rem !important;
+    font-weight: 400 !important;
+    background: #fff !important;
+    padding: 0 0.75rem !important;
+}
+
+.hm-hs .hs-field > input:focus,
+.hm-hs .hs-field > select:focus,
+.hm-wan .wan-filter-grid .hs-field > input:focus,
+.hm-wan .wan-filter-grid .hs-field > select:focus,
+.hm-cp .cp-field > input:focus,
+.hm-dda .dda-filter-grid > .hs-field > input:focus,
+.hm-dda .dda-filter-grid > .hs-field > select:focus,
+.hm-dda .dda-filter-grid > input:focus,
+.hm-dda .dda-filter-grid > select:focus,
+.hm-inq .inq-field > input:focus {
+    border-color: var(--hm-hope-primary) !important;
+    box-shadow: 0 0 0 0.2rem rgba(58, 87, 232, 0.15) !important;
+    outline: 0 !important;
+}
+
+/* Composite search/filter wrappers — single border, no double box */
+.hm-hs .hs-dash-search input,
+.hm-hs .hs-field .hs-input-wrap input,
+.hm-hs .hs-input-wrap input,
+.hm-hs .hs-input-wrap.hm-hope-search input,
+.hm-dd .dd-field input,
+.hm-dd .dd-select-field select,
+.hm-wan .hs-input-wrap input {
+    border: 0 !important;
+    box-shadow: none !important;
+    background: transparent !important;
+    outline: 0 !important;
+    padding: 0 !important;
+    height: auto !important;
+    font-weight: 500 !important;
+    -webkit-appearance: none !important;
+    appearance: none !important;
+}
+
+.hm-hs .hs-field .hs-input-wrap input:focus,
+.hm-hs .hs-input-wrap input:focus,
+.hm-hs .hs-input-wrap.hm-hope-search input:focus,
+.hm-hs .hs-dash-search input:focus {
+    border: 0 !important;
+    box-shadow: none !important;
+    outline: 0 !important;
+}
+
+.hm-hs .hs-dash-search,
+.hm-hs .hs-input-wrap,
+.hm-hs .hs-input-wrap.hm-hope-search,
+.hm-dd .dd-field,
+.hm-dd .dd-select-field {
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.65rem !important;
+    min-height: 2.75rem !important;
+    height: 2.75rem !important;
+    padding: 0 0.95rem !important;
+    border: 1px solid #ced4da !important;
+    border-radius: 0.5rem !important;
+    background: #fff !important;
+    box-shadow: none !important;
+    width: 100% !important;
+}
+
+.hm-hs .hs-dash-search {
+    max-width: 26rem !important;
+    margin-top: 0.85rem !important;
+}
+
+.hm-hs .hs-dash-search:focus-within,
+.hm-hs .hs-input-wrap:focus-within,
+.hm-dd .dd-field:focus-within,
+.hm-dd .dd-select-field:focus-within {
+    border-color: var(--hm-hope-primary) !important;
+    box-shadow: 0 0 0 0.2rem rgba(58, 87, 232, 0.15) !important;
+}
+
+.hm-hs .hs-dash-search i,
+.hm-hs .hs-input-wrap i,
+.hm-dd .dd-field svg {
+    color: #6c757d !important;
+    flex-shrink: 0;
+    position: static !important;
+    transform: none !important;
+    font-size: 1rem !important;
+    line-height: 1 !important;
+}
+
+.hm-hs .hs-input-wrap {
+    position: relative !important;
+}
+
+.hm-hs .hs-input-wrap input {
+    width: 100% !important;
+    min-width: 0 !important;
+    flex: 1 1 auto !important;
+    height: 100% !important;
+    padding: 0 !important;
+    padding-inline-start: 0 !important;
+    border: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    outline: 0 !important;
+    font-size: 0.9rem !important;
+    font-weight: 500 !important;
+    color: var(--hm-hope-text) !important;
+}
+
+.hm-hs .hs-input-wrap input::placeholder {
+    color: #adb5bd !important;
+    font-weight: 400 !important;
+}
+
+/* Hide browser native search cancel / clear chrome that can look odd */
+.hm-hs .hs-input-wrap input[type="search"]::-webkit-search-decoration,
+.hm-hs .hs-input-wrap input[type="search"]::-webkit-search-cancel-button,
+.hm-hs .hs-input-wrap input[type="search"]::-webkit-search-results-button,
+.hm-hs .hs-input-wrap input[type="search"]::-webkit-search-results-decoration {
+    -webkit-appearance: none !important;
+    appearance: none !important;
+}
+
+/* ── Filter toolbars (Clinic Doctors, WAN, CP, DDA, etc.) ── */
+.hm-dd .dd-filters,
+.hm-hs .hs-filter-card,
+.hm-wan .wan-filter-panel,
+.hm-dda .dda-filter-panel,
+.hm-cp .cp-filter-bar,
+.hm-cp .cp-filters,
+.hm-cp .cp-filter-grid,
+.hm-inq .inq-filter-card,
+.hm-inq .inq-filter-panel {
+    padding: 1rem !important;
+    margin-top: 1rem !important;
+    margin-bottom: 1rem !important;
+}
+
+.hm-dd .dd-filters {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 0.8fr) minmax(0, 0.8fr) auto !important;
+    gap: 0.65rem !important;
+    align-items: stretch !important;
+}
+
+.hm-dd .dd-select-field {
+    justify-content: space-between !important;
+    color: var(--hm-hope-text) !important;
+    font-weight: 500 !important;
+    cursor: pointer !important;
+}
+
+.hm-dd .dd-select-field select {
+    font-weight: 500 !important;
+    color: var(--hm-hope-text) !important;
+    text-align: start !important;
+}
+
+.hm-dd .dd-field input::placeholder {
+    color: #adb5bd !important;
+    font-weight: 400 !important;
+}
+
+.hm-dd .dd-clear-btn {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 0.4rem !important;
+    min-height: 2.625rem !important;
+    padding: 0 1rem !important;
+    border: 1px solid var(--hm-hope-primary) !important;
+    border-radius: 0.35rem !important;
+    background: #fff !important;
+    color: var(--hm-hope-primary) !important;
+    font-size: 0.875rem !important;
+    font-weight: 600 !important;
+    cursor: pointer !important;
+    white-space: nowrap !important;
+}
+
+.hm-dd .dd-clear-btn:hover {
+    background: rgba(58, 87, 232, 0.08) !important;
+}
+
+.hm-dd .dd-clear-btn svg {
+    width: 1rem !important;
+    height: 1rem !important;
+}
+
+.hm-hs .hs-filter-card {
+    margin-bottom: 1rem !important;
+}
+
+.hm-hs .hs-filter-head {
+    margin-bottom: 0.85rem !important;
+}
+
+.hm-hs .hs-filter-head h2 {
+    font-size: 1rem !important;
+    font-weight: 600 !important;
+    color: var(--hm-hope-text) !important;
+}
+
+.hm-hs .hs-filter-icon {
+    width: 2.25rem !important;
+    height: 2.25rem !important;
+    border-radius: 0.35rem !important;
+    font-size: 1rem !important;
+}
+
+.hm-hs .hs-filter-grid,
+.hm-wan .wan-filter-grid,
+.hm-dda .dda-filter-grid {
+    gap: 0.75rem !important;
+    align-items: end !important;
+}
+
+.hm-hs .hs-field label,
+.hm-wan .wan-filter-grid label,
+.hm-dda .dda-field label {
+    font-size: 0.75rem !important;
+    font-weight: 600 !important;
+    color: var(--hm-hope-muted) !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.03em !important;
+}
+
+/* ── Stat rows ── */
+.hm-dd .dd-stats {
+    padding: 0.5rem !important;
+    margin-top: 1rem !important;
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 0 !important;
+}
+
+.hm-dd .dd-stat {
+    padding: 1rem !important;
+    gap: 0.75rem !important;
+}
+
+.hm-dd .dd-stat-icon {
+    width: 2.5rem !important;
+    height: 2.5rem !important;
+    border-radius: 0.35rem !important;
+    background: rgba(58, 87, 232, 0.1) !important;
+    color: var(--hm-hope-primary) !important;
+}
+
+.hm-dd .dd-stat small {
+    color: var(--hm-hope-muted) !important;
+    font-size: 0.7rem !important;
+    font-weight: 600 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.04em !important;
+}
+
+.hm-dd .dd-stat b {
+    font-size: 1.35rem !important;
+    font-weight: 700 !important;
+    color: var(--hm-hope-text) !important;
+}
+
+.hm-dd .dd-stat p {
+    color: var(--hm-hope-muted) !important;
+    font-size: 0.8rem !important;
+}
+
+.hm-dda .dda-stat-grid {
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 1rem !important;
+    margin-bottom: 1.25rem !important;
+}
+
+.hm-dda .dda-stat-card {
+    border: 1px solid var(--hm-hope-line) !important;
+    border-radius: var(--hm-hope-radius) !important;
+    box-shadow: var(--hm-hope-card-shadow) !important;
+    padding: 1rem 1.15rem !important;
+    text-decoration: none !important;
+}
+
+.hm-dda .dda-stat-card__label {
+    color: var(--hm-hope-muted) !important;
+    font-size: 0.75rem !important;
+    font-weight: 600 !important;
+    text-transform: uppercase !important;
+}
+
+.hm-dda .dda-stat-card__value {
+    color: var(--hm-hope-text) !important;
+    font-size: 1.5rem !important;
+    font-weight: 700 !important;
+}
+
+.hm-dda .dda-stat-card__icon {
+    width: 2.5rem !important;
+    height: 2.5rem !important;
+    border-radius: 0.35rem !important;
+    background: rgba(58, 87, 232, 0.1) !important;
+    color: var(--hm-hope-primary) !important;
+}
+
+/* Module grid cards */
+.hm-hs .hs-dash-grid {
+    gap: 1rem !important;
+}
+
+.hm-hs .hs-dash-card {
+    border: 1px solid var(--hm-hope-line) !important;
+    transition: transform 0.15s ease, box-shadow 0.15s ease !important;
+}
+
+.hm-hs .hs-dash-card:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 14px 34px rgba(17, 38, 146, 0.1) !important;
+}
+
+.hm-dd .dd-specialty-card {
+    padding: 1rem !important;
+    min-height: auto !important;
+    transition: transform 0.15s ease, box-shadow 0.15s ease !important;
+}
+
+.hm-dd .dd-specialty-card:hover {
+    transform: translateY(-2px) !important;
+    border-color: #c5d0ff !important;
+}
+
+.hm-dd .dd-specialty-card h3 {
+    font-size: 0.9rem !important;
+    font-weight: 600 !important;
+    color: var(--hm-hope-text) !important;
+}
+
+.hm-dd .dd-specialty-icon {
+    width: 3rem !important;
+    height: 3rem !important;
+    border-radius: 0.5rem !important;
+    background: rgba(58, 87, 232, 0.08) !important;
+}
+
+@media (max-width: 991.98px) {
+    .hm-dd .dd-filters {
+        grid-template-columns: 1fr 1fr !important;
+    }
+
+    .hm-dd .dd-filters .dd-field {
+        grid-column: 1 / -1 !important;
+    }
+
+    .hm-dd .dd-stats,
+    .hm-dda .dda-stat-grid {
+        grid-template-columns: 1fr !important;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .hm-dd .dd-filters {
+        grid-template-columns: 1fr !important;
+    }
+
+    .hm-dd .dd-clear-btn {
+        width: 100% !important;
+    }
+}
+
+/* ── Status badges ── */
+.hm-wan-status-badge,
+.hm-cp-status-badge,
+.cp-status-pill,
+.hm-badge {
+    border-radius: 0.35rem !important;
+    font-size: 0.75rem !important;
+    font-weight: 600 !important;
+    padding: 0.35rem 0.65rem !important;
+}
+
+/* ── Dashboard stat cards (Hope UI widget style) ── */
+.hm-hs .hs-dash-card,
+.hm-wan .wan-stat-card,
+.hm-cp .cp-stat-card,
+.hm-dda .dda-dash-card,
+.hm-dd .dd-stat-card {
+    padding: 1.15rem !important;
+}
+
+.hm-hs .hs-dash-card strong,
+.hm-wan .wan-stat-card strong,
+.hm-dd .dd-stat-card strong {
+    font-size: 1.5rem !important;
+    font-weight: 700 !important;
+    color: var(--hm-hope-text) !important;
+}
+
+/* ── Main dashboard quick access ── */
+.hm-hope-dashboard .hm-hope-welcome,
+.hm-hope-dashboard .hm-hope-module-card {
+    box-shadow: var(--hm-hope-card-shadow) !important;
+    border-radius: var(--hm-hope-radius) !important;
+}
+
+/* ── RTL module content ── */
+html[dir="rtl"] .hm-hs,
+html[dir="rtl"] .hm-wan,
+html[dir="rtl"] .hm-dd,
+html[dir="rtl"] .hm-cp,
+html[dir="rtl"] .hm-dda,
+html[dir="rtl"] .hm-inq,
+html[dir="rtl"] .hm-el,
+html[dir="rtl"] .hm-sl {
+    text-align: start;
+}
+
+html[dir="rtl"] .hm-hs .hs-dash-hero,
+html[dir="rtl"] .hm-hs.hm-wan--detail .wan-detail-head,
+html[dir="rtl"] .hm-wan--detail .wan-detail-head,
+html[dir="rtl"] .hm-dd .dd-hero {
+    text-align: start;
+}
+
+html[dir="rtl"] .hm-clinician-table th {
+    text-align: start !important;
+}
+
+html[dir="rtl"] .hm-clinician-table td {
+    text-align: start !important;
+}
+
+html[dir="rtl"] .hm-dd .dd-filters,
+html[dir="rtl"] .hm-dd .dd-field,
+html[dir="rtl"] .hm-dd .dd-select-field,
+html[dir="rtl"] .hm-hs .hs-dash-search,
+html[dir="rtl"] .hm-hs .hs-filter-grid {
+    direction: rtl;
+}
+
+html[dir="rtl"] .hm-dd .dd-select-field select {
+    text-align: start !important;
+}
+
+/* ── Empty states ── */
+.hm-empty-state,
+.hm-hs .hs-empty,
+.wan-empty,
+.cp-empty {
+    border: 1px dashed var(--hm-hope-line) !important;
+    border-radius: var(--hm-hope-radius) !important;
+    background: #f8f9fa !important;
+    color: var(--hm-hope-muted) !important;
+}
+
+/* ── Pagination ── */
+.hm-pagination .page-link,
+.pagination .page-link {
+    border-radius: 0.35rem !important;
+    color: var(--hm-hope-primary) !important;
+}
+
+.hm-pagination .page-item.active .page-link,
+.pagination .page-item.active .page-link {
+    background: var(--hm-hope-primary) !important;
+    border-color: var(--hm-hope-primary) !important;
+}
+
+/* ══════════════════════════════════════════════════════════
+   Work Absence — Notification Detail
+   ══════════════════════════════════════════════════════════ */
+.hm-wan--detail .wan-summary-grid {
+    gap: 1rem !important;
+    margin-bottom: 1rem !important;
+}
+
+.hm-wan--detail .wan-detail-grid,
+.hm-wan--detail .wan-detail-supplementary {
+    gap: 1rem !important;
+    margin-bottom: 1rem !important;
+}
+
+.hm-wan--detail .wan-info-card,
+.hm-wan--detail .hm-wan-detail-card,
+.hm-wan--detail .wan-detail-stack .hm-wan-detail-card {
+    border: 1px solid var(--hm-hope-line) !important;
+    border-radius: var(--hm-hope-radius) !important;
+    background: #fff !important;
+    background-image: none !important;
+    box-shadow: var(--hm-hope-card-shadow) !important;
+    overflow: hidden !important;
+}
+
+.hm-wan--detail .wan-info-card--supplementary,
+.hm-wan--detail .wan-info-card--technical {
+    background: #fff !important;
+    background-image: none !important;
+}
+
+.hm-wan--detail .wan-info-card__head {
+    padding: 1rem 1.15rem 0.65rem !important;
+    gap: 0.75rem !important;
+}
+
+.hm-wan--detail .wan-info-card__icon {
+    width: 2.5rem !important;
+    height: 2.5rem !important;
+    border-radius: 0.35rem !important;
+    font-size: 1rem !important;
+    border: 0 !important;
+    background: rgba(58, 87, 232, 0.1) !important;
+    color: var(--hm-hope-primary) !important;
+}
+
+.hm-wan--detail .wan-info-card__head h2 {
+    font-size: 1rem !important;
+    font-weight: 600 !important;
+    color: var(--hm-hope-text) !important;
+}
+
+.hm-wan--detail .wan-employee-profile {
+    margin: 0 1.15rem 1rem !important;
+    padding: 0.85rem 1rem !important;
+    border: 1px solid var(--hm-hope-line) !important;
+    border-radius: var(--hm-hope-radius) !important;
+    background: #f8f9fa !important;
+    background-image: none !important;
+    gap: 0.85rem !important;
+}
+
+.hm-wan--detail .wan-employee-profile__avatar {
+    width: 2.75rem !important;
+    height: 2.75rem !important;
+    border-radius: 0.35rem !important;
+    background: var(--hm-hope-primary) !important;
+    background-image: none !important;
+    font-size: 0.875rem !important;
+    font-weight: 600 !important;
+}
+
+.hm-wan--detail .wan-employee-profile__copy strong {
+    font-size: 0.9375rem !important;
+    font-weight: 600 !important;
+    color: var(--hm-hope-text) !important;
+}
+
+.hm-wan--detail .wan-employee-profile__copy span {
+    font-size: 0.8125rem !important;
+    color: var(--hm-hope-muted) !important;
+}
+
+.hm-wan--detail .wan-info-list {
+    padding: 0 1.15rem 1rem !important;
+}
+
+.hm-wan--detail .wan-info-card--panel .wan-info-list,
+.hm-wan--detail .wan-info-card--panel .hm-wan-recipient-stats,
+.hm-wan--detail .wan-info-card--panel .hm-wan-recipient-list__heading,
+.hm-wan--detail .wan-info-card--panel .hm-wan-table-wrap,
+.hm-wan--detail .wan-info-card--panel .hm-wan-detail-card__empty,
+.hm-wan--detail .wan-info-card--panel .hm-wan-doc-link,
+.hm-wan--detail .wan-info-card--panel .wan-info-card__meta,
+.hm-wan--detail .wan-info-card--panel .hm-wan-process-form,
+.hm-wan--detail .wan-info-card--panel .hm-wan-memo-form,
+.hm-wan--detail .wan-info-card--panel .hm-history-list {
+    margin-inline: 1.15rem !important;
+    margin-bottom: 1rem !important;
+}
+
+.hm-wan--detail .wan-info-row {
+    grid-template-columns: minmax(0, 38%) 1fr !important;
+    gap: 0.75rem !important;
+    min-height: auto !important;
+    padding: 0.6rem 0 !important;
+    border-bottom-color: var(--hm-hope-line) !important;
+}
+
+.hm-wan--detail .wan-info-row__label {
+    color: var(--hm-hope-muted) !important;
+    font-size: 0.8125rem !important;
+    font-weight: 500 !important;
+}
+
+.hm-wan--detail .wan-info-row__value {
+    color: var(--hm-hope-text) !important;
+    font-size: 0.875rem !important;
+    font-weight: 500 !important;
+}
+
+.hm-wan--detail .wan-info-row__value--block {
+    padding: 0.65rem 0.85rem !important;
+    border: 1px solid var(--hm-hope-line) !important;
+    border-radius: 0.35rem !important;
+    background: #f8f9fa !important;
+    font-weight: 400 !important;
+    line-height: 1.5 !important;
+}
+
+.hm-wan--detail .wan-detail-stack {
+    gap: 1rem !important;
+    margin-top: 0 !important;
+}
+
+.hm-wan--detail .wan-detail-stack .hm-wan-detail-card--process {
+    border-color: rgba(58, 87, 232, 0.25) !important;
+    background: rgba(58, 87, 232, 0.03) !important;
+}
+
+.hm-wan--detail .hm-wan-table thead th {
+    background: #f8f9fa !important;
+    color: var(--hm-hope-text) !important;
+    font-size: 0.75rem !important;
+    font-weight: 600 !important;
+    border-color: var(--hm-hope-line) !important;
+    padding: 0.65rem 0.75rem !important;
+}
+
+.hm-wan--detail .hm-wan-table tbody td {
+    font-size: 0.8125rem !important;
+    font-weight: 400 !important;
+    color: var(--hm-hope-text) !important;
+    border-color: var(--hm-hope-line) !important;
+    padding: 0.65rem 0.75rem !important;
+    vertical-align: middle !important;
+}
+
+.hm-wan--detail .wan-detail-actions {
+    margin-top: 1rem !important;
+    padding: 0 !important;
+    border: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+}
+
+.hm-wan--detail .wan-detail-actions .hs-btn,
+.hm-wan--detail .wan-detail-actions .wan-btn {
+    min-height: 2.5rem !important;
+}
+
+.hm-wan--detail .hm-wan-doc-link {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 0.35rem !important;
+    color: var(--hm-hope-primary) !important;
+    font-weight: 500 !important;
+    text-decoration: none !important;
+}
+
+.hm-wan--detail .wan-info-card__meta {
+    color: var(--hm-hope-muted) !important;
+    font-size: 0.8125rem !important;
+    font-weight: 400 !important;
+}
+
+.hm-wan--detail .hm-wan-detail-card__empty,
+.hm-wan--detail .hm-history-list {
+    color: var(--hm-hope-muted) !important;
+    font-size: 0.875rem !important;
+}
+
+.hm-wan--detail .hm-history-item {
+    padding: 0.65rem 0 !important;
+    border-bottom-color: var(--hm-hope-line) !important;
+    gap: 0.65rem !important;
+}
+
+.hm-wan--detail .hm-history-item__stage {
+    font-size: 0.75rem !important;
+    color: var(--hm-hope-muted) !important;
+}
+
+.hm-wan--detail .hm-history-item__status {
+    font-size: 0.875rem !important;
+    font-weight: 600 !important;
+    color: var(--hm-hope-text) !important;
+}
+
+.hm-wan--detail .hm-history-item__meta {
+    font-size: 0.75rem !important;
+    color: var(--hm-hope-muted) !important;
+}
+
+.hm-wan--detail .hm-wan-recipient-stats {
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 0.75rem !important;
+}
+
+.hm-wan--detail .hm-wan-recipient-stats__item {
+    padding: 0.85rem !important;
+    border: 1px solid var(--hm-hope-line) !important;
+    border-radius: var(--hm-hope-radius) !important;
+    background: #f8f9fa !important;
+}
+
+.hm-wan--detail .hm-wan-recipient-stats__label {
+    font-size: 0.7rem !important;
+    font-weight: 600 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.04em !important;
+    color: var(--hm-hope-muted) !important;
+}
+
+.hm-wan--detail .hm-wan-recipient-stats__value {
+    font-size: 1.25rem !important;
+    font-weight: 700 !important;
+    color: var(--hm-hope-text) !important;
+}
+
+.hm-wan--detail .hm-wan-recipient-list__heading {
+    font-size: 0.875rem !important;
+    font-weight: 600 !important;
+    color: var(--hm-hope-text) !important;
+    margin: 0 1.15rem 0.75rem !important;
+}
+
+.hm-wan--detail .wan-detail-stack .hm-wan-table-wrap,
+.hm-wan--detail .wan-info-card--panel .hm-wan-table-wrap {
+    border: 1px solid var(--hm-hope-line) !important;
+    border-radius: var(--hm-hope-radius) !important;
+    overflow: hidden !important;
+}
+
+.hm-wan--detail .hm-wan-process-form .form-label,
+.hm-wan--detail .hm-wan-memo-form .form-label {
+    font-size: 0.75rem !important;
+    font-weight: 600 !important;
+    color: var(--hm-hope-muted) !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.03em !important;
+}
+
+.hm-wan--detail .hm-wan-process-form .form-select,
+.hm-wan--detail .hm-wan-memo-form .form-control,
+.hm-wan--detail .hm-wan-memo-form .form-select {
+    border: 1px solid #ced4da !important;
+    border-radius: 0.35rem !important;
+    font-size: 0.875rem !important;
+    color: var(--hm-hope-text) !important;
+}
+
+/* ══════════════════════════════════════════════════════════
+   Complaints — List screen
+   ══════════════════════════════════════════════════════════ */
+.hm-cp .cp-panel {
+    padding: 0 !important;
+    overflow: hidden !important;
+}
+
+.hm-cp .cp-search {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 11rem) auto auto !important;
+    gap: 0.75rem !important;
+    align-items: end !important;
+    padding: 1rem !important;
+    margin: 0 !important;
+    border-bottom: 1px solid var(--hm-hope-line) !important;
+    background: #fff !important;
+}
+
+.hm-cp .cp-search__field {
+    gap: 0.35rem !important;
+    min-width: 0 !important;
+}
+
+.hm-cp .cp-search__field label,
+.hm-cp .cp-field label {
+    color: var(--hm-hope-muted) !important;
+    font-size: 0.75rem !important;
+    font-weight: 600 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.03em !important;
+}
+
+.hm-cp .cp-search__input-wrap {
+    position: relative !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.5rem !important;
+    min-height: 2.625rem !important;
+    padding: 0 0.85rem !important;
+    border: 1px solid #ced4da !important;
+    border-radius: 0.35rem !important;
+    background: #fff !important;
+}
+
+.hm-cp .cp-search__input-wrap:focus-within {
+    border-color: var(--hm-hope-primary) !important;
+    box-shadow: 0 0 0 0.2rem rgba(58, 87, 232, 0.15) !important;
+}
+
+.hm-cp .cp-search__input-wrap i {
+    position: static !important;
+    transform: none !important;
+    color: #6c757d !important;
+    flex-shrink: 0;
+}
+
+.hm-cp .cp-search__input-wrap .cp-search__input {
+    height: auto !important;
+    min-height: 0 !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    background: transparent !important;
+    padding: 0 !important;
+    font-size: 0.875rem !important;
+    font-weight: 400 !important;
+    color: var(--hm-hope-text) !important;
+}
+
+.hm-cp .cp-search__input-wrap .cp-search__input:focus {
+    box-shadow: none !important;
+    outline: 0 !important;
+}
+
+.hm-cp .cp-search__select {
+    height: 2.625rem !important;
+    border: 1px solid #ced4da !important;
+    border-radius: 0.35rem !important;
+    padding: 0 0.75rem !important;
+    font-size: 0.875rem !important;
+    font-weight: 400 !important;
+    color: var(--hm-hope-text) !important;
+    background: #fff !important;
+}
+
+.hm-cp .cp-search__select:focus {
+    border-color: var(--hm-hope-primary) !important;
+    box-shadow: 0 0 0 0.2rem rgba(58, 87, 232, 0.15) !important;
+}
+
+.hm-cp .cp-search__submit,
+.hm-cp .cp-search__reset {
+    height: 2.625rem !important;
+    min-height: 2.625rem !important;
+    padding: 0 1rem !important;
+    border-radius: 0.35rem !important;
+    font-size: 0.875rem !important;
+    font-weight: 500 !important;
+    white-space: nowrap !important;
+}
+
+.hm-cp .cp-results__header,
+.hm-cp .cp-result-card {
+    gap: 0.75rem !important;
+    padding: 0.75rem 1rem !important;
+    align-items: center !important;
+}
+
+.hm-cp .cp-results__header {
+    background: #f8f9fa !important;
+    border-bottom: 1px solid var(--hm-hope-line) !important;
+    color: var(--hm-hope-muted) !important;
+    font-size: 0.7rem !important;
+    font-weight: 600 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.04em !important;
+}
+
+.hm-cp .cp-result-card {
+    border-bottom: 1px solid var(--hm-hope-line) !important;
+    transition: background 0.15s ease !important;
+}
+
+.hm-cp .cp-result-card:hover {
+    background: #f8f9fa !important;
+}
+
+.hm-cp .cp-result-card__value {
+    color: var(--hm-hope-text) !important;
+    font-size: 0.875rem !important;
+    font-weight: 500 !important;
+}
+
+.hm-cp .cp-result-card__sub {
+    color: var(--hm-hope-muted) !important;
+    font-size: 0.75rem !important;
+    font-weight: 400 !important;
+}
+
+.hm-cp .cp-complaint-no {
+    display: inline-flex !important;
+    align-items: center !important;
+    min-height: 1.75rem !important;
+    padding: 0 0.5rem !important;
+    border-radius: 0.35rem !important;
+    font-size: 0.75rem !important;
+    font-weight: 600 !important;
+    color: var(--hm-hope-text) !important;
+}
+
+.hm-cp .cp-status,
+.hm-cp .cp-priority {
+    display: inline-flex !important;
+    align-items: center !important;
+    min-height: 1.75rem !important;
+    padding: 0 0.55rem !important;
+    border-radius: 0.35rem !important;
+    font-size: 0.75rem !important;
+    font-weight: 600 !important;
+    color: var(--hm-hope-text) !important;
+}
+
+.hm-cp .cp-detail-btn {
+    height: 2rem !important;
+    padding: 0 0.75rem !important;
+    border: 1px solid var(--hm-hope-primary) !important;
+    border-radius: 0.35rem !important;
+    background: #fff !important;
+    color: var(--hm-hope-primary) !important;
+    font-size: 0.75rem !important;
+    font-weight: 500 !important;
+    text-decoration: none !important;
+}
+
+.hm-cp .cp-detail-btn:hover {
+    background: var(--hm-hope-primary) !important;
+    border-color: var(--hm-hope-primary) !important;
+    color: #fff !important;
+}
+
+.hm-cp .cp-detail-btn--timeline {
+    border-color: #ced4da !important;
+    color: var(--hm-hope-muted) !important;
+    background: #fff !important;
+}
+
+.hm-cp .cp-detail-btn--timeline:hover {
+    border-color: var(--hm-hope-primary) !important;
+    color: var(--hm-hope-primary) !important;
+    background: rgba(58, 87, 232, 0.06) !important;
+}
+
+.hm-cp .cp-actions {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 0.4rem !important;
+}
+
+.hm-cp .cp-pagination {
+    padding: 1rem !important;
+}
+
+/* ══════════════════════════════════════════════════════════
+   Complaints — Detail screen
+   ══════════════════════════════════════════════════════════ */
+.hm-cp--detail .cp-detail-head__copy {
+    flex: 1 1 16rem !important;
+    min-width: 0 !important;
+}
+
+.hm-cp--detail .cp-detail-head h1 {
+    font-size: 1.375rem !important;
+    font-weight: 600 !important;
+    letter-spacing: -0.02em !important;
+    margin-bottom: 0.5rem !important;
+}
+
+.hm-cp .cp-page-subtitle {
+    font-size: 0.9rem !important;
+    font-weight: 400 !important;
+    color: var(--hm-hope-muted) !important;
+}
+
+.hm-cp--detail .cp-detail-no {
+    height: auto !important;
+    min-height: 1.75rem !important;
+    padding: 0.2rem 0.65rem !important;
+    border-radius: 0.35rem !important;
+    background: var(--hm-hope-primary) !important;
+    background-image: none !important;
+    font-size: 0.8125rem !important;
+    font-weight: 600 !important;
+    color: #fff !important;
+}
+
+.hm-cp--detail .cp-detail-status {
+    min-height: 1.75rem !important;
+    padding: 0.2rem 0.65rem !important;
+    border-radius: 0.35rem !important;
+    font-size: 0.75rem !important;
+    font-weight: 600 !important;
+}
+
+.hm-cp--detail .cp-detail-grid {
+    gap: 1rem !important;
+    margin-bottom: 1rem !important;
+}
+
+.hm-cp--detail .cp-info-card,
+.hm-cp--detail .cp-timeline-card {
+    border: 1px solid var(--hm-hope-line) !important;
+    border-radius: var(--hm-hope-radius) !important;
+    background: #fff !important;
+    box-shadow: var(--hm-hope-card-shadow) !important;
+    overflow: hidden !important;
+}
+
+.hm-cp--detail .cp-info-card--investigation {
+    margin-bottom: 1rem !important;
+}
+
+.hm-cp--detail .cp-info-card--investigation::after {
+    display: none !important;
+}
+
+.hm-cp--detail .cp-info-card__head {
+    padding: 1rem 1.15rem 0.65rem !important;
+    gap: 0.75rem !important;
+}
+
+.hm-cp--detail .cp-info-card__icon {
+    width: 2.5rem !important;
+    height: 2.5rem !important;
+    border-radius: 0.35rem !important;
+    font-size: 1rem !important;
+    border: 0 !important;
+    background: rgba(58, 87, 232, 0.1) !important;
+    color: var(--hm-hope-primary) !important;
+}
+
+.hm-cp--detail .cp-info-card__head h2 {
+    font-size: 1rem !important;
+    font-weight: 600 !important;
+    color: var(--hm-hope-text) !important;
+}
+
+.hm-cp--detail .cp-info-list {
+    padding: 0 1.15rem 1rem !important;
+}
+
+.hm-cp--detail .cp-info-card--investigation .cp-info-list {
+    padding-inline-end: 1.15rem !important;
+}
+
+.hm-cp--detail .cp-info-row {
+    grid-template-columns: minmax(0, 38%) 1fr !important;
+    gap: 0.75rem !important;
+    min-height: auto !important;
+    padding: 0.6rem 0 !important;
+    border-bottom-color: var(--hm-hope-line) !important;
+}
+
+.hm-cp--detail .cp-info-row__label {
+    color: var(--hm-hope-muted) !important;
+    font-size: 0.8125rem !important;
+    font-weight: 500 !important;
+}
+
+.hm-cp--detail .cp-info-row__value {
+    color: var(--hm-hope-text) !important;
+    font-size: 0.875rem !important;
+    font-weight: 500 !important;
+}
+
+.hm-cp--detail .cp-timeline-card {
+    margin-bottom: 1rem !important;
+}
+
+.hm-cp--detail .cp-timeline-wrap {
+    padding: 0.5rem 1.15rem 1.15rem !important;
+}
+
+.hm-cp--detail .cp-timeline-step__title {
+    font-size: 0.8125rem !important;
+    font-weight: 600 !important;
+    color: var(--hm-hope-text) !important;
+}
+
+.hm-cp--detail .cp-timeline-step__date {
+    font-size: 0.75rem !important;
+    color: var(--hm-hope-muted) !important;
+}
+
+.hm-cp--detail .cp-timeline-step__desc {
+    font-size: 0.8125rem !important;
+    color: var(--hm-hope-muted) !important;
+    line-height: 1.45 !important;
+}
+
+.hm-cp--detail .cp-timeline-empty {
+    padding: 0 1.15rem 1.15rem !important;
+    color: var(--hm-hope-muted) !important;
+    font-size: 0.875rem !important;
+}
+
+.hm-cp--detail .cp-detail-actions {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 0.65rem !important;
+    margin-top: 0 !important;
+    padding: 0 !important;
+}
+
+.hm-cp .cp-btn {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 0.35rem !important;
+    min-height: 2.5rem !important;
+    padding: 0.5rem 1.15rem !important;
+    border-radius: 0.35rem !important;
+    font-size: 0.875rem !important;
+    font-weight: 500 !important;
+    text-decoration: none !important;
+    transition: color 0.15s, background 0.15s, border-color 0.15s !important;
+}
+
+.hm-cp .cp-btn--primary {
+    background: var(--hm-hope-primary) !important;
+    border: 1px solid var(--hm-hope-primary) !important;
+    color: #fff !important;
+}
+
+.hm-cp .cp-btn--primary:hover {
+    background: #2e46ba !important;
+    border-color: #2e46ba !important;
+    color: #fff !important;
+}
+
+.hm-cp .cp-btn--outline {
+    background: #fff !important;
+    border: 1px solid var(--hm-hope-primary) !important;
+    color: var(--hm-hope-primary) !important;
+}
+
+.hm-cp .cp-btn--outline:hover {
+    background: rgba(58, 87, 232, 0.08) !important;
+    color: var(--hm-hope-primary) !important;
+}
+
+@media (max-width: 991.98px) {
+    .hm-cp .cp-search {
+        grid-template-columns: 1fr 1fr !important;
+    }
+
+    .hm-cp .cp-search__field:first-child {
+        grid-column: 1 / -1 !important;
+    }
+
+    .hm-wan--detail .wan-summary-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    }
+
+    .hm-wan--detail .wan-detail-grid,
+    .hm-wan--detail .wan-detail-supplementary,
+    .hm-cp--detail .cp-detail-grid {
+        grid-template-columns: 1fr !important;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .hm-cp .cp-search {
+        grid-template-columns: 1fr !important;
+    }
+
+    .hm-wan--detail .wan-summary-grid {
+        grid-template-columns: 1fr !important;
+    }
+
+    .hm-wan--detail .wan-info-row,
+    .hm-cp--detail .cp-info-row {
+        grid-template-columns: 1fr !important;
+        gap: 0.25rem !important;
+    }
+
+    .hm-wan--detail .wan-info-row__value,
+    .hm-cp--detail .cp-info-row__value {
+        text-align: start !important;
+    }
+}
+
+/* ══════════════════════════════════════════════════════════
+   Inquiries — list & timeline screens
+   ══════════════════════════════════════════════════════════ */
+.hm-inq .inq-page-hero {
+    display: block !important;
+    grid-template-columns: 1fr !important;
+    margin-bottom: 1rem !important;
+    padding: 1rem 1.15rem !important;
+    background: #fff !important;
+    background-image: none !important;
+}
+
+.hm-inq .inq-page-hero h1 {
+    margin-top: 0.75rem !important;
+    font-size: 1.375rem !important;
+    font-weight: 600 !important;
+    color: var(--hm-hope-text) !important;
+}
+
+.hm-inq .inq-nav-tabs {
+    display: inline-flex !important;
+    gap: 0.35rem !important;
+    padding: 0.2rem !important;
+    border: 1px solid var(--hm-hope-line) !important;
+    border-radius: 0.5rem !important;
+    background: #f8f9fa !important;
+}
+
+.hm-inq .inq-nav-tabs__item {
+    min-height: 2.25rem !important;
+    padding: 0 1rem !important;
+    border: 0 !important;
+    border-radius: 0.35rem !important;
+    background: transparent !important;
+    color: var(--hm-hope-muted) !important;
+    font-size: 0.875rem !important;
+    font-weight: 500 !important;
+}
+
+.hm-inq .inq-nav-tabs__item.is-active {
+    background: var(--hm-hope-primary) !important;
+    color: #fff !important;
+    box-shadow: 0 2px 8px rgba(58, 87, 232, 0.2) !important;
+}
+
+.hm-inq .inq-stat-grid {
+    gap: 1rem !important;
+    margin-bottom: 1rem !important;
+}
+
+.hm-inq .inq-stat-card {
+    align-items: stretch !important;
+    justify-content: flex-start !important;
+    text-align: start !important;
+    min-height: 5.5rem !important;
+    padding: 1rem 1.15rem !important;
+    border-radius: var(--hm-hope-radius) !important;
+}
+
+.hm-inq .inq-stat-card__label {
+    text-align: start !important;
+    width: 100% !important;
+    font-size: 0.7rem !important;
+    font-weight: 600 !important;
+    color: var(--hm-hope-muted) !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.03em !important;
+    line-height: 1.4 !important;
+}
+
+.hm-inq .inq-stat-card__value {
+    text-align: start !important;
+    width: 100% !important;
+    font-size: 1.5rem !important;
+    font-weight: 700 !important;
+    color: var(--hm-hope-text) !important;
+    line-height: 1.2 !important;
+}
+
+.hm-inq .inq-stat-card.is-active {
+    border-color: var(--hm-hope-primary) !important;
+    background: rgba(58, 87, 232, 0.04) !important;
+    box-shadow: 0 0 0 2px rgba(58, 87, 232, 0.1) !important;
+}
+
+.hm-inq .inq-filter-panel .hm-clinician-filter-field__label {
+    color: var(--hm-hope-muted) !important;
+    font-size: 0.75rem !important;
+    font-weight: 600 !important;
+    text-transform: uppercase !important;
+}
+
+.hm-inq .inq-filter-panel .hm-clinician-filter-field__input {
+    height: 2.625rem !important;
+    border: 1px solid #ced4da !important;
+    border-radius: 0.35rem !important;
+    font-size: 0.875rem !important;
+    color: var(--hm-hope-text) !important;
+}
+
+.hm-inq .inq-list-toolbar__summary {
+    font-size: 0.875rem !important;
+    font-weight: 500 !important;
+    color: var(--hm-hope-muted) !important;
+}
+
+.hm-inq .hm-inq-table thead th {
+    background: #f8f9fa !important;
+    color: var(--hm-hope-text) !important;
+    font-size: 0.75rem !important;
+    font-weight: 600 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.03em !important;
+    border-color: var(--hm-hope-line) !important;
+}
+
+.hm-inq .hm-inq-table tbody td {
+    font-size: 0.875rem !important;
+    color: var(--hm-hope-text) !important;
+    border-color: var(--hm-hope-line) !important;
+}
+
+.hm-inq .inq-icon-btn {
+    width: 2.25rem !important;
+    height: 2.25rem !important;
+    border-radius: 0.35rem !important;
+    border-color: var(--hm-hope-line) !important;
+    color: var(--hm-hope-primary) !important;
+}
+
+.hm-inq .inq-icon-btn:hover {
+    background: var(--hm-hope-primary) !important;
+    border-color: var(--hm-hope-primary) !important;
+    color: #fff !important;
+}
+
+.hm-inq .inq-pdf-link {
+    padding: 0.35rem 0.65rem !important;
+    border-radius: 0.35rem !important;
+    background: rgba(58, 87, 232, 0.08) !important;
+    color: var(--hm-hope-primary) !important;
+    font-size: 0.8125rem !important;
+    font-weight: 500 !important;
+}
+
+.hm-inq .inq-pdf-link:hover {
+    background: var(--hm-hope-primary) !important;
+    color: #fff !important;
+}
+
+@media (max-width: 991.98px) {
+    .hm-inq .inq-stat-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .hm-inq .inq-stat-grid {
+        grid-template-columns: 1fr !important;
+    }
+}
+
+/* ══════════════════════════════════════════════════════════
+   Doctors Directory Admin — forms & departments list
+   ══════════════════════════════════════════════════════════ */
+.hm-dda .dda-page-hero,
+.hm-hs.hm-dda .hs-page-hero {
+    display: block !important;
+    grid-template-columns: 1fr !important;
+    margin-bottom: 1rem !important;
+    padding: 1rem 1.15rem !important;
+    background: #fff !important;
+    background-image: none !important;
+}
+
+.hm-dda .dda-page-hero h1,
+.hm-hs.hm-dda .hs-page-hero h1 {
+    font-size: 1.375rem !important;
+    font-weight: 600 !important;
+    color: var(--hm-hope-text) !important;
+    letter-spacing: -0.02em !important;
+}
+
+.hm-dda .dda-page-hero p,
+.hm-hs.hm-dda .hs-page-hero p {
+    font-size: 0.9rem !important;
+    font-weight: 400 !important;
+    color: var(--hm-hope-muted) !important;
+    max-width: none !important;
+}
+
+.hm-dda .dda-action-bar,
+.hm-hs.hm-dda .dda-action-bar {
+    margin-bottom: 1rem !important;
+    gap: 0.65rem !important;
+}
+
+.hm-dda .dda-form {
+    gap: 1rem !important;
+}
+
+.hm-dda .dda-form-section {
+    padding: 1rem 1.15rem !important;
+    border-radius: var(--hm-hope-radius) !important;
+}
+
+.hm-dda .dda-form-section__head {
+    margin-bottom: 1rem !important;
+    padding-bottom: 0.75rem !important;
+    gap: 0.75rem !important;
+    border-bottom-color: var(--hm-hope-line) !important;
+}
+
+.hm-dda .dda-form-section__icon {
+    width: 2.5rem !important;
+    height: 2.5rem !important;
+    border-radius: 0.35rem !important;
+    font-size: 1rem !important;
+    background: rgba(58, 87, 232, 0.1) !important;
+    color: var(--hm-hope-primary) !important;
+    background-image: none !important;
+}
+
+.hm-dda .dda-form-section__icon--green {
+    background: rgba(26, 160, 83, 0.1) !important;
+    color: #1aa053 !important;
+}
+
+.hm-dda .dda-form-section__head h2 {
+    font-size: 1rem !important;
+    font-weight: 600 !important;
+    color: var(--hm-hope-text) !important;
+}
+
+.hm-dda .dda-form-section__head p {
+    font-size: 0.8125rem !important;
+    font-weight: 400 !important;
+    color: var(--hm-hope-muted) !important;
+}
+
+.hm-dda .dda-form-field label {
+    color: var(--hm-hope-muted) !important;
+    font-size: 0.75rem !important;
+    font-weight: 600 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.03em !important;
+}
+
+.hm-dda .dda-form-control,
+.hm-dda .dda-form-select {
+    min-height: 2.625rem !important;
+    border: 1px solid #ced4da !important;
+    border-radius: 0.35rem !important;
+    font-size: 0.875rem !important;
+    font-weight: 400 !important;
+    color: var(--hm-hope-text) !important;
+    background: #fff !important;
+}
+
+.hm-dda .dda-form-control:focus,
+.hm-dda .dda-form-select:focus {
+    border-color: var(--hm-hope-primary) !important;
+    box-shadow: 0 0 0 0.2rem rgba(58, 87, 232, 0.15) !important;
+}
+
+.hm-dda .dda-form-switch {
+    padding: 0.85rem 1rem !important;
+    border: 1px solid var(--hm-hope-line) !important;
+    border-radius: var(--hm-hope-radius) !important;
+    background: #f8f9fa !important;
+    background-image: none !important;
+}
+
+.hm-dda .dda-form-switch__copy strong {
+    font-size: 0.875rem !important;
+    font-weight: 600 !important;
+    color: var(--hm-hope-text) !important;
+}
+
+.hm-dda .dda-form-switch__copy span {
+    font-size: 0.8125rem !important;
+    color: var(--hm-hope-muted) !important;
+}
+
+.hm-dda .dda-form-switch__input:checked + .dda-form-switch__track {
+    background: var(--hm-hope-primary) !important;
+    background-image: none !important;
+}
+
+.hm-dda .dda-form-meta__item {
+    padding: 0.85rem 1rem !important;
+    border: 1px solid var(--hm-hope-line) !important;
+    border-radius: var(--hm-hope-radius) !important;
+    background: #f8f9fa !important;
+}
+
+.hm-dda .dda-form-meta__item small {
+    font-size: 0.7rem !important;
+    font-weight: 600 !important;
+    color: var(--hm-hope-muted) !important;
+}
+
+.hm-dda .dda-form-meta__item strong {
+    font-size: 0.875rem !important;
+    font-weight: 600 !important;
+    color: var(--hm-hope-text) !important;
+}
+
+.hm-dda .dda-form-actions {
+    padding: 1rem 1.15rem !important;
+    gap: 0.65rem !important;
+    border-radius: var(--hm-hope-radius) !important;
+}
+
+.hm-dda .dda-btn {
+    min-height: 2.5rem !important;
+    padding: 0.5rem 1.15rem !important;
+    border-radius: 0.35rem !important;
+    font-size: 0.875rem !important;
+    font-weight: 500 !important;
+}
+
+.hm-hs.hm-dda .hs-filter-card {
+    padding: 1rem !important;
+    margin-bottom: 1rem !important;
+}
+
+.hm-hs.hm-dda .hs-filter-head h2 {
+    font-size: 1rem !important;
+    font-weight: 600 !important;
+    color: var(--hm-hope-text) !important;
+}
+
+.hm-hs.hm-dda .hs-field label {
+    font-size: 0.75rem !important;
+    font-weight: 600 !important;
+    color: var(--hm-hope-muted) !important;
+    text-transform: uppercase !important;
+}
+
+.hm-hs.hm-dda .hs-field select {
+    height: 2.625rem !important;
+    border: 1px solid #ced4da !important;
+    border-radius: 0.35rem !important;
+    font-size: 0.875rem !important;
+}
+
+.hm-hs.hm-dda .hm-doctors-admin-table thead th {
+    background: #f8f9fa !important;
+    color: var(--hm-hope-text) !important;
+    font-size: 0.75rem !important;
+    font-weight: 600 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.03em !important;
+    border-color: var(--hm-hope-line) !important;
+}
+
+.hm-hs.hm-dda .hm-doctors-admin-table tbody td {
+    font-size: 0.875rem !important;
+    color: var(--hm-hope-text) !important;
+    border-color: var(--hm-hope-line) !important;
+    white-space: normal !important;
+    overflow-wrap: anywhere !important;
+    word-break: break-word !important;
+    vertical-align: top !important;
+    line-height: 1.45 !important;
+}
+
+.hm-hs.hm-dda .hm-doctors-admin-table tbody td.hm-doctors-admin-cell--mono,
+.hm-hs.hm-dda .hm-doctors-admin-table tbody td.hm-actions-col,
+.hm-hs.hm-dda .hm-doctors-admin-table tbody td.hm-cell--nowrap {
+    white-space: nowrap !important;
+    vertical-align: middle !important;
+}
+
+.hm-hs.hm-dda .hm-doctors-admin-table tbody td.hm-doctors-admin-cell--mono.hm-cell--wrap {
+    white-space: normal !important;
+    overflow-wrap: anywhere !important;
+    word-break: break-word !important;
+    max-width: 14rem;
+    vertical-align: top !important;
+}
+
+.hm-hs.hm-dda .hm-doctors-admin-table-scroll {
+    overflow-x: visible !important;
+}
+
+.hm-hs.hm-dda .hm-doctors-admin-status {
+    border-radius: 0.35rem !important;
+    font-size: 0.75rem !important;
+    font-weight: 600 !important;
+    white-space: nowrap !important;
+}
+
+@media (max-width: 575.98px) {
+    .hm-dda .dda-form-grid--2,
+    .hm-dda .dda-form-meta {
+        grid-template-columns: 1fr !important;
+    }
+}
+
+/* ══════════════════════════════════════════════════════════
+   Doctors Directory — speciality overview
+   ══════════════════════════════════════════════════════════ */
+.hm-dd .dd-panel.dd-specialty {
+    padding: 1rem 1.15rem !important;
+    border-radius: 0.5rem !important;
+    margin-top: 1rem !important;
+}
+
+.hm-dd .dd-title-line h2 {
+    font-size: 1.375rem !important;
+    font-weight: 600 !important;
+    color: var(--hm-hope-text) !important;
+}
+
+.hm-dd .dd-title-icon {
+    width: 2.5rem !important;
+    height: 2.5rem !important;
+    border-radius: 0.5rem !important;
+    background: var(--hm-hope-primary) !important;
+    box-shadow: none !important;
+}
+
+.hm-dd .dd-description-card {
+    border-inline-start: 4px solid var(--hm-hope-primary) !important;
+    border-radius: 0.5rem !important;
+    background: #f8f9fa !important;
+    box-shadow: none !important;
+    padding: 1rem 1.15rem !important;
+    margin-bottom: 1rem !important;
+}
+
+.hm-dd .dd-description-card p,
+.hm-dd .dd-description-card--rich > p {
+    font-family: var(--hm-font-family-ar) !important;
+    font-size: 0.875rem !important;
+    line-height: 1.75 !important;
+    text-align: start !important;
+    color: var(--hm-hope-text) !important;
+}
+
+.hm-dd .dd-units-trigger {
+    width: 100% !important;
+    margin: 0 0 0.75rem !important;
+    font-family: var(--hm-font-family-ar) !important;
+    color: var(--hm-hope-primary) !important;
+    font-weight: 600 !important;
+}
+
+.hm-dd .dd-units-grid {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0.65rem !important;
+    width: 100% !important;
+    grid-template-columns: none !important;
+}
+
+.hm-dd .dd-unit-row {
+    width: 100% !important;
+    align-items: flex-start !important;
+    padding: 0.85rem 1rem !important;
+    border-radius: 0.5rem !important;
+    font-family: var(--hm-font-family-ar) !important;
+    font-size: 0.875rem !important;
+    text-align: start !important;
+    box-shadow: 0 2px 8px rgba(17, 38, 146, 0.04) !important;
+}
+
+.hm-dd .dd-unit-row > span:last-child {
+    flex: 1 !important;
+    min-width: 0 !important;
+    text-align: start !important;
+    line-height: 1.65 !important;
+    word-break: break-word !important;
+}
+
+/* ── Corporate Communication (.hm-gc / .hm-iv) → Hope UI ── */
+.hm-gc,
+.hm-iv {
+    --hm-hope-primary: var(--bs-primary, #3a57e8);
+    --hm-hope-text: #232d42;
+    --hm-hope-muted: #6c757d;
+    --hm-hope-line: #e9ecef;
+    --hm-hope-card-shadow: 0 10px 30px 0 rgba(17, 38, 146, 0.05);
+    --hm-hope-radius: 0.5rem;
+    color: var(--hm-hope-text);
+}
+
+.hm-gc .gc-page-head,
+.hm-gc .gc-panel,
+.hm-gc .gc-breadcrumb,
+.hm-iv .iv-counter {
+    border-radius: var(--hm-hope-radius) !important;
+    box-shadow: var(--hm-hope-card-shadow) !important;
+}
+
+.hm-gc .gc-table thead th {
+    background: #f8f9fa !important;
+    color: var(--hm-hope-text) !important;
+    font-weight: 600 !important;
+}
+
+.hm-gc .gc-actions__toggle {
+    border-radius: 0.35rem !important;
+}
+
+.hm-gc .gc-actions__toggle.is-open,
+.hm-gc .gc-actions__toggle:focus,
+.hm-gc .gc-actions__toggle:active {
+    color: var(--hm-hope-primary) !important;
+    background: rgba(58, 87, 232, 0.08) !important;
+    border-color: rgba(58, 87, 232, 0.35) !important;
+}
+

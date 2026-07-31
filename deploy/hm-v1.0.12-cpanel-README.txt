@@ -1,0 +1,32 @@
+﻿HM cPanel incremental deployment package
+======================================
+Base version on server: v1.0.11
+Package version:        v1.0.12
+Generated:              2026-07-03 16:32:13
+
+Files in ZIP (changed since v1.0.11): 8
+New files:    0
+Modified:     8
+Removed:      0
+
+Upload steps (cPanel File Manager)
+----------------------------------
+1. Upload hm-v1.0.12-cpanel.zip to your Laravel app root (same folder as artisan).
+2. Extract the ZIP and overwrite existing files.
+3. In server .env set: HM_APP_VERSION=1.0.12
+4. Clear caches (Terminal or SSH):
+   php artisan view:clear
+   php artisan route:clear
+   php artisan config:clear
+5. Hard-refresh the browser (Ctrl+F5).
+6. Confirm login page shows v1.0.12.
+
+Changed files:
+ - app/Http/Controllers/Module/DoctorsDirectory/SpecialityController.php
+ - app/Repositories/DoctorsDirectory/SpecialityRepository.php
+ - app/Services/DoctorsDirectory/SpecialityService.php
+ - lang/ar/dashboard.php
+ - lang/ar/doctors_directory.php
+ - lang/en/dashboard.php
+ - lang/en/doctors_directory.php
+ - resources/views/doctors-directory/specialities/index.blade.php
