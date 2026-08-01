@@ -89,6 +89,25 @@ class UserRepository
             ->update($values) === 1;
     }
 
+    public function changeLegacyPassword(int $hrId, string $currentPassword, string $newPassword): bool
+    {
+        if ($hrId <= 0 || ! Schema::hasTable('ra_users')
+            || ! Schema::hasColumns('ra_users', ['hr_id', 'hr_password'])) {
+            return false;
+        }
+
+        $user = DB::table('ra_users')
+            ->where('hr_id', $hrId)
+            ->where('activated', '1')
+            ->first(['hr_password']);
+
+        if ($user === null || ! hash_equals(strtolower((string) $user->hr_password), hash('sha256', $currentPassword))) {
+            return false;
+        }
+
+        return $this->resetLegacyPassword($hrId, $newPassword);
+    }
+
     public function isUserLoginLocked(?User $user): bool
     {
         if ($user === null || blank($user->last_failed_login)) {

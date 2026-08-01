@@ -5,6 +5,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\Auth\OtpController;
 use App\Http\Controllers\Auth\PasswordRecoveryController;
+use App\Http\Controllers\Auth\ChangePasswordController;
 use App\Http\Controllers\Branch\DashboardController as BranchDashboardController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LocaleController;
@@ -39,6 +40,7 @@ use App\Http\Controllers\Module\WorkAbsenceNotification\NotificationController a
 use App\Http\Controllers\Module\Training\TrainingManagementController;
 use App\Http\Controllers\Module\Training\TrainingCoordinationController;
 use App\Http\Controllers\Module\TechnicalFailure\TechnicalFailureController;
+use App\Http\Controllers\Module\EmergencyPerformanceReport\EmergencyPerformanceReportController;
 use App\Http\Controllers\PublicForms\MedicalAppointmentPublicController;
 use App\Http\Controllers\PublicForms\InspectionVisitDepartmentReplyController;
 use App\Http\Controllers\PublicForms\DataRequestDepartmentReplyController;
@@ -125,6 +127,9 @@ Route::middleware(['otp.pending', 'prevent.cache'])->group(function () {
 Route::middleware('auth.session')->group(function () {
     Route::post('/logout', LogoutController::class)->name('logout');
 
+    Route::get('/profile/password', [ChangePasswordController::class, 'edit'])->name('profile.password.edit');
+    Route::post('/profile/password', [ChangePasswordController::class, 'update'])->name('profile.password.update');
+
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/admin/dashboard', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
     Route::get('/branch/dashboard', [BranchDashboardController::class, 'index'])->name('branch.dashboard');
@@ -132,6 +137,8 @@ Route::middleware('auth.session')->group(function () {
     // Keep verified legacy entry points usable while rendering the current Laravel pages.
     Route::get('/index.php', fn () => redirect()->route('dashboard'))
         ->name('legacy.dashboard');
+    Route::get('/change_my_pass.php', fn () => redirect()->route('profile.password.edit'))
+        ->name('legacy.change-password');
     Route::get('/complaints.php', fn () => redirect()->route('modules.complaints.index'))
         ->name('legacy.complaints')
         ->middleware('permission:complaints');
@@ -175,6 +182,9 @@ Route::middleware('auth.session')->group(function () {
     Route::get('/technical_failure_notice.php', fn () => redirect()->route('modules.technical-failures.index'))
         ->name('legacy.technical-failures')
         ->middleware('permission:technical_failure_notice');
+    Route::get('/rep_1.php', fn () => redirect()->route('modules.emergency-reports.index'))
+        ->name('legacy.emergency-report')
+        ->middleware('admin');
 
     Route::prefix('modules')->name('modules.')->group(function () {
         Route::get('/doctors-directory', fn () => redirect()->route('modules.doctors.specialities.index'))
@@ -202,6 +212,12 @@ Route::middleware('auth.session')->group(function () {
             Route::post('/{notice}/status', [TechnicalFailureController::class, 'updateStatus'])->name('status')->whereNumber('notice');
             Route::get('/{notice}/pdf', [TechnicalFailureController::class, 'pdf'])->name('pdf')->whereNumber('notice');
             Route::get('/{notice}/attachment', [TechnicalFailureController::class, 'attachment'])->name('attachment')->whereNumber('notice');
+        });
+        Route::prefix('emergency-reports')->name('emergency-reports.')->middleware('admin')->group(function () {
+            Route::get('/', [EmergencyPerformanceReportController::class, 'index'])->name('index');
+            Route::get('/pdf', [EmergencyPerformanceReportController::class, 'pdf'])->name('pdf');
+            Route::get('/{section}/{entry}/attachment', [EmergencyPerformanceReportController::class, 'attachment'])
+                ->name('attachment')->whereNumber('entry');
         });
         Route::prefix('system-administration')->name('system-admin.')->middleware('admin')->group(function () {
             Route::get('/', [SystemAdministrationDashboardController::class, 'index'])->name('dashboard');

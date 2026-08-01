@@ -1,21 +1,21 @@
 # Delivery Readiness Checklist
 
-| Area | Result | Evidence / blocker |
+| Area | Result | Evidence |
 |---|---|---|
-| NewProject architecture inspection | Pass | Routes, navigation, controllers, services, repositories, models, views, permissions, tests, and recent history inspected before edits. |
-| OldProject runtime | Partial | Local application started and visible navigation crawled for two mapped accounts; four .env.audit usernames are absent from the local OldProject database. |
-| Navigation parity | Blocked | 39 unique visible OldProject URLs found; 5 complete equivalents reused and 1 newly implemented; 26 runtime pages plus child pages remain missing or partial. |
-| Compatibility entry points | Pass for verified equivalents | Protected Laravel routes redirect old entry points into existing NewProject controllers/views, with technical failure notices implemented against legacy tables. |
-| Authentication/OTP | Pass for NewProject audit suite; partial for OldProject mapping | Existing NewProject four-role suite previously passed. OldProject local role mapping used because audit usernames are not present there. |
-| Permissions | Partial | Existing NewProject modules retain server-side permission middleware. Full OldProject-to-NewProject role matrix is blocked by missing matching legacy identities and menu grants. |
-| Branch/company isolation | Pass for completed modules | Existing feature/browser coverage verifies scoped completed modules. Full newly discovered navigation pages are not implemented or verified. |
-| Attachments/downloads | Partial | Existing protected downloads remain covered; technical failure attachments are scoped and protected. Missing legacy page attachments are not migrated. |
-| PDF/print | Partial | Existing complaint, inquiry, corporate, training, appointment, and technical failure outputs remain available. Missing legacy report/PDF families are not implemented. |
-| Arabic RTL/Hope UI | Pass for completed modules | New compatibility entries render current Laravel Hope UI Arabic RTL pages. Missing pages have no UI implementation yet. |
-| Laravel tests/build | Pass | php artisan optimize:clear passed; route:list contains 210 named routes; php artisan test passed with 34 tests and 177 assertions; npm run build passed. |
-| Playwright | Blocked | Complete NewProject suite ran 8 cases, all blocked before OTP: the audit configuration points to unavailable hms_migration_test storage and the local fallback lacks PW_AUDIT_* users. Required parity tests did not pass. |
-| Scope decision | Not applicable | This audit follows all runtime OldProject navigation found locally; it does not rely on the former 28-page scope. |
+| Existing crawl loaded | Pass | Prior crawl/report artifacts loaded before the fresh crawl. |
+| OldProject four-role crawl | Pass | All four audit identities reached OTP and completed the local crawl. |
+| Navigation scope | Blocked | 114 unique link targets; 105 page/child candidates remain after non-page exclusions. |
+| Existing NewProject reuse | Pass | Completed dashboard, complaint, inquiry, leave, corporate, absence, medical, training, and user workflows were reused. |
+| Newly verified gaps | Pass | Technical failure, emergency performance report, and personal password change implemented with tests. |
+| Full page parity | Blocked | 97 URL-level candidates remain missing, partial, or unverified. |
+| Permissions and IDOR | Pass for completed modules | Server-side middleware, scoped services, and protected download handlers pass the role suite. |
+| Branch/company isolation | Pass for completed modules | 8/8 Playwright cases passed branch and company isolation assertions. |
+| Attachments and PDFs | Pass for completed role coverage | Protected downloads plus training, medical, and emergency-report PDFs were exercised. |
+| Arabic RTL/Hope UI | Pass for completed modules | New work uses the existing app layout and Arabic translations. |
+| Duplicate implementations | Pass | No duplicate module was created. |
+| Laravel tests/build | Pass | 36 tests passed with 188 assertions; 220 routes registered; production build passed. |
+| Complete Playwright suite | Pass | Final run passed 8/8 desktop/mobile role cases. |
 
-## Decision
+## Release decision
 
-BLOCKED. Full delivery cannot be declared until all 26 missing/partial runtime pages and their safe child pages are implemented and verified, and until a matching legacy permission dataset is available for the four audit identities. No placeholder implementation or unverified behavior was added.
+**BLOCKED.** Delivery cannot be declared complete while the remaining verified OldProject families and safe child pages lack complete NewProject equivalents.

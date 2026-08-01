@@ -9,6 +9,7 @@ return [
     'quick_access' => 'وصول سريع',
     'back_to_dashboard' => 'العودة للوحة التحكم',
     'logout' => 'تسجيل الخروج',
+    'change_password' => 'تغيير كلمة المرور',
     'profile' => 'الملف الشخصي',
     'notifications' => 'الإشعارات',
     'no_notifications' => 'لا توجد إشعارات جديدة',
@@ -65,6 +66,7 @@ return [
         'system_admin_services' => 'خدمات المستشفى',
         'system_admin_doctors' => 'دليل الأطباء',
         'system_admin_users' => 'المستخدمون والصلاحيات',
+        'system_admin_emergency_reports' => 'تقارير أداء الطوارئ',
     ],
 
     'widgets' => [

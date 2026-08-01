@@ -81,6 +81,7 @@
                                 <p class="hm-user-dropdown__role">{{ $userRoleLabel }}</p>
                             </div>
                         </li>
+                        <li><a class="hm-user-dropdown__item" href="{{ route('profile.password.edit') }}"><i class="bi bi-key" aria-hidden="true"></i><span>{{ __('dashboard.change_password') }}</span></a></li>
                         <li>
                             <form method="POST" action="{{ route('logout') }}" class="m-0">
                                 @csrf

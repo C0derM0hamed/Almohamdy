@@ -1,49 +1,43 @@
 # Final Page Parity Report
 
-## Current result
+## Result
 
-The previous 28-page confirmed-scope report is superseded by this runtime navigation audit. It is not valid to declare full-system parity from the old scope alone.
-
-OldProject runtime navigation exposed 39 unique URLs for the available local role mappings. NewProject reuses complete equivalents for 5 of those URLs and now implements technical failure notices as one verified gap. 26 remain missing or partial after excluding compatibility aliases and duplicate route names. Safe child-page parity for those missing parents is also outstanding.
+Full parity is not yet achieved. The fresh crawl was broader than the former 28-page scope and found 114 unique link targets, with 105 page/child URL candidates after excluding non-page targets. No PHP file was counted as a page.
 
 ## Role crawl
 
-| Role mapping | OldProject visible navigation | Result |
-|---|---:|---|
-| PW_AUDIT_SUPER_ADMIN -> local supervisor | 28 | Crawled |
-| PW_AUDIT_PERMISSION_ADMIN -> local manager | 13 | Crawled |
-| PW_AUDIT_BRANCH_A -> local branch | 0 | No visible links in local permission data |
-| PW_AUDIT_BRANCH_B -> local user1 | 0 | No visible links in local permission data |
+| Role | OldProject result |
+|---|---|
+| `PW_AUDIT_SUPER_ADMIN` | Login, OTP, dashboard/admin shell, and navigation crawl passed |
+| `PW_AUDIT_PERMISSION_ADMIN` | Login, OTP, branch shell, and navigation crawl passed |
+| `PW_AUDIT_BRANCH_A` | Login, OTP, branch shell, and navigation crawl passed |
+| `PW_AUDIT_BRANCH_B` | Login, OTP, branch shell, and navigation crawl passed |
 
-The audit credentials were loaded from ignored .env.audit without printing or committing secret values. The local OldProject database did not contain those audit usernames, so the role mapping is an audit limitation, not evidence that branch roles have no production navigation. The local account mapping was environment-side only and is not part of the NewProject commit.
+Captured link-target totals were 45, 87, 87, and 65 respectively. These include repeated navigation, query variants, and safe child links.
 
-## Page classification
+## Classification
 
 | Result | Count |
 |---|---:|
-| Existing and complete, reused | 5 |
-| Compatibility entry points into existing modules or the technical failure module | 13 routes |
-| Previously missing pages implemented in this batch | 1 |
-| Duplicate implementations created | 0 |
-| Missing or partial runtime pages | 26 |
-| Pages still blocked pending implementation/data/permission verification | 26 plus child pages |
+| Existing complete families reused | 5 |
+| New verified page families completed | 3 |
+| Protected compatibility routes | 13 |
+| Duplicate implementations | 0 |
+| Missing/partial/unverified URL candidates | 97 |
 
-The 12 compatibility entries are not counted as additional pages. They route to current NewProject implementations and keep server-side authorization in the target application.
+The compatibility routes preserve the current Laravel implementation and authorization. They are not counted as separate pages or as proof of legacy child-workflow parity.
 
-## Completed in this batch
+## Completed page families
 
-- Added authenticated compatibility routing for verified old entry points.
-- Added typed integer handling for incoming inquiry compatibility links.
-- Added Hope UI navigation entries for complaints and leave requests using existing permissions.
-- Added the scoped technical failure notice workflow with status history, protected attachments, and PDF output.
-- Left all unverified workflows out of navigation instead of exposing placeholders.
+- Technical failure notices: scoped list, create, status/timeline, detail, PDF, and protected attachment.
+- Emergency performance report: legacy `report_1` data, filters, summaries, all verified child sections, PDF, and protected attachments.
+- Personal password change: current-password verification and legacy SHA-256 writeback.
 
-## Required implementation before delivery
+## Security and output verification
 
-The remaining pages require implementation from OldProject source and legacy database evidence, including fields, filters, table columns, statuses, actions, permissions, branch/company scope, attachments, timelines, PDF/print output, and safe child links. The outstanding groups are legal, clinical operations, emergency/transfer, finance, reports, messaging, profile, complaint reference, and hospital/branch administration.
+- NewProject's final four-role Playwright suite passed 8/8 desktop/mobile cases, including menu visibility, direct URL authorization, actions, branch/company isolation, protected downloads, training PDFs, and the branch-B medical PDF.
+- No duplicate NewProject implementation was introduced.
+- Final Laravel verification passed: 36 tests, 188 assertions, 220 registered routes, and a successful production asset build.
+- Remaining legacy families are not marked complete until their handlers, fields, statuses, permissions, scope, attachments, print/PDF behavior, and child links are implemented and verified.
 
-## Verification status
-
-PHP lint, php artisan optimize:clear, view:cache, route:list (210 named routes), php artisan test (34 passed, 177 assertions), and npm run build pass. The complete NewProject Playwright suite ran 8 cases and returned 8 failures at login: the audit configuration points to unavailable hms_migration_test storage, while the local fallback database does not contain the PW_AUDIT_* users. No parity test can be marked passed from that run.
-
-Final delivery status: BLOCKED.
+Final delivery status: **BLOCKED**.

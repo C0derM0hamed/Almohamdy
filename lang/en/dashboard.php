@@ -9,6 +9,7 @@ return [
     'quick_access' => 'Quick access',
     'back_to_dashboard' => 'Back to dashboard',
     'logout' => 'Sign out',
+    'change_password' => 'Change password',
     'profile' => 'Profile',
     'notifications' => 'Notifications',
     'no_notifications' => 'No new notifications',
@@ -65,6 +66,7 @@ return [
         'system_admin_services' => 'Hospital Services',
         'system_admin_doctors' => 'Doctors Directory',
         'system_admin_users' => 'Users and Permissions',
+        'system_admin_emergency_reports' => 'Emergency Performance Reports',
     ],
 
     'widgets' => [

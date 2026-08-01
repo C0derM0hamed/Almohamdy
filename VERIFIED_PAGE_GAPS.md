@@ -1,58 +1,54 @@
 # Verified Page Gaps
 
-Audit date: 2026-08-01. This audit starts from runtime OldProject navigation, not from the previous 28-page scope.
+Audit date: 2026-08-01. This report uses the existing crawl artifact and a fresh four-role OldProject crawl. PHP filenames are route identifiers, not page counts.
 
-## Runtime crawl
+## Crawl evidence
 
-- OldProject was started locally on http://127.0.0.1:8011.
-- NewProject was started locally on http://127.0.0.1:8012; the ignored .env.audit configuration was loaded for the audit process without exposing secrets.
-- The local OldProject database contained five named users (admin, manager, branch, supervisor, user1) but did not contain the four PW_AUDIT_* usernames. The audit passwords were loaded without printing them; local account mapping was required for the navigation crawl and is an environment-side audit change, not a NewProject commit.
-- OTP verification used the existing local OldProject demo code.
-- Crawled roles: PW_AUDIT_SUPER_ADMIN mapped to the local level-3 user supervisor; PW_AUDIT_PERMISSION_ADMIN mapped to the local level-1 user manager; PW_AUDIT_BRANCH_A mapped to branch; PW_AUDIT_BRANCH_B mapped to user1.
-- The two branch accounts had no visible navigation entries under the current OldProject permission data.
-- The crawl found 39 unique OldProject navigation URLs across the two accounts with visible navigation. PHP handlers and static asset files are not counted as pages.
+- OldProject: `http://127.0.0.1:8011`
+- NewProject: `http://127.0.0.1:8012`
+- All four `PW_AUDIT_*` accounts reached OldProject OTP and completed the authenticated crawl.
+- The crawl captured 114 unique link targets. After removing language variants, logout, `void(0)`, mail links, static account templates, and other non-page targets, 105 page/child URL candidates remain.
+- Per-role captured link targets: super admin 45, permission admin 87, branch A 87, branch B 65. These are link-target counts and include repeated shell links and child URLs.
+- Existing crawl artifacts: `/tmp/old-nav-audit.json` and the fresh local evidence file `/tmp/current-old-nav-audit.json` (not committed).
 
 ## Classification
 
-| Classification | Count | Result |
-|---|---:|---|
-| Existing and complete, reused | 5 | Dashboard, complaints, inquiries, leave requests, and incoming inquiry detail use existing NewProject controllers and views. |
-| Existing but partial / compatibility entry point added | 13 routes | Legacy entry points now redirect into existing Laravel modules, but this does not prove legacy field/action parity for every old shell. Five of these correspond to crawled complete pages. |
-| Previously missing, now implemented | 1 | Technical failure notices now have scoped list/create/detail/status/timeline/attachment/PDF behavior. |
-| Missing or blocked | 26 | Legal workflow, emergency operations, admission calculators, reference administration, posts, medical terminology, service codes, reports, settings, password profile, and branch setup pages remain unimplemented. |
-| Duplicate/merged | 0 | No NewProject implementation was duplicated or replaced. |
-| Still blocked | 26 plus safe child pages | Full verification needs legacy credentials/permission data and implementation of the listed workflows. |
+| Classification | Result |
+|---|---:|
+| Existing and complete, reused | 5 verified page families |
+| Existing but partial or compatibility entry point | 13 protected routes; parity still needs old child-workflow evidence |
+| Previously missing, implemented in this continuation | 3 page families |
+| Duplicate implementations | 0 |
+| Missing, broken, or still unverified | 97 URL-level candidates, including safe child pages |
 
-The 13 compatibility entry points are protected routes for dashboard, complaints, inquiries, incoming inquiry detail, leave requests, users, government circulars, inspection visits, corporate communications, outgoing correspondence, absence notifications, medical appointments, and technical failure notices. They intentionally reuse existing NewProject modules or the new scoped technical failure module; they are not counted as duplicate pages.
+The counts are URL-level for the fresh 105-candidate crawl. Compatibility routes are not counted as duplicate pages and are not treated as complete when they only redirect without verified field/action parity.
 
-## Verified reused pages
+## Completed in this continuation
 
-| OldProject URL | NewProject equivalent | Status |
+| OldProject page | NewProject equivalent | Result |
 |---|---|---|
-| index.php | /dashboard | Reused |
-| complaints.php | modules.complaints.index | Reused |
-| inquiries.php | modules.inquiries.outgoing.index | Reused |
-| vacations.php | modules.leave.requests.index | Reused |
-| inquiries_and_services_receiver1.php?id={id} | modules.inquiries.show with direction=incoming | Reused and ID validated |
-| technical_failure_notice.php | modules.technical-failures.index | Implemented with scoped workflow |
+| `technical_failure_notice.php` | `modules.technical-failures.*` | Scoped list, create, status history, detail, PDF, protected attachment |
+| `rep_1.php` | `modules.emergency-reports.*` | Real legacy report tables, date/employee/period filters, summaries, child sections, PDF, protected attachments |
+| `change_my_pass.php` | `profile.password.*` | Current-password verification and SHA-256 legacy password update |
 
-Existing module detail, timeline, attachment, protected download, PDF, print, and permission behavior remains owned by the existing NewProject implementations.
+The current Hope UI, Arabic RTL layout, server-side authorization, company/branch scope, and protected download services remain in use.
 
-## Missing or blocked runtime pages
+## Reused verified families
 
-change_my_pass.php, lawsuit.php, complaint_closing_reasons.php, complaint_letter_receiver.php, new_post.php, post_type.php, medical_terminology.php, services_codes.php, permissions.php, change_duty_time.php, resignations.php, users.php field/action parity, job_titles.php, governmental_services_type.php, companies_groups.php, adm_reg_branch.php, branches_departments.php, branches_needs.php, branches_area.php, branches_service_type.php, rep_1.php, emergency_follow_up.php, transferal_home.php, manual_admission_calculator.php, emergency_cases_process.php, settings.php, and emergency_reception_mechanism.php.
+- Dashboard and legacy dashboard entry points.
+- Complaints list/detail/create/reply/timeline/PDF and protected attachments.
+- Inquiry outgoing/incoming list, scoped detail, timeline, status, and PDF behavior.
+- Employee leave list/create/detail/approval workflow.
+- Existing corporate correspondence, outgoing correspondence, absence notification, medical appointment, user administration, and training modules were reused where their NewProject routes already own the workflow.
 
-These pages are not represented by placeholders. Each needs its old handler, schema, statuses, permissions, linked children, file behavior, and output formats reviewed before implementation.
+## Remaining verified gaps
 
-## Authorization and isolation
+The fresh crawl still exposes legacy families requiring source-level parity work: lawsuits, complaint reference administration, posts and post types, medical terminology, service codes, permissions, duty changes, resignations, job titles, governmental service types, company/branch/department/reference administration, emergency follow-up, transferal, admission calculators, emergency case processing/reception, settings, and their linked detail/action/print/PDF pages. Several branch dashboard links also require separate verification against their old handlers before they can be mapped safely.
 
-- New compatibility routes are inside auth.session.
-- Permission-gated legacy entries use the same named permissions as their target NewProject module.
-- Inquiry compatibility IDs are integers and are resolved through the existing scoped inquiry service.
-- Technical failure notice records, statuses, timelines, PDFs, and attachments are resolved through company/branch-scoped service queries.
-- Existing completed modules retain server-side authorization, branch/company scope, and protected file download behavior.
-- Full role parity is not proven because the local OldProject permission dataset did not expose the PW_AUDIT_* identities and the branch accounts had no visible menus.
+## Security status
 
-## Verification evidence
+- NewProject role tests verify server-side permissions, IDOR protection, company isolation, branch isolation, protected downloads, and PDF responses for completed modules.
+- The OldProject crawl confirms all four audit identities can authenticate and reach their role-specific shells. OldProject's current permission data exposes the same branch shell to branch A and the permission-admin mapping; this is recorded as evidence, not broadened in NewProject.
+- No page is marked complete solely because it has a route or redirect.
 
-Existing NewProject feature coverage remains green before this audit batch. Final commands must be rerun after the compatibility routes are committed.
+Final parity status: **BLOCKED** until the remaining verified legacy families and child workflows are implemented and browser-verified.

@@ -328,6 +328,14 @@ return [
                         'subtitle_key' => 'doctors_directory_admin.dashboard_subtitle',
                         'admin_only' => true,
                     ],
+                    [
+                        'label_key' => 'system_admin_emergency_reports',
+                        'route' => 'modules.emergency-reports.index',
+                        'icon' => 'bi-graph-up-arrow',
+                        'active_prefix' => 'modules.emergency-reports',
+                        'subtitle_key' => 'emergency_reports.subtitle',
+                        'admin_only' => true,
+                    ],
                 ],
             ],
             [

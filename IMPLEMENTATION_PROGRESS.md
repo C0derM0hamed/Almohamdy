@@ -1,51 +1,28 @@
 # Implementation Progress
 
-## This audit batch
+## Current continuation
 
-- Inspected NewProject routes, navigation, controllers, services, repositories, models, views, permissions, tests, and recent Git history before editing.
-- Started both local applications.
-- Loaded .env.audit only into the audit process; secrets were not printed or committed.
-- Crawled the visible OldProject navigation for the available local role mappings.
-- Added protected compatibility entry points for verified existing NewProject equivalents.
-- Added complaints and leave requests to the Hope UI sidebar only where the existing NewProject modules already own the workflow.
-- Implemented the verified technical failure notice workflow against the legacy tables: scoped list/search, create, status process history, secure attachment download, detail, and PDF output.
+- Loaded the existing reports and `/tmp/old-nav-audit.json` before discovery.
+- Re-ran OldProject login, OTP, and navigation collection for all four audit roles.
+- Captured 114 unique link targets and 105 page/child URL candidates after excluding non-page shell targets.
+- Completed the verified emergency performance report (`rep_1.php`) using legacy report tables, scoped filters, child sections, PDF, and protected attachments.
+- Completed the verified personal password page (`change_my_pass.php`) using the existing legacy SHA-256 contract and current-password verification.
+- Preserved the existing technical-failure implementation and verified its scoped workflow.
 
-## Reused existing functionality
+## Reused functionality
 
-The following were not duplicated:
+No duplicate module was created for dashboard, complaints, inquiries, leave requests, corporate communication, absence notification, medical appointments, training, or user administration. Existing controllers, services, repositories, permissions, layouts, and protected download handlers remain the owners of those workflows.
 
-- Dashboard entry point.
-- Complaints list/detail/create/reply/timeline/PDF and protected attachment behavior.
-- Inquiry outgoing/incoming list/detail/timeline/PDF/status behavior.
-- Employee leave list/create/detail/approval behavior.
-- Existing corporate communication, absence notification, and medical appointment module entry points.
+## Verification
 
-The compatibility routes redirect into the existing Laravel controllers and Blade views. They do not copy the OldProject visual design.
+- OldProject: all four audit accounts reached OTP and completed the authenticated navigation crawl.
+- NewProject: the complete audit Playwright suite passed 8/8 desktop and mobile role cases after the password-page batch.
+- Branch/company isolation, protected attachments, and training/medical PDF links passed in the completed NewProject role suite.
+- The new password workflow has a focused feature test covering wrong-current-password rejection and SHA-256 update.
+- Final Laravel suite: 36 tests passed, 188 assertions. Final route registration: 220 routes. Production asset build passed.
 
-## Verified OldProject crawl
+## Remaining work
 
-- PW_AUDIT_SUPER_ADMIN mapped to local OldProject level 3: 28 visible links.
-- PW_AUDIT_PERMISSION_ADMIN mapped to local OldProject level 1: 13 visible links.
-- PW_AUDIT_BRANCH_A mapped to local branch account: 0 visible links.
-- PW_AUDIT_BRANCH_B mapped to local branch account: 0 visible links.
-- Unique visible URLs: 39.
-- PHP files were treated as handlers/dependencies, not pages.
+The fresh crawl leaves 97 URL-level candidates that are missing, partial, or not yet parity-verified. They include legal, emergency/transfer, admission calculator, reference administration, profile/settings, report, and complaint-reference families plus safe child pages. These remain blocked until the OldProject handlers, tables, statuses, permissions, scope rules, attachments, and output formats are reviewed and implemented without placeholders.
 
-## Remaining implementation blockers
-
-Twenty-six runtime navigation pages remain missing or partial, plus their safe child pages:
-
-- legal cases and lawsuit actions;
-- emergency follow-up, transfers, reception, and processing;
-- manual/admission calculators and their PDFs;
-- posts, post types, medical terminology, service codes, job titles, and governmental service types;
-- hospital/company/branch/department/reference administration;
-- password profile/change-password;
-- reports and print outputs;
-- complaint reference administration.
-
-No placeholder or invented behavior was added for these rows.
-
-## Test state
-
-PHP lint, route registration, Blade compilation, Laravel tests (34 passed, 177 assertions), and npm build pass after this batch. The complete Playwright suite ran 8 cases and all 8 stopped at login: the audit configuration points to unavailable hms_migration_test storage, while the local fallback database does not contain the PW_AUDIT_* users. The technical failure workflow is route-, syntax-, and service-test verified, but could not receive an authenticated browser assertion with the audit database unavailable.
+Final status for this batch: implementation progressed, but full menu parity remains **BLOCKED**.
