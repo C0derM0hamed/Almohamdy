@@ -35,6 +35,7 @@ use App\Http\Controllers\Module\Inquiries\InquiryAndServiceController;
 use App\Http\Controllers\Module\ServiceLocations\ServiceLocationController;
 use App\Http\Controllers\Module\WorkAbsenceNotification\DashboardController as WorkAbsenceNotificationDashboardController;
 use App\Http\Controllers\Module\WorkAbsenceNotification\NotificationController as WorkAbsenceNotificationController;
+use App\Http\Controllers\Module\Training\TrainingManagementController;
 use App\Http\Controllers\PublicForms\InspectionVisitDepartmentReplyController;
 use App\Http\Controllers\PublicForms\DataRequestDepartmentReplyController;
 use App\Http\Controllers\PublicForms\CorrespondenceDepartmentReplyController;
@@ -43,6 +44,7 @@ use App\Http\Controllers\PublicForms\GovernmentCircularFormalController;
 use App\Support\CorporateCommunications\CorporateCommunicationPermissions;
 use App\Support\EmployeeLeave\EmployeeLeavePermissions;
 use App\Support\WorkAbsenceNotification\WorkAbsenceNotificationPermissions;
+use App\Support\Training\TrainingPermissions;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/lang/ar', [LocaleController::class, 'arabic'])->name('lang.ar');
@@ -429,6 +431,16 @@ Route::middleware('auth.session')->group(function () {
                 ->middleware('permission:inquiries_reply')
                 ->whereIn('direction', ['outgoing', 'incoming'])
                 ->whereNumber('inquiry');
+        });
+        Route::prefix('training/management')->name('training.management.')
+            ->middleware('permission:'.TrainingPermissions::MANAGEMENT)->group(function () {
+            Route::get('/', [TrainingManagementController::class, 'index'])->name('index');
+            Route::post('/', [TrainingManagementController::class, 'store'])->name('store');
+            Route::get('/{training}', [TrainingManagementController::class, 'show'])->name('show')->whereNumber('training');
+            Route::post('/{training}/status', [TrainingManagementController::class, 'status'])->name('status')->whereNumber('training');
+            Route::get('/{training}/timeline', [TrainingManagementController::class, 'timeline'])->name('timeline')->whereNumber('training');
+            Route::get('/{training}/documents/{document}', [TrainingManagementController::class, 'document'])->name('document')->whereNumber('training');
+            Route::get('/{training}/signed-pdf', [TrainingManagementController::class, 'signedPdf'])->name('signed-pdf')->whereNumber('training');
         });
     });
 });

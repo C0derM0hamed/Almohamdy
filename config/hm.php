@@ -238,6 +238,14 @@ return [
                         'active_prefix' => 'modules.work-absence.dashboard',
                         'subtitle_key' => 'employee_services.card_descriptions.managing_absence_notices',
                     ],
+                    [
+                        'label_key' => 'employee_services_training_management',
+                        'route' => 'modules.training.management.index',
+                        'icon' => 'bi-mortarboard',
+                        'active_prefix' => 'modules.training.management.',
+                        'subtitle_key' => 'training.subtitle',
+                        'permission' => \App\Support\Training\TrainingPermissions::MANAGEMENT,
+                    ],
                 ],
             ],
             [

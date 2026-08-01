@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class User extends Model
 {
@@ -45,5 +46,10 @@ class User extends Model
         }
 
         return trim((string) $this->hr_username) ?: '#'.$this->hr_id;
+    }
+
+    public function jobTitle(): BelongsTo
+    {
+        return $this->belongsTo(JobTitle::class, 'job_title');
     }
 }
