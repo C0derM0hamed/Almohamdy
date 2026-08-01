@@ -164,6 +164,8 @@ Route::middleware('auth.session')->group(function () {
     Route::get('/post_type.php', fn () => redirect()->route('modules.system-admin.reference.index', 'post-types'))->name('legacy.post-types')->middleware('admin');
     Route::get('/branches_service_type.php', fn () => redirect()->route('modules.system-admin.reference.index', 'service-types'))->name('legacy.service-types')->middleware('admin');
     Route::get('/new_post.php', fn () => redirect()->route('modules.publications.index'))->name('legacy.new-post');
+    Route::get('/medical_terminology.php', fn () => redirect()->route('modules.system-admin.reference.index', 'medical-terminology'))->name('legacy.medical-terminology')->middleware('admin');
+    Route::get('/services_codes.php', fn () => redirect()->route('modules.system-admin.reference.index', 'service-codes'))->name('legacy.service-codes')->middleware('admin');
     Route::get('/adm_user_groups.php', fn () => redirect()->route('modules.system-admin.reference.index', 'groups'))->name('legacy.user-groups')->middleware('admin');
     Route::get('/job_titles.php', fn () => redirect()->route('modules.system-admin.reference.index', 'job-titles'))->name('legacy.job-titles')->middleware('admin');
     Route::get('/governmental_services_type.php', fn () => redirect()->route('modules.system-admin.reference.index', 'governmental-services'))->name('legacy.governmental-services')->middleware('admin');
@@ -338,9 +340,9 @@ Route::middleware('auth.session')->group(function () {
                 ->name('packages.destroy')
                 ->whereNumber('package');
             Route::prefix('reference')->name('reference.')->group(function () {
-                Route::get('/{type}', [ReferenceAdminController::class, 'index'])->name('index')->whereIn('type', ['groups', 'job-titles', 'governmental-services', 'companies', 'branches', 'departments', 'needs', 'service-types', 'complaint-closing-reasons', 'complaint-letter-receivers', 'complaint-statuses', 'post-types']);
-                Route::get('/{type}/create', [ReferenceAdminController::class, 'create'])->name('create')->whereIn('type', ['groups', 'job-titles', 'governmental-services', 'companies', 'branches', 'departments', 'needs', 'service-types', 'complaint-closing-reasons', 'complaint-letter-receivers', 'complaint-statuses', 'post-types']);
-                Route::post('/{type}', [ReferenceAdminController::class, 'store'])->name('store')->whereIn('type', ['groups', 'job-titles', 'governmental-services', 'companies', 'branches', 'departments', 'needs', 'service-types', 'complaint-closing-reasons', 'complaint-letter-receivers', 'complaint-statuses', 'post-types']);
+                Route::get('/{type}', [ReferenceAdminController::class, 'index'])->name('index')->whereIn('type', ['groups', 'job-titles', 'governmental-services', 'companies', 'branches', 'departments', 'needs', 'service-types', 'complaint-closing-reasons', 'complaint-letter-receivers', 'complaint-statuses', 'post-types', 'medical-terminology', 'service-codes']);
+                Route::get('/{type}/create', [ReferenceAdminController::class, 'create'])->name('create')->whereIn('type', ['groups', 'job-titles', 'governmental-services', 'companies', 'branches', 'departments', 'needs', 'service-types', 'complaint-closing-reasons', 'complaint-letter-receivers', 'complaint-statuses', 'post-types', 'medical-terminology', 'service-codes']);
+                Route::post('/{type}', [ReferenceAdminController::class, 'store'])->name('store')->whereIn('type', ['groups', 'job-titles', 'governmental-services', 'companies', 'branches', 'departments', 'needs', 'service-types', 'complaint-closing-reasons', 'complaint-letter-receivers', 'complaint-statuses', 'post-types', 'medical-terminology', 'service-codes']);
                 Route::get('/{type}/{reference}/edit', [ReferenceAdminController::class, 'edit'])->name('edit')->whereNumber('reference');
                 Route::put('/{type}/{reference}', [ReferenceAdminController::class, 'update'])->name('update')->whereNumber('reference');
                 Route::patch('/{type}/{reference}/publish', [ReferenceAdminController::class, 'publish'])->name('publish')->whereNumber('reference');

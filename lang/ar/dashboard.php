@@ -72,6 +72,8 @@ return [
         'system_administration' => 'إدارة النظام',
         'system_admin_complaint_references' => 'مراجع الشكاوى',
         'publications' => 'المنشورات والتعاميم',
+        'system_admin_terminology' => 'المصطلحات الطبية',
+        'system_admin_service_codes' => 'رموز الخدمات',
         'system_admin_overview' => 'نظرة عامة',
         'system_admin_services' => 'خدمات المستشفى',
         'system_admin_doctors' => 'دليل الأطباء',

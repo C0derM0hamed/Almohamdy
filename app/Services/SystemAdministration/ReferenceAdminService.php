@@ -20,6 +20,8 @@ class ReferenceAdminService
         'complaint-letter-receivers' => ['table' => 'complaint_letter_receiver', 'title' => 'complaint_letter_receivers', 'fields' => ['name_en', 'name_ar', 'name_ch'], 'scope' => 'global'],
         'complaint-statuses' => ['table' => 'complaints_status', 'title' => 'complaint_statuses', 'fields' => ['name_en', 'name_ar', 'name_ch'], 'scope' => 'global'],
         'post-types' => ['table' => 'post_type', 'title' => 'post_types', 'fields' => ['name_en', 'name_ar', 'name_ch', 'info'], 'scope' => 'global'],
+        'medical-terminology' => ['table' => 'medical_terminology', 'title' => 'medical_terminology', 'fields' => ['name_en', 'name_ar', 'name_ch', 'info'], 'scope' => 'global'],
+        'service-codes' => ['table' => 'services_codes', 'title' => 'service_codes', 'fields' => ['name_en', 'name_ar', 'price', 'code'], 'scope' => 'global'],
     ];
 
     public function spec(string $type): array
