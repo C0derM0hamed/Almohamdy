@@ -8,6 +8,15 @@ const MODULES = [
   { key: 'outgoing-correspondence', path: '/modules/outgoing-correspondence', create: '/modules/outgoing-correspondence/create' },
 ];
 
+const TRAINING_MODULES = [
+  { key: 'training-management', path: '/modules/training/management', create: '/modules/training/management' },
+  { key: 'training-coordination', path: '/modules/training/coordination', create: '/modules/training/coordination' },
+];
+
+const MEDICAL_MODULES = [
+  { key: 'medical-appointments', path: '/modules/medical-appointments', create: '/modules/medical-appointments' },
+];
+
 const ADMIN_ONLY = [
   { key: 'users', path: '/modules/system-administration/users' },
   { key: 'system-admin', path: '/modules/system-administration' },
@@ -16,26 +25,26 @@ const ADMIN_ONLY = [
 const ROLES = [
   {
     key: 'PW_AUDIT_SUPER_ADMIN',
-    allowed: [...MODULES, ...ADMIN_ONLY],
-    denied: [],
+    allowed: [...MODULES, ...TRAINING_MODULES, ...ADMIN_ONLY],
+    denied: [...MEDICAL_MODULES],
   },
   {
     key: 'PW_AUDIT_PERMISSION_ADMIN',
     allowed: [ADMIN_ONLY[0]],
-    denied: [ADMIN_ONLY[1]],
+    denied: [ADMIN_ONLY[1], ...TRAINING_MODULES, ...MEDICAL_MODULES],
     optionalAllowedFromEnv: true,
   },
   {
     key: 'PW_AUDIT_BRANCH_A',
     allowed: MODULES,
-    denied: ADMIN_ONLY,
+    denied: [...ADMIN_ONLY, ...TRAINING_MODULES, ...MEDICAL_MODULES],
     ownTag: process.env.PW_AUDIT_BRANCH_A_TAG || 'PW_AUDIT_BRANCH_A',
     otherTag: process.env.PW_AUDIT_BRANCH_B_TAG || 'PW_AUDIT_BRANCH_B',
   },
   {
     key: 'PW_AUDIT_BRANCH_B',
-    allowed: MODULES,
-    denied: ADMIN_ONLY,
+    allowed: [...MODULES, ...MEDICAL_MODULES],
+    denied: [...ADMIN_ONLY, ...TRAINING_MODULES],
     ownTag: process.env.PW_AUDIT_BRANCH_B_TAG || 'PW_AUDIT_BRANCH_B',
     otherTag: process.env.PW_AUDIT_BRANCH_A_TAG || 'PW_AUDIT_BRANCH_A',
   },
@@ -214,6 +223,21 @@ async function verifyProtectedDownload(page, modulePath) {
   expect(response.headers()['content-type'] || '').not.toContain('text/html');
 }
 
+async function verifyPdfDetailLink(page, modulePath, selector) {
+  const detailUrl = await findFirstDetailUrl(page, modulePath);
+  expect(detailUrl, `${modulePath} has no detail link to inspect for PDF output`).toBeTruthy();
+
+  await page.goto(detailUrl, { waitUntil: 'domcontentloaded' });
+  const href = await page.locator(selector).first().getAttribute('href');
+  expect(href, `${modulePath} detail page has no PDF link matching ${selector}`).toBeTruthy();
+
+  const pdfUrl = new URL(href, page.url()).href;
+  const response = await page.context().request.get(pdfUrl);
+  expect(response.status(), `${pdfUrl} did not return a successful PDF response`).toBeLessThan(400);
+  expect(response.headers()['content-disposition'] || '').toContain('attachment');
+  expect(response.headers()['content-type'] || '').toContain('application/pdf');
+}
+
 for (const role of ROLES) {
   test.describe(`${role.key}`, () => {
     const credentials = credentialsFor(role.key);
@@ -291,6 +315,22 @@ for (const role of ROLES) {
       for (const item of allowed.filter((entry) => MODULES.some((module) => module.path === entry.path))) {
         await verifyProtectedDownload(page, item.path);
         evidence.downloads.push({ path: item.path, status: 'verified' });
+      }
+
+      if (role.key === 'PW_AUDIT_SUPER_ADMIN') {
+        for (const item of TRAINING_MODULES) {
+          await visit(page, item.path);
+          await verifyPdfDetailLink(page, item.path, 'a[href*="/documents/"]');
+          evidence.downloads.push({ path: item.path, status: 'training-pdf-verified' });
+        }
+      }
+
+      if (role.key === 'PW_AUDIT_BRANCH_B') {
+        for (const item of MEDICAL_MODULES) {
+          await visit(page, item.path);
+          await verifyPdfDetailLink(page, item.path, 'a[href*="/documents/"]');
+          evidence.downloads.push({ path: item.path, status: 'medical-pdf-verified' });
+        }
       }
 
       expect(telemetry, `Critical browser telemetry for ${role.key}`).toEqual([]);

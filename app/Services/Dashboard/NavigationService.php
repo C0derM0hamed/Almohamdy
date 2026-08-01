@@ -127,6 +127,10 @@ class NavigationService
             return false;
         }
 
+        if (! $this->passesScopeRestrictions($item)) {
+            return false;
+        }
+
         if (! empty($item['admin_only']) && ! $this->permissions->isAdmin()) {
             return false;
         }
@@ -212,6 +216,10 @@ class NavigationService
         }
 
         if (! $this->hasConfiguredPermission($item)) {
+            return null;
+        }
+
+        if (! $this->passesScopeRestrictions($item)) {
             return null;
         }
 
@@ -323,6 +331,25 @@ class NavigationService
         $permission = trim((string) ($item['permission'] ?? ''));
 
         return $permission === '' || $this->permissions->can($permission);
+    }
+
+    /**
+     * @param  array<string, mixed>  $item
+     */
+    private function passesScopeRestrictions(array $item): bool
+    {
+        $allowedCompanies = array_map('intval', is_array($item['company_ids'] ?? null) ? $item['company_ids'] : []);
+        $allowedBranches = array_map('intval', is_array($item['branch_ids'] ?? null) ? $item['branch_ids'] : []);
+
+        if ($allowedCompanies !== [] && ! in_array((int) session('companies_groups_id'), $allowedCompanies, true)) {
+            return false;
+        }
+
+        if ($allowedBranches !== [] && ! in_array((int) session('hr_branch_id'), $allowedBranches, true)) {
+            return false;
+        }
+
+        return true;
     }
 
     /**

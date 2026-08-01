@@ -54,6 +54,8 @@ return [
         'employee_services_managing_absence' => 'إدارة إشعارات التغيب',
         'employee_services_training_management' => 'إدارة التدريب',
         'employee_services_training_coordination' => 'قسم تنسيق التدريب',
+        'medical_appointments' => 'الإجراء الطبي',
+        'medical_appointment_requests' => 'حجز موعد إجراء طبي',
         'work_absence_notification' => 'إشعارات التغيب عن العمل',
         'doctors_directory_admin' => 'إدارة دليل الأطباء',
         'system_administration' => 'إدارة النظام',

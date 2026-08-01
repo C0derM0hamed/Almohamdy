@@ -246,6 +246,32 @@ return [
                         'subtitle_key' => 'training.subtitle',
                         'permission' => \App\Support\Training\TrainingPermissions::MANAGEMENT,
                     ],
+                    [
+                        'label_key' => 'employee_services_training_coordination',
+                        'route' => 'modules.training.coordination.index',
+                        'icon' => 'bi-mortarboard-fill',
+                        'active_prefix' => 'modules.training.coordination.',
+                        'subtitle_key' => 'training.subtitle',
+                        'permission' => \App\Support\Training\TrainingPermissions::COORDINATION,
+                    ],
+                ],
+            ],
+            [
+                'type' => 'group',
+                'label_key' => 'medical_appointments',
+                'icon' => 'bi-heart-pulse',
+                'branch_ids' => \App\Support\MedicalAppointments\MedicalAppointmentScope::BRANCH_IDS,
+                'company_ids' => \App\Support\MedicalAppointments\MedicalAppointmentScope::COMPANY_IDS,
+                'children' => [
+                    [
+                        'label_key' => 'medical_appointment_requests',
+                        'route' => 'modules.medical-appointments.index',
+                        'icon' => 'bi-calendar-plus',
+                        'active_prefix' => 'modules.medical-appointments.',
+                        'subtitle_key' => 'medical_appointments.subtitle',
+                        'branch_ids' => \App\Support\MedicalAppointments\MedicalAppointmentScope::BRANCH_IDS,
+                        'company_ids' => \App\Support\MedicalAppointments\MedicalAppointmentScope::COMPANY_IDS,
+                    ],
                 ],
             ],
             [

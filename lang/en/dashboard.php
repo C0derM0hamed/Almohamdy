@@ -54,6 +54,8 @@ return [
         'employee_services_managing_absence' => 'Managing absence notices',
         'employee_services_training_management' => 'Training Management',
         'employee_services_training_coordination' => 'Training Coordination Department',
+        'medical_appointments' => 'Medical Procedure',
+        'medical_appointment_requests' => 'Book Medical Procedure Appointment',
         'work_absence_notification' => 'Work Absence Notifications',
         'doctors_directory_admin' => 'Manage Doctors Directory',
         'system_administration' => 'System Administration',

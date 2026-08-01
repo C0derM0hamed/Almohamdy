@@ -31,11 +31,14 @@ use App\Http\Controllers\Module\CorporateCommunications\CorporateCommunicationDa
 use App\Http\Controllers\Module\CorporateCommunications\CorporateCommunicationOutgoingLetterController;
 use App\Http\Controllers\Module\Complaints\ComplaintController;
 use App\Http\Controllers\Module\Complaints\ComplaintsDashboardController;
+use App\Http\Controllers\Module\MedicalAppointment\MedicalAppointmentController;
 use App\Http\Controllers\Module\Inquiries\InquiryAndServiceController;
 use App\Http\Controllers\Module\ServiceLocations\ServiceLocationController;
 use App\Http\Controllers\Module\WorkAbsenceNotification\DashboardController as WorkAbsenceNotificationDashboardController;
 use App\Http\Controllers\Module\WorkAbsenceNotification\NotificationController as WorkAbsenceNotificationController;
 use App\Http\Controllers\Module\Training\TrainingManagementController;
+use App\Http\Controllers\Module\Training\TrainingCoordinationController;
+use App\Http\Controllers\PublicForms\MedicalAppointmentPublicController;
 use App\Http\Controllers\PublicForms\InspectionVisitDepartmentReplyController;
 use App\Http\Controllers\PublicForms\DataRequestDepartmentReplyController;
 use App\Http\Controllers\PublicForms\CorrespondenceDepartmentReplyController;
@@ -77,6 +80,19 @@ Route::prefix('public')->name('public.')->group(function () {
         ->name('outgoing-correspondence.revise.show');
     Route::post('/outgoing-correspondence/revise/{token}', [OutgoingLetterReviseController::class, 'store'])
         ->name('outgoing-correspondence.revise.store');
+
+    Route::prefix('medical-appointments')->name('medical-appointments.')->group(function () {
+        Route::get('/patient/{token}', [MedicalAppointmentPublicController::class, 'patientShow'])->name('patient.show');
+        Route::post('/patient/{token}', [MedicalAppointmentPublicController::class, 'patientStore'])->name('patient.store');
+        Route::get('/patient/result', [MedicalAppointmentPublicController::class, 'patientResult'])->name('patient.result');
+        Route::get('/patient/{token}/request-pdf', [MedicalAppointmentPublicController::class, 'requestPdf'])->name('patient.request-pdf');
+        Route::get('/patient/{token}/accepted-pdf', [MedicalAppointmentPublicController::class, 'patientAcceptedPdf'])->name('patient.accepted-pdf');
+        Route::get('/patient/{token}/rejected-pdf', [MedicalAppointmentPublicController::class, 'patientRejectedPdf'])->name('patient.rejected-pdf');
+        Route::get('/doctor/{token}', [MedicalAppointmentPublicController::class, 'doctorShow'])->name('doctor.show');
+        Route::post('/doctor/{token}', [MedicalAppointmentPublicController::class, 'doctorStore'])->name('doctor.store');
+        Route::get('/doctor/result', [MedicalAppointmentPublicController::class, 'doctorResult'])->name('doctor.result');
+        Route::get('/doctor/{token}/reply-pdf', [MedicalAppointmentPublicController::class, 'doctorReplyPdf'])->name('doctor.reply-pdf');
+    });
 });
 
 Route::get('/', [LoginController::class, 'showLogin'])->name('login')->middleware('prevent.cache');
@@ -441,6 +457,26 @@ Route::middleware('auth.session')->group(function () {
             Route::get('/{training}/timeline', [TrainingManagementController::class, 'timeline'])->name('timeline')->whereNumber('training');
             Route::get('/{training}/documents/{document}', [TrainingManagementController::class, 'document'])->name('document')->whereNumber('training');
             Route::get('/{training}/signed-pdf', [TrainingManagementController::class, 'signedPdf'])->name('signed-pdf')->whereNumber('training');
+        });
+        Route::prefix('training/coordination')->name('training.coordination.')
+            ->middleware('permission:'.TrainingPermissions::COORDINATION)->group(function () {
+            Route::get('/', [TrainingCoordinationController::class, 'index'])->name('index');
+            Route::post('/', [TrainingCoordinationController::class, 'store'])->name('store');
+            Route::get('/{training}', [TrainingCoordinationController::class, 'show'])->name('show')->whereNumber('training');
+            Route::post('/{training}/status', [TrainingCoordinationController::class, 'status'])->name('status')->whereNumber('training');
+            Route::get('/{training}/timeline', [TrainingCoordinationController::class, 'timeline'])->name('timeline')->whereNumber('training');
+            Route::get('/{training}/documents/{document}', [TrainingCoordinationController::class, 'document'])->name('document')->whereNumber('training');
+            Route::get('/{training}/signed-pdf', [TrainingCoordinationController::class, 'signedPdf'])->name('signed-pdf')->whereNumber('training');
+        });
+        Route::prefix('medical-appointments')->name('medical-appointments.')
+            ->group(function () {
+            Route::get('/', [MedicalAppointmentController::class, 'index'])->name('index');
+            Route::post('/', [MedicalAppointmentController::class, 'store'])->name('store');
+            Route::get('/{appointment}', [MedicalAppointmentController::class, 'show'])->name('show')->whereNumber('appointment');
+            Route::post('/{appointment}/status', [MedicalAppointmentController::class, 'status'])->name('status')->whereNumber('appointment');
+            Route::get('/{appointment}/timeline', [MedicalAppointmentController::class, 'timeline'])->name('timeline')->whereNumber('appointment');
+            Route::get('/{appointment}/documents/{document}', [MedicalAppointmentController::class, 'document'])->name('document')->whereNumber('appointment');
+            Route::get('/physicians', [MedicalAppointmentController::class, 'physicians'])->name('physicians');
         });
     });
 });
