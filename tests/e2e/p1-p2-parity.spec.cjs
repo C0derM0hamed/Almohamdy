@@ -1,6 +1,6 @@
 const { test, expect } = require('@playwright/test');
 
-const publicPages = ['/modules/publications', '/modules/publications/create'];
+const publicPages = ['/modules/publications', '/modules/publications/create', '/modules/settings'];
 const adminPages = [
   '/modules/system-administration/reference/complaint-statuses',
   '/modules/system-administration/reference/complaint-closing-reasons',
