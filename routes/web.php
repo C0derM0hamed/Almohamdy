@@ -41,6 +41,7 @@ use App\Http\Controllers\Module\Training\TrainingManagementController;
 use App\Http\Controllers\Module\Training\TrainingCoordinationController;
 use App\Http\Controllers\Module\TechnicalFailure\TechnicalFailureController;
 use App\Http\Controllers\Module\EmergencyPerformanceReport\EmergencyPerformanceReportController;
+use App\Http\Controllers\Module\EmergencyFollowUp\EmergencyFollowUpController;
 use App\Http\Controllers\PublicForms\MedicalAppointmentPublicController;
 use App\Http\Controllers\PublicForms\InspectionVisitDepartmentReplyController;
 use App\Http\Controllers\PublicForms\DataRequestDepartmentReplyController;
@@ -185,6 +186,14 @@ Route::middleware('auth.session')->group(function () {
     Route::get('/rep_1.php', fn () => redirect()->route('modules.emergency-reports.index'))
         ->name('legacy.emergency-report')
         ->middleware('admin');
+    Route::get('/emergency_follow_up.php', fn () => redirect()->route('modules.emergency-follow-up.index'))
+        ->name('legacy.emergency-follow-up');
+    Route::get('/emergency_follow_up_notice_record.php', function (Request $request) {
+        return redirect()->route('modules.emergency-follow-up.show', ['followUp' => $request->integer('id')]);
+    })->name('legacy.emergency-follow-up.notice-record');
+    Route::get('/emergency_follow_up_print.php', function (Request $request) {
+        return redirect()->route('modules.emergency-follow-up.print', ['followUp' => $request->integer('id')]);
+    })->name('legacy.emergency-follow-up.print');
 
     Route::prefix('modules')->name('modules.')->group(function () {
         Route::get('/doctors-directory', fn () => redirect()->route('modules.doctors.specialities.index'))
@@ -218,6 +227,15 @@ Route::middleware('auth.session')->group(function () {
             Route::get('/pdf', [EmergencyPerformanceReportController::class, 'pdf'])->name('pdf');
             Route::get('/{section}/{entry}/attachment', [EmergencyPerformanceReportController::class, 'attachment'])
                 ->name('attachment')->whereNumber('entry');
+        });
+        Route::prefix('emergency-follow-up')->name('emergency-follow-up.')->group(function () {
+            Route::get('/', [EmergencyFollowUpController::class, 'index'])->name('index');
+            Route::get('/create', [EmergencyFollowUpController::class, 'create'])->name('create');
+            Route::post('/', [EmergencyFollowUpController::class, 'store'])->name('store');
+            Route::get('/{followUp}/print', [EmergencyFollowUpController::class, 'print'])->name('print')->whereNumber('followUp');
+            Route::get('/{followUp}', [EmergencyFollowUpController::class, 'show'])->name('show')->whereNumber('followUp');
+            Route::post('/{followUp}/notices', [EmergencyFollowUpController::class, 'addNotice'])->name('notices.store')->whereNumber('followUp');
+            Route::post('/{followUp}/close', [EmergencyFollowUpController::class, 'close'])->name('close')->whereNumber('followUp');
         });
         Route::prefix('system-administration')->name('system-admin.')->middleware('admin')->group(function () {
             Route::get('/', [SystemAdministrationDashboardController::class, 'index'])->name('dashboard');

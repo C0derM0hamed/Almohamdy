@@ -42,6 +42,7 @@ return [
         'appointments' => 'Appointments',
         'complaints' => 'Complaints',
         'technical_failures' => 'Technical failure notices',
+        'emergency_follow_up' => 'Emergency follow-up',
         'corporate_communication' => 'Corporate Communication',
         'government_circulars' => 'Government Circulars Service',
         'inspection_visits' => 'Inspection Visits Service',

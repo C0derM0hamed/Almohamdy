@@ -281,6 +281,14 @@ return [
                 'permission' => 'technical_failure_notice',
             ],
             [
+                'label_key' => 'emergency_follow_up',
+                'route' => 'modules.emergency-follow-up.index',
+                'icon' => 'bi-clipboard2-pulse',
+                'active_prefix' => 'modules.emergency-follow-up',
+                'subtitle_key' => 'emergency_follow_up.subtitle',
+                'branch_ids' => [1],
+            ],
+            [
                 'type' => 'group',
                 'label_key' => 'medical_appointments',
                 'icon' => 'bi-heart-pulse',

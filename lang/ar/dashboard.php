@@ -42,6 +42,7 @@ return [
         'appointments' => 'المواعيد',
         'complaints' => 'الشكاوى',
         'technical_failures' => 'بلاغات الأعطال التقنية',
+        'emergency_follow_up' => 'متابعة الطوارئ',
         'corporate_communication' => 'التواصل المؤسسي',
         'government_circulars' => 'خدمة التعاميم الحكومية',
         'inspection_visits' => 'خدمة الزيارات التفتيشية',
