@@ -15,6 +15,7 @@ class SystemReferenceAdminTest extends TestCase
         parent::setUp(); config(['database.default' => 'sqlite', 'database.connections.sqlite.database' => ':memory:']); app('db')->purge('sqlite');
         Schema::create('user_groups', function (Blueprint $b): void { $b->increments('id'); $b->string('name_en')->nullable(); $b->string('name_ar')->nullable(); $b->string('name_ch')->nullable(); $b->integer('publish')->default(1); });
         Schema::create('job_titles', function (Blueprint $b): void { $b->increments('id'); $b->integer('branch_id'); $b->string('name_en')->nullable(); $b->string('name_ar')->nullable(); $b->string('info')->nullable(); $b->integer('training_declarations_id')->nullable(); $b->integer('publish')->default(1); });
+        foreach (['complaint_closing_reasons', 'complaint_letter_receiver', 'complaints_status'] as $table) Schema::create($table, function (Blueprint $b): void { $b->increments('id'); $b->string('name_en')->nullable(); $b->string('name_ar')->nullable(); $b->string('name_ch')->nullable(); $b->integer('publish')->default(1); });
         DB::table('user_groups')->insert(['name_en' => 'Group', 'name_ar' => 'مجموعة', 'name_ch' => '', 'publish' => 1]);
         session(['hr_user_id' => 10, 'hr_branch_id' => 1, 'companies_groups_id' => 1]);
     }
@@ -27,6 +28,8 @@ class SystemReferenceAdminTest extends TestCase
         $this->assertDatabaseHas('user_groups', ['id' => $id, 'publish' => 0]);
         $job = $service->create('job-titles', ['branch_id' => 1, 'name_en' => 'Nurse', 'name_ar' => 'تمريض', 'info' => '']);
         $this->assertSame('تمريض', $service->find('job-titles', $job)->name_ar);
+        $reason = $service->create('complaint-closing-reasons', ['name_en' => 'Closed', 'name_ar' => 'مغلق', 'name_ch' => 'C']);
+        $this->assertSame('مغلق', $service->find('complaint-closing-reasons', $reason)->name_ar);
         session(['hr_branch_id' => 2]);
         $this->expectException(\Symfony\Component\HttpKernel\Exception\HttpException::class);
         $service->find('job-titles', $job);

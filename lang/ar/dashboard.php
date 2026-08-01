@@ -70,6 +70,8 @@ return [
         'work_absence_notification' => 'إشعارات التغيب عن العمل',
         'doctors_directory_admin' => 'إدارة دليل الأطباء',
         'system_administration' => 'إدارة النظام',
+        'system_admin_complaint_references' => 'مراجع الشكاوى',
+        'publications' => 'المنشورات والتعاميم',
         'system_admin_overview' => 'نظرة عامة',
         'system_admin_services' => 'خدمات المستشفى',
         'system_admin_doctors' => 'دليل الأطباء',

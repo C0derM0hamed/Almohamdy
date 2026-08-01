@@ -15,6 +15,11 @@ class ReferenceAdminService
         'branches' => ['table' => 'branches', 'title' => 'branches', 'fields' => ['name_en', 'name_ar', 'email', 'mobile', 'address'], 'scope' => 'company'],
         'departments' => ['table' => 'branches_departments', 'title' => 'departments', 'fields' => ['branch_id', 'name_en', 'name_ar', 'name_ch', 'info'], 'scope' => 'branch'],
         'needs' => ['table' => 'branches_needs', 'title' => 'needs', 'fields' => ['branch_id', 'name_en', 'name_ar', 'name_ch', 'info'], 'scope' => 'branch'],
+        'service-types' => ['table' => 'branches_service_type', 'title' => 'service_types', 'fields' => ['branch_id', 'name_en', 'name_ar', 'name_ch', 'info'], 'scope' => 'branch'],
+        'complaint-closing-reasons' => ['table' => 'complaint_closing_reasons', 'title' => 'complaint_closing_reasons', 'fields' => ['name_en', 'name_ar', 'name_ch'], 'scope' => 'global'],
+        'complaint-letter-receivers' => ['table' => 'complaint_letter_receiver', 'title' => 'complaint_letter_receivers', 'fields' => ['name_en', 'name_ar', 'name_ch'], 'scope' => 'global'],
+        'complaint-statuses' => ['table' => 'complaints_status', 'title' => 'complaint_statuses', 'fields' => ['name_en', 'name_ar', 'name_ch'], 'scope' => 'global'],
+        'post-types' => ['table' => 'post_type', 'title' => 'post_types', 'fields' => ['name_en', 'name_ar', 'name_ch', 'info'], 'scope' => 'global'],
     ];
 
     public function spec(string $type): array
@@ -46,7 +51,7 @@ class ReferenceAdminService
         return match ($type) {
             'job-titles' => ['branches' => DB::table('branches')->where('companies_groups_id', $this->companyId())->where('publish', 1)->orderBy('name_ar')->get(), 'training' => DB::table('training_declarations')->where('branch_id', $this->branchId())->where('publish', 1)->orderBy('id')->get()],
             'governmental-services' => ['platforms' => DB::table('governmental_services_platforms')->where('publish', 1)->orderBy('name_ar')->get()],
-            'departments', 'needs' => ['branches' => DB::table('branches')->where('companies_groups_id', $this->companyId())->where('publish', 1)->orderBy('name_ar')->get()],
+            'departments', 'needs', 'service-types' => ['branches' => DB::table('branches')->where('companies_groups_id', $this->companyId())->where('publish', 1)->orderBy('name_ar')->get()],
             'branches' => ['companies' => DB::table('companies_groups')->where('publish', 1)->orderBy('name_ar')->get()],
             default => [],
         };

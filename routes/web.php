@@ -47,6 +47,7 @@ use App\Http\Controllers\Module\Transferal\TransferalController;
 use App\Http\Controllers\Module\AdmissionCalculator\AdmissionCalculatorController;
 use App\Http\Controllers\Module\EmployeeRequests\EmployeeRequestController;
 use App\Http\Controllers\Module\LegalClaims\LegalClaimController;
+use App\Http\Controllers\Module\Publications\PublicationController;
 use App\Http\Controllers\PublicForms\MedicalAppointmentPublicController;
 use App\Http\Controllers\PublicForms\InspectionVisitDepartmentReplyController;
 use App\Http\Controllers\PublicForms\DataRequestDepartmentReplyController;
@@ -157,6 +158,12 @@ Route::middleware('auth.session')->group(function () {
     Route::get('/permission_request.php', fn () => redirect()->route('modules.employee-requests.create', 'permission'))->name('legacy.permission-request');
     Route::get('/change_duty_time_request.php', fn () => redirect()->route('modules.employee-requests.create', 'duty'))->name('legacy.duty-request');
     Route::get('/resignation_request.php', fn () => redirect()->route('modules.employee-requests.create', 'resignation'))->name('legacy.resignation-request');
+    Route::get('/complaint_closing_reasons.php', fn () => redirect()->route('modules.system-admin.reference.index', 'complaint-closing-reasons'))->name('legacy.complaint-closing-reasons')->middleware('admin');
+    Route::get('/complaint_letter_receiver.php', fn () => redirect()->route('modules.system-admin.reference.index', 'complaint-letter-receivers'))->name('legacy.complaint-letter-receivers')->middleware('admin');
+    Route::get('/complaints_status.php', fn () => redirect()->route('modules.system-admin.reference.index', 'complaint-statuses'))->name('legacy.complaint-statuses')->middleware('admin');
+    Route::get('/post_type.php', fn () => redirect()->route('modules.system-admin.reference.index', 'post-types'))->name('legacy.post-types')->middleware('admin');
+    Route::get('/branches_service_type.php', fn () => redirect()->route('modules.system-admin.reference.index', 'service-types'))->name('legacy.service-types')->middleware('admin');
+    Route::get('/new_post.php', fn () => redirect()->route('modules.publications.index'))->name('legacy.new-post');
     Route::get('/adm_user_groups.php', fn () => redirect()->route('modules.system-admin.reference.index', 'groups'))->name('legacy.user-groups')->middleware('admin');
     Route::get('/job_titles.php', fn () => redirect()->route('modules.system-admin.reference.index', 'job-titles'))->name('legacy.job-titles')->middleware('admin');
     Route::get('/governmental_services_type.php', fn () => redirect()->route('modules.system-admin.reference.index', 'governmental-services'))->name('legacy.governmental-services')->middleware('admin');
@@ -308,6 +315,13 @@ Route::middleware('auth.session')->group(function () {
             Route::get('/{claim}/suspension-pdf', [LegalClaimController::class, 'suspensionPdf'])->name('suspension-pdf')->whereNumber('claim');
             Route::get('/{claim}', [LegalClaimController::class, 'show'])->name('show')->whereNumber('claim');
         });
+        Route::prefix('publications')->name('publications.')->group(function () {
+            Route::get('/', [PublicationController::class, 'index'])->name('index');
+            Route::get('/create', [PublicationController::class, 'create'])->name('create');
+            Route::post('/', [PublicationController::class, 'store'])->name('store');
+            Route::get('/{publication}/download', [PublicationController::class, 'download'])->name('download')->whereNumber('publication');
+            Route::get('/{publication}', [PublicationController::class, 'show'])->name('show')->whereNumber('publication');
+        });
         Route::prefix('system-administration')->name('system-admin.')->middleware('admin')->group(function () {
             Route::get('/', [SystemAdministrationDashboardController::class, 'index'])->name('dashboard');
             Route::get('/packages', [SystemAdministrationServicePackageController::class, 'index'])->name('packages.index');
@@ -324,9 +338,9 @@ Route::middleware('auth.session')->group(function () {
                 ->name('packages.destroy')
                 ->whereNumber('package');
             Route::prefix('reference')->name('reference.')->group(function () {
-                Route::get('/{type}', [ReferenceAdminController::class, 'index'])->name('index')->whereIn('type', ['groups', 'job-titles', 'governmental-services', 'companies', 'branches', 'departments', 'needs']);
-                Route::get('/{type}/create', [ReferenceAdminController::class, 'create'])->name('create')->whereIn('type', ['groups', 'job-titles', 'governmental-services', 'companies', 'branches', 'departments', 'needs']);
-                Route::post('/{type}', [ReferenceAdminController::class, 'store'])->name('store')->whereIn('type', ['groups', 'job-titles', 'governmental-services', 'companies', 'branches', 'departments', 'needs']);
+                Route::get('/{type}', [ReferenceAdminController::class, 'index'])->name('index')->whereIn('type', ['groups', 'job-titles', 'governmental-services', 'companies', 'branches', 'departments', 'needs', 'service-types', 'complaint-closing-reasons', 'complaint-letter-receivers', 'complaint-statuses', 'post-types']);
+                Route::get('/{type}/create', [ReferenceAdminController::class, 'create'])->name('create')->whereIn('type', ['groups', 'job-titles', 'governmental-services', 'companies', 'branches', 'departments', 'needs', 'service-types', 'complaint-closing-reasons', 'complaint-letter-receivers', 'complaint-statuses', 'post-types']);
+                Route::post('/{type}', [ReferenceAdminController::class, 'store'])->name('store')->whereIn('type', ['groups', 'job-titles', 'governmental-services', 'companies', 'branches', 'departments', 'needs', 'service-types', 'complaint-closing-reasons', 'complaint-letter-receivers', 'complaint-statuses', 'post-types']);
                 Route::get('/{type}/{reference}/edit', [ReferenceAdminController::class, 'edit'])->name('edit')->whereNumber('reference');
                 Route::put('/{type}/{reference}', [ReferenceAdminController::class, 'update'])->name('update')->whereNumber('reference');
                 Route::patch('/{type}/{reference}/publish', [ReferenceAdminController::class, 'publish'])->name('publish')->whereNumber('reference');

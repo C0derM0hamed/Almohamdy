@@ -70,6 +70,8 @@ return [
         'work_absence_notification' => 'Work Absence Notifications',
         'doctors_directory_admin' => 'Manage Doctors Directory',
         'system_administration' => 'System Administration',
+        'system_admin_complaint_references' => 'Complaint references',
+        'publications' => 'Publications',
         'system_admin_overview' => 'Overview',
         'system_admin_services' => 'Hospital Services',
         'system_admin_doctors' => 'Doctors Directory',
