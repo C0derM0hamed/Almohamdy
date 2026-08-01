@@ -1,48 +1,58 @@
 # Verified Page Gaps
 
-Audit date: 2026-08-01. Evidence sources: `ACTIVE_PAGE_SCOPE.md`, OldProject leave workflow files, imported audit database, route/controller inspection, Laravel feature tests, Vite build, and Playwright desktop/mobile harness execution.
+Audit date: 2026-08-01. This audit starts from runtime OldProject navigation, not from the previous 28-page scope.
 
-## Delivery-scope findings
+## Runtime crawl
 
-| Page/workflow | Status | Evidence-backed result | Priority |
-|---|---|---|---|
-| Login, OTP, dashboards, doctors, service locations, hospital services | Verified | Desktop/mobile Playwright completed for `PW_AUDIT_SUPER_ADMIN`, `PW_AUDIT_PERMISSION_ADMIN`, `PW_AUDIT_BRANCH_A`, and `PW_AUDIT_BRANCH_B` with login, OTP, menus, direct URL protection, permissions, isolation, downloads, and telemetry checks passing. | P0 |
-| Password recovery/reset | Implemented | Username/mobile generic recovery, hashed expiring OTP, throttling, one-time reset authorization, and legacy SHA-256 write are implemented and feature-tested. | P0 |
-| Complaints list/dashboard | Implemented | Scoped list/detail/timeline has authenticated create, reply/status transitions, protected attachments, and PDF output. | P0 |
-| Complaint create/request | Implemented | Authenticated direct create/store preserves dump-backed complaint and number fields, validation, branch/company ownership, and optional attachment. | P0 |
-| Complaint detail/workflow | Implemented | Sequential statuses 1-4, terminal 5/6, reply timeline, dump-backed fields, protected download, and PDF are implemented. | P0 |
-| Leave requests and approvals | Implemented for verified legacy parity | OldProject branch approvals are company+branch scoped and reject self-approval; Laravel now applies both. No unverified leave statuses or fields were added. | P0 |
-| Absence notifications | Implemented | Self-service request/list/create, five verified type paths, duplicate guard, supervisor recipients, private upload, and scoped download are implemented. | P0 |
-| Circulars, inspection visits, data requests, correspondence | Implemented for protected downloads | Authenticated, permission-gated, company/branch scoped protected download endpoints exist for primary and related files; public circular links now route through protected module downloads rather than direct file paths. | P0 |
-| Outgoing correspondence | Implemented for protected downloads | Authenticated, permission-gated, company/branch scoped attachment download endpoint exists where outgoing correspondence has stored files. | P0 |
-| Inquiries | Implemented | Verified outgoing create/detail and incoming scoped detail are present; reply/status writes use dump columns and include completion status 6 and transfer semantics. | P0 |
-| Training management | Implemented | Legacy `training` type-2 plan creation, status transitions, scoped list/detail, timeline, protected documents, and signed PDF are implemented and feature-tested. | P1 |
-| Training coordination | Implemented | Legacy `training` type-1 coordination create/status path, scoped list/detail, timeline, protected documents, and signed PDF are implemented behind a distinct coordination permission and feature-tested. | P1 |
-| Medical appointment requests | Implemented | The seven-table legacy family (`book_a_medical_appointment` plus status, time, timeline, coverage status, procedure place, reason) drives scoped list/summary/detail, bilingual create, legacy statuses 5/8/9/10/12, public patient and doctor token pages, and four PDF outputs. Feature-tested. | P1 |
+- OldProject was started locally on http://127.0.0.1:8011.
+- NewProject was started locally on http://127.0.0.1:8012; the ignored .env.audit configuration was loaded for the audit process without exposing secrets.
+- The local OldProject database contained five named users (admin, manager, branch, supervisor, user1) but did not contain the four PW_AUDIT_* usernames. The audit passwords were loaded without printing them; local account mapping was required for the navigation crawl and is an environment-side audit change, not a NewProject commit.
+- OTP verification used the existing local OldProject demo code.
+- Crawled roles: PW_AUDIT_SUPER_ADMIN mapped to the local level-3 user supervisor; PW_AUDIT_PERMISSION_ADMIN mapped to the local level-1 user manager; PW_AUDIT_BRANCH_A mapped to branch; PW_AUDIT_BRANCH_B mapped to user1.
+- The two branch accounts had no visible navigation entries under the current OldProject permission data.
+- The crawl found 39 unique OldProject navigation URLs across the two accounts with visible navigation. PHP handlers and static asset files are not counted as pages.
 
-## Authorization and infrastructure blockers
+## Classification
 
-- Complaint, inquiry, absence, circular, inspection visit, data request, correspondence, and outgoing correspondence module routes now fail closed through authentication plus page/action permission middleware where implemented.
-- Protected corporate download tests cover Arabic filenames/MIME type, missing permission, branch scope, attachment IDOR, and path traversal rejection.
-- Four-role browser verification is complete. The ignored local `.env.audit` now contains the recovered/reset `PW_AUDIT_*` credentials and deterministic audit OTP settings; passwords were not committed.
-- The configured `.env` remains unchanged. The audit server was run with `.env.audit`; no database import was repeated.
+| Classification | Count | Result |
+|---|---:|---|
+| Existing and complete, reused | 5 | Dashboard, complaints, inquiries, leave requests, and incoming inquiry detail use existing NewProject controllers and views. |
+| Existing but partial / compatibility entry point added | 13 routes | Legacy entry points now redirect into existing Laravel modules, but this does not prove legacy field/action parity for every old shell. Five of these correspond to crawled complete pages. |
+| Previously missing, now implemented | 1 | Technical failure notices now have scoped list/create/detail/status/timeline/attachment/PDF behavior. |
+| Missing or blocked | 26 | Legal workflow, emergency operations, admission calculators, reference administration, posts, medical terminology, service codes, reports, settings, password profile, and branch setup pages remain unimplemented. |
+| Duplicate/merged | 0 | No NewProject implementation was duplicated or replaced. |
+| Still blocked | 26 plus safe child pages | Full verification needs legacy credentials/permission data and implementation of the listed workflows. |
 
-## Client questions resolved
+The 13 compatibility entry points are protected routes for dashboard, complaints, inquiries, incoming inquiry detail, leave requests, users, government circulars, inspection visits, corporate communications, outgoing correspondence, absence notifications, medical appointments, and technical failure notices. They intentionally reuse existing NewProject modules or the new scoped technical failure module; they are not counted as duplicate pages.
 
-The three previously open questions were answered from the legacy source and the imported dump rather than by assumption:
+## Verified reused pages
 
-1. Training management is the legacy `training` type-2 plan path; training coordination is the type-1 path. Each is gated by its own permission (`TrainingPermissions::MANAGEMENT` / `::COORDINATION`) and each only accepts the status values its type uses in the dump.
-2. Medical appointment requests follow `book_a_medical_appointment` with statuses 5, 8, 9, 10 and 12; patient and doctor act through legacy token links, and the branch/company visibility set is preserved in `MedicalAppointmentScope`.
+| OldProject URL | NewProject equivalent | Status |
+|---|---|---|
+| index.php | /dashboard | Reused |
+| complaints.php | modules.complaints.index | Reused |
+| inquiries.php | modules.inquiries.outgoing.index | Reused |
+| vacations.php | modules.leave.requests.index | Reused |
+| inquiries_and_services_receiver1.php?id={id} | modules.inquiries.show with direction=incoming | Reused and ID validated |
+| technical_failure_notice.php | modules.technical-failures.index | Implemented with scoped workflow |
 
-## Remaining out-of-scope pages
+Existing module detail, timeline, attachment, protected download, PDF, print, and permission behavior remains owned by the existing NewProject implementations.
 
-Seventy-five active legacy pages in legal, clinical operations, finance, reports, messaging and reference administration are still outside the confirmed NewProject delivery scope and are listed in `ACTIVE_PAGE_SCOPE.md`. They remain **client decision required** — they were not silently dropped, and no behavior for them was invented.
+## Missing or blocked runtime pages
 
-## Automated evidence
+change_my_pass.php, lawsuit.php, complaint_closing_reasons.php, complaint_letter_receiver.php, new_post.php, post_type.php, medical_terminology.php, services_codes.php, permissions.php, change_duty_time.php, resignations.php, users.php field/action parity, job_titles.php, governmental_services_type.php, companies_groups.php, adm_reg_branch.php, branches_departments.php, branches_needs.php, branches_area.php, branches_service_type.php, rep_1.php, emergency_follow_up.php, transferal_home.php, manual_admission_calculator.php, emergency_cases_process.php, settings.php, and emergency_reception_mechanism.php.
 
-- `php artisan optimize:clear`: passed.
-- `php artisan route:list`: passed, 193 routes listed.
-- `php artisan test`: passed, 33 tests and 172 assertions.
-- `npm run build`: passed.
-- NewProject Playwright role suite: 8 passed, 0 failed, 0 skipped across desktop/mobile and all four `PW_AUDIT_*` roles.
-- OldProject/NewProject parity suite: 16 passed, 0 failed, 0 skipped across desktop/mobile.
+These pages are not represented by placeholders. Each needs its old handler, schema, statuses, permissions, linked children, file behavior, and output formats reviewed before implementation.
+
+## Authorization and isolation
+
+- New compatibility routes are inside auth.session.
+- Permission-gated legacy entries use the same named permissions as their target NewProject module.
+- Inquiry compatibility IDs are integers and are resolved through the existing scoped inquiry service.
+- Technical failure notice records, statuses, timelines, PDFs, and attachments are resolved through company/branch-scoped service queries.
+- Existing completed modules retain server-side authorization, branch/company scope, and protected file download behavior.
+- Full role parity is not proven because the local OldProject permission dataset did not expose the PW_AUDIT_* identities and the branch accounts had no visible menus.
+
+## Verification evidence
+
+Existing NewProject feature coverage remains green before this audit batch. Final commands must be rerun after the compatibility routes are committed.

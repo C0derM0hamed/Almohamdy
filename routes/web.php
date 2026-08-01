@@ -38,6 +38,7 @@ use App\Http\Controllers\Module\WorkAbsenceNotification\DashboardController as W
 use App\Http\Controllers\Module\WorkAbsenceNotification\NotificationController as WorkAbsenceNotificationController;
 use App\Http\Controllers\Module\Training\TrainingManagementController;
 use App\Http\Controllers\Module\Training\TrainingCoordinationController;
+use App\Http\Controllers\Module\TechnicalFailure\TechnicalFailureController;
 use App\Http\Controllers\PublicForms\MedicalAppointmentPublicController;
 use App\Http\Controllers\PublicForms\InspectionVisitDepartmentReplyController;
 use App\Http\Controllers\PublicForms\DataRequestDepartmentReplyController;
@@ -48,6 +49,7 @@ use App\Support\CorporateCommunications\CorporateCommunicationPermissions;
 use App\Support\EmployeeLeave\EmployeeLeavePermissions;
 use App\Support\WorkAbsenceNotification\WorkAbsenceNotificationPermissions;
 use App\Support\Training\TrainingPermissions;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/lang/ar', [LocaleController::class, 'arabic'])->name('lang.ar');
@@ -127,6 +129,53 @@ Route::middleware('auth.session')->group(function () {
     Route::get('/admin/dashboard', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
     Route::get('/branch/dashboard', [BranchDashboardController::class, 'index'])->name('branch.dashboard');
 
+    // Keep verified legacy entry points usable while rendering the current Laravel pages.
+    Route::get('/index.php', fn () => redirect()->route('dashboard'))
+        ->name('legacy.dashboard');
+    Route::get('/complaints.php', fn () => redirect()->route('modules.complaints.index'))
+        ->name('legacy.complaints')
+        ->middleware('permission:complaints');
+    Route::get('/inquiries.php', fn () => redirect()->route('modules.inquiries.outgoing.index'))
+        ->name('legacy.inquiries')
+        ->middleware('permission:inquiries_and_services');
+    Route::get('/vacations.php', fn () => redirect()->route('modules.leave.requests.index'))
+        ->name('legacy.vacations');
+    Route::get('/users.php', fn () => redirect()->route('modules.system-admin.users.index'))
+        ->name('legacy.users')
+        ->middleware('permission.admin');
+    Route::get('/inquiries_and_services_receiver1.php', function (Request $request) {
+        $inquiryId = $request->integer('id');
+
+        if ($inquiryId < 1) {
+            return redirect()->route('modules.inquiries.incoming.index');
+        }
+
+        return redirect()->route('modules.inquiries.show', [
+            'direction' => 'incoming',
+            'inquiry' => $inquiryId,
+        ]);
+    })->name('legacy.inquiries.receiver')
+        ->middleware('permission:inquiries_and_services');
+    Route::get('/government_circulars.php', fn () => redirect()->route('modules.government-circulars.index'))
+        ->name('legacy.government-circulars')
+        ->middleware('permission:'.CorporateCommunicationPermissions::GOVERNMENT_CIRCULARS);
+    Route::get('/government_inspection_visits.php', fn () => redirect()->route('modules.inspection-visits.index'))
+        ->name('legacy.inspection-visits')
+        ->middleware('permission:'.CorporateCommunicationPermissions::INSPECTION_VISITS);
+    Route::get('/corporate_communications.php', fn () => redirect()->route('modules.corporate-communication.dashboard'))
+        ->name('legacy.corporate-communications');
+    Route::get('/corporate_communications_outgoing_letters.php', fn () => redirect()->route('modules.outgoing-correspondence.index'))
+        ->name('legacy.outgoing-correspondence')
+        ->middleware('permission:'.CorporateCommunicationPermissions::OUTGOING_CORRESPONDENCE);
+    Route::get('/absence_notification_service.php', fn () => redirect()->route('modules.work-absence.dashboard'))
+        ->name('legacy.absence-notifications')
+        ->middleware('permission:'.WorkAbsenceNotificationPermissions::VIEW);
+    Route::get('/book_a_medical_appointment.php', fn () => redirect()->route('modules.medical-appointments.index'))
+        ->name('legacy.medical-appointments');
+    Route::get('/technical_failure_notice.php', fn () => redirect()->route('modules.technical-failures.index'))
+        ->name('legacy.technical-failures')
+        ->middleware('permission:technical_failure_notice');
+
     Route::prefix('modules')->name('modules.')->group(function () {
         Route::get('/doctors-directory', fn () => redirect()->route('modules.doctors.specialities.index'))
             ->name('doctors');
@@ -144,6 +193,15 @@ Route::middleware('auth.session')->group(function () {
             Route::get('/doctors/{doctor}', [DoctorController::class, 'show'])
                 ->name('doctors.show')
                 ->whereNumber('doctor');
+        });
+        Route::prefix('technical-failures')->name('technical-failures.')->middleware('permission:technical_failure_notice')->group(function () {
+            Route::get('/', [TechnicalFailureController::class, 'index'])->name('index');
+            Route::get('/create', [TechnicalFailureController::class, 'create'])->name('create');
+            Route::post('/', [TechnicalFailureController::class, 'store'])->name('store');
+            Route::get('/{notice}', [TechnicalFailureController::class, 'show'])->name('show')->whereNumber('notice');
+            Route::post('/{notice}/status', [TechnicalFailureController::class, 'updateStatus'])->name('status')->whereNumber('notice');
+            Route::get('/{notice}/pdf', [TechnicalFailureController::class, 'pdf'])->name('pdf')->whereNumber('notice');
+            Route::get('/{notice}/attachment', [TechnicalFailureController::class, 'attachment'])->name('attachment')->whereNumber('notice');
         });
         Route::prefix('system-administration')->name('system-admin.')->middleware('admin')->group(function () {
             Route::get('/', [SystemAdministrationDashboardController::class, 'index'])->name('dashboard');

@@ -239,6 +239,14 @@ return [
                         'subtitle_key' => 'employee_services.card_descriptions.managing_absence_notices',
                     ],
                     [
+                        'label_key' => 'employee_services_leave_requests',
+                        'route' => 'modules.leave.requests.index',
+                        'icon' => 'bi-calendar-check',
+                        'active_prefix' => 'modules.leave.',
+                        'subtitle_key' => 'employee_leave.requests_subtitle',
+                        'permission' => \App\Support\EmployeeLeave\EmployeeLeavePermissions::VIEW,
+                    ],
+                    [
                         'label_key' => 'employee_services_training_management',
                         'route' => 'modules.training.management.index',
                         'icon' => 'bi-mortarboard',
@@ -255,6 +263,22 @@ return [
                         'permission' => \App\Support\Training\TrainingPermissions::COORDINATION,
                     ],
                 ],
+            ],
+            [
+                'label_key' => 'complaints',
+                'route' => 'modules.complaints',
+                'icon' => 'bi-chat-square-text',
+                'active_prefix' => 'modules.complaints',
+                'subtitle_key' => 'complaints.subtitle',
+                'permission' => 'complaints',
+            ],
+            [
+                'label_key' => 'technical_failures',
+                'route' => 'modules.technical-failures.index',
+                'icon' => 'bi-tools',
+                'active_prefix' => 'modules.technical-failures',
+                'subtitle_key' => 'technical_failures.subtitle',
+                'permission' => 'technical_failure_notice',
             ],
             [
                 'type' => 'group',

@@ -1,0 +1,18 @@
+@extends('layouts.app')
+@section('title', __('technical_failures.title'))
+@section('content')
+<div class="container-fluid py-3" dir="rtl">
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4"><div><h1 class="h4 mb-1">{{ __('technical_failures.title') }}</h1><p class="text-muted mb-0">{{ __('technical_failures.subtitle') }}</p></div><a class="btn btn-primary" href="{{ route('modules.technical-failures.create') }}"><i class="bi bi-plus-lg me-1"></i>{{ __('technical_failures.create') }}</a></div>
+    <form method="get" class="card border-0 shadow-sm mb-3"><div class="card-body row g-3 align-items-end">
+        <div class="col-md-4"><label class="form-label" for="search">{{ __('technical_failures.search') }}</label><input class="form-control" id="search" name="search" value="{{ $filters['search'] }}"></div>
+        <div class="col-md-2"><label class="form-label" for="from">{{ __('technical_failures.from') }}</label><input type="date" class="form-control" id="from" name="from" value="{{ $filters['from'] }}"></div>
+        <div class="col-md-2"><label class="form-label" for="to">{{ __('technical_failures.to') }}</label><input type="date" class="form-control" id="to" name="to" value="{{ $filters['to'] }}"></div>
+        <div class="col-md-2"><label class="form-label" for="status">{{ __('technical_failures.status') }}</label><select class="form-select" id="status" name="status"><option value="">{{ __('technical_failures.all_statuses') }}</option><option value="0" @selected($filters['status'] === 0)>{{ __('technical_failures.new') }}</option>@foreach($statuses as $status)<option value="{{ $status->id }}" @selected($filters['status'] === (int) $status->id)>{{ app()->getLocale() === 'ar' ? $status->name_ar : $status->name_en }}</option>@endforeach</select></div>
+        <div class="col-md-2"><button class="btn btn-dark w-100" type="submit"><i class="bi bi-search me-1"></i>{{ __('technical_failures.search') }}</button></div>
+    </div></form>
+    <div class="card border-0 shadow-sm"><div class="table-responsive"><table class="table table-hover align-middle mb-0"><thead><tr><th>#</th><th>{{ __('technical_failures.date') }}</th><th>{{ __('technical_failures.notice') }}</th><th>{{ __('technical_failures.platform') }}</th><th>{{ __('technical_failures.service_type') }}</th><th>{{ __('technical_failures.status') }}</th><th>{{ __('technical_failures.actions') }}</th></tr></thead><tbody>
+    @forelse($notices as $notice)<tr><td>{{ $notice->id }}</td><td dir="ltr">{{ date('Y-m-d H:i', (int) $notice->date_time) }}</td><td>{{ $notice->notice }}</td><td>{{ app()->getLocale() === 'ar' ? $notice->platform_name_ar : $notice->platform_name_en }}</td><td>{{ app()->getLocale() === 'ar' ? $notice->service_type_name_ar : $notice->service_type_name_en }}</td><td><span class="badge" style="background-color: {{ $notice->status_color ?: '#6c757d' }}">{{ (int) $notice->status === 0 ? __('technical_failures.new') : (app()->getLocale() === 'ar' ? $notice->status_name_ar : $notice->status_name_en) }}</span></td><td class="text-nowrap"><a class="btn btn-sm btn-outline-primary" href="{{ route('modules.technical-failures.show', $notice->id) }}" title="{{ __('technical_failures.actions') }}"><i class="bi bi-eye"></i></a> <a class="btn btn-sm btn-outline-secondary" href="{{ route('modules.technical-failures.pdf', $notice->id) }}" title="{{ __('technical_failures.pdf') }}"><i class="bi bi-file-earmark-pdf"></i></a></td></tr>
+    @empty<tr><td colspan="7" class="text-center text-muted py-5">{{ __('technical_failures.no_records') }}</td></tr>@endforelse
+    </tbody></table></div><div class="card-footer">{{ $notices->links() }}</div></div>
+</div>
+@endsection

@@ -2,61 +2,48 @@
 
 ## Current result
 
-This is the final implementation report for the confirmed delivery scope. All 28 candidate delivery pages are now implemented in NewProject with verified legacy content and functionality on the current Laravel architecture and Hope UI Arabic RTL layout. The three previously deferred workflows — training management, training coordination and medical appointment requests — were implemented in this sprint from verified legacy source and dump evidence. Delivery is **READY FOR CONFIRMED SCOPE**; 75 active legacy pages outside that scope still need client inclusion before a full-system READY can be declared.
+The previous 28-page confirmed-scope report is superseded by this runtime navigation audit. It is not valid to declare full-system parity from the old scope alone.
 
-| Measure | Count |
+OldProject runtime navigation exposed 39 unique URLs for the available local role mappings. NewProject reuses complete equivalents for 5 of those URLs and now implements technical failure notices as one verified gap. 26 remain missing or partial after excluding compatibility aliases and duplicate route names. Safe child-page parity for those missing parents is also outstanding.
+
+## Role crawl
+
+| Role mapping | OldProject visible navigation | Result |
+|---|---:|---|
+| PW_AUDIT_SUPER_ADMIN -> local supervisor | 28 | Crawled |
+| PW_AUDIT_PERMISSION_ADMIN -> local manager | 13 | Crawled |
+| PW_AUDIT_BRANCH_A -> local branch | 0 | No visible links in local permission data |
+| PW_AUDIT_BRANCH_B -> local user1 | 0 | No visible links in local permission data |
+
+The audit credentials were loaded from ignored .env.audit without printing or committing secret values. The local OldProject database did not contain those audit usernames, so the role mapping is an audit limitation, not evidence that branch roles have no production navigation. The local account mapping was environment-side only and is not part of the NewProject commit.
+
+## Page classification
+
+| Result | Count |
 |---|---:|
-| Active legacy main pages discovered | 115 |
-| Candidate client delivery pages | 28 |
-| Candidate pages complete/verified for confirmed scope | 28 |
-| Candidate pages needing credentialed browser verification | 0 |
-| Candidate pages client decision required | 0 |
-| Active pages outside candidate scope requiring client decision | 75 |
+| Existing and complete, reused | 5 |
+| Compatibility entry points into existing modules or the technical failure module | 13 routes |
+| Previously missing pages implemented in this batch | 1 |
+| Duplicate implementations created | 0 |
+| Missing or partial runtime pages | 26 |
+| Pages still blocked pending implementation/data/permission verification | 26 plus child pages |
 
-The 1,865 PHP files/endpoints are classified in `ACTIVE_PAGE_SCOPE.md`; handlers, AJAX, print/PDF, includes, and child actions are dependencies rather than additional main pages.
+The 12 compatibility entries are not counted as additional pages. They route to current NewProject implementations and keep server-side authorization in the target application.
 
-## Completed blocker results
+## Completed in this batch
 
-- Protected downloads completed for circulars, inspection visits, data requests, correspondence, and outgoing correspondence where stored files exist.
-- Download endpoints enforce authentication, page/action permission middleware, company scope, branch scope, parent/child attachment ownership, path traversal rejection, safe 404/403 behavior, Arabic filename preservation, and detected MIME type.
-- Public circular formal links no longer expose direct public file paths; they point to protected module download routes.
-- Leave parity recheck found and fixed only verified gaps: branch scope on listing/detail and self-approval denial for branch approvers.
-- Training management implemented: legacy `training` type-2 plan creation, status transitions, scoped list/detail, timeline, protected document downloads and signed PDF, gated by `TrainingPermissions::MANAGEMENT`.
-- Training coordination implemented: legacy `training` type-1 path with its own `TrainingPermissions::COORDINATION` gate, create/status writes, scoped list/detail, timeline, protected documents and signed PDF.
-- Medical appointment requests implemented: `book_a_medical_appointment` plus its six related legacy tables, scoped list with status summary and legacy filters, bilingual create with multiple proposed slots, statuses 5/8/9/10/12, dependent physician lookup, timeline, public patient and doctor token pages, and request/accepted/rejected/doctor-reply PDF outputs. Every read is branch+company scoped, so direct IDs cannot cross branches.
-- Audit credentials were recovered/reset only for the four `PW_AUDIT_*` accounts using the verified legacy SHA-256 hash format and stored only in ignored `.env.audit`.
+- Added authenticated compatibility routing for verified old entry points.
+- Added typed integer handling for incoming inquiry compatibility links.
+- Added Hope UI navigation entries for complaints and leave requests using existing permissions.
+- Added the scoped technical failure notice workflow with status history, protected attachments, and PDF output.
+- Left all unverified workflows out of navigation instead of exposing placeholders.
 
-## Verification
+## Required implementation before delivery
 
-- Laravel feature/unit suite: **33 passed, 172 assertions**.
-- `php artisan optimize:clear`: passed.
-- `php artisan route:list`: passed, **193 routes listed**.
-- PHP lint on all changed/added PHP files: passed. `git diff --check`: clean. Working tree: clean.
-- `npm run build`: passed.
-- NewProject Playwright role suite: **8 passed, 0 failed, 0 skipped** across desktop/mobile and all four `PW_AUDIT_*` roles.
-- OldProject/NewProject parity Playwright suite: **16 passed, 0 failed, 0 skipped** across desktop/mobile.
-- Permission/isolation result: menu visibility, direct URL protection, action permission URLs, company isolation, branch isolation, protected downloads, leave self-approval prevention, and critical console/request telemetry passed.
-- Database: configured `.env` was not changed. The existing `.env.audit` local audit configuration was used for the temporary Laravel server; database import was not repeated.
+The remaining pages require implementation from OldProject source and legacy database evidence, including fields, filters, table columns, statuses, actions, permissions, branch/company scope, attachments, timelines, PDF/print output, and safe child links. The outstanding groups are legal, clinical operations, emergency/transfer, finance, reports, messaging, profile, complaint reference, and hospital/branch administration.
 
-## Client decisions required
+## Verification status
 
-1. Scope inclusion for the 75 active legacy pages outside the confirmed delivery modules (legal, clinical operations, finance, reports, messaging, reference administration), listed per page in `ACTIVE_PAGE_SCOPE.md`. No behavior for these was invented or partially stubbed.
-2. Current production permission and menu data, needed to settle the 772 legacy entries that cannot be classified active/dead from source alone.
+PHP lint, php artisan optimize:clear, view:cache, route:list (210 named routes), php artisan test (34 passed, 177 assertions), and npm run build pass. The complete NewProject Playwright suite ran 8 cases and returned 8 failures at login: the audit configuration points to unavailable hms_migration_test storage, while the local fallback database does not contain the PW_AUDIT_* users. No parity test can be marked passed from that run.
 
-## Unverified legacy behavior (documented, not invented)
-
-- Legacy notification side effects (SMS/email dispatch via `sms_class.php` and `PHPMailer`) attached to some workflows were not reproduced; no substitute behavior was invented.
-
-## Git
-
-Branch: `autonomous-delivery-sprint`
-
-Latest commits:
-
-- `97ac9a0 Wire training coordination and medical appointment routes, navigation and audit coverage`
-- `925d0d9 Implement medical appointment requests module with legacy workflow and PDFs`
-- `0466c56 Implement training coordination parity and align training management views`
-- `851569e Ignore Playwright report and test-results output`
-- `4d5a530 Implement training management parity`
-
-Final delivery status: **READY FOR CONFIRMED SCOPE.** Not full-system READY: 75 active legacy pages outside the confirmed scope still require client inclusion.
+Final delivery status: BLOCKED.

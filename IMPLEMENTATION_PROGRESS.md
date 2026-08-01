@@ -1,45 +1,51 @@
 # Implementation Progress
 
-## Completed implementation
+## This audit batch
 
-- Consolidated legacy inventory: 115 active main business pages and 28 candidate delivery pages documented in `ACTIVE_PAGE_SCOPE.md`.
-- Password recovery/reset, complaints, inquiries, absence notifications, employee leave verified parity fixes, and corporate communication protected downloads are implemented at code level.
-- Circulars, inspection visits, data requests, correspondence, and outgoing correspondence now use protected typed download endpoints instead of direct public file paths for module downloads.
-- Page/action permission checks and company/branch scope are applied to the corporate communication module groups and download lookup paths.
-- Leave workflow parity was rechecked against OldProject and the imported database. Only verified missing behavior was added: branch users are scoped to their branch and cannot approve their own leave request.
-- Playwright audit-role coverage now passes for desktop and mobile projects, including login, OTP, menu visibility, direct URL protection, action permission URLs, company/branch isolation markers, protected downloads, critical console errors, and critical failed requests.
+- Inspected NewProject routes, navigation, controllers, services, repositories, models, views, permissions, tests, and recent Git history before editing.
+- Started both local applications.
+- Loaded .env.audit only into the audit process; secrets were not printed or committed.
+- Crawled the visible OldProject navigation for the available local role mappings.
+- Added protected compatibility entry points for verified existing NewProject equivalents.
+- Added complaints and leave requests to the Hope UI sidebar only where the existing NewProject modules already own the workflow.
+- Implemented the verified technical failure notice workflow against the legacy tables: scoped list/search, create, status process history, secure attachment download, detail, and PDF output.
 
-## Modules completed in this sprint
+## Reused existing functionality
 
-- **Training management** — legacy `training` type-2 plan creation, status transitions, scoped list/detail, timeline, protected document downloads and signed PDF, gated by `TrainingPermissions::MANAGEMENT`.
-- **Training coordination** — legacy `training` type-1 coordination path with its own `TrainingPermissions::COORDINATION` gate, create/status writes, scoped list/detail, timeline, protected documents and signed PDF.
-- **Medical appointment requests** — `book_a_medical_appointment` and its six related legacy tables: scoped list with status summary and legacy filters, bilingual create with multiple proposed slots, statuses 5/8/9/10/12, dependent physician lookup, timeline, public patient and doctor token pages, and request/accepted/rejected/doctor-reply PDF outputs. Visibility follows the legacy branch/company set in `MedicalAppointmentScope`; all reads go through a branch+company scoped query so direct IDs cannot leak across branches.
+The following were not duplicated:
 
-## Commits added after `6fd3c28`
+- Dashboard entry point.
+- Complaints list/detail/create/reply/timeline/PDF and protected attachment behavior.
+- Inquiry outgoing/incoming list/detail/timeline/PDF/status behavior.
+- Employee leave list/create/detail/approval behavior.
+- Existing corporate communication, absence notification, and medical appointment module entry points.
 
-- `9988a8a Add protected corporate download endpoints`
-- `4f6ecd8 Add Playwright audit role coverage`
-- `6a54952 Align employee leave branch approval scope`
-- `58864fd Protect circular public attachment links`
-- `212f8cc Complete audit role verification`
-- `4d5a530 Implement training management parity`
-- `851569e Ignore Playwright report and test-results output`
-- `0466c56 Implement training coordination parity and align training management views`
-- `925d0d9 Implement medical appointment requests module with legacy workflow and PDFs`
-- `97ac9a0 Wire training coordination and medical appointment routes, navigation and audit coverage`
+The compatibility routes redirect into the existing Laravel controllers and Blade views. They do not copy the OldProject visual design.
 
-## Final QA run
+## Verified OldProject crawl
 
-- `php artisan optimize:clear`: passed.
-- `php artisan route:list`: passed, 193 routes listed.
-- `php artisan test`: passed, 33 tests and 172 assertions.
-- `npm run build`: passed.
-- NewProject role Playwright: 8 passed, 0 failed, 0 skipped across desktop/mobile and all four `PW_AUDIT_*` roles.
-- OldProject/NewProject parity Playwright: 16 passed, 0 failed, 0 skipped across desktop/mobile.
+- PW_AUDIT_SUPER_ADMIN mapped to local OldProject level 3: 28 visible links.
+- PW_AUDIT_PERMISSION_ADMIN mapped to local OldProject level 1: 13 visible links.
+- PW_AUDIT_BRANCH_A mapped to local branch account: 0 visible links.
+- PW_AUDIT_BRANCH_B mapped to local branch account: 0 visible links.
+- Unique visible URLs: 39.
+- PHP files were treated as handlers/dependencies, not pages.
 
-- PHP lint on all changed/added PHP files: passed. `git diff --check`: clean. Working tree: clean.
+## Remaining implementation blockers
 
-## Remaining delivery blockers
+Twenty-six runtime navigation pages remain missing or partial, plus their safe child pages:
 
-1. Seventy-five active legacy pages (legal, clinical operations, finance, reports, messaging, reference administration) are outside the confirmed delivery scope and still require client inclusion before migration. They are enumerated in `ACTIVE_PAGE_SCOPE.md`.
-2. 772 legacy PHP entries remain unclassifiable from source alone; settling them needs current production permission and menu data.
+- legal cases and lawsuit actions;
+- emergency follow-up, transfers, reception, and processing;
+- manual/admission calculators and their PDFs;
+- posts, post types, medical terminology, service codes, job titles, and governmental service types;
+- hospital/company/branch/department/reference administration;
+- password profile/change-password;
+- reports and print outputs;
+- complaint reference administration.
+
+No placeholder or invented behavior was added for these rows.
+
+## Test state
+
+PHP lint, route registration, Blade compilation, Laravel tests (34 passed, 177 assertions), and npm build pass after this batch. The complete Playwright suite ran 8 cases and all 8 stopped at login: the audit configuration points to unavailable hms_migration_test storage, while the local fallback database does not contain the PW_AUDIT_* users. The technical failure workflow is route-, syntax-, and service-test verified, but could not receive an authenticated browser assertion with the audit database unavailable.
