@@ -46,6 +46,7 @@ return [
     'transferal' => 'Patient transfer and reception',
     'admission_calculator' => 'Admission calculators',
     'employee_requests' => 'Employee requests',
+    'legal_claims' => 'Legal claims',
     'employee_permission_requests' => 'Permission requests',
     'employee_duty_requests' => 'Duty change requests',
     'employee_resignation_requests' => 'Resignation requests',

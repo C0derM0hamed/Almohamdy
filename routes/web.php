@@ -45,6 +45,7 @@ use App\Http\Controllers\Module\EmergencyFollowUp\EmergencyFollowUpController;
 use App\Http\Controllers\Module\Transferal\TransferalController;
 use App\Http\Controllers\Module\AdmissionCalculator\AdmissionCalculatorController;
 use App\Http\Controllers\Module\EmployeeRequests\EmployeeRequestController;
+use App\Http\Controllers\Module\LegalClaims\LegalClaimController;
 use App\Http\Controllers\PublicForms\MedicalAppointmentPublicController;
 use App\Http\Controllers\PublicForms\InspectionVisitDepartmentReplyController;
 use App\Http\Controllers\PublicForms\DataRequestDepartmentReplyController;
@@ -155,6 +156,8 @@ Route::middleware('auth.session')->group(function () {
     Route::get('/permission_request.php', fn () => redirect()->route('modules.employee-requests.create', 'permission'))->name('legacy.permission-request');
     Route::get('/change_duty_time_request.php', fn () => redirect()->route('modules.employee-requests.create', 'duty'))->name('legacy.duty-request');
     Route::get('/resignation_request.php', fn () => redirect()->route('modules.employee-requests.create', 'resignation'))->name('legacy.resignation-request');
+    Route::get('/lawsuit.php', fn () => redirect()->route('modules.legal-claims.index'))->name('legacy.lawsuit')->middleware('admin');
+    Route::get('/lawsuit_pdf.php', function (Request $request) { return app(LegalClaimController::class)->pdf($request->integer('id')); })->name('legacy.lawsuit-pdf')->middleware('admin');
     Route::get('/complaints.php', fn () => redirect()->route('modules.complaints.index'))
         ->name('legacy.complaints')
         ->middleware('permission:complaints');
@@ -281,6 +284,17 @@ Route::middleware('auth.session')->group(function () {
             Route::get('/{type}/{id}/pdf', [EmployeeRequestController::class, 'pdf'])->name('pdf')->whereIn('type', ['permission', 'duty', 'resignation'])->whereNumber('id');
             Route::post('/{type}/{id}/{stage}', [EmployeeRequestController::class, 'reply'])->name('reply')->whereIn('type', ['permission', 'duty', 'resignation'])->whereIn('stage', ['branch', 'hr'])->whereNumber('id');
             Route::get('/{type}/{id}', [EmployeeRequestController::class, 'show'])->name('show')->whereIn('type', ['permission', 'duty', 'resignation'])->whereNumber('id');
+        });
+        Route::prefix('legal-claims')->name('legal-claims.')->middleware('admin')->group(function () {
+            Route::get('/', [LegalClaimController::class, 'index'])->name('index');
+            Route::get('/create', [LegalClaimController::class, 'create'])->name('create');
+            Route::post('/', [LegalClaimController::class, 'store'])->name('store');
+            Route::get('/{claim}/pdf', [LegalClaimController::class, 'pdf'])->name('pdf')->whereNumber('claim');
+            Route::get('/{claim}/download/{kind}/{child?}', [LegalClaimController::class, 'download'])->name('download')->whereNumber('claim')->whereNumber('child');
+            Route::post('/{claim}/actions', [LegalClaimController::class, 'action'])->name('actions.store')->whereNumber('claim');
+            Route::post('/{claim}/attachments', [LegalClaimController::class, 'attachment'])->name('attachments.store')->whereNumber('claim');
+            Route::post('/{claim}/statements', [LegalClaimController::class, 'statement'])->name('statements.store')->whereNumber('claim');
+            Route::get('/{claim}', [LegalClaimController::class, 'show'])->name('show')->whereNumber('claim');
         });
         Route::prefix('system-administration')->name('system-admin.')->middleware('admin')->group(function () {
             Route::get('/', [SystemAdministrationDashboardController::class, 'index'])->name('dashboard');

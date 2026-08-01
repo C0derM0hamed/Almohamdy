@@ -46,6 +46,7 @@ return [
     'transferal' => 'تحويل واستقبال الحالات',
     'admission_calculator' => 'حاسبات التنويم والتسعير',
     'employee_requests' => 'طلبات الموظفين',
+    'legal_claims' => 'المطالبات القانونية',
     'employee_permission_requests' => 'طلبات الاستئذان',
     'employee_duty_requests' => 'طلبات تغيير الدوام',
     'employee_resignation_requests' => 'طلبات الاستقالة',

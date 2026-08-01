@@ -317,6 +317,14 @@ return [
                 ],
             ],
             [
+                'label_key' => 'legal_claims',
+                'route' => 'modules.legal-claims.index',
+                'icon' => 'bi-briefcase',
+                'active_prefix' => 'modules.legal-claims.',
+                'subtitle_key' => 'legal_claims.scope',
+                'permission' => 'admin',
+            ],
+            [
                 'type' => 'group',
                 'label_key' => 'medical_appointments',
                 'icon' => 'bi-heart-pulse',
