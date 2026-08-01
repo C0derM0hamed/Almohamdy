@@ -152,12 +152,12 @@ class TrainingManagementTest extends TestCase
         $this->assertDatabaseHas('training_confirmation_actions', ['training_confirmation_id' => $created->id, 'status_id' => 7, 'details' => 'PW_AUDIT_REASON']);
     }
 
-    private function sessionFor(int $id): array
+    protected function sessionFor(int $id): array
     {
         return ['hr_user_id' => $id, 'hr_user_level' => 1, 'hr_branch_id' => 1, 'companies_groups_id' => 1, 'groupid' => 1];
     }
 
-    private function trainingRow(int $id, int $branch, int $company, int $employee): array
+    protected function trainingRow(int $id, int $branch, int $company, int $employee): array
     {
         return ['id' => $id, 'branch_id' => $branch, 'companies_groups_id' => $company, 'user_id' => 1, 'employee_id' => $employee,
             'training_coordinator' => 1, 'training_hour' => '8', 'begin_date' => '2026-08-01 00:00:00', 'days' => 6,

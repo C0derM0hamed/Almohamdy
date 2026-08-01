@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Module\Training;
 
-use App\Http\Controllers\Concerns\ResolvesDashboardView;
 use App\Http\Controllers\Controller;
 use App\Services\Training\TrainingService;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -12,10 +11,8 @@ use Illuminate\Http\Response;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 
-class TrainingManagementController extends Controller
+class TrainingCoordinationController extends Controller
 {
-    use ResolvesDashboardView;
-
     public function __construct(private readonly TrainingService $service) {}
 
     public function index(Request $request): View
@@ -28,17 +25,16 @@ class TrainingManagementController extends Controller
         ]);
 
         return view('training.management.index', [
-            'mode' => 'management',
+            'mode' => 'coordination',
             'routes' => $this->routes(),
             'trainings' => $this->service->list($filters),
             'statuses' => $this->service->statuses(),
-            'managementStatuses' => $this->service->statuses('2'),
-            'ackStatusId' => 6,
-            'reasonStatusIds' => [7, 8],
+            'managementStatuses' => $this->service->statuses('1'),
+            'ackStatusId' => 3,
+            'reasonStatusIds' => [4],
             'employees' => $this->service->employees(),
             'coordinators' => $this->service->coordinators(),
             'filters' => $filters,
-            'homeRoute' => $this->homeRouteName(),
         ]);
     }
 
@@ -55,7 +51,7 @@ class TrainingManagementController extends Controller
 
         $training = $this->service->create($data);
 
-        return redirect()->route('modules.training.management.show', $training->id)
+        return redirect()->route($this->routes()['show'], $training->id)
             ->with('success', __('training.saved'));
     }
 
@@ -65,14 +61,13 @@ class TrainingManagementController extends Controller
         abort_if($record === null, 404);
 
         return view('training.management.show', [
-            'mode' => 'management',
+            'mode' => 'coordination',
             'routes' => $this->routes(),
             'training' => $record,
             'timeline' => $this->service->timeline($record),
-            'managementStatuses' => $this->service->statuses('2'),
-            'ackStatusId' => 6,
-            'reasonStatusIds' => [7, 8],
-            'homeRoute' => $this->homeRouteName(),
+            'managementStatuses' => $this->service->statuses('1'),
+            'ackStatusId' => 3,
+            'reasonStatusIds' => [4],
         ]);
     }
 
@@ -82,12 +77,12 @@ class TrainingManagementController extends Controller
         abort_if($record === null, 404);
 
         $data = $request->validate([
-            'status_id' => ['required', 'integer', Rule::in([6, 7, 8])],
-            'details' => [Rule::requiredIf(in_array((int) $request->input('status_id'), [7, 8], true)), 'nullable', 'string', 'max:200'],
-            'acknowledgement' => ['exclude_unless:status_id,6', 'required', 'accepted'],
+            'status_id' => ['required', 'integer', Rule::in([2, 3, 4])],
+            'details' => [Rule::requiredIf((int) $request->input('status_id') === 4), 'nullable', 'string', 'max:200'],
+            'acknowledgement' => ['exclude_unless:status_id,3', 'required', 'accepted'],
         ]);
 
-        $this->service->updateManagementStatus($record, (int) $data['status_id'], $data['details'] ?? null);
+        $this->service->updateCoordinationStatus($record, (int) $data['status_id'], $data['details'] ?? null);
 
         return back()->with('success', __('training.status_saved'));
     }
@@ -98,13 +93,12 @@ class TrainingManagementController extends Controller
         abort_if($record === null, 404);
 
         return view('training.timeline', [
-            'mode' => 'management',
+            'mode' => 'coordination',
             'routes' => $this->routes(),
             'training' => $record,
             'timeline' => $this->service->timeline($record),
-            'ackStatusId' => 6,
-            'reasonStatusIds' => [7, 8],
-            'homeRoute' => $this->homeRouteName(),
+            'ackStatusId' => 3,
+            'reasonStatusIds' => [4],
         ]);
     }
 
@@ -121,6 +115,7 @@ class TrainingManagementController extends Controller
             'manager-failed' => 7,
         ];
         abort_unless(array_key_exists($document, $documents), 404);
+
         $requiredStatus = $documents[$document];
         $action = $requiredStatus === null
             ? null
@@ -154,13 +149,13 @@ class TrainingManagementController extends Controller
     protected function routes(): array
     {
         return [
-            'index' => 'modules.training.management.index',
-            'store' => 'modules.training.management.store',
-            'show' => 'modules.training.management.show',
-            'status' => 'modules.training.management.status',
-            'timeline' => 'modules.training.management.timeline',
-            'document' => 'modules.training.management.document',
-            'signed_pdf' => 'modules.training.management.signed-pdf',
+            'index' => 'modules.training.coordination.index',
+            'store' => 'modules.training.coordination.store',
+            'show' => 'modules.training.coordination.show',
+            'status' => 'modules.training.coordination.status',
+            'timeline' => 'modules.training.coordination.timeline',
+            'document' => 'modules.training.coordination.document',
+            'signed_pdf' => 'modules.training.coordination.signed-pdf',
         ];
     }
 }

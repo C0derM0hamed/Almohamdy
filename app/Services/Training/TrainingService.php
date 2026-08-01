@@ -111,6 +111,18 @@ class TrainingService
         });
     }
 
+    public function updateCoordinationStatus(TrainingConfirmation $training, int $statusId, ?string $details): void
+    {
+        $status = TrainingConfirmationStatus::query()->where('publish', 1)->where('type', '1')->find($statusId);
+        abort_if($status === null, 422);
+        abort_if((int) $training->status === $statusId, 422);
+
+        DB::transaction(function () use ($training, $statusId, $details): void {
+            $this->recordAction($training, $statusId, $details);
+            $training->forceFill(['status' => $statusId])->save();
+        });
+    }
+
     public function timeline(TrainingConfirmation $training): Collection
     {
         return TrainingConfirmationAction::query()->with(['status', 'author'])
