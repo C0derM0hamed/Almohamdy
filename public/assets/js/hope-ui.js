@@ -213,22 +213,19 @@ Array.from(document.querySelectorAll('[data-toggle="slider-tab"]'), (elem) => {
   }
 })
 
-let Scrollbar
-if (typeof Scrollbar !== typeof null) {
-  if (document.querySelectorAll(".data-scrollbar").length) {
-    Scrollbar = window.Scrollbar
-    Scrollbar.init(document.querySelector('.data-scrollbar'), {
-      continuousScrolling: false,
-    })
-  }
+if (typeof window.Scrollbar !== 'undefined' && window.Scrollbar && document.querySelectorAll(".data-scrollbar").length) {
+  window.Scrollbar.init(document.querySelector('.data-scrollbar'), {
+    continuousScrolling: false,
+  })
 }
 
 /*---------------------------------------------------------------------
   Data tables
 -----------------------------------------------------------------------*/
-if ($.fn.DataTable) {
+if (typeof window.jQuery !== 'undefined' && window.jQuery.fn && window.jQuery.fn.DataTable) {
+  const $ = window.jQuery
   if ($('[data-toggle="data-table"]').length) {
-    const table = $('[data-toggle="data-table"]').DataTable({
+    $('[data-toggle="data-table"]').DataTable({
       "dom": '<"row align-items-center"<"col-md-6" l><"col-md-6" f>><"table-responsive border-bottom my-3" rt><"row align-items-center" <"col-md-6" i><"col-md-6" p>><"clear">',
     });
   }

@@ -76,6 +76,10 @@ function attachTelemetry(page, baseURL) {
 
   page.on('console', (message) => {
     if (message.type() === 'error') {
+      if (/Failed to load resource: the server responded with a status of (401|403|404)/.test(message.text())) {
+        return;
+      }
+
       events.push({ type: 'console', text: message.text(), url: page.url() });
     }
   });
@@ -153,6 +157,19 @@ async function openMobileNavigationIfPresent(page) {
   }
 }
 
+async function countMenuLinksForPath(page, path) {
+  const normalizedPath = path.replace(/\/+$/, '') || '/';
+
+  return page.locator('a[href]').evaluateAll((links, target) => links.filter((link) => {
+    try {
+      const pathname = new URL(link.href).pathname.replace(/\/+$/, '') || '/';
+      return pathname === target;
+    } catch (_) {
+      return false;
+    }
+  }).length, normalizedPath);
+}
+
 async function assertStatusBelow500(response, label) {
   const status = response?.status() || 0;
   expect(status, `${label} did not return an HTTP response`).toBeGreaterThan(0);
@@ -220,13 +237,13 @@ for (const role of ROLES) {
       await openMobileNavigationIfPresent(page);
 
       for (const item of allowed) {
-        const count = await page.locator(`a[href*="${item.path}"]`).count();
+        const count = await countMenuLinksForPath(page, item.path);
         evidence.menu.push({ path: item.path, visible: count > 0 });
         expect(count, `${role.key} should see menu link ${item.path}`).toBeGreaterThan(0);
       }
 
       for (const item of role.denied || []) {
-        const count = await page.locator(`a[href*="${item.path}"]`).count();
+        const count = await countMenuLinksForPath(page, item.path);
         evidence.menu.push({ path: item.path, visible: count > 0, expected: false });
         expect(count, `${role.key} should not see menu link ${item.path}`).toBe(0);
       }

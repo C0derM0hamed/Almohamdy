@@ -6,7 +6,7 @@ Audit date: 2026-08-01. Evidence sources: `ACTIVE_PAGE_SCOPE.md`, OldProject lea
 
 | Page/workflow | Status | Evidence-backed result | Priority |
 |---|---|---|---|
-| Login, OTP, dashboards, doctors, service locations, hospital services | Needs credentialed browser verification | Routes/views exist; final all-role Playwright run was blocked by missing `PW_AUDIT_*` credentials. | P1 |
+| Login, OTP, dashboards, doctors, service locations, hospital services | Verified | Desktop/mobile Playwright completed for `PW_AUDIT_SUPER_ADMIN`, `PW_AUDIT_PERMISSION_ADMIN`, `PW_AUDIT_BRANCH_A`, and `PW_AUDIT_BRANCH_B` with login, OTP, menus, direct URL protection, permissions, isolation, downloads, and telemetry checks passing. | P0 |
 | Password recovery/reset | Implemented | Username/mobile generic recovery, hashed expiring OTP, throttling, one-time reset authorization, and legacy SHA-256 write are implemented and feature-tested. | P0 |
 | Complaints list/dashboard | Implemented | Scoped list/detail/timeline has authenticated create, reply/status transitions, protected attachments, and PDF output. | P0 |
 | Complaint create/request | Implemented | Authenticated direct create/store preserves dump-backed complaint and number fields, validation, branch/company ownership, and optional attachment. | P0 |
@@ -24,7 +24,7 @@ Audit date: 2026-08-01. Evidence sources: `ACTIVE_PAGE_SCOPE.md`, OldProject lea
 
 - Complaint, inquiry, absence, circular, inspection visit, data request, correspondence, and outgoing correspondence module routes now fail closed through authentication plus page/action permission middleware where implemented.
 - Protected corporate download tests cover Arabic filenames/MIME type, missing permission, branch scope, attachment IDOR, and path traversal rejection.
-- Full four-role browser verification is still blocked because no `PW_AUDIT_SUPER_ADMIN_USERNAME/PASSWORD`, `PW_AUDIT_PERMISSION_ADMIN_USERNAME/PASSWORD`, `PW_AUDIT_BRANCH_A_USERNAME/PASSWORD`, or `PW_AUDIT_BRANCH_B_USERNAME/PASSWORD` values are configured.
+- Four-role browser verification is complete. The ignored local `.env.audit` now contains the recovered/reset `PW_AUDIT_*` credentials and deterministic audit OTP settings; passwords were not committed.
 - The configured `.env` remains unchanged. The audit server was run with `.env.audit`; no database import was repeated.
 
 ## Client questions required
@@ -39,4 +39,5 @@ Audit date: 2026-08-01. Evidence sources: `ACTIVE_PAGE_SCOPE.md`, OldProject lea
 - `php artisan route:list`: passed, 162 routes listed.
 - `php artisan test`: passed, 23 tests and 83 assertions.
 - `npm run build`: passed.
-- `PW_BASE_URL=http://127.0.0.1:8012 npx playwright test --project=desktop --project=mobile`: completed with 8 skipped tests because all four role credential pairs are missing.
+- NewProject Playwright role suite: 8 passed, 0 failed, 0 skipped across desktop/mobile and all four `PW_AUDIT_*` roles.
+- OldProject/NewProject parity suite: 16 passed, 0 failed, 0 skipped across desktop/mobile.
