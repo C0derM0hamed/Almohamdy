@@ -1,0 +1,2 @@
+<?php
+return ['title' => 'Department settings', 'subtitle' => 'Manage settings available to the current account.', 'company' => 'Company settings', 'company_groups' => 'Company groups', 'branches' => 'Branches', 'branch' => 'Branch settings', 'departments' => 'Departments', 'needs' => 'Needs', 'service_types' => 'Service types', 'services' => 'Service settings', 'packages' => 'Service packages', 'governmental_services' => 'Governmental services', 'no_access' => 'No administrative settings are available for this account.'];

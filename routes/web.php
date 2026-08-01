@@ -48,6 +48,7 @@ use App\Http\Controllers\Module\AdmissionCalculator\AdmissionCalculatorControlle
 use App\Http\Controllers\Module\EmployeeRequests\EmployeeRequestController;
 use App\Http\Controllers\Module\LegalClaims\LegalClaimController;
 use App\Http\Controllers\Module\Publications\PublicationController;
+use App\Http\Controllers\Module\Settings\SettingsController;
 use App\Http\Controllers\PublicForms\MedicalAppointmentPublicController;
 use App\Http\Controllers\PublicForms\InspectionVisitDepartmentReplyController;
 use App\Http\Controllers\PublicForms\DataRequestDepartmentReplyController;
@@ -164,6 +165,7 @@ Route::middleware('auth.session')->group(function () {
     Route::get('/post_type.php', fn () => redirect()->route('modules.system-admin.reference.index', 'post-types'))->name('legacy.post-types')->middleware('admin');
     Route::get('/branches_service_type.php', fn () => redirect()->route('modules.system-admin.reference.index', 'service-types'))->name('legacy.service-types')->middleware('admin');
     Route::get('/new_post.php', fn () => redirect()->route('modules.publications.index'))->name('legacy.new-post');
+    Route::get('/settings.php', fn () => redirect()->route('modules.settings.index'))->name('legacy.settings');
     Route::get('/medical_terminology.php', fn () => redirect()->route('modules.system-admin.reference.index', 'medical-terminology'))->name('legacy.medical-terminology')->middleware('admin');
     Route::get('/services_codes.php', fn () => redirect()->route('modules.system-admin.reference.index', 'service-codes'))->name('legacy.service-codes')->middleware('admin');
     Route::get('/adm_user_groups.php', fn () => redirect()->route('modules.system-admin.reference.index', 'groups'))->name('legacy.user-groups')->middleware('admin');
@@ -324,6 +326,7 @@ Route::middleware('auth.session')->group(function () {
             Route::get('/{publication}/download', [PublicationController::class, 'download'])->name('download')->whereNumber('publication');
             Route::get('/{publication}', [PublicationController::class, 'show'])->name('show')->whereNumber('publication');
         });
+        Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index');
         Route::prefix('system-administration')->name('system-admin.')->middleware('admin')->group(function () {
             Route::get('/', [SystemAdministrationDashboardController::class, 'index'])->name('dashboard');
             Route::get('/packages', [SystemAdministrationServicePackageController::class, 'index'])->name('packages.index');

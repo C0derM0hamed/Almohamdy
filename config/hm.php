@@ -288,6 +288,13 @@ return [
                 'subtitle_key' => 'publications.scope',
             ],
             [
+                'label_key' => 'settings',
+                'route' => 'modules.settings.index',
+                'icon' => 'bi-sliders',
+                'active_prefix' => 'modules.settings.',
+                'subtitle_key' => 'settings.subtitle',
+            ],
+            [
                 'label_key' => 'emergency_follow_up',
                 'route' => 'modules.emergency-follow-up.index',
                 'icon' => 'bi-clipboard2-pulse',

@@ -72,6 +72,7 @@ return [
         'system_administration' => 'System Administration',
         'system_admin_complaint_references' => 'Complaint references',
         'publications' => 'Publications',
+        'settings' => 'Settings',
         'system_admin_terminology' => 'Medical terminology',
         'system_admin_service_codes' => 'Service codes',
         'system_admin_overview' => 'Overview',
