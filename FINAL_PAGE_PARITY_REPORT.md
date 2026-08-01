@@ -23,6 +23,20 @@ The crawl baseline is 114 unique targets, 105 deduplicated page/child candidates
 - Legal claims: list/create/detail, actions, sessions, protected attachments, statement requests, installments, suspension requests, and both PDF outputs.
 - System/service management: reused packages and users; added groups, job titles, governmental services, companies, branches, departments, and needs administration.
 
+## P1 result
+
+All five classified P1 modules are implemented and committed without duplicating complete NewProject owners:
+
+- Complaint references: statuses, closing reasons, letter receivers, service types, and post types through the existing scoped reference CRUD.
+- Publications: filtered list, create for scoped branches, detail, post types, real publication data, and protected image download.
+- Company settings: verified settings landing plus existing company administration.
+- Branch settings: verified settings landing plus existing branch, department, needs, and service-type administration.
+- Service settings: verified settings landing plus existing package and governmental-service administration.
+
+## Verified P2 result
+
+Medical terminology and service codes are implemented through the existing reference administration. Rare reports and low-usage utilities remain pending because their active legacy behavior is not sufficiently verified to implement safely.
+
 ## QA evidence
 
 - Focused Laravel P0 tests: pass.
@@ -33,12 +47,15 @@ The crawl baseline is 114 unique targets, 105 deduplicated page/child candidates
 - Focused P0 Playwright: 8 passed, 0 failed, 0 skipped across desktop/mobile and all four audit roles.
 - Authorization and branch/company scope checks passed for P0 smoke coverage.
 - Protected download paths and PDF routes are server-side scoped.
+- Complete post-P1/P2-subset Laravel suite: 46 passed, 218 assertions, 0 failed.
+- Complete Playwright parity suite: 20 passed, 0 failed, 0 skipped across desktop/mobile and all four audit roles.
+- Focused P1/P2 Playwright parity: 4 passed, 0 failed, 0 skipped.
+- Final route registration produced 313 routes; asset build passed.
 
 ## Remaining modules
 
-- P1: complaint references, publications/post types, and remaining operational submenu workflows.
-- P2: terminology/service-code references, rare reports, and low-use utilities.
+- P2: rare reports and low-usage utilities only, subject to further behavioral verification.
 
 One P0 action remains blocked by an external dependency rather than missing application behavior: SMS/email delivery recipients and production delivery semantics in the legacy legal workflow are not verified locally.
 
-Final delivery status: **P0 COMPLETE / OVERALL BLOCKED ON P1-P2**.
+Final delivery status: **P1 COMPLETE / VERIFIED P2 SUBSET COMPLETE / OVERALL IN PROGRESS ON REMAINING P2**.

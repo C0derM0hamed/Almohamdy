@@ -27,11 +27,24 @@ Audit date: 2026-08-02. The existing four-role crawl and classification were reu
 - Legal claims: filtered list, create, detail, status actions, sessions, attachments, protected downloads, statement requests, reconciliation installments, payment marking, suspension requests, claim PDF, and suspension PDF.
 - System/service management: reused complete package and user-permission workflows and added verified user groups, job titles, governmental service types, company groups, branches, departments, and branch needs CRUD/publish flows.
 
-## Remaining P1/P2
+## P1 result
 
-- P1: complaint reference administration, publications/post types, and remaining operational submenu workflows whose old handlers still need source-level parity.
-- P2: medical terminology/service-code references, rare reports, and low-use utilities.
-- No page in P1/P2 is being counted as complete from a redirect alone.
+| Module | Result | NewProject owner |
+|---|---|---|
+| Complaint references | Complete | `modules.system-admin.reference.*` |
+| Publications and post types | Complete | `modules.publications.*` plus `modules.system-admin.reference.post-types.*` |
+| Company settings | Complete for verified settings entry and administration | Existing company administration plus `modules.settings.index` |
+| Branch settings | Complete for verified settings entry and administration | Existing branches, departments, needs, and service-type administration |
+| Service settings | Complete for verified settings entry and administration | Existing packages, governmental services, and service-type administration |
+
+Complaint references preserve the verified global and branch-scoped reference tables, publish state, CRUD actions, and admin authorization. Publications preserve branch/company scope, post types, filters, real post data, image downloads, and the verified create/detail workflow.
+
+## Verified P2 result
+
+- Medical terminology administration is complete through the existing reference administration owner.
+- Service-code administration is complete through the existing reference administration owner.
+- Rare reports and low-usage utilities remain pending. They are not claimed complete because the remaining targets are not sufficiently behaviorally verifiable from the current active navigation and source data.
+- No page is counted as complete from a redirect alone; settings uses a real current-layout landing page and links to existing authorized owners.
 
 ## Blocked actions
 
@@ -44,4 +57,4 @@ Audit date: 2026-08-02. The existing four-role crawl and classification were reu
 - File downloads use `ProtectedFileDownload`; no direct storage URL is exposed.
 - Arabic RTL and the existing Hope UI layout are retained.
 
-Final P0 status: **COMPLETE**. Overall migration status remains **IN PROGRESS** while P1/P2 are queued.
+Final P1 status: **COMPLETE**. Verified P2 subset status: **COMPLETE**. Overall migration status remains **IN PROGRESS** for the remaining P2 reports and utilities.

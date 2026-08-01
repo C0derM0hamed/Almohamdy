@@ -13,9 +13,15 @@
 | Laravel tests | Pass | Complete suite: 44 passed, 209 assertions, 0 failed. |
 | Routes and assets | Pass | `optimize:clear`, 299-route `route:list`, PHP lint, and `npm run build` passed. |
 | P0 Playwright | Pass | 8 passed, 0 failed, 0 skipped across desktop/mobile and four audit roles. |
-| P1/P2 parity | Pending | Remaining modules are queued and are not claimed as complete. |
+| P1 complaint references | Pass | Scoped complaint/status/post reference CRUD, publish state, permissions, and branch scope verified. |
+| P1 publications | Pass | Real publication list/create/detail workflow, branch/company scope, post types, filters, and protected image download verified. |
+| P1 company/branch/service settings | Pass | Settings landing is implemented; existing authorized company, branch, and service administration owners are reused. |
+| Verified P2 terminology/service codes | Pass | Existing reference administration extended with verified medical terminology and service-code tables and fields. |
+| Remaining P2 reports/utilities | Pending | Rare reports and low-usage utilities require additional active-navigation and behavioral verification. |
+| P1/P2 Laravel tests | Pass | Complete suite: 46 passed, 218 assertions, 0 failed. |
+| P1/P2 Playwright parity | Pass | Full suite: 20 passed, 0 failed, 0 skipped; focused P1/P2: 4 passed. |
 | External legal notifications | Blocked action only | SMS/email recipient and delivery semantics require external confirmation; in-app requests are complete. |
 
 ## Release decision
 
-**P0 READY.** Overall delivery remains **BLOCKED** until P1/P2 modules are implemented and verified.
+**P1 READY.** Verified P2 subset is ready. Overall delivery remains **IN PROGRESS** pending the remaining behaviorally verifiable P2 reports and utilities.

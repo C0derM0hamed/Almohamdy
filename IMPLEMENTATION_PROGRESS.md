@@ -2,8 +2,9 @@
 
 ## Current continuation
 
-- Reused the existing crawl, module grouping, and completed emergency-follow-up work.
-- Implemented all five remaining P0 modules in separate stable commits.
+- Reused the existing crawl, module grouping, and completed P0 work.
+- Implemented all five P1 modules in stable commits, reusing the existing system-reference administration where complete.
+- Implemented the behaviorally verified P2 terminology and service-code references.
 - No database setup, login crawl, or completed module was rebuilt.
 
 ## P0 commits
@@ -26,10 +27,28 @@
 - Playwright covered allowed branch workflows, protected system/legal URLs, and admin versus non-admin authorization.
 - PHP lint passed for changed P0 service and controller files.
 
+## P1 and verified P2 commits
+
+- `d793ae8` Implement complaint references and P1 settings parity.
+- `2c85412` Implement publications parity.
+- `03e89a9` Implement verified terminology and service code parity.
+- `abf01cf` Add P1 and P2 parity browser tests.
+- `2f1b805` Add verified settings landing parity.
+- `ee5c3ea` Cover settings in P1 parity smoke tests.
+
+## P1/P2 verification
+
+- Complete Laravel suite: 46 tests passed, 218 assertions, 0 failed.
+- Focused publication, system-reference, and settings tests passed.
+- Full Playwright parity suite: 20 passed, 0 failed, 0 skipped across desktop/mobile and all four audit roles.
+- Focused P1/P2 Playwright parity: 4 passed, 0 failed, 0 skipped.
+- `php artisan optimize:clear`, 313-route `route:list`, PHP lint, and `npm run build` passed.
+- Publication image downloads remain protected and all reference/settings routes enforce admin authorization and scope.
+
 ## Remaining work
 
-- P1 remains: complaint references, publications/post types, and residual operational submenu workflows.
-- P2 remains: terminology/service-code references, rare reports, and low-use utilities.
+- P1 is complete for the five classified modules.
+- P2 remains only for rare reports and low-usage utilities whose behavior is not sufficiently verified.
 - The only explicitly blocked P0 behavior is external SMS/email delivery side effects in the legal source; the in-app workflows are complete.
 
-Final status for this batch: **P0 COMPLETE / P1-P2 QUEUED**.
+Final status for this batch: **P1 COMPLETE / VERIFIED P2 SUBSET COMPLETE / REMAINING P2 PENDING**.
