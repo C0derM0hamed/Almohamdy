@@ -2,30 +2,34 @@
 
 ## Current continuation
 
-- Loaded the existing reports and `/tmp/old-nav-audit.json` before discovery.
-- Re-ran OldProject login, OTP, and navigation collection for all four audit roles.
-- Captured 114 unique link targets and 105 page/child URL candidates after excluding non-page shell targets.
-- Completed the verified emergency performance report (`rep_1.php`) using legacy report tables, scoped filters, child sections, PDF, and protected attachments.
-- Completed the verified personal password page (`change_my_pass.php`) using the existing legacy SHA-256 contract and current-password verification.
-- Preserved the existing technical-failure implementation and verified its scoped workflow.
-- Grouped the 97 remaining candidates into 12 business modules, 42 main page templates, and 55 child/action pages.
-- Completed the first P0 module, emergency follow-up, in `89ee7e9`.
+- Reused the existing crawl, module grouping, and completed emergency-follow-up work.
+- Implemented all five remaining P0 modules in separate stable commits.
+- No database setup, login crawl, or completed module was rebuilt.
 
-## Reused functionality
+## P0 commits
 
-No duplicate module was created for dashboard, complaints, inquiries, leave requests, corporate communication, absence notification, medical appointments, training, or user administration. Existing controllers, services, repositories, permissions, layouts, and protected download handlers remain the owners of those workflows.
+- `e2520ed` Implement transfer and reception parity.
+- `0a2cdbb` Implement admission calculator parity.
+- `ba0240b` Implement employee request workflows.
+- `bc56c42` Implement legal claims parity.
+- `ef7d62c` Complete legal claim child workflows.
+- `9d4af80` Complete system reference administration parity.
+- `5d94fe0` Add P0 parity browser smoke tests.
 
 ## Verification
 
-- OldProject: all four audit accounts reached OTP and completed the authenticated navigation crawl.
-- NewProject: the complete audit Playwright suite passed 8/8 desktop and mobile role cases after the password-page batch.
-- Branch/company isolation, protected attachments, and training/medical PDF links passed in the completed NewProject role suite.
-- The new password workflow has a focused feature test covering wrong-current-password rejection and SHA-256 update.
-- Emergency follow-up focused Laravel tests pass 2 tests and 4 assertions. Its browser parity check passed login/OTP, list, create, detail, notice history, close, print, and branch-B isolation with no console errors.
-- Final Laravel suite: 36 tests passed, 188 assertions. Final route registration: 220 routes. Production asset build passed.
+- Focused P0 Laravel tests: 6 tests passed, 17 assertions.
+- Complete Laravel suite after P0: 44 tests passed, 209 assertions, with no failures.
+- `php artisan route:list` completed successfully with 299 registered routes.
+- `npm run build` completed successfully.
+- Focused P0 Playwright: 8 tests passed across desktop and mobile for all four audit roles.
+- Playwright covered allowed branch workflows, protected system/legal URLs, and admin versus non-admin authorization.
+- PHP lint passed for changed P0 service and controller files.
 
 ## Remaining work
 
-The fresh crawl leaves 97 URL-level candidates that were initially missing, partial, or not yet parity-verified. Emergency follow-up is complete; the remaining P0 queue includes transfer/emergency reception, admission calculators, employee requests, lawsuits, administration residuals, and hospital service/directory residuals. P1 and P2 remain queued until their OldProject handlers, tables, statuses, permissions, scope rules, attachments, and output formats are reviewed and implemented without placeholders.
+- P1 remains: complaint references, publications/post types, and residual operational submenu workflows.
+- P2 remains: terminology/service-code references, rare reports, and low-use utilities.
+- The only explicitly blocked P0 behavior is external SMS/email delivery side effects in the legal source; the in-app workflows are complete.
 
-Final status for this batch: emergency follow-up P0 is complete; the overall P0 scope and full menu parity remain **IN PROGRESS / BLOCKED**.
+Final status for this batch: **P0 COMPLETE / P1-P2 QUEUED**.

@@ -1,53 +1,44 @@
 # Final Page Parity Report
 
-## Result
+## P0 result
 
-Full parity is not yet achieved. The fresh crawl was broader than the former 28-page scope and found 114 unique link targets, with 105 page/child URL candidates after excluding non-page targets. No PHP file was counted as a page.
+All five remaining P0 business modules are implemented and committed. Existing complete NewProject modules were reused; no duplicate implementation was introduced.
 
-## Role crawl
+## Role and scope baseline
 
-| Role | OldProject result |
+| Role | OldProject crawl |
 |---|---|
 | `PW_AUDIT_SUPER_ADMIN` | Login, OTP, dashboard/admin shell, and navigation crawl passed |
 | `PW_AUDIT_PERMISSION_ADMIN` | Login, OTP, branch shell, and navigation crawl passed |
 | `PW_AUDIT_BRANCH_A` | Login, OTP, branch shell, and navigation crawl passed |
 | `PW_AUDIT_BRANCH_B` | Login, OTP, branch shell, and navigation crawl passed |
 
-Captured link-target totals were 45, 87, 87, and 65 respectively. These include repeated navigation, query variants, and safe child links.
+The crawl baseline is 114 unique targets, 105 deduplicated page/child candidates, 12 real modules, 42 main page templates, and 55 child/action pages.
 
-## Classification
+## P0 page families implemented
 
-| Result | Count |
-|---|---:|
-| Existing complete families reused | 5 |
-| New verified page families completed | 3 |
-| Protected compatibility routes | 13 |
-| Duplicate implementations | 0 |
-| Missing/partial/unverified URL candidates | 97 |
+- Transfer and reception: outgoing/incoming, create/detail, workflow replies, timeline, attachments, and PDF.
+- Admission calculators: standard/manual list and form families, detail, deletion, and PDF.
+- Employee requests: permission/duty/resignation list, create, reply, detail, and PDF families.
+- Legal claims: list/create/detail, actions, sessions, protected attachments, statement requests, installments, suspension requests, and both PDF outputs.
+- System/service management: reused packages and users; added groups, job titles, governmental services, companies, branches, departments, and needs administration.
 
-## Module classification checkpoint
+## QA evidence
 
-- Real business modules: 12
-- Main page templates after deduplication: 42
-- Child/action pages: 55
-- P0 queue: emergency follow-up/transfer/reception, admission calculators, employee request workflows, legal claims, user/system administration residuals, and hospital service/directory residuals.
-- P1 queue: complaint references, publications, and company/branch/service setup.
-- P2 queue: terminology/service references, rare reports, low-use utilities, and duplicate targets after verified parity.
+- Focused Laravel P0 tests: pass.
+- Complete Laravel suite: 44 passed, 209 assertions, 0 failed.
+- Route registration: pass, 299 routes.
+- PHP lint on changed P0 PHP files: pass.
+- Production asset build: pass.
+- Focused P0 Playwright: 8 passed, 0 failed, 0 skipped across desktop/mobile and all four audit roles.
+- Authorization and branch/company scope checks passed for P0 smoke coverage.
+- Protected download paths and PDF routes are server-side scoped.
 
-The compatibility routes preserve the current Laravel implementation and authorization. They are not counted as separate pages or as proof of legacy child-workflow parity.
+## Remaining modules
 
-## Completed page families
+- P1: complaint references, publications/post types, and remaining operational submenu workflows.
+- P2: terminology/service-code references, rare reports, and low-use utilities.
 
-- Technical failure notices: scoped list, create, status/timeline, detail, PDF, and protected attachment.
-- Emergency performance report: legacy `report_1` data, filters, summaries, all verified child sections, PDF, and protected attachments.
-- Personal password change: current-password verification and legacy SHA-256 writeback.
-- Emergency follow-up: branch-scoped list/create/detail workflow, notice history, close action, and print output. Verified in `89ee7e9`.
+One P0 action remains blocked by an external dependency rather than missing application behavior: SMS/email delivery recipients and production delivery semantics in the legacy legal workflow are not verified locally.
 
-## Security and output verification
-
-- NewProject's final four-role Playwright suite passed 8/8 desktop/mobile cases, including menu visibility, direct URL authorization, actions, branch/company isolation, protected downloads, training PDFs, and the branch-B medical PDF.
-- No duplicate NewProject implementation was introduced.
-- Final Laravel verification passed: 36 tests, 188 assertions, 220 registered routes, and a successful production asset build.
-- Emergency follow-up has no verified legacy attachment/PDF flow; its print output is covered. Remaining legacy families are not marked complete until their handlers, fields, statuses, permissions, scope, attachments, print/PDF behavior, and child links are implemented and verified.
-
-Final delivery status: **BLOCKED**. P0 implementation is still in progress after the first completed module.
+Final delivery status: **P0 COMPLETE / OVERALL BLOCKED ON P1-P2**.
