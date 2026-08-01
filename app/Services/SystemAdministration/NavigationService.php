@@ -27,7 +27,7 @@ class NavigationService
 
             $cards[] = new DashboardCard(
                 title: __('system_administration.cards.'.$labelKey),
-                url: route($routeName),
+                url: route($routeName, (array) ($card['route_params'] ?? [])),
                 icon: (string) ($card['icon'] ?? 'bi-grid'),
                 route: $routeName,
                 description: $description === $descriptionKey ? '' : $description,

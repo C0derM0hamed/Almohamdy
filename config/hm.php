@@ -457,6 +457,13 @@ return [
                 'route' => 'modules.doctors-admin.dashboard',
                 'icon' => 'bi-gear-wide-connected',
             ],
+            ['label_key' => 'groups', 'route' => 'modules.system-admin.reference.index', 'route_params' => ['type' => 'groups'], 'icon' => 'bi-people'],
+            ['label_key' => 'job_titles', 'route' => 'modules.system-admin.reference.index', 'route_params' => ['type' => 'job-titles'], 'icon' => 'bi-person-badge'],
+            ['label_key' => 'governmental_services', 'route' => 'modules.system-admin.reference.index', 'route_params' => ['type' => 'governmental-services'], 'icon' => 'bi-building-check'],
+            ['label_key' => 'companies', 'route' => 'modules.system-admin.reference.index', 'route_params' => ['type' => 'companies'], 'icon' => 'bi-buildings'],
+            ['label_key' => 'branches', 'route' => 'modules.system-admin.reference.index', 'route_params' => ['type' => 'branches'], 'icon' => 'bi-diagram-3'],
+            ['label_key' => 'departments', 'route' => 'modules.system-admin.reference.index', 'route_params' => ['type' => 'departments'], 'icon' => 'bi-diagram-2'],
+            ['label_key' => 'needs', 'route' => 'modules.system-admin.reference.index', 'route_params' => ['type' => 'needs'], 'icon' => 'bi-list-check'],
         ],
     ],
 

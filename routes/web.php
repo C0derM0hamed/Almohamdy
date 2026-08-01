@@ -24,6 +24,7 @@ use App\Http\Controllers\Module\HospitalServices\ServiceSectionController;
 use App\Http\Controllers\Module\SystemAdministration\DashboardController as SystemAdministrationDashboardController;
 use App\Http\Controllers\Module\SystemAdministration\ServicePackageController as SystemAdministrationServicePackageController;
 use App\Http\Controllers\Module\SystemAdministration\UserPermissionController;
+use App\Http\Controllers\Module\SystemAdministration\ReferenceAdminController;
 use App\Http\Controllers\Module\GovernmentCirculars\GovernmentCircularController;
 use App\Http\Controllers\Module\GovernmentInspectionVisits\GovernmentInspectionVisitController;
 use App\Http\Controllers\Module\GovernmentDataRequests\GovernmentDataRequestController;
@@ -156,6 +157,13 @@ Route::middleware('auth.session')->group(function () {
     Route::get('/permission_request.php', fn () => redirect()->route('modules.employee-requests.create', 'permission'))->name('legacy.permission-request');
     Route::get('/change_duty_time_request.php', fn () => redirect()->route('modules.employee-requests.create', 'duty'))->name('legacy.duty-request');
     Route::get('/resignation_request.php', fn () => redirect()->route('modules.employee-requests.create', 'resignation'))->name('legacy.resignation-request');
+    Route::get('/adm_user_groups.php', fn () => redirect()->route('modules.system-admin.reference.index', 'groups'))->name('legacy.user-groups')->middleware('admin');
+    Route::get('/job_titles.php', fn () => redirect()->route('modules.system-admin.reference.index', 'job-titles'))->name('legacy.job-titles')->middleware('admin');
+    Route::get('/governmental_services_type.php', fn () => redirect()->route('modules.system-admin.reference.index', 'governmental-services'))->name('legacy.governmental-services')->middleware('admin');
+    Route::get('/companies_groups.php', fn () => redirect()->route('modules.system-admin.reference.index', 'companies'))->name('legacy.companies')->middleware('admin');
+    Route::get('/adm_reg_branch.php', fn () => redirect()->route('modules.system-admin.reference.index', 'branches'))->name('legacy.branches')->middleware('admin');
+    Route::get('/branches_departments.php', fn () => redirect()->route('modules.system-admin.reference.index', 'departments'))->name('legacy.departments')->middleware('admin');
+    Route::get('/branches_needs.php', fn () => redirect()->route('modules.system-admin.reference.index', 'needs'))->name('legacy.needs')->middleware('admin');
     Route::get('/lawsuit.php', fn () => redirect()->route('modules.legal-claims.index'))->name('legacy.lawsuit')->middleware('admin');
     Route::get('/lawsuit_pdf.php', function (Request $request) { return app(LegalClaimController::class)->pdf($request->integer('id')); })->name('legacy.lawsuit-pdf')->middleware('admin');
     Route::get('/complaints.php', fn () => redirect()->route('modules.complaints.index'))
@@ -311,6 +319,15 @@ Route::middleware('auth.session')->group(function () {
             Route::delete('/packages/{package}', [SystemAdministrationServicePackageController::class, 'destroy'])
                 ->name('packages.destroy')
                 ->whereNumber('package');
+            Route::prefix('reference')->name('reference.')->group(function () {
+                Route::get('/{type}', [ReferenceAdminController::class, 'index'])->name('index')->whereIn('type', ['groups', 'job-titles', 'governmental-services', 'companies', 'branches', 'departments', 'needs']);
+                Route::get('/{type}/create', [ReferenceAdminController::class, 'create'])->name('create')->whereIn('type', ['groups', 'job-titles', 'governmental-services', 'companies', 'branches', 'departments', 'needs']);
+                Route::post('/{type}', [ReferenceAdminController::class, 'store'])->name('store')->whereIn('type', ['groups', 'job-titles', 'governmental-services', 'companies', 'branches', 'departments', 'needs']);
+                Route::get('/{type}/{reference}/edit', [ReferenceAdminController::class, 'edit'])->name('edit')->whereNumber('reference');
+                Route::put('/{type}/{reference}', [ReferenceAdminController::class, 'update'])->name('update')->whereNumber('reference');
+                Route::patch('/{type}/{reference}/publish', [ReferenceAdminController::class, 'publish'])->name('publish')->whereNumber('reference');
+                Route::delete('/{type}/{reference}', [ReferenceAdminController::class, 'destroy'])->name('destroy')->whereNumber('reference');
+            });
         });
         Route::prefix('system-administration/users')->name('system-admin.users.')->middleware('permission.admin')->group(function () {
             Route::get('/', [UserPermissionController::class, 'index'])->name('index');
