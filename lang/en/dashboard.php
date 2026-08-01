@@ -44,6 +44,7 @@ return [
         'technical_failures' => 'Technical failure notices',
     'emergency_follow_up' => 'Emergency follow-up',
     'transferal' => 'Patient transfer and reception',
+    'admission_calculator' => 'Admission calculators',
         'corporate_communication' => 'Corporate Communication',
         'government_circulars' => 'Government Circulars Service',
         'inspection_visits' => 'Inspection Visits Service',

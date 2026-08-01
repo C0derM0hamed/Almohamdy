@@ -297,6 +297,15 @@ return [
                 'branch_ids' => [1],
             ],
             [
+                'label_key' => 'admission_calculator',
+                'route' => 'modules.admission-calculator.index',
+                'route_params' => ['type' => 'standard'],
+                'icon' => 'bi-calculator',
+                'active_prefix' => 'modules.admission-calculator.',
+                'subtitle_key' => 'admission_calculator.scope',
+                'branch_ids' => [1],
+            ],
+            [
                 'type' => 'group',
                 'label_key' => 'medical_appointments',
                 'icon' => 'bi-heart-pulse',

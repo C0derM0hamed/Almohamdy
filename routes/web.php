@@ -43,6 +43,7 @@ use App\Http\Controllers\Module\TechnicalFailure\TechnicalFailureController;
 use App\Http\Controllers\Module\EmergencyPerformanceReport\EmergencyPerformanceReportController;
 use App\Http\Controllers\Module\EmergencyFollowUp\EmergencyFollowUpController;
 use App\Http\Controllers\Module\Transferal\TransferalController;
+use App\Http\Controllers\Module\AdmissionCalculator\AdmissionCalculatorController;
 use App\Http\Controllers\PublicForms\MedicalAppointmentPublicController;
 use App\Http\Controllers\PublicForms\InspectionVisitDepartmentReplyController;
 use App\Http\Controllers\PublicForms\DataRequestDepartmentReplyController;
@@ -145,6 +146,8 @@ Route::middleware('auth.session')->group(function () {
     Route::get('/transferal.php', fn () => redirect()->route('modules.transferal.outgoing'))->name('legacy.transferal');
     Route::get('/received_transferal.php', fn () => redirect()->route('modules.transferal.incoming'))->name('legacy.received-transferal');
     Route::get('/transferal_pdf.php', function (Request $request) { return app(TransferalController::class)->pdf($request->integer('id')); })->name('legacy.transferal-pdf');
+    Route::get('/admission_calculator.php', fn () => redirect()->route('modules.admission-calculator.index', 'standard'))->name('legacy.admission-calculator');
+    Route::get('/manual_admission_calculator.php', fn () => redirect()->route('modules.admission-calculator.index', 'manual'))->name('legacy.manual-admission-calculator');
     Route::get('/complaints.php', fn () => redirect()->route('modules.complaints.index'))
         ->name('legacy.complaints')
         ->middleware('permission:complaints');
@@ -255,6 +258,14 @@ Route::middleware('auth.session')->group(function () {
             Route::post('/{transferal}/approve', [TransferalController::class, 'approve'])->name('approve')->whereNumber('transferal');
             Route::post('/{transferal}/refuse', [TransferalController::class, 'refuse'])->name('refuse')->whereNumber('transferal');
             Route::post('/{transferal}/receive', [TransferalController::class, 'receive'])->name('receive')->whereNumber('transferal');
+        });
+        Route::prefix('admission-calculator')->name('admission-calculator.')->group(function () {
+            Route::get('/{type}', [AdmissionCalculatorController::class, 'index'])->name('index')->whereIn('type', ['standard', 'manual']);
+            Route::get('/{type}/create', [AdmissionCalculatorController::class, 'create'])->name('create')->whereIn('type', ['standard', 'manual']);
+            Route::post('/{type}', [AdmissionCalculatorController::class, 'store'])->name('store')->whereIn('type', ['standard', 'manual']);
+            Route::get('/{type}/{id}/pdf', [AdmissionCalculatorController::class, 'pdf'])->name('pdf')->whereIn('type', ['standard', 'manual'])->whereNumber('id');
+            Route::get('/{type}/{id}', [AdmissionCalculatorController::class, 'show'])->name('show')->whereIn('type', ['standard', 'manual'])->whereNumber('id');
+            Route::delete('/{type}/{id}', [AdmissionCalculatorController::class, 'destroy'])->name('destroy')->whereIn('type', ['standard', 'manual'])->whereNumber('id');
         });
         Route::prefix('system-administration')->name('system-admin.')->middleware('admin')->group(function () {
             Route::get('/', [SystemAdministrationDashboardController::class, 'index'])->name('dashboard');

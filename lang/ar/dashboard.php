@@ -44,6 +44,7 @@ return [
         'technical_failures' => 'بلاغات الأعطال التقنية',
     'emergency_follow_up' => 'متابعة الطوارئ',
     'transferal' => 'تحويل واستقبال الحالات',
+    'admission_calculator' => 'حاسبات التنويم والتسعير',
         'corporate_communication' => 'التواصل المؤسسي',
         'government_circulars' => 'خدمة التعاميم الحكومية',
         'inspection_visits' => 'خدمة الزيارات التفتيشية',
