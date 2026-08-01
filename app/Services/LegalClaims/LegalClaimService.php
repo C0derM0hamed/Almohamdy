@@ -42,6 +42,7 @@ class LegalClaimService
             'locations' => DB::table('lawsuit_admission_location')->where('publish', 1)->orderBy('id')->get(),
             'requestStatuses' => DB::table('lawsuit_request_status')->where('publish', 1)->orderBy('id')->get(),
             'rejectedReasons' => DB::table('lawsuit_rejected_reason')->where('publish', 1)->orderBy('id')->get(),
+            'suspendStatuses' => DB::table('lawsuit_suspend_case_request_status')->where('publish', 1)->orderBy('ranking')->get(),
         ];
     }
 
@@ -71,6 +72,8 @@ class LegalClaimService
             $claim->actions = DB::table('lawsuit_actions')->leftJoin('lawsuit_status as s', 's.id', '=', 'lawsuit_actions.status_id')->where('lawsuit_id', $id)->orderByDesc('lawsuit_actions.id')->select('lawsuit_actions.*', 's.name_ar as status_name_ar')->get();
             $claim->attachments = DB::table('lawsuit_attachments')->where('lawsuit_id', $id)->orderByDesc('id')->get();
             $claim->statements = DB::table('lawsuit_statement_request')->where('lawsuit_id', $id)->orderByDesc('id')->get();
+            $claim->installments = DB::table('lawsuit_reconciliation_installment')->where('lawsuit_id', $id)->orderBy('installment_date')->get();
+            $claim->suspensions = DB::table('lawsuit_suspend_case_request as r')->leftJoin('lawsuit_suspend_case_request_status as s', 's.id', '=', 'r.lawsuit_suspend_case_request_status_id')->where('r.lawsuit_id', $id)->orderByDesc('r.id')->select('r.*', 's.name_ar as status_name_ar')->get();
         }
         return $claim;
     }
@@ -104,6 +107,26 @@ class LegalClaimService
     {
         abort_if($this->find($id) === null, 404);
         DB::table('lawsuit_statement_request')->insert(['lawsuit_id' => $id, 'branch_id' => $this->branchId(), 'details' => trim($details), 'created_by' => (int) session('hr_user_id', 0), 'created_at' => now(), 'file' => $this->storeFile($file)]);
+    }
+
+    public function addInstallment(int $id, string $date): void
+    {
+        abort_if($this->find($id) === null, 404);
+        DB::table('lawsuit_reconciliation_installment')->insert(['lawsuit_id' => $id, 'branch_id' => $this->branchId(), 'companies_groups_id' => $this->companyId(), 'installment_date' => $date, 'created_by' => (int) session('hr_user_id', 0)]);
+    }
+
+    public function markInstallmentPaid(int $id, int $installment): void
+    {
+        abort_if($this->find($id) === null, 404);
+        abort_unless(DB::table('lawsuit_reconciliation_installment')->where('id', $installment)->where('lawsuit_id', $id)->exists(), 404);
+        DB::table('lawsuit_reconciliation_installment')->where('id', $installment)->where('lawsuit_id', $id)->update(['payment_status' => 1, 'payment_date' => time(), 'payment_intered_by' => (int) session('hr_user_id', 0)]);
+    }
+
+    public function addSuspension(int $id, array $data, ?UploadedFile $file): void
+    {
+        abort_if($this->find($id) === null, 404);
+        abort_unless(DB::table('lawsuit_suspend_case_request_status')->where('id', (int) $data['status_id'])->where('publish', 1)->exists(), 422);
+        DB::table('lawsuit_suspend_case_request')->insert(['lawsuit_id' => $id, 'lawsuit_suspend_case_request_status_id' => (int) $data['status_id'], 'branch_id' => $this->branchId(), 'created_by' => (int) session('hr_user_id', 0), 'total_amount' => $data['total_amount'] ?? null, 'amount_waived' => $data['amount_waived'] ?? null, 'file' => $this->storeFile($file)]);
     }
 
     public function download(int $id, string $kind, ?int $childId = null): mixed

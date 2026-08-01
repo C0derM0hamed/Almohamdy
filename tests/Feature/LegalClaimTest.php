@@ -22,8 +22,11 @@ class LegalClaimTest extends TestCase
         Schema::create('lawsuit_actions', function (Blueprint $b): void { $b->increments('id'); $b->integer('lawsuit_id'); $b->integer('status_id'); $b->integer('branch_id'); $b->text('details')->nullable(); $b->integer('created_by'); $b->timestamp('created_at')->nullable(); $b->string('request_number')->nullable(); $b->string('request_date')->nullable(); $b->string('case_number')->nullable(); $b->string('sessions_number')->nullable(); $b->text('session_summary')->nullable(); $b->string('sessions_date')->nullable(); $b->string('next_sessions_date')->nullable(); $b->string('lawsuit_request_file')->nullable(); $b->string('session_1_file')->nullable(); });
         Schema::create('lawsuit_attachments', function (Blueprint $b): void { $b->increments('id'); $b->integer('lawsuit_id'); $b->string('file_name'); $b->integer('created_by'); $b->timestamp('created_at')->nullable(); });
         Schema::create('lawsuit_statement_request', function (Blueprint $b): void { $b->increments('id'); $b->integer('lawsuit_id'); $b->integer('branch_id'); $b->text('details'); $b->integer('created_by'); $b->timestamp('created_at')->nullable(); $b->string('file')->nullable(); });
+        Schema::create('lawsuit_reconciliation_installment', function (Blueprint $b): void { $b->increments('id'); $b->integer('lawsuit_id'); $b->integer('branch_id'); $b->integer('companies_groups_id'); $b->string('installment_date'); $b->integer('created_by'); $b->integer('payment_status')->nullable(); $b->string('payment_date')->nullable(); $b->integer('payment_intered_by')->nullable(); });
+        Schema::create('lawsuit_suspend_case_request', function (Blueprint $b): void { $b->increments('id'); $b->integer('lawsuit_id'); $b->integer('lawsuit_suspend_case_request_status_id'); $b->integer('branch_id'); $b->integer('created_by'); $b->string('total_amount')->nullable(); $b->string('amount_waived')->nullable(); $b->string('file')->nullable(); });
+        Schema::create('lawsuit_suspend_case_request_status', function (Blueprint $b): void { $b->increments('id'); $b->string('name_ar'); $b->integer('publish')->default(1); $b->integer('ranking')->default(1); });
         foreach (['lawsuit_admission_location', 'lawsuit_request_status', 'lawsuit_rejected_reason'] as $table) Schema::create($table, function (Blueprint $b): void { $b->increments('id'); $b->string('name_ar'); $b->integer('publish')->default(1); });
-        DB::table('lawsuit_payment_type')->insert(['id' => 1, 'name_ar' => 'دفع', 'publish' => 1]); DB::table('lawsuit_status')->insert(['id' => 1, 'name_ar' => 'جديد', 'publish' => 1, 'ranking' => 1]);
+        DB::table('lawsuit_payment_type')->insert(['id' => 1, 'name_ar' => 'دفع', 'publish' => 1]); DB::table('lawsuit_status')->insert(['id' => 1, 'name_ar' => 'جديد', 'publish' => 1, 'ranking' => 1]); DB::table('lawsuit_suspend_case_request_status')->insert(['id' => 1, 'name_ar' => 'طلب', 'publish' => 1, 'ranking' => 1]);
         session(['hr_user_id' => 10, 'hr_branch_id' => 1, 'companies_groups_id' => 1]);
     }
 
@@ -34,6 +37,11 @@ class LegalClaimTest extends TestCase
         $this->assertSame('مريض', $service->find($id)->patient_name);
         $service->addAction($id, ['status_id' => 1, 'details' => 'تمت المراجعة'], []);
         $this->assertDatabaseHas('lawsuit_actions', ['lawsuit_id' => $id, 'details' => 'تمت المراجعة']);
+        $service->addInstallment($id, '2026-08-15');
+        $installment = DB::table('lawsuit_reconciliation_installment')->first();
+        $service->markInstallmentPaid($id, $installment->id);
+        $service->addSuspension($id, ['status_id' => 1, 'total_amount' => 100, 'amount_waived' => 10], null);
+        $this->assertDatabaseHas('lawsuit_suspend_case_request', ['lawsuit_id' => $id, 'amount_waived' => 10]);
         session(['companies_groups_id' => 2]);
         $this->assertNull($service->find($id));
     }

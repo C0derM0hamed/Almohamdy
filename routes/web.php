@@ -302,6 +302,10 @@ Route::middleware('auth.session')->group(function () {
             Route::post('/{claim}/actions', [LegalClaimController::class, 'action'])->name('actions.store')->whereNumber('claim');
             Route::post('/{claim}/attachments', [LegalClaimController::class, 'attachment'])->name('attachments.store')->whereNumber('claim');
             Route::post('/{claim}/statements', [LegalClaimController::class, 'statement'])->name('statements.store')->whereNumber('claim');
+            Route::post('/{claim}/installments', [LegalClaimController::class, 'installment'])->name('installments.store')->whereNumber('claim');
+            Route::patch('/{claim}/installments/{installment}/paid', [LegalClaimController::class, 'paid'])->name('installments.paid')->whereNumber(['claim', 'installment']);
+            Route::post('/{claim}/suspensions', [LegalClaimController::class, 'suspension'])->name('suspensions.store')->whereNumber('claim');
+            Route::get('/{claim}/suspension-pdf', [LegalClaimController::class, 'suspensionPdf'])->name('suspension-pdf')->whereNumber('claim');
             Route::get('/{claim}', [LegalClaimController::class, 'show'])->name('show')->whereNumber('claim');
         });
         Route::prefix('system-administration')->name('system-admin.')->middleware('admin')->group(function () {

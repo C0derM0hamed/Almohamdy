@@ -28,7 +28,7 @@ class LegalClaimController extends Controller
         return redirect()->route('modules.legal-claims.show', $id)->with('success', __('legal_claims.created'));
     }
 
-    public function show(int $claim): View { $record = $this->service->find($claim); abort_if($record === null, 404); return view('legal-claims.show', ['record' => $record, 'statuses' => $this->service->lookups()['statuses'], 'timeline' => $this->service->timeline($claim), 'homeRoute' => 'branch.dashboard']); }
+    public function show(int $claim): View { $lookups = $this->service->lookups(); $record = $this->service->find($claim); abort_if($record === null, 404); return view('legal-claims.show', ['record' => $record, 'statuses' => $lookups['statuses'], 'suspensionStatuses' => $lookups['suspendStatuses'], 'timeline' => $this->service->timeline($claim), 'homeRoute' => 'branch.dashboard']); }
 
     public function action(Request $request, int $claim): RedirectResponse
     {
@@ -39,6 +39,10 @@ class LegalClaimController extends Controller
 
     public function attachment(Request $request, int $claim): RedirectResponse { $request->validate(['file' => ['required', 'file', 'max:10240']]); $this->service->addAttachment($claim, $request->file('file')); return back()->with('success', __('legal_claims.attachment_added')); }
     public function statement(Request $request, int $claim): RedirectResponse { $data = $request->validate(['details' => ['required', 'string', 'max:2000'], 'file' => ['nullable', 'file', 'max:10240']]); $this->service->addStatement($claim, $data['details'], $request->file('file')); return back()->with('success', __('legal_claims.statement_added')); }
+    public function installment(Request $request, int $claim): RedirectResponse { $data = $request->validate(['installment_date' => ['required', 'date']]); $this->service->addInstallment($claim, $data['installment_date']); return back()->with('success', __('legal_claims.installment_added')); }
+    public function paid(int $claim, int $installment): RedirectResponse { $this->service->markInstallmentPaid($claim, $installment); return back()->with('success', __('legal_claims.installment_paid')); }
+    public function suspension(Request $request, int $claim): RedirectResponse { $data = $request->validate(['status_id' => ['required', 'integer'], 'total_amount' => ['nullable', 'numeric'], 'amount_waived' => ['nullable', 'numeric'], 'file' => ['nullable', 'file', 'max:10240']]); $this->service->addSuspension($claim, $data, $request->file('file')); return back()->with('success', __('legal_claims.suspension_added')); }
     public function download(int $claim, string $kind, ?int $child = null): mixed { return $this->service->download($claim, $kind, $child); }
     public function pdf(int $claim): mixed { $record = $this->service->find($claim); abort_if($record === null, 404); return Pdf::loadView('legal-claims.pdf', ['record' => $record])->setPaper('a4')->download('lawsuit-'.$claim.'.pdf'); }
+    public function suspensionPdf(int $claim): mixed { $record = $this->service->find($claim); abort_if($record === null, 404); return Pdf::loadView('legal-claims.suspension-pdf', ['record' => $record])->setPaper('a4')->download('lawsuit-suspension-'.$claim.'.pdf'); }
 }
