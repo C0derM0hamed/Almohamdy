@@ -21,6 +21,38 @@ Audit date: 2026-08-01. This report uses the existing crawl artifact and a fresh
 | Duplicate implementations | 0 |
 | Missing, broken, or still unverified | 97 URL-level candidates, including safe child pages |
 
+## Business-module queue
+
+The 97 remaining URL candidates were grouped by workflow rather than filename:
+
+- 12 real business modules
+- 42 deduplicated main page templates
+- 55 child/action pages, including detail, create, edit, timeline, attachment, print, and PDF targets
+
+### P0
+
+- Emergency follow-up, transferal, reception, and emergency process: approximately 9 main pages.
+- Admission calculators: approximately 2 main pages.
+- Employee request workflows: permissions, duty changes, and resignations, approximately 3 main pages.
+- Legal claims/lawsuits: approximately 1 main page plus child actions.
+- User and system administration residuals: approximately 3 main pages.
+- Hospital service and directory residuals: approximately 5 main pages.
+
+### P1
+
+- Complaint reference administration.
+- Publications and post types.
+- Company, branch, department, and governmental-service setup.
+- Operational submenu workflows not required by the P0 shell.
+
+### P2
+
+- Medical terminology and service-code references.
+- Rare reports and low-use branch utilities.
+- Duplicate/merged compatibility targets after verified parity.
+
+Client decisions are only required for externally delivered SMS/email behavior and whether low-use clinical utilities should remain in the migration scope. No client decision is required for the verified P0 workflows.
+
 The counts are URL-level for the fresh 105-candidate crawl. Compatibility routes are not counted as duplicate pages and are not treated as complete when they only redirect without verified field/action parity.
 
 ## Completed in this continuation
@@ -30,6 +62,7 @@ The counts are URL-level for the fresh 105-candidate crawl. Compatibility routes
 | `technical_failure_notice.php` | `modules.technical-failures.*` | Scoped list, create, status history, detail, PDF, protected attachment |
 | `rep_1.php` | `modules.emergency-reports.*` | Real legacy report tables, date/employee/period filters, summaries, child sections, PDF, protected attachments |
 | `change_my_pass.php` | `profile.password.*` | Current-password verification and SHA-256 legacy password update |
+| `emergency_follow_up.php`, `emergency_follow_up_notice_record.php`, `emergency_follow_up_print.php` | `modules.emergency-follow-up.*` | Scoped list, create, detail, notice history, close action, and print |
 
 The current Hope UI, Arabic RTL layout, server-side authorization, company/branch scope, and protected download services remain in use.
 
@@ -43,7 +76,9 @@ The current Hope UI, Arabic RTL layout, server-side authorization, company/branc
 
 ## Remaining verified gaps
 
-The fresh crawl still exposes legacy families requiring source-level parity work: lawsuits, complaint reference administration, posts and post types, medical terminology, service codes, permissions, duty changes, resignations, job titles, governmental service types, company/branch/department/reference administration, emergency follow-up, transferal, admission calculators, emergency case processing/reception, settings, and their linked detail/action/print/PDF pages. Several branch dashboard links also require separate verification against their old handlers before they can be mapped safely.
+The fresh crawl still exposes legacy families requiring source-level parity work: lawsuits, complaint reference administration, posts and post types, medical terminology, service codes, permissions, duty changes, resignations, job titles, governmental service types, company/branch/department/reference administration, transferal, admission calculators, emergency case processing/reception, settings, and their linked detail/action/print/PDF pages. Several branch dashboard links also require separate verification against their old handlers before they can be mapped safely.
+
+Emergency follow-up is no longer in the gap list: its verified branch-1 workflow is implemented and browser-tested in commit `89ee7e9`. The legacy source exposes no attachment or PDF behavior for this module; the verified print page is preserved.
 
 ## Security status
 
