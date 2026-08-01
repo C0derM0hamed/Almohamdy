@@ -289,6 +289,14 @@ return [
                 'branch_ids' => [1],
             ],
             [
+                'label_key' => 'transferal',
+                'route' => 'modules.transferal.home',
+                'icon' => 'bi-arrow-left-right',
+                'active_prefix' => 'modules.transferal.',
+                'subtitle_key' => 'transferal.scope',
+                'branch_ids' => [1],
+            ],
+            [
                 'type' => 'group',
                 'label_key' => 'medical_appointments',
                 'icon' => 'bi-heart-pulse',

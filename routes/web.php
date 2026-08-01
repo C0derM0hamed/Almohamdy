@@ -42,6 +42,7 @@ use App\Http\Controllers\Module\Training\TrainingCoordinationController;
 use App\Http\Controllers\Module\TechnicalFailure\TechnicalFailureController;
 use App\Http\Controllers\Module\EmergencyPerformanceReport\EmergencyPerformanceReportController;
 use App\Http\Controllers\Module\EmergencyFollowUp\EmergencyFollowUpController;
+use App\Http\Controllers\Module\Transferal\TransferalController;
 use App\Http\Controllers\PublicForms\MedicalAppointmentPublicController;
 use App\Http\Controllers\PublicForms\InspectionVisitDepartmentReplyController;
 use App\Http\Controllers\PublicForms\DataRequestDepartmentReplyController;
@@ -140,6 +141,10 @@ Route::middleware('auth.session')->group(function () {
         ->name('legacy.dashboard');
     Route::get('/change_my_pass.php', fn () => redirect()->route('profile.password.edit'))
         ->name('legacy.change-password');
+    Route::get('/transferal_home.php', [TransferalController::class, 'home'])->name('legacy.transferal-home');
+    Route::get('/transferal.php', fn () => redirect()->route('modules.transferal.outgoing'))->name('legacy.transferal');
+    Route::get('/received_transferal.php', fn () => redirect()->route('modules.transferal.incoming'))->name('legacy.received-transferal');
+    Route::get('/transferal_pdf.php', function (Request $request) { return app(TransferalController::class)->pdf($request->integer('id')); })->name('legacy.transferal-pdf');
     Route::get('/complaints.php', fn () => redirect()->route('modules.complaints.index'))
         ->name('legacy.complaints')
         ->middleware('permission:complaints');
@@ -236,6 +241,20 @@ Route::middleware('auth.session')->group(function () {
             Route::get('/{followUp}', [EmergencyFollowUpController::class, 'show'])->name('show')->whereNumber('followUp');
             Route::post('/{followUp}/notices', [EmergencyFollowUpController::class, 'addNotice'])->name('notices.store')->whereNumber('followUp');
             Route::post('/{followUp}/close', [EmergencyFollowUpController::class, 'close'])->name('close')->whereNumber('followUp');
+        });
+        Route::prefix('transferal')->name('transferal.')->group(function () {
+            Route::get('/', [TransferalController::class, 'home'])->name('home');
+            Route::get('/outgoing', fn (Request $request) => app(TransferalController::class)->index($request, 'outgoing'))->name('outgoing');
+            Route::get('/incoming', fn (Request $request) => app(TransferalController::class)->index($request, 'incoming'))->name('incoming');
+            Route::get('/create', [TransferalController::class, 'create'])->name('create');
+            Route::post('/', [TransferalController::class, 'store'])->name('store');
+            Route::get('/{transferal}/pdf', [TransferalController::class, 'pdf'])->name('pdf')->whereNumber('transferal');
+            Route::get('/{transferal}/attachment/{type}', [TransferalController::class, 'attachment'])->name('attachment')->whereNumber('transferal');
+            Route::get('/{transferal}', [TransferalController::class, 'show'])->name('show')->whereNumber('transferal');
+            Route::post('/{transferal}/confirm', [TransferalController::class, 'confirm'])->name('confirm')->whereNumber('transferal');
+            Route::post('/{transferal}/approve', [TransferalController::class, 'approve'])->name('approve')->whereNumber('transferal');
+            Route::post('/{transferal}/refuse', [TransferalController::class, 'refuse'])->name('refuse')->whereNumber('transferal');
+            Route::post('/{transferal}/receive', [TransferalController::class, 'receive'])->name('receive')->whereNumber('transferal');
         });
         Route::prefix('system-administration')->name('system-admin.')->middleware('admin')->group(function () {
             Route::get('/', [SystemAdministrationDashboardController::class, 'index'])->name('dashboard');
