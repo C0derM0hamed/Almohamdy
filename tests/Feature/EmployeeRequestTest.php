@@ -1,0 +1,12 @@
+<?php
+namespace Tests\Feature;
+use App\Services\EmployeeRequests\EmployeeRequestService;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
+use Tests\TestCase;
+class EmployeeRequestTest extends TestCase
+{
+    protected function setUp(): void { parent::setUp(); config(['database.default'=>'sqlite','database.connections.sqlite.database'=>':memory:']); app('db')->purge('sqlite'); foreach(['permission_request','change_duty_time_request','resignation_request'] as $t) Schema::create($t,function(Blueprint $b)use($t){$b->increments('id');$b->integer('branch_id');$b->integer('companies_groups_id');$b->integer('emp_id');$b->string('date');if($t!=='resignation_request'){$b->string('duty_time_from');$b->string('duty_time_to');$b->string('permission_time_from');$b->string('permission_time_to');}$b->string('started_date');$b->string('reason');}); foreach(['permission_branch_reply','permission_hr_reply','change_duty_time_branch_reply','change_duty_time_hr_reply','resignation_branch_reply','resignation_hr_reply'] as $t) Schema::create($t,function(Blueprint $b){$b->increments('id');$b->integer('vac_id');$b->integer('status_id');$b->string('date');$b->string('comment');$b->integer('data_entry_id');}); Schema::create('order_status',function(Blueprint $b){$b->increments('id');$b->string('name_ar');$b->tinyInteger('publish')->default(1);});Schema::create('ra_users',function(Blueprint $b){$b->increments('hr_id');$b->string('hr_username');$b->string('hr_first_name');$b->string('hr_last_name');});DB::table('order_status')->insert(['id'=>1,'name_ar'=>'قبول','publish'=>1]);DB::table('ra_users')->insert(['hr_id'=>10,'hr_username'=>'tester','hr_first_name'=>'اختبار','hr_last_name'=>'موظف']);session(['hr_user_id'=>10,'hr_user_level'=>3,'hr_branch_id'=>1,'companies_groups_id'=>1]); }
+    public function test_three_request_types_share_scoped_workflow(): void { $s=app(EmployeeRequestService::class);$base=['reason'=>'سبب','started_date'=>'2026-08-05'];$id=$s->create('resignation',$base);$s->reply('resignation',$id,'hr',1,'مقبول');$this->assertSame('سبب',$s->find('resignation',$id)->reason);$d=$s->create('duty',$base+['duty_time_from'=>'08:00','duty_time_to'=>'16:00','permission_time_from'=>'10:00','permission_time_to'=>'11:00']);$this->assertNotNull($s->find('duty',$d));session(['hr_branch_id'=>2]);$this->expectException(\Symfony\Component\HttpKernel\Exception\HttpException::class);$s->find('duty',$d);}
+}

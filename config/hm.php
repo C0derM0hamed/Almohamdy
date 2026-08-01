@@ -307,6 +307,17 @@ return [
             ],
             [
                 'type' => 'group',
+                'label_key' => 'employee_requests',
+                'icon' => 'bi-person-lines-fill',
+                'branch_ids' => [1],
+                'children' => [
+                    ['label_key' => 'employee_permission_requests', 'route' => 'modules.employee-requests.index', 'route_params' => ['type' => 'permission'], 'icon' => 'bi-clock', 'active_prefix' => 'modules.employee-requests.', 'branch_ids' => [1]],
+                    ['label_key' => 'employee_duty_requests', 'route' => 'modules.employee-requests.index', 'route_params' => ['type' => 'duty'], 'icon' => 'bi-calendar2-week', 'active_prefix' => 'modules.employee-requests.', 'branch_ids' => [1]],
+                    ['label_key' => 'employee_resignation_requests', 'route' => 'modules.employee-requests.index', 'route_params' => ['type' => 'resignation'], 'icon' => 'bi-person-dash', 'active_prefix' => 'modules.employee-requests.', 'branch_ids' => [1]],
+                ],
+            ],
+            [
+                'type' => 'group',
                 'label_key' => 'medical_appointments',
                 'icon' => 'bi-heart-pulse',
                 'branch_ids' => \App\Support\MedicalAppointments\MedicalAppointmentScope::BRANCH_IDS,

@@ -44,6 +44,7 @@ use App\Http\Controllers\Module\EmergencyPerformanceReport\EmergencyPerformanceR
 use App\Http\Controllers\Module\EmergencyFollowUp\EmergencyFollowUpController;
 use App\Http\Controllers\Module\Transferal\TransferalController;
 use App\Http\Controllers\Module\AdmissionCalculator\AdmissionCalculatorController;
+use App\Http\Controllers\Module\EmployeeRequests\EmployeeRequestController;
 use App\Http\Controllers\PublicForms\MedicalAppointmentPublicController;
 use App\Http\Controllers\PublicForms\InspectionVisitDepartmentReplyController;
 use App\Http\Controllers\PublicForms\DataRequestDepartmentReplyController;
@@ -148,6 +149,12 @@ Route::middleware('auth.session')->group(function () {
     Route::get('/transferal_pdf.php', function (Request $request) { return app(TransferalController::class)->pdf($request->integer('id')); })->name('legacy.transferal-pdf');
     Route::get('/admission_calculator.php', fn () => redirect()->route('modules.admission-calculator.index', 'standard'))->name('legacy.admission-calculator');
     Route::get('/manual_admission_calculator.php', fn () => redirect()->route('modules.admission-calculator.index', 'manual'))->name('legacy.manual-admission-calculator');
+    Route::get('/permissions.php', fn () => redirect()->route('modules.employee-requests.index', 'permission'))->name('legacy.permissions');
+    Route::get('/change_duty_time.php', fn () => redirect()->route('modules.employee-requests.index', 'duty'))->name('legacy.change-duty');
+    Route::get('/resignations.php', fn () => redirect()->route('modules.employee-requests.index', 'resignation'))->name('legacy.resignations');
+    Route::get('/permission_request.php', fn () => redirect()->route('modules.employee-requests.create', 'permission'))->name('legacy.permission-request');
+    Route::get('/change_duty_time_request.php', fn () => redirect()->route('modules.employee-requests.create', 'duty'))->name('legacy.duty-request');
+    Route::get('/resignation_request.php', fn () => redirect()->route('modules.employee-requests.create', 'resignation'))->name('legacy.resignation-request');
     Route::get('/complaints.php', fn () => redirect()->route('modules.complaints.index'))
         ->name('legacy.complaints')
         ->middleware('permission:complaints');
@@ -266,6 +273,14 @@ Route::middleware('auth.session')->group(function () {
             Route::get('/{type}/{id}/pdf', [AdmissionCalculatorController::class, 'pdf'])->name('pdf')->whereIn('type', ['standard', 'manual'])->whereNumber('id');
             Route::get('/{type}/{id}', [AdmissionCalculatorController::class, 'show'])->name('show')->whereIn('type', ['standard', 'manual'])->whereNumber('id');
             Route::delete('/{type}/{id}', [AdmissionCalculatorController::class, 'destroy'])->name('destroy')->whereIn('type', ['standard', 'manual'])->whereNumber('id');
+        });
+        Route::prefix('employee-requests')->name('employee-requests.')->group(function () {
+            Route::get('/{type}', [EmployeeRequestController::class, 'index'])->name('index')->whereIn('type', ['permission', 'duty', 'resignation']);
+            Route::get('/{type}/create', [EmployeeRequestController::class, 'create'])->name('create')->whereIn('type', ['permission', 'duty', 'resignation']);
+            Route::post('/{type}', [EmployeeRequestController::class, 'store'])->name('store')->whereIn('type', ['permission', 'duty', 'resignation']);
+            Route::get('/{type}/{id}/pdf', [EmployeeRequestController::class, 'pdf'])->name('pdf')->whereIn('type', ['permission', 'duty', 'resignation'])->whereNumber('id');
+            Route::post('/{type}/{id}/{stage}', [EmployeeRequestController::class, 'reply'])->name('reply')->whereIn('type', ['permission', 'duty', 'resignation'])->whereIn('stage', ['branch', 'hr'])->whereNumber('id');
+            Route::get('/{type}/{id}', [EmployeeRequestController::class, 'show'])->name('show')->whereIn('type', ['permission', 'duty', 'resignation'])->whereNumber('id');
         });
         Route::prefix('system-administration')->name('system-admin.')->middleware('admin')->group(function () {
             Route::get('/', [SystemAdministrationDashboardController::class, 'index'])->name('dashboard');
