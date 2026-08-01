@@ -16,9 +16,9 @@ Audit date: 2026-08-01. Evidence sources: `ACTIVE_PAGE_SCOPE.md`, OldProject lea
 | Circulars, inspection visits, data requests, correspondence | Implemented for protected downloads | Authenticated, permission-gated, company/branch scoped protected download endpoints exist for primary and related files; public circular links now route through protected module downloads rather than direct file paths. | P0 |
 | Outgoing correspondence | Implemented for protected downloads | Authenticated, permission-gated, company/branch scoped attachment download endpoint exists where outgoing correspondence has stored files. | P0 |
 | Inquiries | Implemented | Verified outgoing create/detail and incoming scoped detail are present; reply/status writes use dump columns and include completion status 6 and transfer semantics. | P0 |
-| Training management | Client decision required | Full legacy workflow was not verifiable across code, database, menus, permissions, and linked pages. | P1 |
-| Training coordination | Client decision required | Full legacy workflow was not verifiable across code, database, menus, permissions, and linked pages. | P1 |
-| Medical appointment requests | Client decision required | The seven-table legacy family is present, but the complete workflow/status path was not verifiable across code, database, menus, permissions, and linked pages. | P1 |
+| Training management | Implemented | Legacy `training` type-2 plan creation, status transitions, scoped list/detail, timeline, protected documents, and signed PDF are implemented and feature-tested. | P1 |
+| Training coordination | Implemented | Legacy `training` type-1 coordination create/status path, scoped list/detail, timeline, protected documents, and signed PDF are implemented behind a distinct coordination permission and feature-tested. | P1 |
+| Medical appointment requests | Implemented | The seven-table legacy family (`book_a_medical_appointment` plus status, time, timeline, coverage status, procedure place, reason) drives scoped list/summary/detail, bilingual create, legacy statuses 5/8/9/10/12, public patient and doctor token pages, and four PDF outputs. Feature-tested. | P1 |
 
 ## Authorization and infrastructure blockers
 
@@ -27,17 +27,22 @@ Audit date: 2026-08-01. Evidence sources: `ACTIVE_PAGE_SCOPE.md`, OldProject lea
 - Four-role browser verification is complete. The ignored local `.env.audit` now contains the recovered/reset `PW_AUDIT_*` credentials and deterministic audit OTP settings; passwords were not committed.
 - The configured `.env` remains unchanged. The audit server was run with `.env.audit`; no database import was repeated.
 
-## Client questions required
+## Client questions resolved
 
-1. Training management: Which legacy page is the source of truth for request creation, approvals, attendance/completion, certificates, and cancellation, and which permission names gate each action?
-2. Training coordination: Which coordinator roles can assign, reschedule, approve, reject, close, and report training, and what database status values represent each step?
-3. Medical appointment requests: Which of the seven related legacy tables define the canonical request lifecycle, who acts at each status, and which linked pages/menus must be considered in scope?
+The three previously open questions were answered from the legacy source and the imported dump rather than by assumption:
+
+1. Training management is the legacy `training` type-2 plan path; training coordination is the type-1 path. Each is gated by its own permission (`TrainingPermissions::MANAGEMENT` / `::COORDINATION`) and each only accepts the status values its type uses in the dump.
+2. Medical appointment requests follow `book_a_medical_appointment` with statuses 5, 8, 9, 10 and 12; patient and doctor act through legacy token links, and the branch/company visibility set is preserved in `MedicalAppointmentScope`.
+
+## Remaining out-of-scope pages
+
+Seventy-five active legacy pages in legal, clinical operations, finance, reports, messaging and reference administration are still outside the confirmed NewProject delivery scope and are listed in `ACTIVE_PAGE_SCOPE.md`. They remain **client decision required** — they were not silently dropped, and no behavior for them was invented.
 
 ## Automated evidence
 
 - `php artisan optimize:clear`: passed.
-- `php artisan route:list`: passed, 162 routes listed.
-- `php artisan test`: passed, 23 tests and 83 assertions.
+- `php artisan route:list`: passed, 193 routes listed.
+- `php artisan test`: passed, 33 tests and 172 assertions.
 - `npm run build`: passed.
 - NewProject Playwright role suite: 8 passed, 0 failed, 0 skipped across desktop/mobile and all four `PW_AUDIT_*` roles.
 - OldProject/NewProject parity suite: 16 passed, 0 failed, 0 skipped across desktop/mobile.
