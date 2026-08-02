@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Http\Controllers\Module\LegacyOffice\LegacyOfficeController;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Http\Request;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
@@ -100,6 +101,38 @@ class LegacyOfficeWorkflowTest extends TestCase
         session(['hr_user_id' => 20]);
         $this->expectException(HttpException::class);
         $this->controller->signatureImage();
+    }
+
+    public function test_holiday_attachment_download_and_delete_are_parent_scoped(): void
+    {
+        Storage::fake('local');
+        $request = Request::create('/', 'POST', [
+            'patient_name' => 'مريض',
+            'nationality' => '102',
+            'idno' => '1234567890',
+            'file_number' => 'F2',
+            'days' => 2,
+            'issue_date' => '2026-08-02',
+            'issuer' => 'الموارد البشرية',
+            'type' => 1,
+        ], [], ['attachment' => UploadedFile::fake()->create('holiday.pdf', 2, 'application/pdf')]);
+        $this->controller->storeHoliday($request);
+        $holiday = (int) DB::table('holidays_inquiry')->value('id');
+        $attachment = DB::table('holidays_inquiry_attachments')->where('holidays_inquiry_id', $holiday)->first();
+
+        $this->assertSame(200, $this->controller->holidayAttachment($holiday, (int) $attachment->id)->getStatusCode());
+
+        session(['hr_branch_id' => 2]);
+        try {
+            $this->controller->holidayAttachment($holiday, (int) $attachment->id);
+            $this->fail('Holiday attachment crossed branch scope.');
+        } catch (HttpException $exception) {
+            $this->assertSame(404, $exception->getStatusCode());
+        }
+
+        session(['hr_branch_id' => 1]);
+        $this->controller->deleteHolidayAttachment($holiday, (int) $attachment->id);
+        $this->assertDatabaseMissing('holidays_inquiry_attachments', ['id' => $attachment->id]);
     }
 
     private function schemas(): void
