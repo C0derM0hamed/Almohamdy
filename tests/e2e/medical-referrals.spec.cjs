@@ -21,7 +21,7 @@ test('branch A can open all six medical/referral workflows and PDFs stay protect
   for (const path of paths) {
     const response = await page.goto(`/${path}`);
     expect(response.status(), path).toBeLessThan(400);
-    await expect(page.locator('h1')).toBeVisible();
+    await expect(page.locator('main h1').last()).toBeVisible();
     await expect(page.getByRole('link', { name: /إضافة جديد/ })).toBeVisible();
   }
 });

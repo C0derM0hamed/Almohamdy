@@ -20,7 +20,7 @@ test('branch A opens the legacy agreement and governmental-services entry points
   for (const path of ['/medical_services_agreement.php', '/governmental_services.php']) {
     const response = await page.goto(path, { waitUntil: 'domcontentloaded' });
     expect(response.status(), path).toBeLessThan(400);
-    await expect(page.locator('h1')).toBeVisible();
+    await expect(page.locator('main h1').last()).toBeVisible();
     await expect(page.locator('table tbody tr').first()).toBeVisible();
   }
   const pdf = page.locator('a[href$="/pdf"]').first();

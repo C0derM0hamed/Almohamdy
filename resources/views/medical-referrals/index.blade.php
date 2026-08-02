@@ -28,11 +28,17 @@
     </div>
 </form>
 <div class="card border-0 shadow-sm"><div class="table-responsive"><table class="table table-hover align-middle mb-0"><thead><tr>
-    @if($type === 'pulse-status')<th>الرقم</th><th>التاريخ</th><th>الاسم</th><th>رقم الهوية</th><th>حالة الطلب</th>
-    @elseif($type === 'bed-reservation')<th>تاريخ الإصدار</th><th>اسم المريض</th><th>رقم الهوية</th><th>القسم</th><th>الطبيب</th><th>مصدر الإشعار</th>
-    @elseif($type === 'accept-referral')<th>تاريخ الإصدار</th><th>اسم المريض</th><th>رقم الهوية</th><th>رقم الإحالة</th><th>القسم</th><th>الطبيب المعالج</th><th>مصدر الإشعار</th>
-    @elseif($type === 'referral-apology')<th>التاريخ</th><th>اسم المريض</th><th>الجنسية</th><th>رقم الهوية</th><th>رقم الإحالة</th><th>سبب الاعتذار</th><th>مصدر الإشعار</th>
-    @else<th>تاريخ الإصدار</th><th>الوحدة</th><th>المدة المتوقعة</th><th>سبب الاعتذار</th><th>مصدر الإشعار</th>@endif
+    @if($type === 'pulse-status')
+        <th>الرقم</th><th>التاريخ</th><th>الاسم</th><th>رقم الهوية</th><th>حالة الطلب</th>
+    @elseif($type === 'bed-reservation')
+        <th>تاريخ الإصدار</th><th>اسم المريض</th><th>رقم الهوية</th><th>القسم</th><th>الطبيب</th><th>مصدر الإشعار</th>
+    @elseif($type === 'accept-referral')
+        <th>تاريخ الإصدار</th><th>اسم المريض</th><th>رقم الهوية</th><th>رقم الإحالة</th><th>القسم</th><th>الطبيب المعالج</th><th>مصدر الإشعار</th>
+    @elseif($type === 'referral-apology')
+        <th>التاريخ</th><th>اسم المريض</th><th>الجنسية</th><th>رقم الهوية</th><th>رقم الإحالة</th><th>سبب الاعتذار</th><th>مصدر الإشعار</th>
+    @else
+        <th>تاريخ الإصدار</th><th>الوحدة</th><th>المدة المتوقعة</th><th>سبب الاعتذار</th><th>مصدر الإشعار</th>
+    @endif
     <th>الإجراء</th>
 </tr></thead><tbody>
 @forelse($records as $item)<tr>
@@ -53,5 +59,9 @@
     @if((int)$item->user_id === (int)session('hr_user_id'))<form class="d-inline" method="post" action="{{ route('modules.medical-referrals.destroy', [$type, $item->id]) }}" onsubmit="return confirm('هل أنت متأكد؟')">@csrf @method('DELETE')<button class="btn btn-sm btn-outline-danger" type="submit" aria-label="حذف"><i class="bi bi-trash"></i></button></form>@endif</td>
 </tr>@empty<tr><td class="text-center text-muted py-5" colspan="9">لا توجد سجلات</td></tr>@endforelse
 </tbody></table></div><div class="p-3">{{ $records->links() }}</div></div>
-@if($type !== 'pulse-status')@foreach($records as $item)<div class="modal fade" id="emailRecord{{ $item->id }}" tabindex="-1" aria-hidden="true"><div class="modal-dialog"><form class="modal-content" method="post" action="{{ route('modules.medical-referrals.email', [$type, $item->id]) }}">@csrf<div class="modal-header"><h2 class="modal-title fs-5">إرسال بريد بالنموذج</h2><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><label class="form-label">مرسل إلى</label><input class="form-control mb-3" type="email" name="mail_to" required><label class="form-label">نسخة إلى</label><input class="form-control" type="email" name="mail_cc"></div><div class="modal-footer"><button class="btn btn-primary" type="submit">إرسال</button></div></form></div></div>@endforeach@endif
+    @if($type !== 'pulse-status')
+        @foreach($records as $item)
+            <div class="modal fade" id="emailRecord{{ $item->id }}" tabindex="-1" aria-hidden="true"><div class="modal-dialog"><form class="modal-content" method="post" action="{{ route('modules.medical-referrals.email', [$type, $item->id]) }}">@csrf<div class="modal-header"><h2 class="modal-title fs-5">إرسال بريد بالنموذج</h2><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><label class="form-label">مرسل إلى</label><input class="form-control mb-3" type="email" name="mail_to" required><label class="form-label">نسخة إلى</label><input class="form-control" type="email" name="mail_cc"></div><div class="modal-footer"><button class="btn btn-primary" type="submit">إرسال</button></div></form></div></div>
+        @endforeach
+    @endif
 @endsection
