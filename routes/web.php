@@ -1,65 +1,65 @@
 <?php
 
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
+use App\Http\Controllers\Auth\ChangePasswordController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\Auth\OtpController;
 use App\Http\Controllers\Auth\PasswordRecoveryController;
-use App\Http\Controllers\Auth\ChangePasswordController;
 use App\Http\Controllers\Branch\DashboardController as BranchDashboardController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LocaleController;
+use App\Http\Controllers\Module\AdmissionCalculator\AdmissionCalculatorController;
+use App\Http\Controllers\Module\Complaints\ComplaintController;
+use App\Http\Controllers\Module\Complaints\ComplaintsDashboardController;
+use App\Http\Controllers\Module\CorporateCommunications\CorporateCommunicationController;
+use App\Http\Controllers\Module\CorporateCommunications\CorporateCommunicationDashboardController;
+use App\Http\Controllers\Module\CorporateCommunications\CorporateCommunicationOutgoingLetterController;
 use App\Http\Controllers\Module\DoctorsDirectory\DoctorController;
 use App\Http\Controllers\Module\DoctorsDirectory\SpecialityController;
 use App\Http\Controllers\Module\DoctorsDirectoryAdmin\DashboardController as DoctorsDirectoryAdminDashboardController;
 use App\Http\Controllers\Module\DoctorsDirectoryAdmin\DepartmentController as DoctorsDirectoryAdminDepartmentController;
 use App\Http\Controllers\Module\DoctorsDirectoryAdmin\DoctorController as DoctorsDirectoryAdminDoctorController;
 use App\Http\Controllers\Module\DoctorsDirectoryAdmin\SpecialityController as DoctorsDirectoryAdminSpecialityController;
+use App\Http\Controllers\Module\EmergencyFollowUp\EmergencyFollowUpController;
+use App\Http\Controllers\Module\EmergencyPerformanceReport\EmergencyPerformanceReportController;
 use App\Http\Controllers\Module\EmployeeLeave\LeaveDashboardController;
 use App\Http\Controllers\Module\EmployeeLeave\LeaveRequestController;
+use App\Http\Controllers\Module\EmployeeRequests\EmployeeRequestController;
 use App\Http\Controllers\Module\EmployeeServices\EmployeeServicesDashboardController;
+use App\Http\Controllers\Module\GovernmentCirculars\GovernmentCircularController;
+use App\Http\Controllers\Module\GovernmentDataRequests\GovernmentDataRequestController;
+use App\Http\Controllers\Module\GovernmentInspectionVisits\GovernmentInspectionVisitController;
 use App\Http\Controllers\Module\HospitalServices\HospitalServicesDashboardController;
 use App\Http\Controllers\Module\HospitalServices\PrivateRoomController;
 use App\Http\Controllers\Module\HospitalServices\ServiceSectionController;
+use App\Http\Controllers\Module\Inquiries\InquiryAndServiceController;
+use App\Http\Controllers\Module\LegalClaims\LegalClaimController;
+use App\Http\Controllers\Module\MedicalAppointment\MedicalAppointmentController;
+use App\Http\Controllers\Module\MedicalReferrals\MedicalReferralController;
+use App\Http\Controllers\Module\Publications\PublicationController;
+use App\Http\Controllers\Module\ServiceLocations\ServiceLocationController;
+use App\Http\Controllers\Module\Settings\SettingsController;
 use App\Http\Controllers\Module\SystemAdministration\DashboardController as SystemAdministrationDashboardController;
+use App\Http\Controllers\Module\SystemAdministration\ReferenceAdminController;
 use App\Http\Controllers\Module\SystemAdministration\ServicePackageController as SystemAdministrationServicePackageController;
 use App\Http\Controllers\Module\SystemAdministration\UserPermissionController;
-use App\Http\Controllers\Module\SystemAdministration\ReferenceAdminController;
-use App\Http\Controllers\Module\GovernmentCirculars\GovernmentCircularController;
-use App\Http\Controllers\Module\GovernmentInspectionVisits\GovernmentInspectionVisitController;
-use App\Http\Controllers\Module\GovernmentDataRequests\GovernmentDataRequestController;
-use App\Http\Controllers\Module\CorporateCommunications\CorporateCommunicationController;
-use App\Http\Controllers\Module\CorporateCommunications\CorporateCommunicationDashboardController;
-use App\Http\Controllers\Module\CorporateCommunications\CorporateCommunicationOutgoingLetterController;
-use App\Http\Controllers\Module\Complaints\ComplaintController;
-use App\Http\Controllers\Module\Complaints\ComplaintsDashboardController;
-use App\Http\Controllers\Module\MedicalAppointment\MedicalAppointmentController;
-use App\Http\Controllers\Module\Inquiries\InquiryAndServiceController;
-use App\Http\Controllers\Module\ServiceLocations\ServiceLocationController;
+use App\Http\Controllers\Module\TechnicalFailure\TechnicalFailureController;
+use App\Http\Controllers\Module\Training\TrainingCoordinationController;
+use App\Http\Controllers\Module\Training\TrainingManagementController;
+use App\Http\Controllers\Module\Transferal\TransferalController;
 use App\Http\Controllers\Module\WorkAbsenceNotification\DashboardController as WorkAbsenceNotificationDashboardController;
 use App\Http\Controllers\Module\WorkAbsenceNotification\NotificationController as WorkAbsenceNotificationController;
-use App\Http\Controllers\Module\Training\TrainingManagementController;
-use App\Http\Controllers\Module\Training\TrainingCoordinationController;
-use App\Http\Controllers\Module\TechnicalFailure\TechnicalFailureController;
-use App\Http\Controllers\Module\EmergencyPerformanceReport\EmergencyPerformanceReportController;
-use App\Http\Controllers\Module\EmergencyFollowUp\EmergencyFollowUpController;
-use App\Http\Controllers\Module\Transferal\TransferalController;
-use App\Http\Controllers\Module\AdmissionCalculator\AdmissionCalculatorController;
-use App\Http\Controllers\Module\MedicalReferrals\MedicalReferralController;
-use App\Http\Controllers\Module\EmployeeRequests\EmployeeRequestController;
-use App\Http\Controllers\Module\LegalClaims\LegalClaimController;
-use App\Http\Controllers\Module\Publications\PublicationController;
-use App\Http\Controllers\Module\Settings\SettingsController;
-use App\Http\Controllers\PublicForms\MedicalAppointmentPublicController;
-use App\Http\Controllers\PublicForms\InspectionVisitDepartmentReplyController;
-use App\Http\Controllers\PublicForms\DataRequestDepartmentReplyController;
 use App\Http\Controllers\PublicForms\CorrespondenceDepartmentReplyController;
-use App\Http\Controllers\PublicForms\OutgoingLetterReviseController;
+use App\Http\Controllers\PublicForms\DataRequestDepartmentReplyController;
 use App\Http\Controllers\PublicForms\GovernmentCircularFormalController;
+use App\Http\Controllers\PublicForms\InspectionVisitDepartmentReplyController;
+use App\Http\Controllers\PublicForms\MedicalAppointmentPublicController;
+use App\Http\Controllers\PublicForms\OutgoingLetterReviseController;
 use App\Support\CorporateCommunications\CorporateCommunicationPermissions;
 use App\Support\EmployeeLeave\EmployeeLeavePermissions;
-use App\Support\WorkAbsenceNotification\WorkAbsenceNotificationPermissions;
 use App\Support\Training\TrainingPermissions;
+use App\Support\WorkAbsenceNotification\WorkAbsenceNotificationPermissions;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -155,7 +155,9 @@ Route::middleware('auth.session')->group(function () {
     Route::get('/transferal_home.php', [TransferalController::class, 'home'])->name('legacy.transferal-home');
     Route::get('/transferal.php', fn () => redirect()->route('modules.transferal.outgoing'))->name('legacy.transferal');
     Route::get('/received_transferal.php', fn () => redirect()->route('modules.transferal.incoming'))->name('legacy.received-transferal');
-    Route::get('/transferal_pdf.php', function (Request $request) { return app(TransferalController::class)->pdf($request->integer('id')); })->name('legacy.transferal-pdf');
+    Route::get('/transferal_pdf.php', function (Request $request) {
+        return app(TransferalController::class)->pdf($request->integer('id'));
+    })->name('legacy.transferal-pdf');
     Route::get('/admission_calculator.php', fn () => redirect()->route('modules.admission-calculator.index', 'standard'))->name('legacy.admission-calculator');
     Route::get('/manual_admission_calculator.php', fn () => redirect()->route('modules.admission-calculator.index', 'manual'))->name('legacy.manual-admission-calculator');
     Route::get('/Pulse_status.php', fn () => redirect()->route('modules.medical-referrals.index', 'pulse-status'))->name('legacy.pulse-status');
@@ -187,7 +189,9 @@ Route::middleware('auth.session')->group(function () {
     Route::get('/branches_departments.php', fn () => redirect()->route('modules.system-admin.reference.index', 'departments'))->name('legacy.departments')->middleware('admin');
     Route::get('/branches_needs.php', fn () => redirect()->route('modules.system-admin.reference.index', 'needs'))->name('legacy.needs')->middleware('admin');
     Route::get('/lawsuit.php', fn () => redirect()->route('modules.legal-claims.index'))->name('legacy.lawsuit')->middleware('admin');
-    Route::get('/lawsuit_pdf.php', function (Request $request) { return app(LegalClaimController::class)->pdf($request->integer('id')); })->name('legacy.lawsuit-pdf')->middleware('admin');
+    Route::get('/lawsuit_pdf.php', function (Request $request) {
+        return app(LegalClaimController::class)->pdf($request->integer('id'));
+    })->name('legacy.lawsuit-pdf')->middleware('admin');
     Route::get('/complaints.php', fn () => redirect()->route('modules.complaints.index'))
         ->name('legacy.complaints')
         ->middleware('permission:complaints');
@@ -242,7 +246,6 @@ Route::middleware('auth.session')->group(function () {
     Route::get('/emergency_follow_up_print.php', function (Request $request) {
         return redirect()->route('modules.emergency-follow-up.print', ['followUp' => $request->integer('id')]);
     })->name('legacy.emergency-follow-up.print');
-
     Route::prefix('modules')->name('modules.')->group(function () {
         Route::get('/doctors-directory', fn () => redirect()->route('modules.doctors.specialities.index'))
             ->name('doctors');
@@ -532,109 +535,109 @@ Route::middleware('auth.session')->group(function () {
             ->name('corporate-communication.dashboard');
         Route::prefix('government-circulars')->name('government-circulars.')
             ->middleware('permission:'.CorporateCommunicationPermissions::GOVERNMENT_CIRCULARS)->group(function () {
-            Route::get('/', [GovernmentCircularController::class, 'index'])->name('index');
-            Route::get('/create', [GovernmentCircularController::class, 'create'])->name('create');
-            Route::post('/', [GovernmentCircularController::class, 'store'])->name('store');
-            Route::get('/{circular}/download', [GovernmentCircularController::class, 'download'])
-                ->name('download')
-                ->whereNumber('circular');
-            Route::get('/{circular}/attachments/{attachment}/download', [GovernmentCircularController::class, 'downloadAttachment'])
-                ->name('attachments.download')
-                ->whereNumber(['circular', 'attachment']);
-            Route::get('/{circular}/receipt', [GovernmentCircularController::class, 'receipt'])
-                ->name('receipt')
-                ->whereNumber('circular');
-            Route::get('/{circular}/departments', [GovernmentCircularController::class, 'departments'])
-                ->name('departments')
-                ->whereNumber('circular');
-            Route::post('/{circular}/status', [GovernmentCircularController::class, 'updateStatus'])
-                ->name('status')
-                ->whereNumber('circular');
-            Route::get('/{circular}', [GovernmentCircularController::class, 'show'])
-                ->name('show')
-                ->whereNumber('circular');
-        });
+                Route::get('/', [GovernmentCircularController::class, 'index'])->name('index');
+                Route::get('/create', [GovernmentCircularController::class, 'create'])->name('create');
+                Route::post('/', [GovernmentCircularController::class, 'store'])->name('store');
+                Route::get('/{circular}/download', [GovernmentCircularController::class, 'download'])
+                    ->name('download')
+                    ->whereNumber('circular');
+                Route::get('/{circular}/attachments/{attachment}/download', [GovernmentCircularController::class, 'downloadAttachment'])
+                    ->name('attachments.download')
+                    ->whereNumber(['circular', 'attachment']);
+                Route::get('/{circular}/receipt', [GovernmentCircularController::class, 'receipt'])
+                    ->name('receipt')
+                    ->whereNumber('circular');
+                Route::get('/{circular}/departments', [GovernmentCircularController::class, 'departments'])
+                    ->name('departments')
+                    ->whereNumber('circular');
+                Route::post('/{circular}/status', [GovernmentCircularController::class, 'updateStatus'])
+                    ->name('status')
+                    ->whereNumber('circular');
+                Route::get('/{circular}', [GovernmentCircularController::class, 'show'])
+                    ->name('show')
+                    ->whereNumber('circular');
+            });
         Route::prefix('inspection-visits')->name('inspection-visits.')
             ->middleware('permission:'.CorporateCommunicationPermissions::INSPECTION_VISITS)->group(function () {
-            Route::get('/', [GovernmentInspectionVisitController::class, 'index'])->name('index');
-            Route::get('/create', [GovernmentInspectionVisitController::class, 'create'])->name('create');
-            Route::post('/', [GovernmentInspectionVisitController::class, 'store'])->name('store');
-            Route::get('/{visit}/attachments/{attachment}/download', [GovernmentInspectionVisitController::class, 'downloadAttachment'])
-                ->name('attachments.download')
-                ->whereNumber(['visit', 'attachment']);
-            Route::get('/{visit}/notices/{submission}/download', [GovernmentInspectionVisitController::class, 'downloadNotice'])
-                ->name('notices.download')
-                ->whereNumber(['visit', 'submission']);
-            Route::get('/{visit}/receipt', [GovernmentInspectionVisitController::class, 'receipt'])
-                ->name('receipt')
-                ->whereNumber('visit');
-            Route::post('/{visit}/status', [GovernmentInspectionVisitController::class, 'updateStatus'])
-                ->name('status')
-                ->whereNumber('visit');
-            Route::post('/{visit}/attachments', [GovernmentInspectionVisitController::class, 'storeAttachment'])
-                ->name('attachments.store')
-                ->whereNumber('visit');
-            Route::get('/{visit}', [GovernmentInspectionVisitController::class, 'show'])
-                ->name('show')
-                ->whereNumber('visit');
-        });
+                Route::get('/', [GovernmentInspectionVisitController::class, 'index'])->name('index');
+                Route::get('/create', [GovernmentInspectionVisitController::class, 'create'])->name('create');
+                Route::post('/', [GovernmentInspectionVisitController::class, 'store'])->name('store');
+                Route::get('/{visit}/attachments/{attachment}/download', [GovernmentInspectionVisitController::class, 'downloadAttachment'])
+                    ->name('attachments.download')
+                    ->whereNumber(['visit', 'attachment']);
+                Route::get('/{visit}/notices/{submission}/download', [GovernmentInspectionVisitController::class, 'downloadNotice'])
+                    ->name('notices.download')
+                    ->whereNumber(['visit', 'submission']);
+                Route::get('/{visit}/receipt', [GovernmentInspectionVisitController::class, 'receipt'])
+                    ->name('receipt')
+                    ->whereNumber('visit');
+                Route::post('/{visit}/status', [GovernmentInspectionVisitController::class, 'updateStatus'])
+                    ->name('status')
+                    ->whereNumber('visit');
+                Route::post('/{visit}/attachments', [GovernmentInspectionVisitController::class, 'storeAttachment'])
+                    ->name('attachments.store')
+                    ->whereNumber('visit');
+                Route::get('/{visit}', [GovernmentInspectionVisitController::class, 'show'])
+                    ->name('show')
+                    ->whereNumber('visit');
+            });
         Route::prefix('data-requests')->name('data-requests.')
             ->middleware('permission:'.CorporateCommunicationPermissions::DATA_REQUESTS)->group(function () {
-            Route::get('/', [GovernmentDataRequestController::class, 'index'])->name('index');
-            Route::get('/create', [GovernmentDataRequestController::class, 'create'])->name('create');
-            Route::post('/', [GovernmentDataRequestController::class, 'store'])->name('store');
-            Route::get('/{dataRequest}/attachments/{attachment}/download', [GovernmentDataRequestController::class, 'downloadAttachment'])
-                ->name('attachments.download')
-                ->whereNumber(['dataRequest', 'attachment']);
-            Route::get('/{dataRequest}/answers/{answer}/download', [GovernmentDataRequestController::class, 'downloadAnswer'])
-                ->name('answers.download')
-                ->whereNumber(['dataRequest', 'answer']);
-            Route::get('/{dataRequest}/receipt', [GovernmentDataRequestController::class, 'receipt'])
-                ->name('receipt')
-                ->whereNumber('dataRequest');
-            Route::post('/{dataRequest}/status', [GovernmentDataRequestController::class, 'updateStatus'])
-                ->name('status')
-                ->whereNumber('dataRequest');
-            Route::get('/{dataRequest}', [GovernmentDataRequestController::class, 'show'])
-                ->name('show')
-                ->whereNumber('dataRequest');
-        });
+                Route::get('/', [GovernmentDataRequestController::class, 'index'])->name('index');
+                Route::get('/create', [GovernmentDataRequestController::class, 'create'])->name('create');
+                Route::post('/', [GovernmentDataRequestController::class, 'store'])->name('store');
+                Route::get('/{dataRequest}/attachments/{attachment}/download', [GovernmentDataRequestController::class, 'downloadAttachment'])
+                    ->name('attachments.download')
+                    ->whereNumber(['dataRequest', 'attachment']);
+                Route::get('/{dataRequest}/answers/{answer}/download', [GovernmentDataRequestController::class, 'downloadAnswer'])
+                    ->name('answers.download')
+                    ->whereNumber(['dataRequest', 'answer']);
+                Route::get('/{dataRequest}/receipt', [GovernmentDataRequestController::class, 'receipt'])
+                    ->name('receipt')
+                    ->whereNumber('dataRequest');
+                Route::post('/{dataRequest}/status', [GovernmentDataRequestController::class, 'updateStatus'])
+                    ->name('status')
+                    ->whereNumber('dataRequest');
+                Route::get('/{dataRequest}', [GovernmentDataRequestController::class, 'show'])
+                    ->name('show')
+                    ->whereNumber('dataRequest');
+            });
         Route::prefix('correspondence')->name('correspondence.')
             ->middleware('permission:'.CorporateCommunicationPermissions::CORRESPONDENCE)->group(function () {
-            Route::get('/', [CorporateCommunicationController::class, 'index'])->name('index');
-            Route::get('/create', [CorporateCommunicationController::class, 'create'])->name('create');
-            Route::post('/', [CorporateCommunicationController::class, 'store'])->name('store');
-            Route::get('/{correspondence}/attachments/{attachment}/download', [CorporateCommunicationController::class, 'downloadAttachment'])
-                ->name('attachments.download')
-                ->whereNumber(['correspondence', 'attachment']);
-            Route::get('/{correspondence}/receipt', [CorporateCommunicationController::class, 'receipt'])
-                ->name('receipt')
-                ->whereNumber('correspondence');
-            Route::post('/{correspondence}/status', [CorporateCommunicationController::class, 'updateStatus'])
-                ->name('status')
-                ->whereNumber('correspondence');
-            Route::get('/{correspondence}', [CorporateCommunicationController::class, 'show'])
-                ->name('show')
-                ->whereNumber('correspondence');
-        });
+                Route::get('/', [CorporateCommunicationController::class, 'index'])->name('index');
+                Route::get('/create', [CorporateCommunicationController::class, 'create'])->name('create');
+                Route::post('/', [CorporateCommunicationController::class, 'store'])->name('store');
+                Route::get('/{correspondence}/attachments/{attachment}/download', [CorporateCommunicationController::class, 'downloadAttachment'])
+                    ->name('attachments.download')
+                    ->whereNumber(['correspondence', 'attachment']);
+                Route::get('/{correspondence}/receipt', [CorporateCommunicationController::class, 'receipt'])
+                    ->name('receipt')
+                    ->whereNumber('correspondence');
+                Route::post('/{correspondence}/status', [CorporateCommunicationController::class, 'updateStatus'])
+                    ->name('status')
+                    ->whereNumber('correspondence');
+                Route::get('/{correspondence}', [CorporateCommunicationController::class, 'show'])
+                    ->name('show')
+                    ->whereNumber('correspondence');
+            });
         Route::prefix('outgoing-correspondence')->name('outgoing-correspondence.')
             ->middleware('permission:'.CorporateCommunicationPermissions::OUTGOING_CORRESPONDENCE)->group(function () {
-            Route::get('/', [CorporateCommunicationOutgoingLetterController::class, 'index'])->name('index');
-            Route::get('/create', [CorporateCommunicationOutgoingLetterController::class, 'create'])->name('create');
-            Route::post('/', [CorporateCommunicationOutgoingLetterController::class, 'store'])->name('store');
-            Route::get('/{letter}/attachments/{attachment}/download', [CorporateCommunicationOutgoingLetterController::class, 'downloadAttachment'])
-                ->name('attachments.download')
-                ->whereNumber(['letter', 'attachment']);
-            Route::post('/{letter}/status', [CorporateCommunicationOutgoingLetterController::class, 'updateStatus'])
-                ->name('status')
-                ->whereNumber('letter');
-            Route::get('/{letter}/print', [CorporateCommunicationOutgoingLetterController::class, 'print'])
-                ->name('print')
-                ->whereNumber('letter');
-            Route::get('/{letter}', [CorporateCommunicationOutgoingLetterController::class, 'show'])
-                ->name('show')
-                ->whereNumber('letter');
-        });
+                Route::get('/', [CorporateCommunicationOutgoingLetterController::class, 'index'])->name('index');
+                Route::get('/create', [CorporateCommunicationOutgoingLetterController::class, 'create'])->name('create');
+                Route::post('/', [CorporateCommunicationOutgoingLetterController::class, 'store'])->name('store');
+                Route::get('/{letter}/attachments/{attachment}/download', [CorporateCommunicationOutgoingLetterController::class, 'downloadAttachment'])
+                    ->name('attachments.download')
+                    ->whereNumber(['letter', 'attachment']);
+                Route::post('/{letter}/status', [CorporateCommunicationOutgoingLetterController::class, 'updateStatus'])
+                    ->name('status')
+                    ->whereNumber('letter');
+                Route::get('/{letter}/print', [CorporateCommunicationOutgoingLetterController::class, 'print'])
+                    ->name('print')
+                    ->whereNumber('letter');
+                Route::get('/{letter}', [CorporateCommunicationOutgoingLetterController::class, 'show'])
+                    ->name('show')
+                    ->whereNumber('letter');
+            });
         Route::prefix('inquiries')->name('inquiries.')->middleware('permission:inquiries_and_services')->group(function () {
             Route::get('/outgoing', [InquiryAndServiceController::class, 'index'])->name('outgoing.index');
             Route::get('/outgoing/create', [InquiryAndServiceController::class, 'create'])->name('outgoing.create')->middleware('permission:inquiries_create');
@@ -660,33 +663,33 @@ Route::middleware('auth.session')->group(function () {
         });
         Route::prefix('training/management')->name('training.management.')
             ->middleware('permission:'.TrainingPermissions::MANAGEMENT)->group(function () {
-            Route::get('/', [TrainingManagementController::class, 'index'])->name('index');
-            Route::post('/', [TrainingManagementController::class, 'store'])->name('store');
-            Route::get('/{training}', [TrainingManagementController::class, 'show'])->name('show')->whereNumber('training');
-            Route::post('/{training}/status', [TrainingManagementController::class, 'status'])->name('status')->whereNumber('training');
-            Route::get('/{training}/timeline', [TrainingManagementController::class, 'timeline'])->name('timeline')->whereNumber('training');
-            Route::get('/{training}/documents/{document}', [TrainingManagementController::class, 'document'])->name('document')->whereNumber('training');
-            Route::get('/{training}/signed-pdf', [TrainingManagementController::class, 'signedPdf'])->name('signed-pdf')->whereNumber('training');
-        });
+                Route::get('/', [TrainingManagementController::class, 'index'])->name('index');
+                Route::post('/', [TrainingManagementController::class, 'store'])->name('store');
+                Route::get('/{training}', [TrainingManagementController::class, 'show'])->name('show')->whereNumber('training');
+                Route::post('/{training}/status', [TrainingManagementController::class, 'status'])->name('status')->whereNumber('training');
+                Route::get('/{training}/timeline', [TrainingManagementController::class, 'timeline'])->name('timeline')->whereNumber('training');
+                Route::get('/{training}/documents/{document}', [TrainingManagementController::class, 'document'])->name('document')->whereNumber('training');
+                Route::get('/{training}/signed-pdf', [TrainingManagementController::class, 'signedPdf'])->name('signed-pdf')->whereNumber('training');
+            });
         Route::prefix('training/coordination')->name('training.coordination.')
             ->middleware('permission:'.TrainingPermissions::COORDINATION)->group(function () {
-            Route::get('/', [TrainingCoordinationController::class, 'index'])->name('index');
-            Route::post('/', [TrainingCoordinationController::class, 'store'])->name('store');
-            Route::get('/{training}', [TrainingCoordinationController::class, 'show'])->name('show')->whereNumber('training');
-            Route::post('/{training}/status', [TrainingCoordinationController::class, 'status'])->name('status')->whereNumber('training');
-            Route::get('/{training}/timeline', [TrainingCoordinationController::class, 'timeline'])->name('timeline')->whereNumber('training');
-            Route::get('/{training}/documents/{document}', [TrainingCoordinationController::class, 'document'])->name('document')->whereNumber('training');
-            Route::get('/{training}/signed-pdf', [TrainingCoordinationController::class, 'signedPdf'])->name('signed-pdf')->whereNumber('training');
-        });
+                Route::get('/', [TrainingCoordinationController::class, 'index'])->name('index');
+                Route::post('/', [TrainingCoordinationController::class, 'store'])->name('store');
+                Route::get('/{training}', [TrainingCoordinationController::class, 'show'])->name('show')->whereNumber('training');
+                Route::post('/{training}/status', [TrainingCoordinationController::class, 'status'])->name('status')->whereNumber('training');
+                Route::get('/{training}/timeline', [TrainingCoordinationController::class, 'timeline'])->name('timeline')->whereNumber('training');
+                Route::get('/{training}/documents/{document}', [TrainingCoordinationController::class, 'document'])->name('document')->whereNumber('training');
+                Route::get('/{training}/signed-pdf', [TrainingCoordinationController::class, 'signedPdf'])->name('signed-pdf')->whereNumber('training');
+            });
         Route::prefix('medical-appointments')->name('medical-appointments.')
             ->group(function () {
-            Route::get('/', [MedicalAppointmentController::class, 'index'])->name('index');
-            Route::post('/', [MedicalAppointmentController::class, 'store'])->name('store');
-            Route::get('/{appointment}', [MedicalAppointmentController::class, 'show'])->name('show')->whereNumber('appointment');
-            Route::post('/{appointment}/status', [MedicalAppointmentController::class, 'status'])->name('status')->whereNumber('appointment');
-            Route::get('/{appointment}/timeline', [MedicalAppointmentController::class, 'timeline'])->name('timeline')->whereNumber('appointment');
-            Route::get('/{appointment}/documents/{document}', [MedicalAppointmentController::class, 'document'])->name('document')->whereNumber('appointment');
-            Route::get('/physicians', [MedicalAppointmentController::class, 'physicians'])->name('physicians');
-        });
+                Route::get('/', [MedicalAppointmentController::class, 'index'])->name('index');
+                Route::post('/', [MedicalAppointmentController::class, 'store'])->name('store');
+                Route::get('/{appointment}', [MedicalAppointmentController::class, 'show'])->name('show')->whereNumber('appointment');
+                Route::post('/{appointment}/status', [MedicalAppointmentController::class, 'status'])->name('status')->whereNumber('appointment');
+                Route::get('/{appointment}/timeline', [MedicalAppointmentController::class, 'timeline'])->name('timeline')->whereNumber('appointment');
+                Route::get('/{appointment}/documents/{document}', [MedicalAppointmentController::class, 'document'])->name('document')->whereNumber('appointment');
+                Route::get('/physicians', [MedicalAppointmentController::class, 'physicians'])->name('physicians');
+            });
     });
 });
