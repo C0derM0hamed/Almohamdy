@@ -5,7 +5,9 @@ namespace App\Services\Dashboard;
 use App\Data\NavigationItem;
 use App\Services\Auth\PermissionService;
 use App\Support\WorkAbsenceNotification\WorkAbsenceNotificationPermissions;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 
 class NavigationService
@@ -131,6 +133,10 @@ class NavigationService
             return false;
         }
 
+        if (! $this->hasLegacyPrivilege($item)) {
+            return false;
+        }
+
         if (! empty($item['admin_only']) && ! $this->permissions->isAdmin()) {
             return false;
         }
@@ -223,11 +229,19 @@ class NavigationService
             return null;
         }
 
+        if (! $this->hasLegacyPrivilege($item)) {
+            return null;
+        }
+
         if (! empty($item['admin_only']) && ! $this->permissions->isAdmin()) {
             return null;
         }
 
         if (! empty($item['permission_admin_only']) && ! $this->permissions->canManageUsers()) {
+            return null;
+        }
+
+        if (! $this->passesScopeRestrictions($item) || ! $this->hasLegacyPrivilege($item)) {
             return null;
         }
 
@@ -340,6 +354,7 @@ class NavigationService
     {
         $allowedCompanies = array_map('intval', is_array($item['company_ids'] ?? null) ? $item['company_ids'] : []);
         $allowedBranches = array_map('intval', is_array($item['branch_ids'] ?? null) ? $item['branch_ids'] : []);
+        $allowedLevels = array_map('intval', is_array($item['user_levels'] ?? null) ? $item['user_levels'] : []);
 
         if ($allowedCompanies !== [] && ! in_array((int) session('companies_groups_id'), $allowedCompanies, true)) {
             return false;
@@ -349,7 +364,34 @@ class NavigationService
             return false;
         }
 
+        if ($allowedLevels !== [] && ! in_array((int) session('hr_user_level'), $allowedLevels, true)) {
+            return false;
+        }
+
         return true;
+    }
+
+    /**
+     * @param  array<string, mixed>  $item
+     */
+    private function hasLegacyPrivilege(array $item): bool
+    {
+        $privilege = trim((string) ($item['legacy_privilege'] ?? ''));
+
+        if ($privilege === '') {
+            return true;
+        }
+
+        if (! Schema::hasTable('user_role') || ! Schema::hasTable('role_perm') || ! Schema::hasTable('permissions')) {
+            return false;
+        }
+
+        return DB::table('user_role as ur')
+            ->join('role_perm as rp', 'rp.role_id', '=', 'ur.role_id')
+            ->join('permissions as p', 'p.perm_id', '=', 'rp.perm_id')
+            ->where('ur.user_id', (int) session('hr_user_id', 0))
+            ->where('p.perm_desc', $privilege)
+            ->exists();
     }
 
     /**

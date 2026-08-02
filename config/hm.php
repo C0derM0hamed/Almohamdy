@@ -1,5 +1,10 @@
 <?php
 
+use App\Support\CorporateCommunications\CorporateCommunicationPermissions;
+use App\Support\EmployeeLeave\EmployeeLeavePermissions;
+use App\Support\MedicalAppointments\MedicalAppointmentScope;
+use App\Support\Training\TrainingPermissions;
+
 return [
 
     // Application release version. Bump on each deployment so the login
@@ -183,7 +188,7 @@ return [
                         'icon' => 'bi-file-earmark-text',
                         'active_prefix' => 'modules.government-circulars.',
                         'subtitle_key' => 'government_circulars.subtitle',
-                        'permission' => \App\Support\CorporateCommunications\CorporateCommunicationPermissions::GOVERNMENT_CIRCULARS,
+                        'permission' => CorporateCommunicationPermissions::GOVERNMENT_CIRCULARS,
                     ],
                     [
                         'label_key' => 'inspection_visits',
@@ -191,7 +196,7 @@ return [
                         'icon' => 'bi-clipboard2-check',
                         'active_prefix' => 'modules.inspection-visits.',
                         'subtitle_key' => 'inspection_visits.subtitle',
-                        'permission' => \App\Support\CorporateCommunications\CorporateCommunicationPermissions::INSPECTION_VISITS,
+                        'permission' => CorporateCommunicationPermissions::INSPECTION_VISITS,
                     ],
                     [
                         'label_key' => 'data_requests',
@@ -199,7 +204,7 @@ return [
                         'icon' => 'bi-database',
                         'active_prefix' => 'modules.data-requests.',
                         'subtitle_key' => 'data_requests.subtitle',
-                        'permission' => \App\Support\CorporateCommunications\CorporateCommunicationPermissions::DATA_REQUESTS,
+                        'permission' => CorporateCommunicationPermissions::DATA_REQUESTS,
                     ],
                     [
                         'label_key' => 'correspondence',
@@ -207,7 +212,7 @@ return [
                         'icon' => 'bi-envelope-open',
                         'active_prefix' => 'modules.correspondence.',
                         'subtitle_key' => 'correspondence.subtitle',
-                        'permission' => \App\Support\CorporateCommunications\CorporateCommunicationPermissions::CORRESPONDENCE,
+                        'permission' => CorporateCommunicationPermissions::CORRESPONDENCE,
                     ],
                     [
                         'label_key' => 'outgoing_correspondence',
@@ -215,7 +220,7 @@ return [
                         'icon' => 'bi-envelope-paper',
                         'active_prefix' => 'modules.outgoing-correspondence.',
                         'subtitle_key' => 'outgoing_correspondence.subtitle',
-                        'permission' => \App\Support\CorporateCommunications\CorporateCommunicationPermissions::OUTGOING_CORRESPONDENCE,
+                        'permission' => CorporateCommunicationPermissions::OUTGOING_CORRESPONDENCE,
                     ],
                 ],
             ],
@@ -244,7 +249,7 @@ return [
                         'icon' => 'bi-calendar-check',
                         'active_prefix' => 'modules.leave.',
                         'subtitle_key' => 'employee_leave.requests_subtitle',
-                        'permission' => \App\Support\EmployeeLeave\EmployeeLeavePermissions::VIEW,
+                        'permission' => EmployeeLeavePermissions::VIEW,
                     ],
                     [
                         'label_key' => 'employee_services_training_management',
@@ -252,7 +257,7 @@ return [
                         'icon' => 'bi-mortarboard',
                         'active_prefix' => 'modules.training.management.',
                         'subtitle_key' => 'training.subtitle',
-                        'permission' => \App\Support\Training\TrainingPermissions::MANAGEMENT,
+                        'permission' => TrainingPermissions::MANAGEMENT,
                     ],
                     [
                         'label_key' => 'employee_services_training_coordination',
@@ -260,7 +265,7 @@ return [
                         'icon' => 'bi-mortarboard-fill',
                         'active_prefix' => 'modules.training.coordination.',
                         'subtitle_key' => 'training.subtitle',
-                        'permission' => \App\Support\Training\TrainingPermissions::COORDINATION,
+                        'permission' => TrainingPermissions::COORDINATION,
                     ],
                 ],
             ],
@@ -342,8 +347,8 @@ return [
                 'type' => 'group',
                 'label_key' => 'medical_appointments',
                 'icon' => 'bi-heart-pulse',
-                'branch_ids' => \App\Support\MedicalAppointments\MedicalAppointmentScope::BRANCH_IDS,
-                'company_ids' => \App\Support\MedicalAppointments\MedicalAppointmentScope::COMPANY_IDS,
+                'branch_ids' => MedicalAppointmentScope::BRANCH_IDS,
+                'company_ids' => MedicalAppointmentScope::COMPANY_IDS,
                 'children' => [
                     [
                         'label_key' => 'medical_appointment_requests',
@@ -351,9 +356,66 @@ return [
                         'icon' => 'bi-calendar-plus',
                         'active_prefix' => 'modules.medical-appointments.',
                         'subtitle_key' => 'medical_appointments.subtitle',
-                        'branch_ids' => \App\Support\MedicalAppointments\MedicalAppointmentScope::BRANCH_IDS,
-                        'company_ids' => \App\Support\MedicalAppointments\MedicalAppointmentScope::COMPANY_IDS,
+                        'branch_ids' => MedicalAppointmentScope::BRANCH_IDS,
+                        'company_ids' => MedicalAppointmentScope::COMPANY_IDS,
                     ],
+                ],
+            ],
+            [
+                'type' => 'group',
+                'label_key' => 'legacy_emergency_reception',
+                'icon' => 'bi-hospital',
+                'branch_ids' => [1],
+                'user_levels' => [1, 2, 4],
+                'children' => [
+                    ['label_key' => 'emergency_cases_process', 'route' => 'modules.emergency-reception.guide', 'route_params' => ['guide' => 'emergency-cases'], 'icon' => 'bi-journal-medical', 'branch_ids' => [1], 'user_levels' => [1, 2, 4]],
+                    ['label_key' => 'emergency_reception_mechanism', 'route' => 'modules.emergency-reception.guide', 'route_params' => ['guide' => 'emergency-reception'], 'icon' => 'bi-signpost-split', 'branch_ids' => [1], 'user_levels' => [1, 2, 4]],
+                    ['label_key' => 'health_service_purchase', 'route' => 'modules.health-service-purchase.index', 'icon' => 'bi-person-vcard', 'active_prefix' => 'modules.health-service-purchase.', 'branch_ids' => [1], 'user_levels' => [1, 2, 4]],
+                    ['label_key' => 'receiving_corpse', 'route' => 'modules.emergency-reception.index', 'route_params' => ['type' => 'corpse'], 'icon' => 'bi-file-earmark-medical', 'branch_ids' => [1], 'user_levels' => [1, 2, 4]],
+                    ['label_key' => 'claiming_against_others', 'route' => 'modules.emergency-reception.index', 'route_params' => ['type' => 'claim'], 'icon' => 'bi-file-earmark-check', 'branch_ids' => [1], 'user_levels' => [1, 2, 4]],
+                    ['label_key' => 'unidentified_case', 'route' => 'modules.emergency-reception.index', 'route_params' => ['type' => 'unidentified'], 'icon' => 'bi-person-exclamation', 'branch_ids' => [1], 'user_levels' => [1, 2, 4]],
+                    ['label_key' => 'escape_report', 'route' => 'modules.emergency-reception.index', 'route_params' => ['type' => 'escape'], 'icon' => 'bi-door-open', 'branch_ids' => [1], 'user_levels' => [1, 2, 4]],
+                    ['label_key' => 'incident_report', 'route' => 'modules.emergency-reception.index', 'route_params' => ['type' => 'incident'], 'icon' => 'bi-exclamation-triangle', 'branch_ids' => [1], 'user_levels' => [1, 2, 4]],
+                ],
+            ],
+            [
+                'type' => 'group',
+                'label_key' => 'legacy_medical_referrals',
+                'icon' => 'bi-heart-pulse',
+                'branch_ids' => [1],
+                'user_levels' => [1, 2, 4],
+                'children' => [
+                    ['label_key' => 'pulse_status', 'route' => 'modules.medical-referrals.index', 'route_params' => ['type' => 'pulse-status'], 'icon' => 'bi-activity', 'branch_ids' => [1], 'user_levels' => [1, 2, 4]],
+                    ['label_key' => 'bed_reservation', 'route' => 'modules.medical-referrals.index', 'route_params' => ['type' => 'bed-reservation'], 'icon' => 'bi-hospital', 'branch_ids' => [1], 'user_levels' => [1, 2, 4]],
+                    ['label_key' => 'accept_referral', 'route' => 'modules.medical-referrals.index', 'route_params' => ['type' => 'accept-referral'], 'icon' => 'bi-check2-circle', 'branch_ids' => [1], 'user_levels' => [1, 2, 4]],
+                    ['label_key' => 'referral_apology', 'route' => 'modules.medical-referrals.index', 'route_params' => ['type' => 'referral-apology'], 'icon' => 'bi-x-circle', 'branch_ids' => [1], 'user_levels' => [1, 2, 4]],
+                    ['label_key' => 'crisis_management', 'route' => 'modules.medical-referrals.index', 'route_params' => ['type' => 'crisis-management'], 'icon' => 'bi-shield-exclamation', 'branch_ids' => [1], 'user_levels' => [1, 2, 4]],
+                    ['label_key' => 'red_crescent', 'route' => 'modules.medical-referrals.index', 'route_params' => ['type' => 'red-crescent'], 'icon' => 'bi-truck-front', 'branch_ids' => [1], 'user_levels' => [1, 2, 4]],
+                ],
+            ],
+            [
+                'type' => 'group',
+                'label_key' => 'legacy_agreements_services',
+                'icon' => 'bi-file-earmark-text',
+                'user_levels' => [1, 2, 4],
+                'children' => [
+                    ['label_key' => 'agreement_sadq', 'route' => 'modules.medical-agreements.index', 'route_params' => ['variant' => 'sadq'], 'icon' => 'bi-patch-check', 'branch_ids' => [1, 5, 8], 'user_levels' => [1, 2, 4], 'legacy_privilege' => 'Medical Services Provision Agreement Yaqeen'],
+                    ['label_key' => 'agreement_sadq_manual', 'route' => 'modules.medical-agreements.index', 'route_params' => ['variant' => 'sadq-manual'], 'icon' => 'bi-pencil-square', 'branch_ids' => [1, 5, 8], 'user_levels' => [1, 2, 4], 'legacy_privilege' => 'Medical Services Provision Agreement non Yaqeen'],
+                    ['label_key' => 'agreement_archive', 'route' => 'modules.medical-agreements.index', 'route_params' => ['variant' => 'standard'], 'icon' => 'bi-archive', 'branch_ids' => [1, 5, 8], 'user_levels' => [1, 2, 4]],
+                    ['label_key' => 'governmental_workflows', 'route' => 'modules.governmental-services.index', 'icon' => 'bi-building-check', 'active_prefix' => 'modules.governmental-services.', 'branch_ids' => [1, 5, 7], 'company_ids' => [1], 'user_levels' => [1, 2, 4]],
+                    ['label_key' => 'holiday_inquiries', 'route' => 'modules.legacy-office.holidays.index', 'icon' => 'bi-calendar2-check', 'active_prefix' => 'modules.legacy-office.holidays.', 'branch_ids' => [1, 5, 7], 'user_levels' => [1, 2, 4]],
+                    ['label_key' => 'medical_report_approvals', 'route' => 'modules.legacy-office.medical-reports.index', 'icon' => 'bi-file-medical', 'active_prefix' => 'modules.legacy-office.medical-reports.', 'branch_ids' => [1, 5, 7], 'user_levels' => [1, 2, 4]],
+                ],
+            ],
+            [
+                'type' => 'group',
+                'label_key' => 'legacy_memos',
+                'icon' => 'bi-sticky',
+                'user_levels' => [0, 1, 2, 4],
+                'children' => [
+                    ['label_key' => 'outgoing_memos', 'route' => 'modules.legacy-office.memos.index', 'icon' => 'bi-send', 'active_prefix' => 'modules.legacy-office.memos.', 'user_levels' => [0, 1, 2, 4]],
+                    ['label_key' => 'received_memos', 'route' => 'modules.legacy-office.memos.received', 'icon' => 'bi-inbox', 'active_prefix' => 'modules.legacy-office.memos.', 'user_levels' => [0, 1, 2, 4]],
+                    ['label_key' => 'coverage_memos', 'route' => 'modules.legacy-office.coverage.index', 'icon' => 'bi-file-earmark-medical', 'active_prefix' => 'modules.legacy-office.coverage.', 'branch_ids' => [1, 2, 8], 'user_levels' => [0, 1, 2, 4]],
                 ],
             ],
             [
