@@ -45,6 +45,7 @@ use App\Http\Controllers\Module\EmergencyPerformanceReport\EmergencyPerformanceR
 use App\Http\Controllers\Module\EmergencyFollowUp\EmergencyFollowUpController;
 use App\Http\Controllers\Module\Transferal\TransferalController;
 use App\Http\Controllers\Module\AdmissionCalculator\AdmissionCalculatorController;
+use App\Http\Controllers\Module\MedicalReferrals\MedicalReferralController;
 use App\Http\Controllers\Module\EmployeeRequests\EmployeeRequestController;
 use App\Http\Controllers\Module\LegalClaims\LegalClaimController;
 use App\Http\Controllers\Module\Publications\PublicationController;
@@ -153,6 +154,12 @@ Route::middleware('auth.session')->group(function () {
     Route::get('/transferal_pdf.php', function (Request $request) { return app(TransferalController::class)->pdf($request->integer('id')); })->name('legacy.transferal-pdf');
     Route::get('/admission_calculator.php', fn () => redirect()->route('modules.admission-calculator.index', 'standard'))->name('legacy.admission-calculator');
     Route::get('/manual_admission_calculator.php', fn () => redirect()->route('modules.admission-calculator.index', 'manual'))->name('legacy.manual-admission-calculator');
+    Route::get('/Pulse_status.php', fn () => redirect()->route('modules.medical-referrals.index', 'pulse-status'))->name('legacy.pulse-status');
+    Route::get('/bed_reservation.php', fn () => redirect()->route('modules.medical-referrals.index', 'bed-reservation'))->name('legacy.bed-reservation');
+    Route::get('/accept_referral.php', fn () => redirect()->route('modules.medical-referrals.index', 'accept-referral'))->name('legacy.accept-referral');
+    Route::get('/ehala_case_apology.php', fn () => redirect()->route('modules.medical-referrals.index', 'referral-apology'))->name('legacy.referral-apology');
+    Route::get('/crisis_management.php', fn () => redirect()->route('modules.medical-referrals.index', 'crisis-management'))->name('legacy.crisis-management');
+    Route::get('/red_crescent.php', fn () => redirect()->route('modules.medical-referrals.index', 'red-crescent'))->name('legacy.red-crescent');
     Route::get('/permissions.php', fn () => redirect()->route('modules.employee-requests.index', 'permission'))->name('legacy.permissions');
     Route::get('/change_duty_time.php', fn () => redirect()->route('modules.employee-requests.index', 'duty'))->name('legacy.change-duty');
     Route::get('/resignations.php', fn () => redirect()->route('modules.employee-requests.index', 'resignation'))->name('legacy.resignations');
@@ -295,6 +302,14 @@ Route::middleware('auth.session')->group(function () {
             Route::get('/{type}/{id}/pdf', [AdmissionCalculatorController::class, 'pdf'])->name('pdf')->whereIn('type', ['standard', 'manual'])->whereNumber('id');
             Route::get('/{type}/{id}', [AdmissionCalculatorController::class, 'show'])->name('show')->whereIn('type', ['standard', 'manual'])->whereNumber('id');
             Route::delete('/{type}/{id}', [AdmissionCalculatorController::class, 'destroy'])->name('destroy')->whereIn('type', ['standard', 'manual'])->whereNumber('id');
+        });
+        Route::prefix('medical-referrals')->name('medical-referrals.')->group(function () {
+            Route::get('/{type}', [MedicalReferralController::class, 'index'])->name('index')->whereIn('type', ['pulse-status', 'bed-reservation', 'accept-referral', 'referral-apology', 'crisis-management', 'red-crescent']);
+            Route::get('/{type}/create', [MedicalReferralController::class, 'create'])->name('create')->whereIn('type', ['pulse-status', 'bed-reservation', 'accept-referral', 'referral-apology', 'crisis-management', 'red-crescent']);
+            Route::post('/{type}', [MedicalReferralController::class, 'store'])->name('store')->whereIn('type', ['pulse-status', 'bed-reservation', 'accept-referral', 'referral-apology', 'crisis-management', 'red-crescent']);
+            Route::get('/{type}/{record}/pdf', [MedicalReferralController::class, 'pdf'])->name('pdf')->whereIn('type', ['pulse-status', 'bed-reservation', 'accept-referral', 'referral-apology', 'crisis-management', 'red-crescent'])->whereNumber('record');
+            Route::post('/{type}/{record}/email', [MedicalReferralController::class, 'email'])->name('email')->whereIn('type', ['pulse-status', 'bed-reservation', 'accept-referral', 'referral-apology', 'crisis-management', 'red-crescent'])->whereNumber('record');
+            Route::delete('/{type}/{record}', [MedicalReferralController::class, 'destroy'])->name('destroy')->whereIn('type', ['pulse-status', 'bed-reservation', 'accept-referral', 'referral-apology', 'crisis-management', 'red-crescent'])->whereNumber('record');
         });
         Route::prefix('employee-requests')->name('employee-requests.')->group(function () {
             Route::get('/{type}', [EmployeeRequestController::class, 'index'])->name('index')->whereIn('type', ['permission', 'duty', 'resignation']);
