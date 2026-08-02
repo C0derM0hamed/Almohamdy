@@ -110,6 +110,7 @@ Route::prefix('public')->name('public.')->group(function () {
 
 require __DIR__.'/legacy-office.php';
 require __DIR__.'/emergency-reception.php';
+require __DIR__.'/legacy-workflows.php';
 
 Route::get('/', [LoginController::class, 'showLogin'])->name('login')->middleware('prevent.cache');
 Route::get('/login', [LoginController::class, 'showLogin'])->middleware('prevent.cache');
