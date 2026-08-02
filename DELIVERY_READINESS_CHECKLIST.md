@@ -17,11 +17,11 @@
 | P1 publications | Pass | Real publication list/create/detail workflow, branch/company scope, post types, filters, and protected image download verified. |
 | P1 company/branch/service settings | Pass | Settings landing is implemented; existing authorized company, branch, and service administration owners are reused. |
 | Verified P2 terminology/service codes | Pass | Existing reference administration extended with verified medical terminology and service-code tables and fields. |
-| Remaining P2 reports/utilities | Pending | Rare reports and low-usage utilities require additional active-navigation and behavioral verification. |
+| Remaining P2 reports/utilities | Pass with exclusions | Targeted verification found no reachable missing P2 page for the four audit roles; remaining files are duplicate, unreachable, ungranted, or child handlers. |
 | P1/P2 Laravel tests | Pass | Complete suite: 46 passed, 218 assertions, 0 failed. |
 | P1/P2 Playwright parity | Pass | Full suite: 20 passed, 0 failed, 0 skipped; focused P1/P2: 4 passed. |
 | External legal notifications | Blocked action only | SMS/email recipient and delivery semantics require external confirmation; in-app requests are complete. |
 
 ## Release decision
 
-**P1 READY.** Verified P2 subset is ready. Overall delivery remains **IN PROGRESS** pending the remaining behaviorally verifiable P2 reports and utilities.
+**P1 + VERIFIED P2 READY.** Verified P2 scope is closed for the four-role audit delivery. Only the documented external legal SMS/email action and excluded legacy candidates remain. Overall status: **DELIVERY READY**.

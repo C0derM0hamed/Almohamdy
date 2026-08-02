@@ -45,10 +45,10 @@
 - `php artisan optimize:clear`, 313-route `route:list`, PHP lint, and `npm run build` passed.
 - Publication image downloads remain protected and all reference/settings routes enforce admin authorization and scope.
 
-## Remaining work
+## P2 closure
 
 - P1 is complete for the five classified modules.
-- P2 remains only for rare reports and low-usage utilities whose behavior is not sufficiently verified.
+- Targeted P2 verification closed the remaining rare report and utility candidates without adding an out-of-scope page. The absence report is duplicate/unreachable for audit branches 1 and 2; the inquiry report is explicitly branch-15-only and no audit role is on branch 15. Other candidates are handlers, duplicates, or lack active audit-role reachability.
 - The only explicitly blocked P0 behavior is external SMS/email delivery side effects in the legal source; the in-app workflows are complete.
 
-Final status for this batch: **P1 COMPLETE / VERIFIED P2 SUBSET COMPLETE / REMAINING P2 PENDING**.
+Final status for this batch: **P1 COMPLETE / VERIFIED P2 CLOSED FOR AUDIT SCOPE**.

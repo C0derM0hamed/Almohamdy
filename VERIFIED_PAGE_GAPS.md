@@ -43,7 +43,10 @@ Complaint references preserve the verified global and branch-scoped reference ta
 
 - Medical terminology administration is complete through the existing reference administration owner.
 - Service-code administration is complete through the existing reference administration owner.
-- Rare reports and low-usage utilities remain pending. They are not claimed complete because the remaining targets are not sufficiently behaviorally verifiable from the current active navigation and source data.
+- No additional rare report or low-usage utility is an active, reachable gap for the four audit roles. The targeted source checks below explain the remaining legacy report files.
+- `branch/reports_absence.php` and `branch/report_absence.php` are duplicate report screens. Their menu entry is guarded by `barches_emp_array = [10, 5, 15, 9]`; audit branches 1 and 2 cannot reach it. `branch/reports_absences.php` has no active menu evidence.
+- `branch/inquiresServicesReport.php` and `branch/inquiresServicesReport_export.php` are one report plus its export handler, and the report has an explicit `hr_branch_id != 15` redirect. No audit account is assigned to branch 15, so neither the report nor its export is reachable in the verified audit scope.
+- Other rare report/utility candidates remain outside the verified delivery because they have no active audit-role menu reachability, no usable production grant evidence, or are handlers/PDF/AJAX endpoints attached to excluded legacy modules. They are not implemented as standalone pages.
 - No page is counted as complete from a redirect alone; settings uses a real current-layout landing page and links to existing authorized owners.
 
 ## Blocked actions
@@ -57,4 +60,4 @@ Complaint references preserve the verified global and branch-scoped reference ta
 - File downloads use `ProtectedFileDownload`; no direct storage URL is exposed.
 - Arabic RTL and the existing Hope UI layout are retained.
 
-Final P1 status: **COMPLETE**. Verified P2 subset status: **COMPLETE**. Overall migration status remains **IN PROGRESS** for the remaining P2 reports and utilities.
+Final P1 status: **COMPLETE**. Verified P2 subset status: **COMPLETE**. No verified active P2 page remains missing in the four-role audit scope.

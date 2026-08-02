@@ -35,7 +35,7 @@ All five classified P1 modules are implemented and committed without duplicating
 
 ## Verified P2 result
 
-Medical terminology and service codes are implemented through the existing reference administration. Rare reports and low-usage utilities remain pending because their active legacy behavior is not sufficiently verified to implement safely.
+Medical terminology and service codes are implemented through the existing reference administration. Targeted verification found no additional reachable rare report or low-usage utility missing from the four-role delivery scope. The absence report files are duplicate/unreachable for audit branches 1 and 2, and the inquiry report/export is explicitly restricted to legacy branch 15, which has no audit account. Remaining report files are handlers, duplicates, or lack active-role reachability and are excluded rather than implemented.
 
 ## QA evidence
 
@@ -52,10 +52,13 @@ Medical terminology and service codes are implemented through the existing refer
 - Focused P1/P2 Playwright parity: 4 passed, 0 failed, 0 skipped.
 - Final route registration produced 313 routes; asset build passed.
 
-## Remaining modules
+## Excluded legacy candidates
 
-- P2: rare reports and low-usage utilities only, subject to further behavioral verification.
+- `reports_absence.php` / `report_absence.php`: duplicate and hidden for the verified audit branches by the legacy branch allow-list.
+- `reports_absences.php`: no active navigation evidence.
+- `inquiresServicesReport.php` / `inquiresServicesReport_export.php`: branch-15-only report/export pair; no audit role has branch 15.
+- Other rare reports/utilities: no verified active audit-role reachability or are child handlers of excluded modules.
 
 One P0 action remains blocked by an external dependency rather than missing application behavior: SMS/email delivery recipients and production delivery semantics in the legacy legal workflow are not verified locally.
 
-Final delivery status: **P1 COMPLETE / VERIFIED P2 SUBSET COMPLETE / OVERALL IN PROGRESS ON REMAINING P2**.
+Final delivery status: **DELIVERY READY FOR VERIFIED AUDIT SCOPE**.
