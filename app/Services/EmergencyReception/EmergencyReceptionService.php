@@ -7,8 +7,8 @@ use Illuminate\Database\Query\Builder;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 final class EmergencyReceptionService
@@ -58,20 +58,30 @@ final class EmergencyReceptionService
         EmergencyReceptionAccess::authorize();
         $definition = $this->definition($type);
         $query = $this->scoped($definition['table'])->orderByDesc('id');
-        if ($filters['from'] ?? null) $query->where('date', '>=', strtotime($filters['from']));
-        if ($filters['to'] ?? null) $query->where('date', '<=', strtotime($filters['to'].' 23:59:59'));
-        if (($filters['user_id'] ?? 0) > 0) $query->where('user_id', (int) $filters['user_id']);
-        if ($definition['status'] && ($filters['status'] ?? '') !== '') $query->where($definition['status'], (int) $filters['status']);
+        if ($filters['from'] ?? null) {
+            $query->where('date', '>=', strtotime($filters['from']));
+        }
+        if ($filters['to'] ?? null) {
+            $query->where('date', '<=', strtotime($filters['to'].' 23:59:59'));
+        }
+        if (($filters['user_id'] ?? 0) > 0) {
+            $query->where('user_id', (int) $filters['user_id']);
+        }
+        if ($definition['status'] && ($filters['status'] ?? '') !== '') {
+            $query->where($definition['status'], (int) $filters['status']);
+        }
         if ($filters['search'] ?? '') {
             $term = trim($filters['search']);
             $query->where(fn (Builder $q) => collect($definition['search'])->each(fn ($field, $i) => $i ? $q->orWhere($field, 'like', "%{$term}%") : $q->where($field, 'like', "%{$term}%")));
         }
+
         return $query->paginate(20)->withQueryString();
     }
 
     public function find(string $type, int $id): ?object
     {
         EmergencyReceptionAccess::authorize();
+
         return $this->scoped($this->definition($type)['table'])->where('id', $id)->first();
     }
 
@@ -82,12 +92,21 @@ final class EmergencyReceptionService
         $row = ['branch_id' => 1, 'companies_groups_id' => $this->companyId(), 'user_id' => (int) session('hr_user_id'), 'date' => time()];
         foreach ($definition['fields'] as $field => [, $kind]) {
             $value = $data[$field] ?? null;
-            if (in_array($kind, ['date', 'datetime-local'], true)) $value = strtotime((string) $value);
+            if (in_array($kind, ['date', 'datetime-local'], true)) {
+                $value = strtotime((string) $value);
+            }
             $row[$field] = $value;
         }
-        if (in_array($type, ['corpse', 'claim'], true)) $row += ['sms_tocken' => hash('sha256', Str::random(40)), 'contractor_approval' => 0];
-        if ($type === 'corpse') $row += ['contractor_idno_confirm' => 0, 'recipient_received_date' => (string) time()];
-        if ($type === 'incident') $row += ['sms_tocken' => hash('sha256', Str::random(40))];
+        if (in_array($type, ['corpse', 'claim'], true)) {
+            $row += ['sms_tocken' => hash('sha256', Str::random(40)), 'contractor_approval' => 0];
+        }
+        if ($type === 'corpse') {
+            $row += ['contractor_idno_confirm' => 0, 'recipient_received_date' => (string) time()];
+        }
+        if ($type === 'incident') {
+            $row += ['sms_tocken' => hash('sha256', Str::random(40))];
+        }
+
         return (int) DB::table($definition['table'])->insertGetId($row);
     }
 
@@ -95,6 +114,7 @@ final class EmergencyReceptionService
     {
         EmergencyReceptionAccess::authorize();
         $table = fn (string $name) => DB::table($name)->where('publish', 1)->orderBy('name_ar')->get();
+
         return ['country' => DB::table('countries')->where('publish', 1)->orderBy('country_nationality_ar')->get(), 'nationality' => $table('nationality'), 'death_reason' => $table('death_reason'), 'relative' => $table('relatives'), 'injury' => $table('injury_type'), 'room_type' => $table('room_type'), 'receipt_via' => $table('receipt_case_via'), 'gender' => $table('gender'), 'incident_status' => $table('incident_report_status'), 'paramedic' => $table('paramedics'), 'doctors' => DB::table('incident_report_form_doctors')->where('companies_groups_id', $this->companyId())->where('publish', 1)->orderBy('name')->get(), 'users' => DB::table('ra_users')->where('branch_id', 1)->where('companies_groups_id', $this->companyId())->where('activated', 1)->orderBy('hr_first_name')->get()];
     }
 
@@ -103,6 +123,7 @@ final class EmergencyReceptionService
         $record = $this->find($type, $id);
         abort_if($record === null, 404);
         $cfg = $this->definition($type)['attachments'];
+
         return $cfg && Schema::hasTable($cfg[0]) ? DB::table($cfg[0])->where($cfg[1], $id)->orderByDesc('id')->get() : [];
     }
 
@@ -134,9 +155,12 @@ final class EmergencyReceptionService
         abort_if($row === null, 404);
         $name = basename((string) $row->file_name);
         $newPath = "emergency-reception/{$type}/{$name}";
-        if (Storage::disk('local')->exists($newPath)) return Storage::disk('local')->download($newPath, $name);
+        if (Storage::disk('local')->exists($newPath)) {
+            return Storage::disk('local')->download($newPath, $name);
+        }
         $legacy = base_path("../OldProject/{$cfg[2]}/{$name}");
         abort_unless(is_file($legacy), 404);
+
         return response()->download($legacy, $name);
     }
 
@@ -145,5 +169,8 @@ final class EmergencyReceptionService
         return DB::table($table)->where('branch_id', 1)->where('companies_groups_id', $this->companyId());
     }
 
-    private function companyId(): int { return (int) session('companies_groups_id'); }
+    private function companyId(): int
+    {
+        return (int) session('companies_groups_id');
+    }
 }
