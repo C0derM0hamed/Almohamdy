@@ -116,6 +116,8 @@ Route::get('/password/forgot', [PasswordRecoveryController::class, 'show'])->nam
 Route::post('/password/forgot', [PasswordRecoveryController::class, 'send'])
     ->middleware('throttle:5,1')
     ->name('password.send');
+require __DIR__.'/legacy-office.php';
+
 Route::get('/password/otp', [PasswordRecoveryController::class, 'showOtp'])->name('password.otp.show');
 Route::post('/password/otp', [PasswordRecoveryController::class, 'verifyOtp'])
     ->middleware('throttle:10,1')
