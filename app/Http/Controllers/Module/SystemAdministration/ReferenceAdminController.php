@@ -18,5 +18,30 @@ class ReferenceAdminController extends Controller
     public function update(Request $request, string $type, int $reference): RedirectResponse { $spec = $this->service->spec($type); $this->service->update($type, $reference, $request->validate($this->rules($spec))); return redirect()->route('modules.system-admin.reference.index', $type)->with('success', __('system_administration.reference.saved')); }
     public function publish(string $type, int $reference): RedirectResponse { $this->service->toggle($type, $reference); return back()->with('success', __('system_administration.reference.status_changed')); }
     public function destroy(string $type, int $reference): RedirectResponse { $this->service->delete($type, $reference); return back()->with('success', __('system_administration.reference.deleted')); }
-    private function rules(array $spec): array { $rules = []; foreach ($spec['fields'] as $field) $rules[$field] = str_ends_with($field, '_id') || $field === 'branch_id' || $field === 'platform_id' ? ['nullable', 'integer'] : ['nullable', 'string', 'max:255']; return $rules; }
+    private function rules(array $spec): array
+    {
+        $required = $spec['required'] ?? [];
+        $maxLengths = $spec['max_lengths'] ?? [];
+        $rules = [];
+
+        foreach ($spec['fields'] as $field) {
+            $isNumeric = str_ends_with($field, '_id') || $field === 'branch_id' || $field === 'platform_id';
+            $fieldRules = [in_array($field, $required, true) ? 'required' : 'nullable'];
+            $fieldRules[] = $isNumeric ? 'integer' : 'string';
+            if ($isNumeric) {
+                $fieldRules[] = 'min:1';
+            }
+            if ($field === 'branch_id') {
+                $fieldRules[] = 'exists:branches,id';
+            }
+            if (isset($maxLengths[$field])) {
+                $fieldRules[] = 'max:'.$maxLengths[$field];
+            } elseif (! $isNumeric) {
+                $fieldRules[] = 'max:255';
+            }
+            $rules[$field] = $fieldRules;
+        }
+
+        return $rules;
+    }
 }

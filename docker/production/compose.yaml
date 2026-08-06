@@ -1,0 +1,76 @@
+name: medical_demo
+
+services:
+  db:
+    image: mariadb:11.4
+    container_name: medical_demo_db
+    restart: unless-stopped
+    environment:
+      MARIADB_ROOT_PASSWORD: ${MEDICAL_DB_ROOT_PASSWORD}
+      MARIADB_DATABASE: hms_migration_test
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./database-init:/docker-entrypoint-initdb.d:ro
+    networks:
+      - internal
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 30s
+
+  app:
+    build:
+      context: ../..
+      dockerfile: docker/production/Dockerfile
+      target: app
+    image: medical_demo_app:latest
+    container_name: medical_demo_app
+    restart: unless-stopped
+    env_file:
+      - ../../.env
+    volumes:
+      - app_uploads:/var/www/html/storage/app
+    networks:
+      - internal
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "php", "artisan", "about", "--only=environment"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 30s
+
+  web:
+    build:
+      context: ../..
+      dockerfile: docker/production/Dockerfile
+      target: web
+    image: medical_demo_web:latest
+    container_name: medical_demo_web
+    restart: unless-stopped
+    ports:
+      - "18012:80"
+    volumes:
+      - web_logs:/var/log/nginx
+    networks:
+      - internal
+    depends_on:
+      app:
+        condition: service_healthy
+
+networks:
+  internal:
+    name: medical_demo_internal
+    internal: true
+
+volumes:
+  db_data:
+    name: medical_demo_db_data
+  app_uploads:
+    name: medical_demo_app_uploads
+  web_logs:
+    name: medical_demo_web_logs

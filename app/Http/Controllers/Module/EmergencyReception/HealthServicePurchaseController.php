@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Module\EmergencyReception;
 
 use App\Http\Controllers\Controller;
 use App\Services\EmergencyReception\HealthServicePurchaseService;
-use Barryvdh\DomPDF\Facade\Pdf;
+use App\Services\Pdf\ArabicPdfService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -64,7 +64,7 @@ final class HealthServicePurchaseController extends Controller
         $item = $this->service->find($record);
         abort_if($item === null, 404);
 
-        return Pdf::loadView('modules.emergency-reception.health-pdf', ['record' => $item])->setPaper('a4')->download("health-service-purchase-{$record}.pdf");
+        return app(ArabicPdfService::class)->loadView('modules.emergency-reception.health-pdf', ['record' => $item])->setPaper('a4')->download("health-service-purchase-{$record}.pdf");
     }
 
     public function publicShow(string $token): View

@@ -16,6 +16,8 @@ class ReferenceAdminService
         'departments' => ['table' => 'branches_departments', 'title' => 'departments', 'fields' => ['branch_id', 'name_en', 'name_ar', 'name_ch', 'info'], 'scope' => 'branch'],
         'needs' => ['table' => 'branches_needs', 'title' => 'needs', 'fields' => ['branch_id', 'name_en', 'name_ar', 'name_ch', 'info'], 'scope' => 'branch'],
         'service-types' => ['table' => 'branches_service_type', 'title' => 'service_types', 'fields' => ['branch_id', 'name_en', 'name_ar', 'name_ch', 'info'], 'scope' => 'branch'],
+        'work-areas' => ['table' => 'branches_area', 'title' => 'work_areas', 'fields' => ['branch_id', 'name_en', 'name_ar', 'name_ch', 'info'], 'scope' => 'branch', 'required' => ['branch_id', 'name_en'], 'max_lengths' => ['name_en' => 50, 'name_ar' => 70, 'name_ch' => 70, 'info' => 255]],
+        'inquiries' => ['table' => 'inquiries', 'title' => 'inquiry_types', 'fields' => ['branch_id', 'name_en', 'name_ar', 'name_ch', 'info'], 'scope' => 'branch', 'required' => ['branch_id', 'name_en', 'name_ar'], 'max_lengths' => ['name_en' => 150, 'name_ar' => 150, 'name_ch' => 70, 'info' => 255]],
         'complaint-closing-reasons' => ['table' => 'complaint_closing_reasons', 'title' => 'complaint_closing_reasons', 'fields' => ['name_en', 'name_ar', 'name_ch'], 'scope' => 'global'],
         'complaint-letter-receivers' => ['table' => 'complaint_letter_receiver', 'title' => 'complaint_letter_receivers', 'fields' => ['name_en', 'name_ar', 'name_ch'], 'scope' => 'global'],
         'complaint-statuses' => ['table' => 'complaints_status', 'title' => 'complaint_statuses', 'fields' => ['name_en', 'name_ar', 'name_ch'], 'scope' => 'global'],
@@ -53,7 +55,7 @@ class ReferenceAdminService
         return match ($type) {
             'job-titles' => ['branches' => DB::table('branches')->where('companies_groups_id', $this->companyId())->where('publish', 1)->orderBy('name_ar')->get(), 'training' => DB::table('training_declarations')->where('branch_id', $this->branchId())->where('publish', 1)->orderBy('id')->get()],
             'governmental-services' => ['platforms' => DB::table('governmental_services_platforms')->where('publish', 1)->orderBy('name_ar')->get()],
-            'departments', 'needs', 'service-types' => ['branches' => DB::table('branches')->where('companies_groups_id', $this->companyId())->where('publish', 1)->orderBy('name_ar')->get()],
+            'departments', 'needs', 'service-types', 'work-areas', 'inquiries' => ['branches' => DB::table('branches')->where('companies_groups_id', $this->companyId())->where('publish', 1)->orderBy('name_ar')->get()],
             'branches' => ['companies' => DB::table('companies_groups')->where('publish', 1)->orderBy('name_ar')->get()],
             default => [],
         };
@@ -80,8 +82,31 @@ class ReferenceAdminService
     }
 
     private function values(array $spec, array $data): array { return collect($spec['fields'])->mapWithKeys(fn ($field) => [$field => array_key_exists($field, $data) ? trim((string) $data[$field]) : null])->all(); }
-    private function validateScope(array $spec, array $data): void { if (in_array($spec['scope'], ['branch', 'company'], true)) abort_unless((int) ($data['branch_id'] ?? $this->branchId()) === $this->branchId() || $spec['scope'] === 'company', 403); if ($spec['scope'] === 'company' && array_key_exists('companies_groups_id', $data)) abort_unless((int) $data['companies_groups_id'] === $this->companyId(), 403); }
-    private function scope($query, array $spec): void { if ($spec['scope'] === 'branch') $query->where('branch_id', $this->branchId()); if ($spec['scope'] === 'company') $query->where('companies_groups_id', $this->companyId()); }
+    private function validateScope(array $spec, array $data): void
+    {
+        if ($spec['scope'] === 'branch') {
+            $branchId = (int) ($data['branch_id'] ?? $this->branchId());
+            abort_unless($this->branchId() > 0 && $branchId === $this->branchId(), 403);
+            abort_unless(DB::table('branches')->where('id', $branchId)->where('companies_groups_id', $this->companyId())->exists(), 403);
+        }
+
+        if ($spec['scope'] === 'company' && array_key_exists('companies_groups_id', $data)) {
+            abort_unless((int) $data['companies_groups_id'] === $this->companyId(), 403);
+        }
+    }
+
+    private function scope($query, array $spec): void
+    {
+        if ($spec['scope'] === 'branch') {
+            $table = $spec['table'];
+            $query->where($table.'.branch_id', $this->branchId())
+                ->whereExists(fn ($branch) => $branch->selectRaw('1')->from('branches')->whereColumn('branches.id', $table.'.branch_id')->where('branches.companies_groups_id', $this->companyId()));
+        }
+
+        if ($spec['scope'] === 'company') {
+            $query->where('companies_groups_id', $this->companyId());
+        }
+    }
     private function branchId(): int { return (int) session('hr_branch_id', 0); }
     private function companyId(): int { return (int) session('companies_groups_id', 0); }
 }

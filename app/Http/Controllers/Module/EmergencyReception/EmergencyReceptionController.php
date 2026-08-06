@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Module\EmergencyReception;
 use App\Http\Controllers\Controller;
 use App\Services\EmergencyReception\EmergencyReceptionService;
 use App\Support\EmergencyReception\EmergencyReceptionAccess;
-use Barryvdh\DomPDF\Facade\Pdf;
+use App\Services\Pdf\ArabicPdfService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -91,6 +91,6 @@ final class EmergencyReceptionController extends Controller
         $item = $this->service->find($type, $record);
         abort_if($item === null, 404);
 
-        return Pdf::loadView('modules.emergency-reception.pdf', ['definition' => $this->service->definition($type), 'record' => $item])->setPaper('a4')->download("{$type}-{$record}.pdf");
+        return app(ArabicPdfService::class)->loadView('modules.emergency-reception.pdf', ['definition' => $this->service->definition($type), 'record' => $item])->setPaper('a4')->download("{$type}-{$record}.pdf");
     }
 }

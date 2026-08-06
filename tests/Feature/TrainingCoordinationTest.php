@@ -21,7 +21,10 @@ class TrainingCoordinationTest extends TrainingManagementTest
         $this->withSession($session)->get(route('modules.training.coordination.document', [10, 'plan']))->assertOk();
 
         DB::table('user_permission')->where('page', TrainingPermissions::COORDINATION)->delete();
-        $this->withSession([...$session, 'hm_permissions' => []])->get(route('modules.training.coordination.index'))->assertForbidden();
+        $this->withSession([...$session, 'hm_permissions' => []])
+            ->get(route('modules.training.coordination.index'))
+            ->assertOk()
+            ->assertSee('PW_AUDIT_TRAINEE');
     }
 
     public function test_coordination_creates_and_updates_type_one_statuses(): void

@@ -4,6 +4,7 @@ namespace App\Services\Dashboard;
 
 use App\Data\NavigationItem;
 use App\Services\Auth\PermissionService;
+use App\Services\Auth\LegacyScopeService;
 use App\Support\WorkAbsenceNotification\WorkAbsenceNotificationPermissions;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
@@ -14,6 +15,7 @@ class NavigationService
 {
     public function __construct(
         private readonly PermissionService $permissions,
+        private readonly LegacyScopeService $legacyScopes,
     ) {}
 
     public function homeRouteName(): string
@@ -21,6 +23,13 @@ class NavigationService
         $items = $this->sidebar();
 
         foreach ($items as $item) {
+            // The dashboard endpoint is a compatibility entry point that
+            // redirects to the first usable module. It must not select itself
+            // as the landing route or authenticated dashboard requests loop.
+            if (! $item->isGroup && $item->route === 'dashboard') {
+                continue;
+            }
+
             if ($item->hasChildren()) {
                 foreach ($item->children as $child) {
                     if ($child->route !== null && $child->route !== '') {
@@ -121,7 +130,8 @@ class NavigationService
         }
 
         if ($this->requiresWorkAbsenceView($routeName)
-            && ! $this->permissions->can(WorkAbsenceNotificationPermissions::VIEW)) {
+            && ! $this->permissions->can(WorkAbsenceNotificationPermissions::VIEW)
+            && ! $this->legacyScopes->allows(LegacyScopeService::EMPLOYEE_SERVICES)) {
             return false;
         }
 
@@ -217,7 +227,8 @@ class NavigationService
         }
 
         if ($this->requiresWorkAbsenceView($routeName)
-            && ! $this->permissions->can(WorkAbsenceNotificationPermissions::VIEW)) {
+            && ! $this->permissions->can(WorkAbsenceNotificationPermissions::VIEW)
+            && ! $this->legacyScopes->allows(LegacyScopeService::EMPLOYEE_SERVICES)) {
             return null;
         }
 
@@ -344,7 +355,13 @@ class NavigationService
     {
         $permission = trim((string) ($item['permission'] ?? ''));
 
-        return $permission === '' || $this->permissions->can($permission);
+        if ($permission !== '') {
+            return $this->permissions->can($permission);
+        }
+
+        $legacyScope = trim((string) ($item['legacy_scope'] ?? ''));
+
+        return $legacyScope === '' || $this->legacyScopes->allows($legacyScope);
     }
 
     /**
@@ -376,6 +393,12 @@ class NavigationService
      */
     private function hasLegacyPrivilege(array $item): bool
     {
+        $legacyScope = trim((string) ($item['legacy_scope'] ?? ''));
+
+        if ($legacyScope !== '' && $this->legacyScopes->allows($legacyScope)) {
+            return true;
+        }
+
         $privilege = trim((string) ($item['legacy_privilege'] ?? ''));
 
         if ($privilege === '') {

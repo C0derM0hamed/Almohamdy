@@ -2,6 +2,7 @@
 
 namespace App\Services\LegacyWorkflows;
 
+use App\Services\Auth\LegacyScopeService;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
@@ -10,6 +11,8 @@ use Illuminate\Support\Str;
 
 class MedicalAgreementService
 {
+    public function __construct(private readonly LegacyScopeService $legacyScopes) {}
+
     public const STANDARD = 'standard';
 
     public const SADQ = 'sadq';
@@ -33,7 +36,7 @@ class MedicalAgreementService
                 ? 'Medical Services Provision Agreement Yaqeen'
                 : 'Medical Services Provision Agreement non Yaqeen';
 
-            abort_unless($this->hasLegacyPrivilege($permission), 403);
+            abort_unless($this->hasLegacyPrivilege($permission) || $this->legacyScopes->allows(LegacyScopeService::SADQ), 403);
         }
     }
 

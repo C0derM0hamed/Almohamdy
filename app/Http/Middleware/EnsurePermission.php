@@ -18,7 +18,9 @@ class EnsurePermission
      */
     public function handle(Request $request, Closure $next, string $permission): Response
     {
-        $this->permissions->authorize($permission);
+        if (! $this->permissions->can($permission)) {
+            $this->permissions->authorize($permission);
+        }
 
         return $next($request);
     }

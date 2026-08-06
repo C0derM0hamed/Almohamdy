@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Module\LegacyWorkflows;
 use App\Http\Controllers\Controller;
 use App\Services\LegacyWorkflows\GovernmentalServiceWorkflow;
 use App\Support\LegacyWorkflows\LegacyWorkflowDownload;
-use Barryvdh\DomPDF\Facade\Pdf;
+use App\Services\Pdf\ArabicPdfService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -88,6 +88,6 @@ class GovernmentalServiceController extends Controller
         $record = $this->service->find($service);
         abort_if($record === null, 404);
 
-        return Pdf::loadView('legacy-workflows.governmental-services.pdf', ['record' => $record])->setPaper('a4')->download('governmental-service-'.$service.'.pdf');
+        return app(ArabicPdfService::class)->loadView('legacy-workflows.governmental-services.pdf', ['record' => $record])->setPaper('a4')->download('governmental-service-'.$service.'.pdf');
     }
 }

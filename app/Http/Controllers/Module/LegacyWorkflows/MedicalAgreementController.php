@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Module\LegacyWorkflows;
 use App\Http\Controllers\Controller;
 use App\Services\LegacyWorkflows\MedicalAgreementService;
 use App\Support\LegacyWorkflows\LegacyWorkflowDownload;
-use Barryvdh\DomPDF\Facade\Pdf;
+use App\Services\Pdf\ArabicPdfService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -59,7 +59,7 @@ class MedicalAgreementController extends Controller
         $record = $this->service->find($variant, $agreement);
         abort_if($record === null, 404);
 
-        return Pdf::loadView('legacy-workflows.medical-agreements.pdf', ['variant' => $variant, 'agreement' => $record])->setPaper('a4')->download('medical-agreement-'.$agreement.'.pdf');
+        return app(ArabicPdfService::class)->loadView('legacy-workflows.medical-agreements.pdf', ['variant' => $variant, 'agreement' => $record])->setPaper('a4')->download('medical-agreement-'.$agreement.'.pdf');
     }
 
     public function attach(Request $request, string $variant, int $agreement): RedirectResponse

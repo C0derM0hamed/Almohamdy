@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Module\Transferal;
 
 use App\Http\Controllers\Controller;
 use App\Services\Transferal\TransferalService;
-use Barryvdh\DomPDF\Facade\Pdf;
+use App\Services\Pdf\ArabicPdfService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -38,6 +38,6 @@ class TransferalController extends Controller
     public function refuse(Request $request, int $transferal): RedirectResponse { $data = $request->validate(['doctor' => ['required', 'string', 'max:150'], 'refusal_reason' => ['required', 'string', 'max:200']]); $this->service->refuse($transferal, $data, $request->file('file_a')); return back()->with('success', __('transferal.refused')); }
     public function receive(Request $request, int $transferal): RedirectResponse { $data = $request->validate(['doctor' => ['required', 'string', 'max:150'], 'date_time' => ['required', 'date']]); $this->service->receive($transferal, $data, $request->file('file_a')); return back()->with('success', __('transferal.received')); }
 
-    public function pdf(int $transferal): mixed { $record = $this->service->find($transferal); abort_if($record === null, 404); return Pdf::loadView('transferal.pdf', ['record' => $record, 'timeline' => $this->service->timeline($transferal)])->setPaper('a4')->download('transferal-'.$transferal.'.pdf'); }
+    public function pdf(int $transferal): mixed { $record = $this->service->find($transferal); abort_if($record === null, 404); return app(ArabicPdfService::class)->loadView('transferal.pdf', ['record' => $record, 'timeline' => $this->service->timeline($transferal)])->setPaper('a4')->download('transferal-'.$transferal.'.pdf'); }
     public function attachment(int $transferal, string $type): mixed { return $this->service->attachment($transferal, $type); }
 }

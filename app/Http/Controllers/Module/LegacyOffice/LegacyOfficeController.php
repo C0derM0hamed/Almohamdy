@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Module\LegacyOffice;
 
 use App\Http\Controllers\Controller;
 use App\Services\Sms\SmsGateway;
-use Barryvdh\DomPDF\Facade\Pdf;
+use App\Services\Pdf\ArabicPdfService;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -93,7 +93,7 @@ class LegacyOfficeController extends Controller
     {
         $record = $this->findScoped('holidays_inquiry', $holiday, true);
 
-        return Pdf::loadView('legacy-office.holiday-pdf', ['record' => $record])->stream("holiday-{$holiday}.pdf");
+        return app(ArabicPdfService::class)->loadView('legacy-office.holiday-pdf', ['record' => $record])->stream("holiday-{$holiday}.pdf");
     }
 
     public function storeHolidayAttachment(Request $request, int $holiday): RedirectResponse
@@ -167,7 +167,7 @@ class LegacyOfficeController extends Controller
         $this->requireBranches([1, 5, 7]);
         $record = $this->findScoped('medica_report', $report, false);
 
-        return Pdf::loadView('legacy-office.medical-report-pdf', ['record' => $record])->stream("medical-report-{$report}.pdf");
+        return app(ArabicPdfService::class)->loadView('legacy-office.medical-report-pdf', ['record' => $record])->stream("medical-report-{$report}.pdf");
     }
 
     public function memos(Request $request): View
@@ -215,7 +215,7 @@ class LegacyOfficeController extends Controller
     {
         $record = $this->memoAccessibleToCurrentUser($memo);
 
-        return Pdf::loadView('legacy-office.memo-pdf', ['record' => $record, 'type' => DB::table('memo_types')->where('id', $record->memo_types_id)->first()])->stream("memo-{$memo}.pdf");
+        return app(ArabicPdfService::class)->loadView('legacy-office.memo-pdf', ['record' => $record, 'type' => DB::table('memo_types')->where('id', $record->memo_types_id)->first()])->stream("memo-{$memo}.pdf");
     }
 
     public function coverage(Request $request): View
@@ -276,7 +276,7 @@ class LegacyOfficeController extends Controller
         $this->requireBranches([1, 2, 9]);
         $record = $this->findScoped('service_coverage_memo', $memo);
 
-        return Pdf::loadView('legacy-office.coverage-pdf', ['record' => $record, 'type' => DB::table('service_coverage_memo_types')->where('id', $record->memo_types_id)->first()])->stream("coverage-{$memo}.pdf");
+        return app(ArabicPdfService::class)->loadView('legacy-office.coverage-pdf', ['record' => $record, 'type' => DB::table('service_coverage_memo_types')->where('id', $record->memo_types_id)->first()])->stream("coverage-{$memo}.pdf");
     }
 
     public function signature(): View

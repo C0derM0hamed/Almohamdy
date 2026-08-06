@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Module\MedicalAppointment;
 use App\Http\Controllers\Controller;
 use App\Services\MedicalAppointment\MedicalAppointmentService;
 use App\Support\MedicalAppointments\MedicalAppointmentScope;
-use Barryvdh\DomPDF\Facade\Pdf;
+use App\Services\Pdf\ArabicPdfService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -141,7 +141,7 @@ class MedicalAppointmentController extends Controller
         $field = $documents[$document];
         abort_if($field !== null && empty($record->{$field}), 404);
 
-        return Pdf::loadView('medical-appointments.pdf', [
+        return app(ArabicPdfService::class)->loadView('medical-appointments.pdf', [
             'appointment' => $record,
             'document' => $document,
             'times' => $record->times,

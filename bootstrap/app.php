@@ -12,6 +12,9 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        // Cloudflare Tunnel forwards the original HTTPS request headers.
+        $middleware->trustProxies(at: 'REMOTE_ADDR');
+
         $middleware->web(append: [
             \App\Http\Middleware\SetLocale::class,
         ]);

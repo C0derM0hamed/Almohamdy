@@ -13,6 +13,7 @@ class PermissionService
 
     public function __construct(
         private readonly PermissionRepository $repository,
+        private readonly LegacyScopeService $legacyScopes,
     ) {}
 
     public function can(string $permission): bool
@@ -25,7 +26,8 @@ class PermissionService
             return true;
         }
 
-        return in_array($permission, $this->sessionPermissions(), true);
+        return in_array($permission, $this->sessionPermissions(), true)
+            || $this->legacyScopes->allowsPermission($permission);
     }
 
     public function isAdmin(): bool

@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Module\Training;
 
 use App\Http\Controllers\Controller;
 use App\Services\Training\TrainingService;
-use Barryvdh\DomPDF\Facade\Pdf;
+use App\Services\Pdf\ArabicPdfService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -122,7 +122,7 @@ class TrainingCoordinationController extends Controller
             : $this->service->timeline($record)->firstWhere('status_id', $requiredStatus);
         abort_if($requiredStatus !== null && $action === null, 404);
 
-        return Pdf::loadView('training.pdf', [
+        return app(ArabicPdfService::class)->loadView('training.pdf', [
             'training' => $record,
             'document' => $document,
             'action' => $action,

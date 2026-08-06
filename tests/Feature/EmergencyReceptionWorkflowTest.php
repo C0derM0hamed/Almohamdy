@@ -60,6 +60,11 @@ class EmergencyReceptionWorkflowTest extends TestCase
             $b->string('date');
             $b->string('sms_tocken');
         });
+        Schema::create('ra_users', function (Blueprint $b): void {
+            $b->increments('hr_id');
+            $b->string('hr_first_name')->nullable();
+            $b->string('hr_last_name')->nullable();
+        });
         Schema::create('health_service_purchase_form_attachments', function (Blueprint $b): void {
             $b->increments('id');
             $b->integer('form_id');
@@ -152,5 +157,18 @@ class EmergencyReceptionWorkflowTest extends TestCase
         session(['companies_groups_id' => 2]);
         $this->expectException(HttpException::class);
         $service->downloadAttachment($record->id, (int) $attachment->id);
+    }
+
+    public function test_health_service_purchase_uses_the_authenticated_branch_scope(): void
+    {
+        $service = app(HealthServicePurchaseService::class);
+        $branchOne = $service->create('0500000000', 1);
+
+        session(['hr_branch_id' => 2, 'hr_user_id' => 20]);
+        $branchTwo = $service->create('0500000001', 2);
+
+        $this->assertDatabaseHas('health_service_purchase_form', ['id' => $branchTwo->id, 'branch_id' => 2, 'companies_groups_id' => 1]);
+        $this->assertNotNull($service->find($branchTwo->id));
+        $this->assertNull($service->find($branchOne->id));
     }
 }

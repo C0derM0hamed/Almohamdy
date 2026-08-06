@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Module\LegalClaims;
 
 use App\Http\Controllers\Controller;
 use App\Services\LegalClaims\LegalClaimService;
-use Barryvdh\DomPDF\Facade\Pdf;
+use App\Services\Pdf\ArabicPdfService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -43,6 +43,6 @@ class LegalClaimController extends Controller
     public function paid(int $claim, int $installment): RedirectResponse { $this->service->markInstallmentPaid($claim, $installment); return back()->with('success', __('legal_claims.installment_paid')); }
     public function suspension(Request $request, int $claim): RedirectResponse { $data = $request->validate(['status_id' => ['required', 'integer'], 'total_amount' => ['nullable', 'numeric'], 'amount_waived' => ['nullable', 'numeric'], 'file' => ['nullable', 'file', 'max:10240']]); $this->service->addSuspension($claim, $data, $request->file('file')); return back()->with('success', __('legal_claims.suspension_added')); }
     public function download(int $claim, string $kind, ?int $child = null): mixed { return $this->service->download($claim, $kind, $child); }
-    public function pdf(int $claim): mixed { $record = $this->service->find($claim); abort_if($record === null, 404); return Pdf::loadView('legal-claims.pdf', ['record' => $record])->setPaper('a4')->download('lawsuit-'.$claim.'.pdf'); }
-    public function suspensionPdf(int $claim): mixed { $record = $this->service->find($claim); abort_if($record === null, 404); return Pdf::loadView('legal-claims.suspension-pdf', ['record' => $record])->setPaper('a4')->download('lawsuit-suspension-'.$claim.'.pdf'); }
+    public function pdf(int $claim): mixed { $record = $this->service->find($claim); abort_if($record === null, 404); return app(ArabicPdfService::class)->loadView('legal-claims.pdf', ['record' => $record])->setPaper('a4')->download('lawsuit-'.$claim.'.pdf'); }
+    public function suspensionPdf(int $claim): mixed { $record = $this->service->find($claim); abort_if($record === null, 404); return app(ArabicPdfService::class)->loadView('legal-claims.suspension-pdf', ['record' => $record])->setPaper('a4')->download('lawsuit-suspension-'.$claim.'.pdf'); }
 }

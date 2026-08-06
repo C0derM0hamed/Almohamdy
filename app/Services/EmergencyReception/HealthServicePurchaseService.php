@@ -14,7 +14,7 @@ final class HealthServicePurchaseService
 {
     public function list(array $filters): mixed
     {
-        EmergencyReceptionAccess::authorize();
+        EmergencyReceptionAccess::authorize(true);
         $query = $this->scoped()->leftJoin('ra_users as u', 'u.hr_id', '=', 'health_service_purchase_form.user_id')->select('health_service_purchase_form.*', 'u.hr_first_name', 'u.hr_last_name')->orderByDesc('health_service_purchase_form.id');
         if ($filters['from']) {
             $query->where('health_service_purchase_form.date', '>=', strtotime($filters['from']));
@@ -34,16 +34,16 @@ final class HealthServicePurchaseService
 
     public function create(string $mobile, int $idType): object
     {
-        EmergencyReceptionAccess::authorize();
+        EmergencyReceptionAccess::authorize(true);
         $token = 'hsp'.hash('sha256', Str::random(48));
-        $id = DB::table('health_service_purchase_form')->insertGetId(['branch_id' => 1, 'companies_groups_id' => $this->companyId(), 'user_id' => (int) session('hr_user_id'), 'mobile' => $mobile, 'id_type' => $idType, 'date' => (string) time(), 'sms_tocken' => $token]);
+        $id = DB::table('health_service_purchase_form')->insertGetId(['branch_id' => $this->branchId(), 'companies_groups_id' => $this->companyId(), 'user_id' => (int) session('hr_user_id'), 'mobile' => $mobile, 'id_type' => $idType, 'date' => (string) time(), 'sms_tocken' => $token]);
 
         return (object) ['id' => $id, 'id_type' => $idType, 'sms_tocken' => $token];
     }
 
     public function find(int $id): ?object
     {
-        EmergencyReceptionAccess::authorize();
+        EmergencyReceptionAccess::authorize(true);
 
         return $this->scoped()->where('health_service_purchase_form.id', $id)->first();
     }
@@ -51,7 +51,7 @@ final class HealthServicePurchaseService
     public function status(int $id, int $verified): void
     {
         $this->find($id) ?? abort(404);
-        DB::table('health_service_purchase_form')->where('id', $id)->where('branch_id', 1)->where('companies_groups_id', $this->companyId())->update(['verified' => $verified, 'verified_by' => (int) session('hr_user_id'), 'verified_at' => (string) time()]);
+        DB::table('health_service_purchase_form')->where('id', $id)->where('branch_id', $this->branchId())->where('companies_groups_id', $this->companyId())->update(['verified' => $verified, 'verified_by' => (int) session('hr_user_id'), 'verified_at' => (string) time()]);
     }
 
     public function webPro(int $id): void
@@ -59,7 +59,7 @@ final class HealthServicePurchaseService
         $record = $this->find($id);
         abort_if($record === null, 404);
         abort_unless((int) $record->verified === 1, 422);
-        DB::table('health_service_purchase_form')->where('id', $id)->where('branch_id', 1)->where('companies_groups_id', $this->companyId())->update(['uploaded_to_webpro' => 1, 'uploaded_to_webpro_by' => (int) session('hr_user_id'), 'uploaded_to_webpro_at' => (string) time()]);
+        DB::table('health_service_purchase_form')->where('id', $id)->where('branch_id', $this->branchId())->where('companies_groups_id', $this->companyId())->update(['uploaded_to_webpro' => 1, 'uploaded_to_webpro_by' => (int) session('hr_user_id'), 'uploaded_to_webpro_at' => (string) time()]);
     }
 
     public function attachments(int $id): iterable
@@ -123,8 +123,10 @@ final class HealthServicePurchaseService
 
     private function scoped(): Builder
     {
-        return DB::table('health_service_purchase_form')->where('health_service_purchase_form.branch_id', 1)->where('health_service_purchase_form.companies_groups_id', $this->companyId());
+        return DB::table('health_service_purchase_form')->where('health_service_purchase_form.branch_id', $this->branchId())->where('health_service_purchase_form.companies_groups_id', $this->companyId());
     }
+
+    private function branchId(): int { return (int) session('hr_branch_id', 0); }
 
     private function companyId(): int
     {

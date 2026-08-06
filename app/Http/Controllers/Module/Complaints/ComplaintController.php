@@ -8,7 +8,7 @@ use App\Http\Requests\Complaints\ComplaintIndexRequest;
 use App\Http\Requests\Complaints\StoreComplaintRequest;
 use App\Http\Requests\Complaints\StoreComplaintReplyRequest;
 use App\Services\Complaints\ComplaintService;
-use Barryvdh\DomPDF\Facade\Pdf;
+use App\Services\Pdf\ArabicPdfService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Storage;
@@ -83,7 +83,7 @@ class ComplaintController extends Controller
     {
         $record = $this->complaintService->findForDetail($complaint);
         abort_if($record === null, 404);
-        $pdf = Pdf::loadView('complaints.pdf', ['complaint' => $record, 'timeline' => $this->complaintService->timeline($complaint)])
+        $pdf = app(ArabicPdfService::class)->loadView('complaints.pdf', ['complaint' => $record, 'timeline' => $this->complaintService->timeline($complaint)])
             ->setPaper('a4');
         return $pdf->download('complaint-'.$record->displayNumber().'.pdf');
     }

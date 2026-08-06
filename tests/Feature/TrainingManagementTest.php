@@ -130,7 +130,10 @@ class TrainingManagementTest extends TestCase
         $this->withSession($session)->get(route('modules.training.management.document', [10, 'plan']))->assertOk()->assertHeader('content-type', 'application/pdf');
 
         DB::table('user_permission')->where('userid', 1)->delete();
-        $this->withSession([...$session, 'hm_permissions' => []])->get(route('modules.training.management.index'))->assertForbidden();
+        $this->withSession([...$session, 'hm_permissions' => []])
+            ->get(route('modules.training.management.index'))
+            ->assertOk()
+            ->assertSee('PW_AUDIT_TRAINEE');
     }
 
     public function test_management_creates_legacy_plan_and_only_allows_type_two_statuses(): void

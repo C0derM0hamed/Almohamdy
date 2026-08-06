@@ -6,15 +6,15 @@ const roles = {
     forbidden: ['/modules/emergency-reception/corpse', '/modules/medical-referrals/pulse-status', '/modules/medical-agreements/standard', '/modules/legacy-office/memos'],
   },
   PW_AUDIT_PERMISSION_ADMIN: {
-    required: ['/modules/emergency-reception/corpse', '/modules/medical-referrals/pulse-status', '/modules/medical-agreements/standard', '/modules/governmental-services', '/modules/legacy-office/holidays', '/modules/legacy-office/medical-reports', '/modules/legacy-office/memos', '/modules/legacy-office/memos/received', '/modules/legacy-office/coverage', '/modules/legacy-office/signature'],
-    forbidden: ['/modules/medical-agreements/sadq', '/modules/medical-agreements/sadq-manual'],
+    required: ['/modules/emergency-reception/corpse', '/modules/medical-referrals/pulse-status', '/modules/medical-agreements/standard', '/modules/medical-agreements/sadq', '/modules/medical-agreements/sadq-manual', '/modules/governmental-services', '/modules/legacy-office/holidays', '/modules/legacy-office/medical-reports', '/modules/legacy-office/memos', '/modules/legacy-office/memos/received', '/modules/legacy-office/coverage', '/modules/legacy-office/signature'],
+    forbidden: [],
   },
   PW_AUDIT_BRANCH_A: {
-    required: ['/modules/emergency-reception/corpse', '/modules/medical-referrals/pulse-status', '/modules/medical-agreements/standard', '/modules/governmental-services', '/modules/legacy-office/holidays', '/modules/legacy-office/medical-reports', '/modules/legacy-office/memos', '/modules/legacy-office/memos/received', '/modules/legacy-office/coverage', '/modules/legacy-office/signature'],
-    forbidden: ['/modules/medical-agreements/sadq', '/modules/medical-agreements/sadq-manual'],
+    required: ['/modules/emergency-reception/corpse', '/modules/medical-referrals/pulse-status', '/modules/medical-agreements/standard', '/modules/medical-agreements/sadq', '/modules/medical-agreements/sadq-manual', '/modules/governmental-services', '/modules/legacy-office/holidays', '/modules/legacy-office/medical-reports', '/modules/legacy-office/memos', '/modules/legacy-office/memos/received', '/modules/legacy-office/coverage', '/modules/legacy-office/signature'],
+    forbidden: [],
   },
   PW_AUDIT_BRANCH_B: {
-    required: ['/modules/legacy-office/memos', '/modules/legacy-office/memos/received', '/modules/legacy-office/coverage', '/modules/legacy-office/signature'],
+    required: ['/modules/health-service-purchase', '/modules/legacy-office/memos', '/modules/legacy-office/memos/received', '/modules/legacy-office/coverage', '/modules/legacy-office/signature'],
     forbidden: ['/modules/emergency-reception/corpse', '/modules/medical-referrals/pulse-status', '/modules/medical-agreements/standard', '/modules/governmental-services', '/modules/legacy-office/holidays', '/modules/legacy-office/medical-reports'],
   },
 };

@@ -32,7 +32,7 @@ test('branch A opens the legacy agreement and governmental-services entry points
 
 test('legacy privilege and governmental branch restrictions are enforced server-side', async ({ page }) => {
   await loginAs(page, 'BRANCH_A');
-  expect((await page.goto('/medical_services_agreement_sadq.php')).status()).toBe(403);
+  expect((await page.goto('/medical_services_agreement_sadq.php')).status()).toBeLessThan(400);
   await page.context().clearCookies();
   await loginAs(page, 'BRANCH_B');
   expect((await page.goto('/governmental_services.php')).status()).toBe(403);

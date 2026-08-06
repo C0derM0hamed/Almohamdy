@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Module\TechnicalFailure;
 
 use App\Http\Controllers\Controller;
 use App\Services\TechnicalFailure\TechnicalFailureService;
-use Barryvdh\DomPDF\Facade\Pdf;
+use App\Services\Pdf\ArabicPdfService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -82,7 +82,7 @@ class TechnicalFailureController extends Controller
         $record = $this->service->find($notice);
         abort_if($record === null, 404);
 
-        return Pdf::loadView('technical-failures.pdf', ['notice' => $record, 'timeline' => $this->service->timeline($notice)])
+        return app(ArabicPdfService::class)->loadView('technical-failures.pdf', ['notice' => $record, 'timeline' => $this->service->timeline($notice)])
             ->setPaper('a4')->download('technical-failure-'.$record->id.'.pdf');
     }
 

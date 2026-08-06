@@ -4,7 +4,7 @@ namespace App\Http\Controllers\PublicForms;
 
 use App\Http\Controllers\Controller;
 use App\Services\MedicalAppointment\MedicalAppointmentService;
-use Barryvdh\DomPDF\Facade\Pdf;
+use App\Services\Pdf\ArabicPdfService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -95,7 +95,7 @@ class MedicalAppointmentPublicController extends Controller
         $appointment = $this->service->findByToken($token);
         abort_if($appointment === null, 404);
 
-        return Pdf::loadView('medical-appointments.pdf', [
+        return app(ArabicPdfService::class)->loadView('medical-appointments.pdf', [
             'appointment' => $appointment,
             'document' => 'request',
             'times' => $appointment->times,
@@ -107,7 +107,7 @@ class MedicalAppointmentPublicController extends Controller
         $appointment = $this->service->findByToken($token);
         abort_if($appointment === null || $appointment->patient_confirm_date === null, 404);
 
-        return Pdf::loadView('medical-appointments.pdf', [
+        return app(ArabicPdfService::class)->loadView('medical-appointments.pdf', [
             'appointment' => $appointment,
             'document' => 'patient-accepted',
             'times' => $appointment->times,
@@ -119,7 +119,7 @@ class MedicalAppointmentPublicController extends Controller
         $appointment = $this->service->findByToken($token);
         abort_if($appointment === null || $appointment->patient_confirm_date_notice === null, 404);
 
-        return Pdf::loadView('medical-appointments.pdf', [
+        return app(ArabicPdfService::class)->loadView('medical-appointments.pdf', [
             'appointment' => $appointment,
             'document' => 'patient-rejected',
             'times' => $appointment->times,
@@ -131,7 +131,7 @@ class MedicalAppointmentPublicController extends Controller
         $appointment = $this->service->findByToken($token);
         abort_if($appointment === null || $appointment->patient_confirm_date === null || (int) $appointment->doctor_action <= 0, 404);
 
-        return Pdf::loadView('medical-appointments.pdf', [
+        return app(ArabicPdfService::class)->loadView('medical-appointments.pdf', [
             'appointment' => $appointment,
             'document' => 'doctor-reply',
             'times' => $appointment->times,

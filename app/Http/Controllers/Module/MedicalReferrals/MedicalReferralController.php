@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Module\MedicalReferrals;
 
 use App\Http\Controllers\Controller;
 use App\Services\MedicalReferrals\MedicalReferralService;
-use Barryvdh\DomPDF\Facade\Pdf;
+use App\Services\Pdf\ArabicPdfService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
@@ -66,7 +66,7 @@ class MedicalReferralController extends Controller
         $item = $this->service->find($type, $record);
         abort_if($item === null, 404);
 
-        return Pdf::loadView('medical-referrals.pdf', ['item' => $item, 'definition' => $this->service->definition($type), 'type' => $type])
+        return app(ArabicPdfService::class)->loadView('medical-referrals.pdf', ['item' => $item, 'definition' => $this->service->definition($type), 'type' => $type])
             ->setPaper('a4')
             ->stream($type.'-'.$record.'.pdf');
     }
@@ -79,7 +79,7 @@ class MedicalReferralController extends Controller
             ? ['mail_to' => 'srca10803@srca.org.sa', 'mail_cc' => null]
             : $request->validate(['mail_to' => ['required', 'email'], 'mail_cc' => ['nullable', 'email']]);
         $definition = $this->service->definition($type);
-        $pdf = Pdf::loadView('medical-referrals.pdf', compact('item', 'definition', 'type'))->setPaper('a4')->output();
+        $pdf = app(ArabicPdfService::class)->loadView('medical-referrals.pdf', compact('item', 'definition', 'type'))->setPaper('a4')->output();
         Mail::raw($definition['title'], function ($message) use ($data, $definition, $pdf, $type, $record): void {
             $message->to($data['mail_to'])->subject($definition['title'])->attachData($pdf, $type.'-'.$record.'.pdf', ['mime' => 'application/pdf']);
             if (! empty($data['mail_cc'])) {

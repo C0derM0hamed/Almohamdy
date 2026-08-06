@@ -33,7 +33,33 @@ class AdmissionCalculatorService
         $this->authorizeBranch();
         $table = $this->table($type);
         abort_unless(DB::table('admission_rooms')->where('id', $data['room'])->where('publish', 1)->exists(), 422);
-        return (int) DB::table($table)->insertGetId(['branch_id' => self::BRANCH_ID, 'companies_groups_id' => $this->companyId(), 'user_id' => (int) session('hr_user_id', 0), 'patient_name' => trim($data['patient_name']), 'file_number' => trim($data['file_number']), 'nationality' => (int) $data['nationality'], 'room' => (int) $data['room'], 'procedurs' => trim((string) ($data['procedurs'] ?? '')), 'doctor' => trim($data['doctor']), 'date' => (string) time(), 'days' => (int) $data['days'], 'discount' => trim((string) ($data['discount'] ?? '0')), 'tools_value' => trim((string) ($data['tools_value'] ?? '0')), 'lang' => (string) ($data['lang'] ?? 'ar'), 'vat' => trim((string) ($data['vat'] ?? '')), 'code_total' => trim((string) ($data['code_total'] ?? '')), 'type' => 0, 'room_price' => trim((string) ($data['room_price'] ?? '0'))]);
+        $record = [
+            'branch_id' => self::BRANCH_ID,
+            'companies_groups_id' => $this->companyId(),
+            'user_id' => (int) session('hr_user_id', 0),
+            'patient_name' => trim($data['patient_name']),
+            'file_number' => trim($data['file_number']),
+            'nationality' => (int) $data['nationality'],
+            'room' => (int) $data['room'],
+            'doctor' => trim($data['doctor']),
+            'date' => (string) time(),
+            'days' => (int) $data['days'],
+            'discount' => trim((string) ($data['discount'] ?? '0')),
+            'tools_value' => trim((string) ($data['tools_value'] ?? '0')),
+            'lang' => (string) ($data['lang'] ?? 'ar'),
+            'vat' => trim((string) ($data['vat'] ?? '')),
+            'code_total' => trim((string) ($data['code_total'] ?? '')),
+            'type' => 0,
+            'room_price' => trim((string) ($data['room_price'] ?? '0')),
+        ];
+
+        // The audit/legacy manual table has no `procedurs` column. The
+        // standard calculator table does, so only send that field there.
+        if ($type === 'standard') {
+            $record['procedurs'] = trim((string) ($data['procedurs'] ?? ''));
+        }
+
+        return (int) DB::table($table)->insertGetId($record);
     }
 
     public function find(string $type, int $id): ?object

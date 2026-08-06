@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Module\EmergencyPerformanceReport;
 use App\Http\Controllers\Controller;
 use App\Services\EmergencyPerformanceReport\EmergencyPerformanceReportService;
 use App\Support\ProtectedFileDownload;
-use Barryvdh\DomPDF\Facade\Pdf;
+use App\Services\Pdf\ArabicPdfService;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
@@ -39,7 +39,7 @@ class EmergencyPerformanceReportController extends Controller
             'submitted' => true,
         ]);
 
-        return Pdf::loadView('emergency-performance-reports.pdf', $this->reports->report($filters) + ['filters' => $filters])
+        return app(ArabicPdfService::class)->loadView('emergency-performance-reports.pdf', $this->reports->report($filters) + ['filters' => $filters])
             ->setPaper('a4', 'landscape')->download('emergency-performance-report.pdf');
     }
 

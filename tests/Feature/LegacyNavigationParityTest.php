@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Data\NavigationItem;
 use App\Services\Dashboard\NavigationService;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Tests\TestCase;
@@ -62,10 +63,16 @@ class LegacyNavigationParityTest extends TestCase
         $this->assertContains('modules.legacy-office.memos.index', $routes);
         $this->assertContains('modules.legacy-office.memos.received', $routes);
         $this->assertContains('modules.legacy-office.coverage.index', $routes);
+        $this->assertContains('modules.outgoing-correspondence.index', $routes);
+        $this->assertContains('modules.work-absence.notifications.index', $routes);
+        $this->assertContains('modules.work-absence.dashboard', $routes);
+        $this->assertContains('modules.training.management.index', $routes);
+        $this->assertContains('modules.training.coordination.index', $routes);
+        $this->assertContains('modules.technical-failures.index', $routes);
 
         $titles = $this->titlesFor($this->auditSession(10, 2, 1));
-        $this->assertNotContains(__('dashboard.nav.agreement_sadq'), $titles);
-        $this->assertNotContains(__('dashboard.nav.agreement_sadq_manual'), $titles);
+        $this->assertContains(__('dashboard.nav.agreement_sadq'), $titles);
+        $this->assertContains(__('dashboard.nav.agreement_sadq_manual'), $titles);
     }
 
     public function test_branch_two_role_only_receives_its_legacy_memo_workflows(): void
@@ -75,6 +82,13 @@ class LegacyNavigationParityTest extends TestCase
         $this->assertContains('modules.legacy-office.memos.index', $routes);
         $this->assertContains('modules.legacy-office.memos.received', $routes);
         $this->assertContains('modules.legacy-office.coverage.index', $routes);
+        $this->assertContains('modules.outgoing-correspondence.index', $routes);
+        $this->assertContains('modules.work-absence.notifications.index', $routes);
+        $this->assertContains('modules.work-absence.dashboard', $routes);
+        $this->assertContains('modules.training.management.index', $routes);
+        $this->assertContains('modules.training.coordination.index', $routes);
+        $this->assertNotContains('modules.technical-failures.index', $routes);
+        $this->assertNotContains('modules.medical-agreements.index', $routes);
         $this->assertNotContains('modules.emergency-reception.index', $routes);
         $this->assertNotContains('modules.medical-referrals.index', $routes);
         $this->assertNotContains('modules.medical-agreements.index', $routes);
@@ -108,6 +122,117 @@ class LegacyNavigationParityTest extends TestCase
         $this->assertNotContains('modules.legacy-office.memos.index', $routes);
     }
 
+    public function test_all_audit_roles_can_reach_the_dashboard_from_the_sidebar(): void
+    {
+        foreach ([3, 2, 1, 4] as $level) {
+            $this->assertContains(
+                route('dashboard'),
+                $this->urlsFor($this->auditSession(100 + $level, $level, $level === 4 ? 2 : 1)),
+            );
+        }
+    }
+
+    public function test_dashboard_is_not_selected_as_the_authenticated_landing_route_for_any_audit_role(): void
+    {
+        foreach ([3, 2, 1, 4] as $level) {
+            $this->startSession();
+            session()->flush();
+            session($this->auditSession(400 + $level, $level, $level === 4 ? 2 : 1));
+
+            $this->assertNotSame('dashboard', app(NavigationService::class)->homeRouteName());
+        }
+    }
+
+    public function test_super_admin_reference_pages_are_visible_and_branch_roles_do_not_receive_them(): void
+    {
+        $types = [
+            'complaint-closing-reasons',
+            'complaint-letter-receivers',
+            'post-types',
+            'job-titles',
+            'governmental-services',
+            'companies',
+            'branches',
+            'departments',
+            'needs',
+            'work-areas',
+            'inquiries',
+            'service-types',
+        ];
+        $superUrls = $this->urlsFor($this->auditSession(40, 3, 1));
+        $branchUrls = $this->urlsFor($this->auditSession(10, 2, 1));
+
+        foreach ($types as $type) {
+            $url = route('modules.system-admin.reference.index', ['type' => $type]);
+            $this->assertContains($url, $superUrls, $type.' must be visible to the super admin');
+            $this->assertNotContains($url, $branchUrls, $type.' must remain hidden from branch roles');
+
+            $middleware = app('router')->getRoutes()->getByName('modules.system-admin.reference.index')->gatherMiddleware();
+            $this->assertContains('admin', $middleware);
+        }
+    }
+
+    public function test_branch_roles_can_reach_each_old_location_detail_from_the_sidebar(): void
+    {
+        $targets = [
+            ...array_map(
+                fn (int $id): string => route('modules.service-locations.show', ['outpatientClinic' => $id]),
+                range(1, 7),
+            ),
+            route('modules.service-locations.floors'),
+            ...array_map(
+                fn (int $id): string => route('modules.service-locations.floors.show', ['floor' => $id]),
+                range(1, 8),
+            ),
+        ];
+
+        foreach ([2, 1, 4] as $level) {
+            $urls = $this->urlsFor($this->auditSession(200 + $level, $level, $level === 4 ? 2 : 1));
+
+            foreach ($targets as $target) {
+                $this->assertContains($target, $urls, 'Missing branch location target for level '.$level.': '.$target);
+            }
+        }
+
+        $superUrls = $this->urlsFor($this->auditSession(40, 3, 1));
+        $this->assertNotContains($targets[0], $superUrls);
+    }
+
+    public function test_sidebar_has_no_duplicate_visible_urls_for_any_audit_role(): void
+    {
+        foreach ([3, 2, 1, 4] as $level) {
+            $urls = $this->urlsFor($this->auditSession(300 + $level, $level, $level === 4 ? 2 : 1));
+
+            $this->assertCount(count(array_unique($urls)), $urls, 'Duplicate sidebar URL for level '.$level);
+        }
+    }
+
+    public function test_active_reference_child_opens_the_system_administration_group(): void
+    {
+        $this->startSession();
+        session()->flush();
+        session($this->auditSession(40, 3, 1));
+
+        $route = app('router')->getRoutes()->getByName('modules.system-admin.reference.index');
+        $request = Request::create(route('modules.system-admin.reference.index', ['type' => 'post-types']), 'GET');
+        $route->bind($request);
+        $request->setRouteResolver(static fn () => $route);
+        $this->app->instance('request', $request);
+        $currentRoute = new \ReflectionProperty(app('router'), 'current');
+        $currentRoute->setValue(app('router'), $route);
+
+        $system = collect(app(NavigationService::class)->sidebar())
+            ->first(fn (NavigationItem $item): bool => $item->collapseId === 'sidebar-system-administration');
+        $this->assertNotNull($system);
+
+        $child = collect($system->children)
+            ->first(fn (NavigationItem $item): bool => $item->url === route('modules.system-admin.reference.index', ['type' => 'post-types']));
+
+        $this->assertNotNull($child);
+        $this->assertTrue($child->active);
+        $this->assertTrue($system->active);
+    }
+
     /** @return array<string, int|bool> */
     private function auditSession(int $userId, int $level, int $branch): array
     {
@@ -132,6 +257,19 @@ class LegacyNavigationParityTest extends TestCase
 
         return $this->flatten(app(NavigationService::class)->sidebar())
             ->pluck('route')->filter()->values()->all();
+    }
+
+    /** @param array<string, int|bool> $session
+     * @return list<string>
+     */
+    private function urlsFor(array $session): array
+    {
+        $this->startSession();
+        session()->flush();
+        session($session);
+
+        return $this->flatten(app(NavigationService::class)->sidebar())
+            ->pluck('url')->values()->all();
     }
 
     /** @param array<string, int|bool> $session
