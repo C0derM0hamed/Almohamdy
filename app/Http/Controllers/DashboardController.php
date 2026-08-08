@@ -2,17 +2,25 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\Dashboard\DashboardAnalyticsService;
+use App\Services\Dashboard\DashboardCardService;
 use App\Services\Dashboard\NavigationService;
-use Illuminate\Http\RedirectResponse;
+use Illuminate\Contracts\View\View;
 
 class DashboardController extends Controller
 {
     public function __construct(
+        private readonly DashboardAnalyticsService $analytics,
+        private readonly DashboardCardService $cards,
         private readonly NavigationService $navigation,
     ) {}
 
-    public function index(): RedirectResponse
+    public function index(): View
     {
-        return redirect()->route($this->navigation->homeRouteName());
+        return view('dashboard.home', [
+            'analytics' => $this->analytics->overview(),
+            'cards' => $this->cards->resolve(),
+            'userName' => $this->navigation->userDisplayName(),
+        ]);
     }
 }

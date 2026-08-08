@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\SystemAdministration;
 
+use App\Support\DemoAccounts;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -20,7 +21,13 @@ class SaveUserRequest extends FormRequest
         return [
             'hr_first_name' => ['required', 'string', 'max:150'],
             'hr_last_name' => ['nullable', 'string', 'max:150'],
-            'hr_email_address' => ['required', 'email', 'max:50', Rule::unique('ra_users', 'hr_email_address')->ignore($userId, 'hr_id')],
+            'hr_email_address' => ['required', 'email', 'max:50', Rule::unique('ra_users', 'hr_email_address')
+                ->ignore($userId, 'hr_id')
+                // Narrow exception: the dedicated demo accounts deliberately
+                // share two real OTP inboxes, so their rows must not block a
+                // normal user from using an address. Uniqueness between
+                // normal users is unchanged.
+                ->whereNotIn('hr_username', DemoAccounts::usernames())],
             'hr_username' => ['required', 'string', 'max:25', Rule::unique('ra_users', 'hr_username')->ignore($userId, 'hr_id')],
             'password' => [$userId ? 'nullable' : 'required', 'string', 'min:8', 'max:64', 'confirmed'],
             'mobile' => ['nullable', 'string', 'max:20'],

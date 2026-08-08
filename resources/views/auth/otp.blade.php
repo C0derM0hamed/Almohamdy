@@ -43,13 +43,6 @@
                 </div>
             @endif
 
-            @if ($isDemoMode)
-                <div class="hm-auth-alert hm-auth-alert--info" role="note">
-                    <i class="bi bi-info-circle" aria-hidden="true"></i>
-                    <span>{{ __('otp.demo_hint') }}</span>
-                </div>
-            @endif
-
             <form method="POST" action="{{ route('otp.verify') }}" id="otp-form" class="hm-hope-otp__form">
                 @csrf
 
@@ -78,7 +71,7 @@
                     <i class="bi bi-clock" aria-hidden="true"></i>
                     <span>
                         {{ __('otp.resend_in_prefix') }}
-                        <strong id="otpTimerSeconds">{{ $remainingSeconds }}</strong>
+                        <strong id="otpTimerSeconds">{{ $resendInSeconds }}</strong>
                         {{ __('otp.resend_in_suffix') }}
                     </span>
                 </div>
@@ -109,7 +102,8 @@
             var timerSeconds = document.getElementById('otpTimerSeconds');
             var timerWrap = document.getElementById('otpTimerWrap');
             var resendForm = document.getElementById('otp-resend-form');
-            var remaining = {{ (int) $remainingSeconds }};
+            // Resend cooldown, not OTP expiry — these are separate windows.
+            var remaining = {{ (int) $resendInSeconds }};
             var otpLength = {{ (int) $otpLength }};
             var isSubmitting = false;
 

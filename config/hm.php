@@ -13,10 +13,9 @@ return [
 
     'otp' => [
         'length' => max(4, min(8, (int) env('HM_OTP_LENGTH', 6))),
-        'expiry_seconds' => (int) env('HM_OTP_EXPIRY_SECONDS', 120),
+        'expiry_seconds' => (int) env('HM_OTP_EXPIRY_SECONDS', 300),
+        'resend_cooldown_seconds' => (int) env('HM_OTP_RESEND_COOLDOWN_SECONDS', 30),
         'max_attempts' => (int) env('HM_OTP_MAX_ATTEMPTS', 5),
-        'demo_code' => env('HM_OTP_DEMO_CODE', '111111'),
-        'demo_mode' => (bool) env('HM_OTP_DEMO_MODE', true),
     ],
 
     'password_recovery' => [

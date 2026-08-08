@@ -15,31 +15,85 @@ body.hm-app-body {
     color: #232d42;
 }
 
-/* LTR — sidebar on left */
-html[dir="ltr"] .sidebar,
-html:not([dir="rtl"]) .sidebar {
-    left: 0 !important;
-    right: auto !important;
+/* Default (Mobile/Tablet < 1200px): Off-canvas */
+@media (max-width: 1199.98px) {
+    body.hm-app-body .sidebar,
+    body.hm-app-body .sidebar.sidebar-default {
+        position: fixed !important;
+        top: 0;
+        bottom: 0;
+        z-index: 1040 !important;
+        transition: transform 0.3s ease-in-out !important;
+    }
+    
+    html[dir="ltr"] body.hm-app-body .sidebar.sidebar-default,
+    html:not([dir="rtl"]) body.hm-app-body .sidebar.sidebar-default {
+        left: 0 !important;
+        right: auto !important;
+        transform: translateX(-100%) !important;
+    }
+    
+    html[dir="rtl"] body.hm-app-body .sidebar.sidebar-default {
+        left: auto !important;
+        right: 0 !important;
+        transform: translateX(100%) !important;
+    }
+    
+    html[dir="ltr"] body.hm-sidebar-mobile-open.hm-app-body .sidebar.sidebar-default,
+    html:not([dir="rtl"]) body.hm-sidebar-mobile-open.hm-app-body .sidebar.sidebar-default,
+    html[dir="rtl"] body.hm-sidebar-mobile-open.hm-app-body .sidebar.sidebar-default {
+        transform: translateX(0) !important;
+    }
+    
+    html[dir="ltr"] body.hm-app-body .sidebar.sidebar-default + .main-content,
+    html:not([dir="rtl"]) body.hm-app-body .sidebar.sidebar-default + .main-content,
+    html[dir="rtl"] body.hm-app-body .sidebar.sidebar-default + .main-content {
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+    }
+
+    /* Mobile off-canvas sidebar header brand logo */
+    .sidebar .hm-hope-logo .logo-normal,
+    body.hm-app-body .sidebar .hm-hope-logo .logo-normal {
+        display: block !important;
+        height: 34px !important;
+        width: auto !important;
+        max-width: 100% !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+    }
+    .sidebar .hm-hope-logo .logo-mini {
+        display: none !important;
+    }
+    .sidebar .navbar-brand {
+        transform: none !important;
+    }
 }
 
-html[dir="ltr"] .sidebar + .main-content,
-html:not([dir="rtl"]) .sidebar + .main-content {
-    margin-left: var(--hm-sidebar-width);
-    margin-right: 0;
-}
-
-/* RTL — sidebar on right */
-html[dir="rtl"] .sidebar {
-    left: auto !important;
-    right: 0 !important;
-}
-
-html[dir="rtl"] .sidebar + .main-content {
-    margin-right: var(--hm-sidebar-width) !important;
-    margin-left: 0 !important;
-}
-
-@media (min-width: 992px) {
+/* Desktop (>= 1200px): Fixed Sidebar */
+@media (min-width: 1200px) {
+    html[dir="ltr"] .sidebar,
+    html:not([dir="rtl"]) .sidebar {
+        left: 0 !important;
+        right: auto !important;
+    }
+    
+    html[dir="ltr"] .sidebar + .main-content,
+    html:not([dir="rtl"]) .sidebar + .main-content {
+        margin-left: var(--hm-sidebar-width);
+        margin-right: 0;
+    }
+    
+    html[dir="rtl"] .sidebar {
+        left: auto !important;
+        right: 0 !important;
+    }
+    
+    html[dir="rtl"] .sidebar + .main-content {
+        margin-right: var(--hm-sidebar-width) !important;
+        margin-left: 0 !important;
+    }
+    
     html[dir="rtl"] body.hm-app-body .sidebar + .main-content,
     html[dir="rtl"] body.hm-app-body .sidebar.sidebar-default + .main-content,
     html[dir="rtl"] body.hm-app-body .sidebar.sidebar-base + .main-content,
@@ -212,29 +266,6 @@ body.sidebar-mini .sidebar .hm-hope-logo .logo-mini {
     --hs-blue: var(--bs-primary, #3a57e8);
     --hs-blue-2: #0f4cc8;
     --hs-navy: #071b3d;
-}
-
-.sidebar .hm-sidebar-context {
-    padding: 1rem 1.35rem 0.85rem;
-    margin: 0 0.85rem 0.5rem;
-    border-radius: 12px;
-    background: #f4f7ff;
-    border: 1px solid #e8edff;
-}
-
-.sidebar .hm-sidebar-context__title {
-    margin: 0;
-    font-size: 0.95rem;
-    font-weight: 700;
-    color: #232d42;
-    line-height: 1.35;
-}
-
-.sidebar .hm-sidebar-context__subtitle {
-    margin: 0.35rem 0 0;
-    font-size: 0.78rem;
-    color: #5c6578;
-    line-height: 1.45;
 }
 
 /* Bootstrap icons inside Hope UI nav */
@@ -617,12 +648,6 @@ html[dir="rtl"] body.hm-sidebar-collapsed .sidebar-base .sidebar-list .navbar-na
     overflow: hidden !important;
 }
 
-/* Hide the module context heading in the rail */
-html.hm-sidebar-is-collapsed .sidebar .hm-sidebar-context,
-body.hm-sidebar-collapsed .sidebar .hm-sidebar-context {
-    display: none !important;
-}
-
 /* Center icons in the rail */
 html.hm-sidebar-is-collapsed .sidebar .nav-item .nav-link,
 body.hm-sidebar-collapsed .sidebar .nav-item .nav-link {
@@ -885,4 +910,40 @@ html[dir="rtl"] .hm-hope-lang {
 html.hm-sidebar-is-collapsed .sidebar .sub-nav,
 body.hm-sidebar-collapsed .sidebar .sub-nav {
     display: none !important;
+}
+
+/* Mobile Sidebar Backdrop */
+.hm-sidebar-mobile-backdrop {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 1035; /* Just below sidebar */
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+/* Global small-screen safety net */
+@media (max-width: 1199.98px) {
+    body.hm-sidebar-mobile-open .hm-sidebar-mobile-backdrop {
+        display: block;
+        opacity: 1;
+    }
+    body.hm-sidebar-mobile-open {
+        overflow: hidden;
+    }
+    .main-content, .content-inner, .hm-content-inner {
+        overflow-x: hidden;
+        max-width: 100%;
+        width: 100%;
+    }
+}
+
+@media (max-width: 767.98px) {
+    :root {
+        --hm-content-pad-x: 0.5rem;
+    }
 }

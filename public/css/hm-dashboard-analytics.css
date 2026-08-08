@@ -1,0 +1,106 @@
+/*
+ * Analytics dashboard layer — BankDash card language on top of the
+ * existing shell. RTL-safe: logical properties only.
+ */
+
+.hm-analytics-dashboard .hm-chart-card,
+.hm-analytics-dashboard .hm-kpi-card {
+    border: 0;
+    border-radius: var(--bd-radius-card, 22px);
+    box-shadow: var(--bd-shadow-soft, 0 6px 24px rgba(52, 60, 106, 0.06));
+}
+
+.hm-analytics-dashboard .hm-chart-title {
+    color: var(--bd-title, #343c6a);
+    font-weight: 700;
+    font-size: 1.02rem;
+}
+
+.hm-chart-box {
+    position: relative;
+    height: 240px;
+}
+
+.hm-chart-box--tall {
+    height: 300px;
+}
+
+.hm-kpi-icon {
+    width: 56px;
+    height: 56px;
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    font-size: 1.35rem;
+}
+
+.hm-kpi-icon--primary { background: var(--bd-primary-soft, #e7edff); color: var(--bd-primary, #2d60ff); }
+.hm-kpi-icon--teal { background: rgba(22, 219, 204, 0.14); color: var(--bd-teal, #16dbcc); }
+.hm-kpi-icon--warning { background: rgba(252, 170, 11, 0.14); color: var(--bd-warning, #fcaa0b); }
+.hm-kpi-icon--success { background: rgba(65, 212, 168, 0.14); color: var(--bd-success, #41d4a8); }
+
+.hm-kpi-card h4 {
+    color: var(--bd-title, #343c6a);
+    font-weight: 700;
+}
+
+.hm-attention-row,
+.hm-latest-row {
+    padding-block: 0.65rem;
+    border-block-end: 1px solid var(--bd-line, #e6eff5);
+}
+
+.hm-attention-row:last-child,
+.hm-latest-row:last-child {
+    border-block-end: 0;
+}
+
+.hm-attention-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--bd-danger, #fe5c73);
+    flex: 0 0 auto;
+}
+
+.hm-attention-label,
+.hm-latest-title {
+    color: var(--bd-text, #232323);
+    font-size: 0.9rem;
+}
+
+.hm-attention-row:hover .hm-attention-label,
+.hm-latest-row:hover .hm-latest-title {
+    color: var(--bd-primary, #2d60ff);
+}
+
+.hm-attention-badge {
+    background: rgba(254, 92, 115, 0.12);
+    color: var(--bd-danger, #fe5c73);
+    border-radius: var(--bd-radius-pill, 40px);
+    font-weight: 700;
+    padding-inline: 0.7rem;
+}
+
+.hm-latest-main {
+    min-width: 0;
+}
+
+.hm-latest-title {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.hm-latest-date {
+    flex: 0 0 auto;
+}
+
+@media (max-width: 575.98px) {
+    .hm-chart-box,
+    .hm-chart-box--tall {
+        height: 220px;
+    }
+}

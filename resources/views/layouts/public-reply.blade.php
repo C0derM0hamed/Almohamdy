@@ -16,6 +16,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
     <link href="{{ asset('css/hm-fonts.css') }}?v={{ $hmAssetVersion ?? 1 }}" rel="stylesheet">
     <link href="{{ asset('css/hm-public-reply.css') }}?v={{ filemtime(public_path('css/hm-public-reply.css')) }}" rel="stylesheet">
+    <link href="{{ asset('css/hm-bankdash-theme.css') }}?v={{ filemtime(public_path('css/hm-bankdash-theme.css')) }}" rel="stylesheet">
     @stack('styles')
 </head>
 <body class="hm-public-reply {{ $isRtl ? 'is-rtl' : 'is-ltr' }}">

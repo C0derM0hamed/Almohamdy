@@ -31,14 +31,18 @@ class LoginOtpMail extends Mailable
             replyTo: $replyTo
                 ? [new Address((string) $replyTo, (string) config('mail.from.name'))]
                 : [],
-            subject: __('otp.email_subject'),
+            subject: __('otp.email_subject', [], 'ar'),
         );
     }
 
     public function content(): Content
     {
+        // A plain-text alternative is required alongside the HTML part: an
+        // HTML-only message carrying an embedded image scores as spam at Gmail,
+        // which accepts it at SMTP level and then files it out of the inbox.
         return new Content(
             view: 'emails.auth.login-otp',
+            text: 'emails.auth.login-otp-text',
         );
     }
 }

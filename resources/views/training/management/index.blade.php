@@ -15,7 +15,7 @@
             <div class="col-md-2"><label class="form-label">{{ __('training.to') }}</label><input type="date" class="form-control" name="to" value="{{ $filters['to'] ?? '' }}"></div>
             <div class="col-md-3"><label class="form-label">{{ __('training.status') }}</label><select class="form-select" name="status"><option value="">{{ __('training.all') }}</option>@foreach($statuses as $status)<option value="{{ $status->id }}" @selected((string)($filters['status'] ?? '') === (string)$status->id)>{{ $status->name_ar }}</option>@endforeach</select></div>
             <div class="col-md-3"><label class="form-label">{{ __('training.employee_search') }}</label><input class="form-control" name="employee" value="{{ $filters['employee'] ?? '' }}"></div>
-            <div class="col-md-2 d-flex gap-2"><button class="btn btn-dark flex-grow-1">{{ __('training.search') }}</button><a href="{{ route($routes['index']) }}" class="btn btn-outline-secondary">{{ __('training.reset') }}</a></div>
+            <div class="col-md-2 d-flex flex-wrap gap-2"><button class="btn btn-dark flex-grow-1">{{ __('training.search') }}</button><a href="{{ route($routes['index']) }}" class="btn btn-outline-secondary">{{ __('training.reset') }}</a></div>
         </form>
     </div></div>
     <div class="card"><div class="table-responsive"><table class="table table-hover align-middle mb-0">

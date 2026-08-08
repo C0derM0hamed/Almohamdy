@@ -41,12 +41,28 @@ class UserRepository
 
         // Prefer a single equality so username / email indexes can be used.
         if (str_contains($login, '@')) {
-            $query->where('hr_email_address', $login);
-        } else {
-            $query->where('hr_username', $login);
+            // An address shared by more than one active account (the dedicated
+            // demo accounts) must never be auto-resolved to an arbitrary user;
+            // those accounts sign in by username. Unique addresses are
+            // unaffected.
+            $matches = $query->where('hr_email_address', $login)->limit(2)->get();
+
+            return $matches->count() === 1 ? $matches->first() : null;
         }
 
-        return $query->first();
+        return $query->where('hr_username', $login)->first();
+    }
+
+    /**
+     * Number of active accounts sharing an email address. Used to tell an
+     * unknown address apart from one that requires username login.
+     */
+    public function countActiveByEmail(string $email): int
+    {
+        return User::query()
+            ->where('activated', '1')
+            ->where('hr_email_address', $email)
+            ->count();
     }
 
     public function findById(int $hrId): ?User
@@ -56,6 +72,67 @@ class UserRepository
             ->whereKey($hrId)
             ->where('activated', '1')
             ->first();
+    }
+
+    /**
+     * Matches an active user's mobile number regardless of leading 0 / 966
+     * country code / spaces / dashes. Legacy `mobile` values are stored in a
+     * few different shapes, so this compares a small set of digit-only
+     * candidates in PHP rather than assuming a fixed stored format/length.
+     */
+    public function findActiveByMobile(string $mobile): ?User
+    {
+        $candidates = $this->mobileCandidates($mobile);
+
+        if ($candidates === []) {
+            return null;
+        }
+
+        return User::query()
+            ->select(self::AUTH_COLUMNS)
+            ->where('activated', '1')
+            ->whereNotNull('mobile')
+            ->where('mobile', '!=', '')
+            ->get()
+            ->first(function (User $user) use ($candidates): bool {
+                $stored = preg_replace('/\D+/', '', (string) $user->mobile) ?? '';
+
+                return $stored !== '' && in_array($stored, $candidates, true);
+            });
+    }
+
+    /**
+     * @return list<string>
+     */
+    private function mobileCandidates(string $mobile): array
+    {
+        $digits = preg_replace('/\D+/', '', $mobile) ?? '';
+
+        if ($digits === '') {
+            return [];
+        }
+
+        $candidates = [$digits];
+
+        if (str_starts_with($digits, '00')) {
+            $digits = substr($digits, 2);
+            $candidates[] = $digits;
+        }
+
+        if (str_starts_with($digits, '966')) {
+            $local = substr($digits, 3);
+            $candidates[] = $local;
+            $candidates[] = '0'.$local;
+        } elseif (str_starts_with($digits, '0')) {
+            $local = substr($digits, 1);
+            $candidates[] = $local;
+            $candidates[] = '966'.$local;
+        } else {
+            $candidates[] = '0'.$digits;
+            $candidates[] = '966'.$digits;
+        }
+
+        return array_values(array_unique(array_filter($candidates, static fn (string $c): bool => $c !== '')));
     }
 
     public function findActiveByUsernameAndMobile(string $username, string $mobile): ?User

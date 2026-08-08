@@ -1,0 +1,790 @@
+/*
+ * BankDash visual theme layer.
+ * Re-skins the existing Hope UI / Bootstrap shell with the BankDash design
+ * language (colors, type scale, radius, shadows). Content, markup and
+ * behavior are untouched — this file is loaded last and only overrides
+ * visual properties. RTL-safe: uses logical properties only.
+ */
+
+:root {
+    /* Palette */
+    --bd-primary: #2d60ff;
+    --bd-primary-deep: #1814f3;
+    --bd-primary-soft: #e7edff;
+    --bd-title: #343c6a;
+    --bd-text: #232323;
+    --bd-muted: #718ebf;
+    --bd-inactive: #b1b1b1;
+    --bd-danger: #fe5c73;
+    --bd-success: #41d4a8;
+    --bd-teal: #16dbcc;
+    --bd-warning: #fcaa0b;
+    --bd-page-bg: #f5f7fa;
+    --bd-line: #e6eff5;
+    --bd-line-strong: #dfeaf2;
+    --bd-input-bg: #ffffff;
+    --bd-input-pill-bg: #f5f7fa;
+    --bd-placeholder: #8ba3cb;
+    --bd-shadow: 4px 4px 18px -2px rgba(231, 228, 232, 0.8);
+    --bd-shadow-soft: 0 6px 24px rgba(52, 60, 106, 0.06);
+
+    /* Radii */
+    --bd-radius-card: 22px;
+    --bd-radius-input: 14px;
+    --bd-radius-btn: 12px;
+    --bd-radius-pill: 40px;
+
+    /* Bridge into existing token systems */
+    --hm-primary: var(--bd-primary);
+    --hm-primary-soft: var(--bd-primary-soft);
+    --hm-body-bg: var(--bd-page-bg);
+    --hm-ui-line: var(--bd-line);
+    --hm-ui-shadow: var(--bd-shadow-soft);
+    --hm-ui-radius: var(--bd-radius-card);
+    --hm-ui-navy: var(--bd-title);
+
+    /* Hope UI / Bootstrap root tokens */
+    --bs-primary: var(--bd-primary);
+    --bs-primary-rgb: 45, 96, 255;
+    --bs-danger: var(--bd-danger);
+    --bs-danger-rgb: 254, 92, 115;
+    --bs-success: var(--bd-success);
+    --bs-success-rgb: 65, 212, 168;
+    --bs-info: var(--bd-teal);
+    --bs-info-rgb: 22, 219, 204;
+    --bs-body-bg: var(--bd-page-bg);
+    --bs-body-color: var(--bd-text);
+    --bs-border-color: var(--bd-line);
+    --bs-link-color: var(--bd-primary);
+    --bs-link-hover-color: var(--bd-primary-deep);
+}
+
+/* ---------------------------------------------------------------- Base */
+
+body.hm-app-body {
+    background: var(--bd-page-bg);
+    color: var(--bd-text);
+}
+
+h1, h2, h3, h4, h5, h6,
+.h1, .h2, .h3, .h4, .h5, .h6,
+.card-title, .modal-title {
+    color: var(--bd-title);
+}
+
+a {
+    color: var(--bd-primary);
+}
+
+a:hover {
+    color: var(--bd-primary-deep);
+}
+
+.text-muted {
+    color: var(--bd-muted) !important;
+}
+
+.text-primary { color: var(--bd-primary) !important; }
+.bg-primary { background-color: var(--bd-primary) !important; }
+.border-primary { border-color: var(--bd-primary) !important; }
+
+/* ------------------------------------------------------------- Sidebar */
+
+.sidebar.sidebar-white,
+.sidebar.sidebar-default {
+    background: #ffffff;
+    border-inline-end: 1px solid var(--bd-line);
+    box-shadow: none;
+}
+
+.sidebar .sidebar-header {
+    border-block-end: 1px solid var(--bd-line);
+}
+
+.sidebar .navbar-nav .nav-item .nav-link {
+    color: var(--bd-inactive);
+    font-weight: 500;
+    border-radius: var(--bd-radius-btn);
+    transition: color 0.2s ease, background-color 0.2s ease;
+    position: relative;
+}
+
+.sidebar .navbar-nav .nav-item .nav-link .icon,
+.sidebar .navbar-nav .nav-item .nav-link i {
+    color: inherit;
+}
+
+.sidebar .navbar-nav .nav-item .nav-link:hover:not(.active):not(.disabled) {
+    color: var(--bd-primary);
+    background: transparent;
+}
+
+.sidebar .navbar-nav .nav-item .nav-link.active,
+.sidebar .navbar-nav .nav-item .nav-link[aria-expanded="true"] {
+    color: var(--bd-primary);
+    background: transparent;
+    box-shadow: none;
+    font-weight: 600;
+}
+
+/* BankDash active indicator bar on the logical start edge */
+.sidebar .navbar-nav > .nav-item > .nav-link.active::before {
+    content: "";
+    position: absolute;
+    inset-inline-start: calc(-1 * var(--hm-shell-pad, 0.75rem));
+    inset-block: 4px;
+    width: 6px;
+    border-start-end-radius: 10px;
+    border-end-end-radius: 10px;
+    background: var(--bd-primary);
+}
+
+.sidebar .sub-nav .nav-link.active {
+    color: var(--bd-primary);
+}
+
+/* Keep active labels and icons readable when the active background is transparent. */
+.sidebar .navbar-nav .nav-item .nav-link.active,
+.sidebar .navbar-nav .nav-item .nav-link.active:hover {
+    color: #2d60ff;
+    opacity: 1;
+}
+
+.sidebar .navbar-nav .nav-item .nav-link.active .item-name,
+.sidebar .navbar-nav .nav-item .nav-link.active:hover .item-name {
+    color: #2d60ff !important;
+    opacity: 1 !important;
+}
+
+.sidebar .navbar-nav .nav-item .nav-link.active > .icon,
+.sidebar .navbar-nav .nav-item .nav-link.active > .icon > .bi,
+.sidebar .navbar-nav .nav-item .nav-link.active > .right-icon,
+.sidebar .navbar-nav .nav-item .nav-link.active > .right-icon > .bi,
+.sidebar .navbar-nav .nav-item .nav-link.active:hover > .icon,
+.sidebar .navbar-nav .nav-item .nav-link.active:hover > .icon > .bi,
+.sidebar .navbar-nav .nav-item .nav-link.active:hover > .right-icon,
+.sidebar .navbar-nav .nav-item .nav-link.active:hover > .right-icon > .bi {
+    color: #2d60ff !important;
+    opacity: 1 !important;
+}
+
+/* Collapsed rail: the active icon sits on a solid blue tile (see
+   hm-hope-ui-bridge.css), so the blue icon glyph above is invisible there.
+   Force a high-contrast white glyph whenever the rail is collapsed. */
+html.hm-sidebar-is-collapsed .sidebar .navbar-nav .nav-item .nav-link.active > .icon > .bi,
+body.hm-sidebar-collapsed .sidebar .navbar-nav .nav-item .nav-link.active > .icon > .bi,
+html.hm-sidebar-is-collapsed .sidebar .navbar-nav .nav-item .nav-link.active:hover > .icon > .bi,
+body.hm-sidebar-collapsed .sidebar .navbar-nav .nav-item .nav-link.active:hover > .icon > .bi {
+    color: #ffffff !important;
+    opacity: 1 !important;
+}
+
+.sidebar .navbar-nav .static-item .default-icon {
+    color: var(--bd-muted);
+    font-weight: 600;
+    font-size: 0.78rem;
+    letter-spacing: 0.04em;
+}
+
+/* -------------------------------------------------------------- Navbar */
+
+.iq-navbar {
+    background: #ffffff;
+    border-block-end: 1px solid var(--bd-line);
+    box-shadow: none;
+    border-radius: 0;
+}
+
+.iq-navbar .caption-title {
+    color: var(--bd-title);
+    font-weight: 600;
+}
+
+.iq-navbar .caption-sub-title {
+    color: var(--bd-muted);
+}
+
+.hm-navbar-sidebar-toggle,
+.hm-notify-btn {
+    color: var(--bd-title);
+}
+
+.hm-notify-btn:hover {
+    color: var(--bd-primary);
+}
+
+.hm-navbar__badge {
+    background: var(--bd-danger);
+}
+
+.hm-user-dropdown__avatar {
+    background: var(--bd-primary-soft);
+    color: var(--bd-primary);
+    font-weight: 600;
+}
+
+.hm-hope-lang {
+    background: var(--bd-page-bg);
+    border-radius: var(--bd-radius-pill);
+    border: 1px solid var(--bd-line);
+}
+
+.hm-hope-lang a {
+    color: var(--bd-muted);
+    border-radius: var(--bd-radius-pill);
+}
+
+.hm-hope-lang a.is-active {
+    background: var(--bd-primary);
+    color: #ffffff;
+}
+
+/* --------------------------------------------------------------- Cards */
+
+.card {
+    border: 0;
+    border-radius: var(--bd-radius-card);
+    box-shadow: var(--bd-shadow-soft);
+    background: #ffffff;
+}
+
+.card .card-header {
+    background: transparent;
+    border-block-end: 1px solid var(--bd-line);
+    border-start-start-radius: var(--bd-radius-card);
+    border-start-end-radius: var(--bd-radius-card);
+}
+
+.card .card-header .card-title,
+.card .card-header h4,
+.card .card-header h5 {
+    color: var(--bd-title);
+    font-weight: 600;
+}
+
+.card .card-footer {
+    background: transparent;
+    border-block-start: 1px solid var(--bd-line);
+}
+
+/* ------------------------------------------------------------- Buttons */
+
+.btn {
+    border-radius: var(--bd-radius-btn);
+    font-weight: 500;
+}
+
+.btn-primary {
+    background: var(--bd-primary);
+    border-color: var(--bd-primary);
+    box-shadow: none;
+}
+
+.btn-primary:hover,
+.btn-primary:focus,
+.btn-primary:active {
+    background: var(--bd-primary-deep) !important;
+    border-color: var(--bd-primary-deep) !important;
+}
+
+.btn-primary:focus-visible {
+    box-shadow: 0 0 0 0.25rem rgba(45, 96, 255, 0.25);
+}
+
+.btn-outline-primary {
+    color: var(--bd-primary);
+    border-color: var(--bd-primary);
+}
+
+.btn-outline-primary:hover,
+.btn-outline-primary:active {
+    background: var(--bd-primary) !important;
+    border-color: var(--bd-primary) !important;
+    color: #fff !important;
+}
+
+.btn-danger {
+    background: var(--bd-danger);
+    border-color: var(--bd-danger);
+}
+
+.btn-outline-danger {
+    color: var(--bd-danger);
+    border-color: var(--bd-danger);
+}
+
+.btn-success {
+    background: var(--bd-success);
+    border-color: var(--bd-success);
+}
+
+.btn-secondary,
+.btn-outline-secondary {
+    border-radius: var(--bd-radius-btn);
+}
+
+.btn-soft-primary,
+.btn-light-primary {
+    background: var(--bd-primary-soft);
+    color: var(--bd-primary);
+    border-color: transparent;
+}
+
+/* --------------------------------------------------------------- Forms */
+
+.form-control,
+.form-select {
+    background-color: var(--bd-input-bg);
+    border: 1px solid var(--bd-line-strong);
+    border-radius: var(--bd-radius-input);
+    color: var(--bd-text);
+}
+
+.form-control::placeholder {
+    color: var(--bd-placeholder);
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--bd-primary);
+    box-shadow: 0 0 0 0.2rem rgba(45, 96, 255, 0.12);
+}
+
+.form-label,
+label {
+    color: var(--bd-text);
+}
+
+.form-check-input:checked {
+    background-color: var(--bd-primary);
+    border-color: var(--bd-primary);
+}
+
+.form-check-input:focus {
+    box-shadow: 0 0 0 0.2rem rgba(45, 96, 255, 0.15);
+}
+
+.input-group-text {
+    background: var(--bd-input-pill-bg);
+    border: 1px solid var(--bd-line-strong);
+    border-radius: var(--bd-radius-input);
+    color: var(--bd-muted);
+}
+
+/* -------------------------------------------------------------- Tables */
+
+.table {
+    --bs-table-color: var(--bd-text);
+    color: var(--bd-text);
+}
+
+.table thead th,
+.table > :not(caption) > * > th {
+    color: var(--bd-muted);
+    font-weight: 500;
+    background: transparent;
+    border-block-end: 1px solid var(--bd-line);
+    text-transform: none;
+}
+
+.table > :not(caption) > * > * {
+    border-color: var(--bd-line);
+    padding-block: 0.85rem;
+}
+
+.table-hover > tbody > tr:hover > * {
+    background-color: var(--bd-page-bg);
+    --bs-table-accent-bg: var(--bd-page-bg);
+}
+
+.table-striped > tbody > tr:nth-of-type(odd) > * {
+    --bs-table-accent-bg: rgba(245, 247, 250, 0.6);
+}
+
+.table .badge {
+    font-weight: 500;
+}
+
+/* -------------------------------------------------------------- Badges */
+
+.badge {
+    border-radius: var(--bd-radius-pill);
+    font-weight: 500;
+    padding: 0.42em 0.85em;
+}
+
+.badge.bg-primary { background-color: var(--bd-primary) !important; }
+.badge.bg-danger { background-color: var(--bd-danger) !important; }
+.badge.bg-success { background-color: var(--bd-success) !important; }
+.badge.bg-info { background-color: var(--bd-teal) !important; }
+
+.badge.bg-soft-primary,
+.badge.bg-primary-subtle {
+    background-color: var(--bd-primary-soft) !important;
+    color: var(--bd-primary) !important;
+}
+
+/* -------------------------------------------------------------- Alerts */
+
+.alert {
+    border: 0;
+    border-radius: var(--bd-radius-input);
+}
+
+.alert-primary {
+    background: var(--bd-primary-soft);
+    color: var(--bd-primary-deep);
+}
+
+.alert-danger {
+    background: #ffecef;
+    color: #d63a51;
+}
+
+.alert-success {
+    background: #e2f9f2;
+    color: #1d9f78;
+}
+
+.alert-warning {
+    background: #fff4de;
+    color: #b97b06;
+}
+
+.alert-info {
+    background: #e0fbf8;
+    color: #0f9d92;
+}
+
+/* -------------------------------------------------------------- Modals */
+
+.modal-content {
+    border: 0;
+    border-radius: var(--bd-radius-card);
+    box-shadow: 0 20px 60px rgba(52, 60, 106, 0.18);
+}
+
+.modal-header {
+    border-block-end: 1px solid var(--bd-line);
+}
+
+.modal-footer {
+    border-block-start: 1px solid var(--bd-line);
+}
+
+/* ---------------------------------------------------------- Pagination */
+
+.pagination {
+    gap: 0.35rem;
+}
+
+.pagination .page-link {
+    border: 0;
+    border-radius: 10px;
+    color: var(--bd-primary);
+    font-weight: 500;
+    background: transparent;
+    min-width: 2.25rem;
+    text-align: center;
+}
+
+.pagination .page-link:hover {
+    background: var(--bd-primary-soft);
+    color: var(--bd-primary-deep);
+}
+
+.pagination .page-item.active .page-link {
+    background: var(--bd-primary);
+    color: #ffffff;
+    box-shadow: none;
+}
+
+.pagination .page-item.disabled .page-link {
+    color: var(--bd-inactive);
+    background: transparent;
+}
+
+/* --------------------------------------------------------- Breadcrumbs */
+
+.breadcrumb {
+    background: transparent;
+}
+
+.breadcrumb .breadcrumb-item,
+.breadcrumb .breadcrumb-item a {
+    color: var(--bd-muted);
+}
+
+.breadcrumb .breadcrumb-item a:hover {
+    color: var(--bd-primary);
+}
+
+.breadcrumb .breadcrumb-item.active {
+    color: var(--bd-title);
+    font-weight: 500;
+}
+
+/* ------------------------------------------------------------ Nav tabs */
+
+.nav-tabs {
+    border-block-end: 1px solid var(--bd-line);
+    gap: 0.5rem;
+}
+
+.nav-tabs .nav-link {
+    border: 0;
+    border-block-end: 3px solid transparent;
+    border-radius: 0;
+    color: var(--bd-muted);
+    font-weight: 500;
+    background: transparent;
+}
+
+.nav-tabs .nav-link:hover {
+    color: var(--bd-primary);
+}
+
+.nav-tabs .nav-link.active {
+    color: var(--bd-primary-deep);
+    border-block-end-color: var(--bd-primary-deep);
+    background: transparent;
+    font-weight: 600;
+}
+
+.nav-pills .nav-link {
+    border-radius: var(--bd-radius-pill);
+    color: var(--bd-muted);
+}
+
+.nav-pills .nav-link.active {
+    background: var(--bd-primary);
+    color: #fff;
+}
+
+/* ----------------------------------------------------------- Dropdowns */
+
+.dropdown-menu {
+    border: 1px solid var(--bd-line);
+    border-radius: var(--bd-radius-input);
+    box-shadow: 0 12px 34px rgba(52, 60, 106, 0.12);
+}
+
+.dropdown-item {
+    color: var(--bd-text);
+    border-radius: 8px;
+}
+
+.dropdown-item:hover,
+.dropdown-item:focus {
+    background: var(--bd-primary-soft);
+    color: var(--bd-primary-deep);
+}
+
+.hm-dropdown-menu__header {
+    color: var(--bd-title);
+    font-weight: 600;
+}
+
+/* ----------------------------------------------------- Misc components */
+
+.progress {
+    border-radius: var(--bd-radius-pill);
+    background: var(--bd-line);
+}
+
+.progress-bar {
+    background-color: var(--bd-primary);
+    border-radius: var(--bd-radius-pill);
+}
+
+.list-group-item {
+    border-color: var(--bd-line);
+    color: var(--bd-text);
+}
+
+.list-group-item.active {
+    background: var(--bd-primary);
+    border-color: var(--bd-primary);
+}
+
+.offcanvas {
+    border-radius: 0;
+}
+
+.toast {
+    border-radius: var(--bd-radius-input);
+    box-shadow: var(--bd-shadow-soft);
+}
+
+::selection {
+    background: rgba(45, 96, 255, 0.18);
+}
+
+/* Scrollbar accent (webkit) */
+.sidebar-body::-webkit-scrollbar-thumb {
+    background: var(--bd-line-strong);
+    border-radius: var(--bd-radius-pill);
+}
+
+/* ================================================================
+   Refinement pass 2 — Figma comparison fixes
+   ================================================================ */
+
+/* Page canvas: cool BankDash background so white cards float,
+   applied to every shell wrapper (some module CSS painted these white). */
+body.hm-app-body,
+.main-content,
+.content-inner,
+.hm-content-inner,
+.hm-page-root {
+    background-color: var(--bd-page-bg);
+}
+
+/* Navbar: BankDash header is taller with vertically centered content. */
+.iq-navbar {
+    min-height: 74px;
+    display: flex;
+    align-items: center;
+}
+
+.iq-navbar > .container-fluid,
+.iq-navbar .navbar-collapse {
+    align-items: center;
+}
+
+/* Sidebar proportions: airier item rhythm like BankDash. */
+.sidebar .navbar-nav .nav-item .nav-link {
+    padding-block: 0.7rem;
+    font-size: 0.95rem;
+}
+
+.sidebar .navbar-nav > .nav-item + .nav-item {
+    margin-block-start: 0.15rem;
+}
+
+/* Typography hierarchy: page-level titles match BankDash 22–24px
+   semibold titles; card titles one step down. */
+.content-inner h1,
+.content-inner .h1,
+.content-inner h2,
+.content-inner .h2 {
+    font-size: 1.45rem;
+    font-weight: 600;
+}
+
+.content-inner .card-title,
+.content-inner .card-header h3,
+.content-inner .card-header .h5 {
+    font-size: 1.05rem;
+    font-weight: 600;
+}
+
+/* Module-CSS conflicts: dark search/action buttons → BankDash primary. */
+.btn-dark,
+.btn-dark:focus {
+    background-color: var(--bd-primary);
+    border-color: var(--bd-primary);
+    color: #fff;
+    border-radius: var(--bd-radius-btn);
+}
+
+.btn-dark:hover,
+.btn-dark:active,
+.btn-dark:first-child:active,
+.btn-check:checked + .btn-dark {
+    background-color: var(--bd-primary-deep);
+    border-color: var(--bd-primary-deep);
+    color: #fff;
+}
+
+/* Secondary/reset buttons → BankDash quiet outline. */
+.btn-outline-secondary {
+    color: var(--bd-muted);
+    border-color: var(--bd-line-strong);
+    background-color: #fff;
+}
+
+.btn-outline-secondary:hover,
+.btn-outline-secondary:active,
+.btn-outline-secondary:first-child:active {
+    color: var(--bd-primary);
+    border-color: var(--bd-primary);
+    background-color: #fff;
+}
+
+.btn-secondary {
+    background-color: var(--bd-input-pill-bg);
+    border-color: var(--bd-line-strong);
+    color: var(--bd-title);
+}
+
+/* Tables: kill heavy zebra striping from module sheets — BankDash rows
+   are white with hairline separators only. */
+.table-striped > tbody > tr:nth-of-type(odd) > *,
+.table-striped > tbody > tr:nth-of-type(even) > * {
+    --bs-table-accent-bg: transparent;
+    --bs-table-bg-type: transparent;
+}
+
+.table tbody tr {
+    background-color: #fff;
+}
+
+.table > :not(caption) > * > * {
+    border-block-end: 1px solid var(--bd-line);
+    border-inline: 0;
+}
+
+/* Tables outside a .card (some legacy pages) still get the floating
+   white card look via their responsive wrapper. */
+.content-inner > .table-responsive,
+.content-inner form + .table-responsive {
+    background: #fff;
+    border-radius: var(--bd-radius-card);
+    box-shadow: var(--bd-shadow-soft);
+    padding: 0.5rem 0.75rem;
+}
+
+.table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Cards: consistent breathing room between stacked cards. */
+.content-inner .card {
+    margin-block-end: 1.25rem;
+    border: 0;
+}
+
+.content-inner .card .card-header {
+    background: transparent;
+    border-block-end: 1px solid var(--bd-line);
+}
+
+.content-inner .card .card-footer {
+    background: transparent;
+    border-block-start: 1px solid var(--bd-line);
+}
+
+/* Compact stat tiles (dashboards): center content, soften borders. */
+.content-inner .card .display-6,
+.content-inner .card .fs-2 {
+    color: var(--bd-title);
+    font-weight: 600;
+}
+
+/* Responsive: at narrow widths BankDash drops shadows/radius slightly
+   and tightens padding. */
+@media (max-width: 767.98px) {
+    :root {
+        --bd-radius-card: 16px;
+    }
+
+    .content-inner .card {
+        margin-block-end: 1rem;
+    }
+
+    .iq-navbar {
+        min-height: 60px;
+    }
+}

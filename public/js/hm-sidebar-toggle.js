@@ -30,9 +30,18 @@
             return;
         }
 
-        var collapsed = isCollapsed();
         var showLabel = toggleBtn.dataset.labelShow || 'Show menu';
         var hideLabel = toggleBtn.dataset.labelHide || 'Hide menu';
+
+        if (window.innerWidth < 1200) {
+            var mobileOpen = document.body.classList.contains('hm-sidebar-mobile-open');
+            toggleBtn.setAttribute('aria-expanded', mobileOpen ? 'true' : 'false');
+            toggleBtn.setAttribute('aria-label', mobileOpen ? hideLabel : showLabel);
+            toggleBtn.classList.toggle('is-collapsed', !mobileOpen);
+            return;
+        }
+
+        var collapsed = isCollapsed();
 
         toggleBtn.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
         toggleBtn.setAttribute('aria-label', collapsed ? showLabel : hideLabel);
@@ -61,16 +70,48 @@
             return;
         }
 
+        // Add backdrop element if it doesn't exist
+        var backdrop = document.querySelector('.hm-sidebar-mobile-backdrop');
+        if (!backdrop) {
+            backdrop = document.createElement('div');
+            backdrop.className = 'hm-sidebar-mobile-backdrop';
+            document.body.appendChild(backdrop);
+            
+            backdrop.addEventListener('click', function() {
+                document.body.classList.remove('hm-sidebar-mobile-open');
+                updateToggleUi();
+            });
+        }
+
         toggleBtn.addEventListener('click', function (event) {
             event.preventDefault();
             event.stopPropagation();
+            
+            if (window.innerWidth < 1200) {
+                document.body.classList.toggle('hm-sidebar-mobile-open');
+                updateToggleUi();
+                return;
+            }
+
             toggleSidebar();
         });
 
         toggleBtn.addEventListener('keydown', function (event) {
             if (event.key === 'Enter' || event.key === ' ') {
                 event.preventDefault();
+                if (window.innerWidth < 1200) {
+                    document.body.classList.toggle('hm-sidebar-mobile-open');
+                    updateToggleUi();
+                    return;
+                }
                 toggleSidebar();
+            }
+        });
+        
+        window.addEventListener('resize', function() {
+            updateToggleUi();
+            if (window.innerWidth >= 1200 && document.body.classList.contains('hm-sidebar-mobile-open')) {
+                document.body.classList.remove('hm-sidebar-mobile-open');
             }
         });
 

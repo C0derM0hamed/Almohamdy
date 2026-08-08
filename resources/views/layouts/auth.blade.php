@@ -22,6 +22,7 @@
     <link href="{{ asset('css/hm-hope-auth-bridge.css') }}?v={{ filemtime(public_path('css/hm-hope-auth-bridge.css')) }}" rel="stylesheet">
     <link href="{{ asset('css/hm-hope-overlays.css') }}?v={{ filemtime(public_path('css/hm-hope-overlays.css')) }}" rel="stylesheet">
     <link href="{{ asset('css/hm-page-transitions.css') }}?v={{ filemtime(public_path('css/hm-page-transitions.css')) }}" rel="stylesheet">
+    <link href="{{ asset('css/hm-bankdash-theme.css') }}?v={{ filemtime(public_path('css/hm-bankdash-theme.css')) }}" rel="stylesheet">
     <script>
         (function () {
             try {

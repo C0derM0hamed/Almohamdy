@@ -1,13 +1,3 @@
-@php
-    $sidebarHeading = trim($__env->yieldContent('sidebar_heading'));
-    $sidebarSubheading = trim($__env->yieldContent('sidebar_subheading'));
-
-    if ($sidebarHeading === '' && ! empty($sidebarContext['heading'] ?? null)) {
-        $sidebarHeading = (string) $sidebarContext['heading'];
-        $sidebarSubheading = (string) ($sidebarContext['subheading'] ?? '');
-    }
-@endphp
-
 <aside id="hmAppSidebar" class="sidebar sidebar-default sidebar-white sidebar-base navs-rounded-all" data-toggle="main-sidebar" data-sidebar="responsive">
     <div class="sidebar-header d-flex align-items-center justify-content-start">
         <a href="{{ route($homeRoute ?? 'dashboard') }}" class="navbar-brand hm-hope-logo">
@@ -19,15 +9,6 @@
     </div>
 
     <div class="sidebar-body pt-0 data-scrollbar">
-        @if ($sidebarHeading !== '')
-            <div class="hm-sidebar-context">
-                <h1 class="hm-sidebar-context__title">{{ $sidebarHeading }}</h1>
-                @if ($sidebarSubheading !== '')
-                    <p class="hm-sidebar-context__subtitle">{{ $sidebarSubheading }}</p>
-                @endif
-            </div>
-        @endif
-
         <div class="sidebar-list">
             <ul class="navbar-nav iq-main-menu" id="sidebar-menu">
                 <li class="nav-item static-item">

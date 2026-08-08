@@ -3,7 +3,7 @@
 @section('title', __('password_change.title'))
 
 @section('content')
-    <div class="row justify-content-center">
+    <div class="row justify-content-center mx-0">
         <div class="col-xl-7 col-lg-9">
             <div class="card border-0 shadow-sm">
                 <div class="card-body p-4 p-lg-5">

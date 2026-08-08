@@ -35,8 +35,16 @@
         <form method="POST" action="{{ url('/login') }}" novalidate id="hmLoginForm">
             @csrf
 
+            <div class="btn-group w-100 mb-3 hm-hope-login-mode" role="group" aria-label="{{ __('login.mode_toggle_label') }}">
+                <input type="radio" class="btn-check" name="login_mode" id="loginModeIdentifier" value="identifier" checked>
+                <label class="btn btn-outline-primary" for="loginModeIdentifier">{{ __('login.tab_identifier') }}</label>
+
+                <input type="radio" class="btn-check" name="login_mode" id="loginModeMobile" value="mobile">
+                <label class="btn btn-outline-primary" for="loginModeMobile">{{ __('login.tab_mobile') }}</label>
+            </div>
+
             <div class="form-group">
-                <label for="username" class="form-label">{{ __('login.username') }}</label>
+                <label for="username" class="form-label" id="usernameLabel">{{ __('login.username') }}</label>
                 <input
                     type="text"
                     id="username"
@@ -48,6 +56,10 @@
                     autofocus
                     autocomplete="username"
                     dir="{{ $isRtl ? 'rtl' : 'ltr' }}"
+                    data-label-identifier="{{ __('login.username') }}"
+                    data-label-mobile="{{ __('login.tab_mobile') }}"
+                    data-placeholder-identifier="{{ __('login.username_placeholder') }}"
+                    data-placeholder-mobile="{{ __('login.mobile_placeholder') }}"
                 >
                 @error('username')
                     <div class="invalid-feedback d-block">{{ $message }}</div>

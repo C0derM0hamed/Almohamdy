@@ -57,6 +57,7 @@ class LoginService
             'job_title',
             'mobile',
             'email',
+            'otp_channel',
             'code',
             'code_time',
             'otp_expires_at',
@@ -69,7 +70,7 @@ class LoginService
      */
     public function attemptCredentials(Request $request, string $username, string $password): array
     {
-        $user = $this->users->findActiveByUsernameOrEmail($username);
+        [$user, $channel] = $this->resolveUserAndChannel($username);
 
         if ($this->users->isUserLoginLocked($user)) {
             return [
@@ -78,8 +79,17 @@ class LoginService
             ];
         }
 
+        if (! $user
+            && str_contains($username, '@')
+            && $this->users->countActiveByEmail(trim($username)) > 1) {
+            return [
+                'success' => false,
+                'message' => __('login.errors.email_not_unique'),
+            ];
+        }
+
         if (! $user || ! $this->verifyPassword($password, (string) $user->hr_password)) {
-            $this->incrementFailedAttempts($username);
+            $this->incrementFailedAttempts($user?->hr_username ?? $username);
 
             return [
                 'success' => false,
@@ -87,19 +97,19 @@ class LoginService
             ];
         }
 
-        if (! $this->canReceiveOtp($user)) {
+        if (! $this->canReceiveOtp($user, $channel)) {
             return [
                 'success' => false,
-                'message' => $this->otp->isDemoMode()
+                'message' => $channel === 'sms'
                     ? __('login.errors.mobile_required')
                     : __('login.errors.email_required'),
             ];
         }
 
         $request->session()->regenerate();
-        $this->storePendingUserSession($user);
+        $this->storePendingUserSession($user, $channel);
 
-        $otpResult = $this->otp->generateAndStore($user);
+        $otpResult = $this->otp->generateAndStore($user, $channel);
 
         if (! $otpResult['success']) {
             $this->clearPendingOtp();
@@ -114,6 +124,43 @@ class LoginService
         $this->users->clearFailedLogin((string) $user->hr_username);
 
         return ['success' => true];
+    }
+
+    /**
+     * Resolves the login identifier to an active user and the OTP channel to use.
+     *
+     * Username and email matching is unchanged from the original behavior
+     * (delegated to findActiveByUsernameOrEmail, tried first). A numeric,
+     * phone-shaped identifier that doesn't match a username is tried against
+     * the mobile column as a new, additive lookup path.
+     *
+     * @return array{0: ?User, 1: string}
+     */
+    private function resolveUserAndChannel(string $login): array
+    {
+        $login = trim($login);
+
+        if (str_contains($login, '@')) {
+            return [$this->users->findActiveByUsernameOrEmail($login), 'email'];
+        }
+
+        $user = $this->users->findActiveByUsernameOrEmail($login);
+
+        if ($user !== null) {
+            return [$user, 'email'];
+        }
+
+        $digits = preg_replace('/\D+/', '', $login) ?? '';
+
+        if (strlen($digits) >= 9) {
+            $mobileUser = $this->users->findActiveByMobile($login);
+
+            if ($mobileUser !== null) {
+                return [$mobileUser, 'sms'];
+            }
+        }
+
+        return [null, 'email'];
     }
 
     public function pendingUser(): ?User
@@ -135,13 +182,11 @@ class LoginService
             && hash_equals($normalized, hash('sha256', $plain));
     }
 
-    private function canReceiveOtp(User $user): bool
+    private function canReceiveOtp(User $user, string $channel): bool
     {
-        if ($this->otp->isDemoMode()) {
-            return $this->hasValidMobile($user);
-        }
-
-        return $this->hasValidEmail($user);
+        return $channel === 'sms'
+            ? $this->hasValidMobile($user)
+            : $this->hasValidEmail($user);
     }
 
     private function hasValidMobile(User $user): bool
@@ -156,7 +201,7 @@ class LoginService
         return $email !== '' && filter_var($email, FILTER_VALIDATE_EMAIL) !== false;
     }
 
-    private function storePendingUserSession(User $user): void
+    private function storePendingUserSession(User $user, string $channel): void
     {
         Session::put([
             'hr_id' => $user->hr_id,
@@ -172,6 +217,7 @@ class LoginService
             'job_title' => $user->job_title,
             'mobile' => $user->mobile,
             'email' => $user->hr_email_address,
+            'otp_channel' => $channel,
             'step1' => true,
         ]);
     }

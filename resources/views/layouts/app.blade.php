@@ -45,6 +45,7 @@
     <link href="{{ asset('css/hm-hope-modules.css') }}?v={{ filemtime(public_path('css/hm-hope-modules.css')) }}" rel="stylesheet">
     <link href="{{ asset('css/hm-cc-hope.css') }}?v={{ filemtime(public_path('css/hm-cc-hope.css')) }}" rel="stylesheet">
     <link href="{{ asset('css/hm-print.css') }}?v={{ filemtime(public_path('css/hm-print.css')) }}" rel="stylesheet">
+    <link href="{{ asset('css/hm-bankdash-theme.css') }}?v={{ filemtime(public_path('css/hm-bankdash-theme.css')) }}" rel="stylesheet">
 </head>
 <body class="hm-app-body {{ $isRtl ? 'hm-locale-ar' : 'hm-locale-en' }}" data-hm-home-url="{{ route($homeRoute ?? 'dashboard') }}">
     <div id="loading">

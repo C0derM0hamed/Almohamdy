@@ -30,8 +30,8 @@ class OtpController extends Controller
 
         return view('auth.otp', [
             'remainingSeconds' => $this->otpService->remainingSeconds(),
+            'resendInSeconds' => $this->otpService->resendAvailableInSeconds(),
             'maskedDestination' => $this->maskedDestination(),
-            'isDemoMode' => $this->otpService->isDemoMode(),
             'otpLength' => $this->otpService->codeLength(),
             'otpFields' => array_map(
                 static fn (int $i): string => 'n'.$i,
@@ -81,7 +81,7 @@ class OtpController extends Controller
 
     private function maskedDestination(): string
     {
-        if ($this->otpService->isDemoMode()) {
+        if (session('otp_channel') === 'sms') {
             return $this->maskMobile((string) session('mobile'));
         }
 

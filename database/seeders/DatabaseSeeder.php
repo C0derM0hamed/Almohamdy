@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -15,11 +14,11 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
-
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);
+        $this->call(LocalDemoUsersSeeder::class);
+        $this->call(ClientTestUsersSeeder::class);
+        $this->call(AuthorizationSeeder::class);
+        // Runs last: it mirrors branch scope from the audit accounts, which
+        // AuthorizationSeeder has just finished granting.
+        $this->call(ClientDemoUsersSeeder::class);
     }
 }

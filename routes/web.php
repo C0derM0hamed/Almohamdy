@@ -112,9 +112,23 @@ require __DIR__.'/legacy-office.php';
 require __DIR__.'/emergency-reception.php';
 require __DIR__.'/legacy-workflows.php';
 
-Route::get('/', [LoginController::class, 'showLogin'])->name('login')->middleware('prevent.cache');
-Route::get('/login', [LoginController::class, 'showLogin'])->middleware('prevent.cache');
-Route::post('/login', [LoginController::class, 'login'])->middleware('prevent.cache');
+Route::get('/portal', function () {
+    return view('portal');
+})->name('portal');
+
+Route::get('/', function () {
+    if (app(\App\Services\Auth\LoginService::class)->isAuthenticated()) {
+        return redirect()->to(
+            app(\App\Services\Auth\OtpService::class)->dashboardRouteForLevel((int) session('hr_user_level'))
+        );
+    }
+
+    return view('portal');
+})->name('home')->middleware('prevent.cache');
+
+Route::get('/login', [LoginController::class, 'showLogin'])->name('login')->middleware('prevent.cache');
+Route::post('/login', [LoginController::class, 'login'])
+    ->middleware(['prevent.cache', 'throttle:10,1']);
 
 Route::get('/password/forgot', [PasswordRecoveryController::class, 'show'])->name('password.forgot');
 Route::post('/password/forgot', [PasswordRecoveryController::class, 'send'])
@@ -133,8 +147,12 @@ Route::get('/otp/cancel', [OtpController::class, 'cancel'])->name('otp.cancel')-
 
 Route::middleware(['otp.pending', 'prevent.cache'])->group(function () {
     Route::get('/otp', [OtpController::class, 'showOtp'])->name('otp.show');
-    Route::post('/otp', [OtpController::class, 'verifyOtp'])->name('otp.verify');
-    Route::post('/otp/resend', [OtpController::class, 'resendOtp'])->name('otp.resend');
+    Route::post('/otp', [OtpController::class, 'verifyOtp'])
+        ->middleware('throttle:15,1')
+        ->name('otp.verify');
+    Route::post('/otp/resend', [OtpController::class, 'resendOtp'])
+        ->middleware('throttle:6,1')
+        ->name('otp.resend');
 });
 
 Route::middleware('auth.session')->group(function () {
