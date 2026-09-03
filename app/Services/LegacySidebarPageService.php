@@ -40,7 +40,7 @@ class LegacySidebarPageService
         'medica_report' => ['label' => 'التقارير الطبية', 'table' => 'medica_report', 'mode' => 'clinical', 'scope' => 'company', 'fields' => ['patient_name', 'nationality', 'birth_date', 'file_number', 'doctor', 'entry_date', 'exit_date', 'medical_diagnosis', 'treatment', 'recommendation', 'report_type', 'visit_date']],
         'medical_approval_notifications' => ['label' => 'إشعارات الموافقات الطبية', 'table' => 'medical_approval_notifications', 'mode' => 'clinical', 'scope' => 'branch', 'fields' => ['patient_name', 'patient_identity', 'room_number', 'clinician_id', 'inpatient_clinician_id', 'medical_approval_cc_ids', 'notes']],
         'medical_cases' => ['label' => 'القضايا الطبية', 'table' => 'medical_cases', 'mode' => 'case', 'scope' => 'branch', 'display' => ['case_number', 'claimant_name', 'claimant_id', 'defendant_name', 'defendant_id', 'status'], 'fields' => ['claimant_name', 'claimant_id', 'defendant_name', 'defendant_id', 'specialty', 'claim_type', 'mobile', 'email', 'agency_number', 'request_number', 'case_number', 'attachments_name']],
-        'onlinetody' => ['label' => 'المتابعة الإلكترونية اليومية', 'table' => 'ra_users', 'mode' => 'report', 'scope' => 'branch', 'display' => ['hr_first_name', 'hr_last_name', 'hr_username', 'hr_email_address', 'mobile', 'hr_last_login', 'status']],
+        'onlinetody' => ['label' => 'المتابعة الإلكترونية اليومية', 'table' => 'ra_users', 'key' => 'hr_id', 'mode' => 'report', 'scope' => 'branch', 'display' => ['hr_first_name', 'hr_last_name', 'hr_username', 'hr_email_address', 'mobile', 'hr_last_login', 'status']],
         'rep_ss' => ['label' => 'طلب تقرير طبي', 'table' => 'rep_ss', 'mode' => 'clinical', 'scope' => 'branch', 'display' => ['name', 'no_file', 'service', 'Paymentـstatus', 'Patientـname', 'dateIn', 'dateOut', 'countries', 'branches_departments', 'onid', 'details', 'status', 'Answer', 'becuse'], 'fields' => ['name', 'no_file', 'service', 'Paymentـstatus', 'Patientـname', 'dateIn', 'dateOut', 'countries', 'branches_departments', 'onid', 'details']],
         'psychosocial_assessment_all' => ['label' => 'التقييم النفسي والاجتماعي', 'table' => 'psychosocial_assessment', 'mode' => 'clinical', 'scope' => 'company', 'fields' => ['the_name', 'gender', 'file_no', 'room_no', 'religion', 'nationality', 'education_level', 'id_no', 'age', 'address', 'city', 'occupation', 'mobile_no', 'family_support', 'marital_status', 'medical_diagnosis', 'room_type', 'notice']],
         'sanad_reg' => ['label' => 'تفعيل السندات', 'table' => 'sanad_reg', 'mode' => 'finance', 'scope' => 'branch', 'fields' => ['first_no', 'last_no', 'branch', 'comment']],
@@ -195,6 +195,11 @@ class LegacySidebarPageService
         $table = $spec['table'];
         $columns = Schema::getColumnListing($table);
         $query = DB::table($table)->select($table.'.*');
+        // Tables without an `id` column expose their primary key as `id` so the
+        // shared list/modal template can address rows uniformly.
+        if (! empty($spec['key']) && $spec['key'] !== 'id') {
+            $query->addSelect($table.'.'.$spec['key'].' as id');
+        }
         $this->scope($query, $spec, $table, $columns);
 
         if ($search !== '') {

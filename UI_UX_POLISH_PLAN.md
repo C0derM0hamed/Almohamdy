@@ -159,9 +159,9 @@ Mark `[x]` as you go. Every task lists the files it touches. Keep each phase
 committed separately with the required trailer.
 
 ### Phase 0 — blockers (30 min)
-- [ ] 0.1 Fix `AppSupportLocaleText` → `\App\Support\LocaleText` in `resources/views/system-administration/reference/index.blade.php:17`.
-- [ ] 0.2 Fix `onlinetody` 500 (`ra_users` PK `hr_id`) in `app/Services/LegacySidebarPageService.php` + `resources/views/legacy-sidebar/index.blade.php` (id access) — verify `/modules/legacy-sidebar/onlinetody` renders as SUPER.
-- [ ] 0.3 Re-run `node tools/ui-audit/crawl.mjs SUPER --locales=ar --vp=desktop` → zero `HTTP5xx/PHP-ERROR`.
+- [x] 0.1 Fix `AppSupportLocaleText` → `\App\Support\LocaleText` in `resources/views/system-administration/reference/index.blade.php:17`.
+- [x] 0.2 Fix `onlinetody` 500 (`ra_users` PK `hr_id`) in `app/Services/LegacySidebarPageService.php` + `resources/views/legacy-sidebar/index.blade.php` (id access) — verify `/modules/legacy-sidebar/onlinetody` renders as SUPER.
+- [x] 0.3 Re-run `node tools/ui-audit/crawl.mjs SUPER --locales=ar --vp=desktop` → zero `HTTP5xx/PHP-ERROR`.
 
 ### Phase 1 — shared foundation (the multiplier; do before any page)
 Create `public/css/hm-fm-shared.css` (loaded in `layouts/app.blade.php` after
@@ -239,3 +239,4 @@ routes, or validation.
 - `/modules/training/*` rows have empty name/title/ID columns (data mapping in the training repository, backend).
 - `hospital_admission_consent_contract_approval.php?id=…` legacy-style public links are reachable from consents lists (intended, legacy parity).
 - Duplicate routes (training management/coordination; calculator standard) are by design (permission parity).
+| 2026-09-03 | Phase 0 | P0-1 LocaleText and P0-2 onlinetody fixed, verified 200 as SUPER. |

@@ -20,5 +20,12 @@ class DatabaseSeeder extends Seeder
         // Runs last: it mirrors branch scope from the audit accounts, which
         // AuthorizationSeeder has just finished granting.
         $this->call(ClientDemoUsersSeeder::class);
+
+        // Keep the Government Accounts review fixture opt-in outside local
+        // development. It is idempotent and can also be run directly with
+        // `php artisan db:seed --class=GovAccountDemoSeeder`.
+        if ($this->app->environment('local')) {
+            $this->call(GovAccountDemoSeeder::class);
+        }
     }
 }
