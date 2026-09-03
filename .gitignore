@@ -39,3 +39,6 @@ credentials*
 Homestead.json
 Homestead.yaml
 Thumbs.db
+
+# UI audit crawler output
+/tools/ui-audit/out/
