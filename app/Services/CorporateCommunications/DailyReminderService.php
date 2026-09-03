@@ -11,6 +11,7 @@ use App\Services\GovernmentDataRequests\GovernmentDataRequestService;
 use App\Services\GovernmentInspectionVisits\GovernmentInspectionVisitService;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Schema;
 
 class DailyReminderService
 {
@@ -54,6 +55,22 @@ class DailyReminderService
      */
     public function pendingInspectionVisits(): Collection
     {
+        // Some deployed legacy databases contain the status/audit relation
+        // under this table name but not the finding/reply columns used by the
+        // inspection workflow. Do not let the scheduler crash with SQLSTATE
+        // 42S22; the schema must be restored before reminders can be enabled.
+        if (! Schema::hasColumn('government_inspection_visits_abuses_and_notes', 'reply')
+            || ! Schema::hasColumn('government_inspection_visits_returned', 'reply')) {
+            Log::critical('cc.daily_reminders.inspection_schema_incomplete', [
+                'required' => [
+                    'government_inspection_visits_abuses_and_notes.reply',
+                    'government_inspection_visits_returned.reply',
+                ],
+            ]);
+
+            return collect();
+        }
+
         $visitIdsWithPendingFindings = GovernmentInspectionVisitFinding::query()
             ->where(function ($query) {
                 $query->whereNull('reply')->orWhere('reply', '');

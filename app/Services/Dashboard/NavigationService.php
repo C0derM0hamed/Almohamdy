@@ -4,6 +4,7 @@ namespace App\Services\Dashboard;
 
 use App\Data\NavigationItem;
 use App\Services\Auth\PermissionService;
+use App\Services\Auth\PermissionRegistry;
 use App\Services\Auth\LegacyScopeService;
 use App\Support\WorkAbsenceNotification\WorkAbsenceNotificationPermissions;
 use Illuminate\Support\Facades\DB;
@@ -16,36 +17,38 @@ class NavigationService
     public function __construct(
         private readonly PermissionService $permissions,
         private readonly LegacyScopeService $legacyScopes,
+        private readonly PermissionRegistry $registry,
     ) {}
 
-    public function homeRouteName(): string
+    /** @return array{route: string, params: array<string, mixed>} */
+    public function homeLanding(): array
     {
-        $items = $this->sidebar();
-
-        foreach ($items as $item) {
-            // The dashboard endpoint is a compatibility entry point that
-            // redirects to the first usable module. It must not select itself
-            // as the landing route or authenticated dashboard requests loop.
-            if (! $item->isGroup && $item->route === 'dashboard') {
-                continue;
-            }
-
-            if ($item->hasChildren()) {
-                foreach ($item->children as $child) {
-                    if ($child->route !== null && $child->route !== '') {
-                        return $child->route;
-                    }
-                }
-
-                continue;
-            }
-
-            if ($item->route !== null && $item->route !== '') {
-                return $item->route;
+        foreach ($this->sidebar() as $item) {
+            $landing = $this->firstLeafLanding($item);
+            if ($landing !== null) {
+                return $landing;
             }
         }
 
-        return 'login';
+        return ['route' => 'login', 'params' => []];
+    }
+
+    public function homeRouteName(): string
+    {
+        return $this->homeLanding()['route'];
+    }
+
+    /** @return array<string, mixed> */
+    public function homeRouteParams(): array
+    {
+        return $this->homeLanding()['params'];
+    }
+
+    public function homeUrl(): string
+    {
+        $landing = $this->homeLanding();
+
+        return route($landing['route'], $landing['params'], false);
     }
 
     /**
@@ -64,7 +67,14 @@ class NavigationService
             }
         }
 
-        return $items;
+        // A level-3 account is the system-wide administrator. It receives
+        // the canonical entry point for every branch/company workflow, but
+        // legacy menus contain aliases of the same target under different
+        // branch headings. Keep the first canonical occurrence so the global
+        // menu is complete without presenting duplicate actions.
+        return $this->permissions->isAdmin()
+            ? $this->uniqueNavigationItems($items)
+            : $items;
     }
 
     /**
@@ -78,12 +88,9 @@ class NavigationService
             $type = (string) ($item['type'] ?? 'route');
 
             if ($type === 'group') {
-                foreach ($item['children'] ?? [] as $child) {
-                    if (! $this->itemMatchesRoute($child, $currentRoute)) {
-                        continue;
-                    }
-
-                    return $this->contextFromConfigItem($child);
+                $context = $this->activeContextInChildren($item['children'] ?? [], $currentRoute);
+                if ($context !== null) {
+                    return $context;
                 }
 
                 continue;
@@ -123,6 +130,16 @@ class NavigationService
      */
     private function itemMatchesRoute(array $item, ?string $currentRoute): bool
     {
+        $excludedPrefixes = $item['active_exclude_prefixes'] ?? [];
+
+        if ($currentRoute !== null && is_array($excludedPrefixes)) {
+            foreach ($excludedPrefixes as $excludedPrefix) {
+                if ($this->routeMatchesPrefix($currentRoute, (string) $excludedPrefix)) {
+                    return false;
+                }
+            }
+        }
+
         $routeName = (string) ($item['route'] ?? '');
 
         if ($routeName === '' || ! Route::has($routeName)) {
@@ -153,6 +170,12 @@ class NavigationService
 
         if (! empty($item['permission_admin_only']) && ! $this->permissions->canManageUsers()) {
             return false;
+        }
+
+        $activeRoutePatterns = $item['active_route_patterns'] ?? [];
+        if ($currentRoute !== null && is_array($activeRoutePatterns) && $activeRoutePatterns !== []) {
+            return collect($activeRoutePatterns)
+                ->contains(fn ($pattern): bool => Str::is((string) $pattern, $currentRoute));
         }
 
         $routeParams = $item['route_params'] ?? [];
@@ -226,6 +249,10 @@ class NavigationService
             return null;
         }
 
+        if (! $this->publishedServiceSection($item)) {
+            return null;
+        }
+
         if ($this->requiresWorkAbsenceView($routeName)
             && ! $this->permissions->can(WorkAbsenceNotificationPermissions::VIEW)
             && ! $this->legacyScopes->allows(LegacyScopeService::EMPLOYEE_SERVICES)) {
@@ -265,6 +292,7 @@ class NavigationService
             icon: $icon,
             route: $routeName,
             active: $isActive,
+            routeParams: $routeParams,
         );
     }
 
@@ -328,6 +356,92 @@ class NavigationService
         );
     }
 
+    /** @param list<NavigationItem> $children
+     * @return array{route: string, params: array<string, mixed>}|null
+     */
+    private function firstLeafLanding(NavigationItem $item): ?array
+    {
+        if ($item->route === 'dashboard') {
+            return null;
+        }
+
+        if ($item->hasChildren()) {
+            foreach ($item->children as $child) {
+                $landing = $this->firstLeafLanding($child);
+                if ($landing !== null) {
+                    return $landing;
+                }
+            }
+
+            return null;
+        }
+
+        if ($item->route === null || $item->route === '') {
+            return null;
+        }
+
+        return ['route' => $item->route, 'params' => $item->routeParams];
+    }
+
+    /** @param list<NavigationItem> $children */
+    private function firstLeafRoute(array $children): ?string
+    {
+        foreach ($children as $child) {
+            if ($child->hasChildren()) {
+                $route = $this->firstLeafRoute($child->children);
+                if ($route !== null) {
+                    return $route;
+                }
+                continue;
+            }
+
+            if ($child->route !== null && $child->route !== '') {
+                return $child->route;
+            }
+        }
+
+        return null;
+    }
+
+    /** @param mixed $children */
+    private function activeContextInChildren(mixed $children, ?string $currentRoute): ?array
+    {
+        if (! is_array($children)) {
+            return null;
+        }
+
+        foreach ($children as $child) {
+            if (! is_array($child)) {
+                continue;
+            }
+
+            if (($child['type'] ?? 'route') === 'group') {
+                $nested = $this->activeContextInChildren($child['children'] ?? [], $currentRoute);
+                if ($nested !== null) {
+                    return $nested;
+                }
+                continue;
+            }
+
+            if ($this->itemMatchesRoute($child, $currentRoute)) {
+                return $this->contextFromConfigItem($child);
+            }
+        }
+
+        return null;
+    }
+
+    /** @param array<string, mixed> $item */
+    private function publishedServiceSection(array $item): bool
+    {
+        $sectionId = (int) ($item['published_section_id'] ?? 0);
+        if ($sectionId <= 0 || ! Schema::hasTable('services_sections') || ! Schema::hasColumn('services_sections', 'publish')) {
+            return true;
+        }
+
+        return DB::table('services_sections')->where('id', $sectionId)->where('publish', 1)->exists();
+    }
+
     private function routeMatchesPrefix(?string $currentRoute, string $prefix): bool
     {
         if ($currentRoute === null || $prefix === '') {
@@ -359,9 +473,26 @@ class NavigationService
             return $this->permissions->can($permission);
         }
 
+        $routePermissions = $this->registry->codesForRoute((string) ($item['route'] ?? ''));
+        if ($routePermissions !== []) {
+            $allowed = collect($routePermissions)->contains(fn (string $code): bool => $this->permissions->can($code));
+            if ($allowed) {
+                return true;
+            }
+
+            if (config('hm.permissions.enforcement_mode', 'compat') === 'strict'
+                || trim((string) ($item['permission'] ?? '')) !== '') {
+                return false;
+            }
+        }
+
         $legacyScope = trim((string) ($item['legacy_scope'] ?? ''));
 
-        return $legacyScope === '' || $this->legacyScopes->allows($legacyScope);
+        if ($legacyScope === '') {
+            return true;
+        }
+
+        return $this->legacyScopes->allows($legacyScope) || $this->hasLegacyPrivilege($item);
     }
 
     /**
@@ -369,6 +500,25 @@ class NavigationService
      */
     private function passesScopeRestrictions(array $item): bool
     {
+        $excludedCompanies = array_map('intval', is_array($item['excluded_company_ids'] ?? null) ? $item['excluded_company_ids'] : []);
+        if ($excludedCompanies !== [] && in_array((int) session('companies_groups_id'), $excludedCompanies, true)) {
+            return false;
+        }
+
+        $excludedBranches = array_map('intval', is_array($item['excluded_branch_ids'] ?? null) ? $item['excluded_branch_ids'] : []);
+        if ($excludedBranches !== [] && in_array((int) session('hr_branch_id'), $excludedBranches, true)) {
+            return false;
+        }
+
+        // Level 3 is the explicit global system administrator role. It is
+        // allowed to navigate branch/company-specific modules; repository and
+        // workflow authorization still protects each action. This intentionally
+        // replaces the former email-based bypass, which made ordinary accounts
+        // inherit unrelated branch menus.
+        if ($this->permissions->isAdmin()) {
+            return true;
+        }
+
         $allowedCompanies = array_map('intval', is_array($item['company_ids'] ?? null) ? $item['company_ids'] : []);
         $allowedBranches = array_map('intval', is_array($item['branch_ids'] ?? null) ? $item['branch_ids'] : []);
         $allowedLevels = array_map('intval', is_array($item['user_levels'] ?? null) ? $item['user_levels'] : []);
@@ -393,6 +543,10 @@ class NavigationService
      */
     private function hasLegacyPrivilege(array $item): bool
     {
+        if ($this->permissions->isAdmin()) {
+            return true;
+        }
+
         $legacyScope = trim((string) ($item['legacy_scope'] ?? ''));
 
         if ($legacyScope !== '' && $this->legacyScopes->allows($legacyScope)) {
@@ -415,6 +569,63 @@ class NavigationService
             ->where('ur.user_id', (int) session('hr_user_id', 0))
             ->where('p.perm_desc', $privilege)
             ->exists();
+    }
+
+    /**
+     * Collapse repeated legacy URLs for the global administrator while
+     * retaining nested hierarchy and the first, canonical placement.
+     *
+     * @param list<NavigationItem> $items
+     * @return list<NavigationItem>
+     */
+    private function uniqueNavigationItems(array $items): array
+    {
+        $seenUrls = [];
+
+        return collect($items)
+            ->map(function (NavigationItem $item) use (&$seenUrls): ?NavigationItem {
+                return $this->uniqueNavigationItem($item, $seenUrls);
+            })
+            ->filter()
+            ->values()
+            ->all();
+    }
+
+    /** @param array<string, true> $seenUrls */
+    private function uniqueNavigationItem(NavigationItem $item, array &$seenUrls): ?NavigationItem
+    {
+        if ($item->hasChildren()) {
+            $children = collect($item->children)
+                ->map(function (NavigationItem $child) use (&$seenUrls): ?NavigationItem {
+                    return $this->uniqueNavigationItem($child, $seenUrls);
+                })
+                ->filter()
+                ->values()
+                ->all();
+
+            if ($children === []) {
+                return null;
+            }
+
+            return new NavigationItem(
+                title: $item->title,
+                url: $item->url,
+                icon: $item->icon,
+                route: $item->route,
+                active: $item->active,
+                children: $children,
+                isGroup: $item->isGroup,
+                collapseId: $item->collapseId,
+            );
+        }
+
+        if (isset($seenUrls[$item->url])) {
+            return null;
+        }
+
+        $seenUrls[$item->url] = true;
+
+        return $item;
     }
 
     /**

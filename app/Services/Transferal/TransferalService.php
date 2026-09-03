@@ -7,6 +7,7 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
 
 class TransferalService
@@ -51,18 +52,25 @@ class TransferalService
         $this->authorizeBranch();
 
         return [
-            'companies' => DB::table('companies_groups')->where('publish', 1)->where('id', '<>', $this->companyId())->orderBy('name_ar')->get(),
+            'companies' => DB::table('companies_groups')
+                ->when(Schema::hasColumn('companies_groups', 'publish'), fn ($query) => $query->where('publish', 1))
+                ->where('id', '<>', $this->companyId())->orderBy('name_ar')->get(),
             'specializations' => DB::table('specialization')->where('publish', 1)->orderBy('name_ar')->get(),
             'reasons' => DB::table('transferal_reason')->where('publish', 1)->orderBy('name_ar')->get(),
             'rooms' => DB::table('room_type')->where('publish', 1)->orderBy('name_ar')->get(),
-            'paymentTypes' => DB::table('rep1_payment_type')->where('publish', 1)->orderBy('name_ar')->get(),
+            'paymentTypes' => DB::table('rep1_payment_type')
+                ->when(Schema::hasColumn('rep1_payment_type', 'publish'), fn ($query) => $query->where('publish', 1))
+                ->orderBy('name_ar')->get(),
         ];
     }
 
     public function create(array $data, ?UploadedFile $file): int
     {
         $this->authorizeBranch();
-        abort_unless(DB::table('companies_groups')->where('id', $data['transferal_to'])->where('publish', 1)->exists(), 422);
+        abort_unless(DB::table('companies_groups')
+            ->where('id', $data['transferal_to'])
+            ->when(Schema::hasColumn('companies_groups', 'publish'), fn ($query) => $query->where('publish', 1))
+            ->exists(), 422);
         $stored = $file?->store('transferal', 'public') ?: '';
 
         return (int) DB::table('transferal')->insertGetId([

@@ -21,6 +21,7 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class GovernmentInspectionVisitRepository
 {
@@ -136,23 +137,35 @@ class GovernmentInspectionVisitRepository
 
     public function findForDetail(int $id): ?GovernmentInspectionVisit
     {
-        return $this->scopedQuery()
-            ->with([
-                'authority:id,name_en,name_ar',
-                'section:id,name_en,name_ar',
-                'currentStatus:id,name_en,name_ar,info',
-                'visitType:id,name_en,name_ar',
-                'branch:id,name_en,name_ar',
-                'visitNumberRecord',
-                'findings',
-                'attachments',
-                'returnedItems.finding',
-                'replySubmissions',
-                'timelineEntries.status:id,name_en,name_ar,info',
-            ])
+        $relations = [
+            'authority:id,name_en,name_ar',
+            'section:id,name_en,name_ar',
+            'currentStatus:id,name_en,name_ar,info',
+            'visitType:id,name_en,name_ar',
+            'branch:id,name_en,name_ar',
+            'visitNumberRecord',
+            'findings',
+            'attachments',
+            'returnedItems.finding',
+            'replySubmissions',
+            'timelineEntries.statusRelation:id,name_en,name_ar,info',
+        ];
+
+        if (Schema::hasTable('government_inspection_visits_reply')) {
+            $relations[] = 'replies';
+        }
+
+        $record = $this->scopedQuery()
+            ->with($relations)
             ->withCount('receiptReports as recipients_count')
             ->whereKey($id)
             ->first();
+
+        if ($record !== null && ! Schema::hasTable('government_inspection_visits_reply')) {
+            $record->setRelation('replies', collect());
+        }
+
+        return $record;
     }
 
     public function updateStatus(int $visitId, int $statusId): void
@@ -176,6 +189,45 @@ class GovernmentInspectionVisitRepository
             ])
             ->where('sms_tocken', $token)
             ->first();
+    }
+
+    public function administratorCanAccess(int $visitId, int $administratorId): bool
+    {
+        if ($administratorId < 1) {
+            return false;
+        }
+
+        if (DB::table('government_inspection_visits_receipt_reports')
+            ->where('government_inspection_visits_id', $visitId)
+            ->where('government_circulars_sections_administrators_id', $administratorId)
+            ->exists()) {
+            return true;
+        }
+
+        $users = (string) (GovernmentInspectionVisit::query()
+            ->whereKey($visitId)
+            ->value('users') ?? '');
+
+        return in_array(
+            $administratorId,
+            array_values(array_filter(array_map('intval', preg_split('/\s*,\s*/', $users) ?: []))),
+            true,
+        );
+    }
+
+    public function markReceiptSeen(int $visitId, int $administratorId, ?int $channel): void
+    {
+        if (! in_array($channel, [1, 2], true) || ! $this->administratorCanAccess($visitId, $administratorId)) {
+            return;
+        }
+
+        $column = $channel === 1 ? 'seen_by_sms_at' : 'seen_by_email_at';
+
+        DB::table('government_inspection_visits_receipt_reports')
+            ->where('government_inspection_visits_id', $visitId)
+            ->where('government_circulars_sections_administrators_id', $administratorId)
+            ->whereNull($column)
+            ->update([$column => now()]);
     }
 
     /**
@@ -449,10 +501,17 @@ class GovernmentInspectionVisitRepository
     public function branchOptions(): Collection
     {
         return Branch::query()
-            ->where('publish', 1)
+            ->when(Schema::hasColumn('branches', 'publish'), fn (Builder $query) => $query->where('publish', 1))
             ->where('companies_groups_id', (int) session('companies_groups_id', 0))
-            ->orderBy('ranking')
+            ->when((int) session('hr_user_level', 0) !== 3 && (int) session('hr_branch_id', 0) > 0,
+                fn (Builder $query) => $query->where('id', (int) session('hr_branch_id')))
+            ->when(Schema::hasColumn('branches', 'ranking'), fn (Builder $query) => $query->orderBy('ranking'))
             ->orderBy('id')
             ->get(['id', 'name_en', 'name_ar']);
+    }
+
+    public function branchIsAllowed(int $branchId): bool
+    {
+        return $this->branchOptions()->contains(fn (Branch $branch): bool => (int) $branch->id === $branchId);
     }
 }

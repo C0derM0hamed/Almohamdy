@@ -115,9 +115,9 @@ class TechnicalFailureService
             'types' => DB::table('technical_failure_notice_type')
                 ->where('publish', 1)->orderBy('name_ar')->get(),
             'platforms' => DB::table('technical_failure_notice_platform')
-                ->where('publish', 1)->whereIn('branch_id', [$branchId, 0])->orderBy('name_ar')->get(),
+                ->where('publish', 1)->orderBy('name_ar')->get(),
             'serviceTypes' => DB::table('technical_failure_notice_service_type')
-                ->where('publish', 1)->whereIn('branch_id', [$branchId, 0])->orderBy('name_ar')->get(),
+                ->where('publish', 1)->orderBy('name_ar')->get(),
         ];
     }
 

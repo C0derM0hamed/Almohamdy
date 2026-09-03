@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Module\SystemAdministration;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\SystemAdministration\SaveUserRequest;
+use App\Http\Requests\SystemAdministration\SaveUserPermissionsRequest;
 use App\Models\User;
 use App\Services\SystemAdministration\UserPermissionAdminService;
 use Illuminate\Http\RedirectResponse;
@@ -50,5 +51,32 @@ class UserPermissionController extends Controller
         $this->service->update($scopedUser, $request->validated());
 
         return redirect()->route('modules.system-admin.users.show', $scopedUser)->with('status', __('system_administration.users.saved'));
+    }
+
+    public function editPermissions(int $user): View
+    {
+        $scopedUser = $this->service->scopedUser($user);
+
+        return view('system-administration.users.permissions', $this->service->permissionData($scopedUser));
+    }
+
+    public function updatePermissions(SaveUserPermissionsRequest $request, int $user): RedirectResponse
+    {
+        $scopedUser = $this->service->scopedUser($user);
+        $this->service->updatePermissions($scopedUser, $request->validated(), [
+            'request_id' => $request->header('X-Request-Id'),
+            'ip_address' => $request->ip(),
+            'user_agent' => $request->userAgent(),
+        ]);
+
+        return redirect()->route('modules.system-admin.users.permissions.edit', $scopedUser->hr_id)
+            ->with('status', 'تم تحديث صلاحيات المستخدم بنجاح.');
+    }
+
+    public function permissionHistory(int $user): View
+    {
+        $scopedUser = $this->service->scopedUser($user);
+
+        return view('system-administration.users.permission-history', $this->service->permissionHistory($scopedUser));
     }
 }

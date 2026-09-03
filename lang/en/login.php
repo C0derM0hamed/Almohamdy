@@ -7,8 +7,8 @@ return [
     'portal_group' => 'Al Hammadi Hospitals Group',
     'vision_2030' => 'Saudi Vision 2030',
     'subtitle' => 'Please sign in to continue',
-    'username' => 'Username / Email',
-    'username_placeholder' => 'Enter username',
+    'username' => 'Employee number / Email',
+    'username_placeholder' => 'Enter employee number or email',
     'mode_toggle_label' => 'Sign in with',
     'tab_identifier' => 'Username / Email',
     'tab_mobile' => 'Mobile Number',
@@ -28,8 +28,8 @@ return [
 
     'errors' => [
         'locked' => 'Sorry, please try again after 5 minutes due to failed login attempts.',
-        'invalid_credentials' => 'Invalid username or password.',
-        'email_not_unique' => 'This email address is linked to more than one account. Please sign in with your username.',
+        'invalid_credentials' => 'Invalid employee number, email, or password.',
+        'email_not_unique' => 'This email address is linked to more than one account. Please sign in with the employee number.',
         'mobile_required' => 'Sorry, system access requires a registered mobile number.',
         'email_required' => 'Sorry, system access requires a valid registered email address.',
         'otp_send_failed' => 'We could not send the verification code. Please check mail settings or try again later.',

@@ -6,10 +6,10 @@
     $usesApology = in_array($type, ['referral-apology', 'crisis-management', 'red-crescent'], true);
     $usesIdentity = in_array($type, ['bed-reservation', 'accept-referral', 'referral-apology'], true);
     $usesUser = in_array($type, ['bed-reservation', 'accept-referral'], true);
-    $roomNames = $rooms->pluck('name_ar', 'id');
-    $periodNames = $periods->pluck('name_ar', 'id');
-    $apologyNames = $apologies->pluck('name_ar', 'id');
-    $countryNames = $countries->pluck('country_nationality_ar', 'id');
+    $roomNames = $rooms->mapWithKeys(fn ($item) => [$item->id => \App\Support\LocaleText::localizedValue($item->name_ar ?? null, $item->name_en ?? null)]);
+    $periodNames = $periods->mapWithKeys(fn ($item) => [$item->id => \App\Support\LocaleText::localizedValue($item->name_ar ?? null, $item->name_en ?? null)]);
+    $apologyNames = $apologies->mapWithKeys(fn ($item) => [$item->id => \App\Support\LocaleText::localizedValue($item->name_ar ?? null, $item->name_en ?? null)]);
+    $countryNames = $countries->mapWithKeys(fn ($item) => [$item->id => \App\Support\LocaleText::localizedValue($item->country_nationality_ar ?? null, $item->country_nationality_en ?? null)]);
 @endphp
 <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
     <h1 class="h4 mb-0">{{ $definition['title'] }}</h1>
@@ -20,8 +20,8 @@
     <div class="card-body row g-3 align-items-end">
         <div class="col-md-2"><label class="form-label">من تاريخ</label><input class="form-control" type="date" name="from" value="{{ $filters['from'] }}"></div>
         <div class="col-md-2"><label class="form-label">إلى تاريخ</label><input class="form-control" type="date" name="to" value="{{ $filters['to'] }}"></div>
-        @if($usesRoom)<div class="col-md-2"><label class="form-label">{{ in_array($type, ['crisis-management','red-crescent'], true) ? 'الوحدة' : 'القسم' }}</label><select class="form-select" name="room_type"><option value="">الكل</option>@foreach($rooms as $option)<option value="{{ $option->id }}" @selected($filters['room_type'] === (int) $option->id)>{{ $option->name_ar }}</option>@endforeach</select></div>@endif
-        @if($usesApology)<div class="col-md-2"><label class="form-label">سبب الاعتذار</label><select class="form-select" name="apology"><option value="">الكل</option>@foreach($apologies as $option)<option value="{{ $option->id }}" @selected($filters['apology'] === (int) $option->id)>{{ $option->name_ar }}</option>@endforeach</select></div>@endif
+        @if($usesRoom)<div class="col-md-2"><label class="form-label">{{ app()->getLocale() === 'ar' ? (in_array($type, ['crisis-management','red-crescent'], true) ? 'الوحدة' : 'القسم') : (in_array($type, ['crisis-management','red-crescent'], true) ? 'Unit' : 'Department') }}</label><select class="form-select" name="room_type"><option value="">{{ app()->getLocale() === 'ar' ? 'الكل' : 'All' }}</option>@foreach($rooms as $option)<option value="{{ $option->id }}" @selected($filters['room_type'] === (int) $option->id)>{{ \App\Support\LocaleText::localizedValue($option->name_ar ?? null, $option->name_en ?? null) }}</option>@endforeach</select></div>@endif
+        @if($usesApology)<div class="col-md-2"><label class="form-label">{{ app()->getLocale() === 'ar' ? 'سبب الاعتذار' : 'Apology reason' }}</label><select class="form-select" name="apology"><option value="">{{ app()->getLocale() === 'ar' ? 'الكل' : 'All' }}</option>@foreach($apologies as $option)<option value="{{ $option->id }}" @selected($filters['apology'] === (int) $option->id)>{{ \App\Support\LocaleText::localizedValue($option->name_ar ?? null, $option->name_en ?? null) }}</option>@endforeach</select></div>@endif
         @if($usesUser)<div class="col-md-2"><label class="form-label">المدخل</label><select class="form-select" name="user_id"><option value="">الكل</option>@foreach($users as $option)<option value="{{ $option->hr_id }}" @selected($filters['user_id'] === (int) $option->hr_id)>{{ $option->hr_first_name }}</option>@endforeach</select></div>@endif
         @if($usesIdentity)<div class="col-md-2"><label class="form-label">رقم الهوية</label><input class="form-control" name="identity" value="{{ $filters['identity'] }}"></div>@endif
         <div class="col-auto"><button class="btn btn-dark" type="submit"><i class="bi bi-search"></i> بحث</button> <a class="btn btn-outline-secondary" href="{{ route('modules.medical-referrals.index', $type) }}">استعادة</a></div>

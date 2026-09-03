@@ -29,6 +29,20 @@ return [
         'reset' => 'إعادة تعيين',
     ],
 
+    'circulars_count' => ':count تعميم',
+    'results_summary' => 'عرض :shown من أصل :total',
+    'view_details' => 'عرض التفاصيل',
+
+    'toolbar' => [
+        'columns' => 'إعدادات الأعمدة',
+        'export' => 'تصدير',
+        'refresh' => 'تحديث',
+        'sort' => 'ترتيب',
+        'sort_date' => 'تاريخ الإصدار',
+        'sort_subject' => 'الموضوع',
+        'sort_status' => 'الحالة',
+    ],
+
     'table' => [
         'sent_date' => 'تاريخ الإصدار',
         'authority' => 'الجهة المصدرة',

@@ -16,6 +16,7 @@ return [
         'expiry_seconds' => (int) env('HM_OTP_EXPIRY_SECONDS', 300),
         'resend_cooldown_seconds' => (int) env('HM_OTP_RESEND_COOLDOWN_SECONDS', 30),
         'max_attempts' => (int) env('HM_OTP_MAX_ATTEMPTS', 5),
+        'demo_mode' => (bool) env('HM_OTP_DEMO_MODE', false),
     ],
 
     'password_recovery' => [
@@ -28,6 +29,7 @@ return [
     'permissions' => [
         'bypass' => (bool) env('HM_PERMISSIONS_BYPASS', false),
         'admin_levels' => [3],
+        'enforcement_mode' => env('HM_PERMISSION_ENFORCEMENT_MODE', 'compat'),
     ],
 
     'dashboard' => [
@@ -77,6 +79,7 @@ return [
                 'label_key' => 'complaints',
                 'route' => 'modules.complaints',
                 'icon' => 'bi-chat-square-text',
+                'permission' => 'complaints',
             ],
             [
                 'label_key' => 'employee_services',
@@ -127,6 +130,7 @@ return [
                         'active_prefix' => 'modules.inquiries.outgoing',
                         'active_params' => ['direction' => 'outgoing'],
                         'subtitle_key' => 'inquiries.subtitle',
+                        'permission' => 'inquiries_and_services',
                     ],
                     [
                         'label_key' => 'inquiries_incoming',
@@ -135,6 +139,7 @@ return [
                         'active_prefix' => 'modules.inquiries.incoming',
                         'active_params' => ['direction' => 'incoming'],
                         'subtitle_key' => 'inquiries.subtitle',
+                        'permission' => 'inquiries_and_services',
                     ],
                 ],
             ],
@@ -180,10 +185,51 @@ return [
                     ],
                     [
                         'label_key' => 'services_inpatient',
-                        'route' => 'modules.services.sections.show',
-                        'route_params' => ['section' => 6],
+                        'type' => 'group',
                         'icon' => 'bi-hospital',
-                        'subtitle_key' => 'hospital_services.section_page_subtitle',
+                        'children' => [
+                            [
+                                'label_key' => 'services_inpatient_rooms',
+                                'route' => 'modules.services.sections.show',
+                                'route_params' => ['section' => 7],
+                                'icon' => 'bi-door-open',
+                                'active_prefix' => 'modules.services.sections',
+                                'active_params' => ['section' => 7],
+                                'subtitle_key' => 'hospital_services.section_page_subtitle',
+                                'published_section_id' => 7,
+                            ],
+                            [
+                                'label_key' => 'services_inpatient_reproduction',
+                                'route' => 'modules.services.sections.show',
+                                'route_params' => ['section' => 8],
+                                'icon' => 'bi-heart-pulse',
+                                'active_prefix' => 'modules.services.sections',
+                                'active_params' => ['section' => 8],
+                                'subtitle_key' => 'hospital_services.section_page_subtitle',
+                                'published_section_id' => 8,
+                                'excluded_company_ids' => [3],
+                            ],
+                            [
+                                'label_key' => 'services_inpatient_endoscopy',
+                                'route' => 'modules.services.sections.show',
+                                'route_params' => ['section' => 9],
+                                'icon' => 'bi-circle-half',
+                                'active_prefix' => 'modules.services.sections',
+                                'active_params' => ['section' => 9],
+                                'subtitle_key' => 'hospital_services.section_page_subtitle',
+                                'published_section_id' => 9,
+                            ],
+                            [
+                                'label_key' => 'services_inpatient_dialysis',
+                                'route' => 'modules.services.sections.show',
+                                'route_params' => ['section' => 10],
+                                'icon' => 'bi-droplet-half',
+                                'active_prefix' => 'modules.services.sections',
+                                'active_params' => ['section' => 10],
+                                'subtitle_key' => 'hospital_services.section_page_subtitle',
+                                'published_section_id' => 10,
+                            ],
+                        ],
                     ],
                     [
                         'label_key' => 'services_partnerships',
@@ -203,9 +249,167 @@ return [
             ],
             [
                 'type' => 'group',
+                'label_key' => 'inpatient_workflows',
+                'icon' => 'bi-clipboard2-pulse',
+                'children' => [
+                    ['label_key' => 'inpatient_calculator', 'route' => 'modules.admission-inpatient.calculator.index', 'route_params' => ['type' => 'standard'], 'icon' => 'bi-calculator', 'active_prefix' => 'modules.admission-inpatient.calculator.'],
+                    ['label_key' => 'inpatient_manual_calculator', 'route' => 'modules.admission-inpatient.calculator.index', 'route_params' => ['type' => 'manual'], 'icon' => 'bi-calculator-fill', 'active_prefix' => 'modules.admission-inpatient.calculator.'],
+                    ['label_key' => 'inpatient_consents', 'route' => 'modules.admission-inpatient.consents.index', 'icon' => 'bi-file-earmark-check', 'active_prefix' => 'modules.admission-inpatient.consents', 'branch_ids' => [1, 9, 34]],
+                    ['label_key' => 'inpatient_approvals', 'route' => 'modules.admission-inpatient.approvals.index', 'icon' => 'bi-send-check', 'active_prefix' => 'modules.admission-inpatient.approvals', 'branch_ids' => [10]],
+                    ['label_key' => 'inpatient_doctors', 'route' => 'modules.admission-inpatient.doctors.index', 'icon' => 'bi-person-badge', 'active_prefix' => 'modules.admission-inpatient.doctors'],
+                    ['label_key' => 'inpatient_packages', 'route' => 'modules.admission-inpatient.packages.index', 'icon' => 'bi-box-seam', 'active_prefix' => 'modules.admission-inpatient.packages', 'admin_only' => true],
+                    ['label_key' => 'inpatient_package_catalog', 'route' => 'modules.admission-inpatient.package-catalog', 'icon' => 'bi-collection', 'active_prefix' => 'modules.admission-inpatient.package-catalog'],
+                    ['label_key' => 'inpatient_report9', 'route' => 'modules.admission-inpatient.report9.index', 'icon' => 'bi-clipboard-data', 'active_prefix' => 'modules.admission-inpatient.report9', 'branch_ids' => [9]],
+                    ['label_key' => 'inpatient_employee_report9', 'route' => 'modules.admission-inpatient.employee-report9.index', 'icon' => 'bi-people', 'active_prefix' => 'modules.admission-inpatient.employee-report9', 'branch_ids' => [9]],
+                    ['label_key' => 'inpatient_nationalities', 'route' => 'modules.admission-inpatient.reference.index', 'route_params' => ['type' => 'nationalities'], 'icon' => 'bi-globe2', 'admin_only' => true],
+                    ['label_key' => 'inpatient_statuses', 'route' => 'modules.admission-inpatient.reference.index', 'route_params' => ['type' => 'statuses'], 'icon' => 'bi-list-check', 'admin_only' => true],
+                    ['label_key' => 'inpatient_rooms', 'route' => 'modules.admission-inpatient.reference.index', 'route_params' => ['type' => 'rooms'], 'icon' => 'bi-door-open', 'admin_only' => true],
+                    ['label_key' => 'inpatient_service_prices', 'route' => 'modules.admission-inpatient.reference.index', 'route_params' => ['type' => 'service-prices'], 'icon' => 'bi-tags', 'admin_only' => true],
+                    ['label_key' => 'inpatient_room_types', 'route' => 'modules.admission-inpatient.reference.index', 'route_params' => ['type' => 'room-types'], 'icon' => 'bi-grid-3x3-gap', 'admin_only' => true],
+                    ['label_key' => 'inpatient_booking_periods', 'route' => 'modules.admission-inpatient.reference.index', 'route_params' => ['type' => 'booking-periods'], 'icon' => 'bi-clock-history', 'admin_only' => true],
+                    ['label_key' => 'inpatient_hospitalization_places', 'route' => 'modules.admission-inpatient.reference.index', 'route_params' => ['type' => 'hospitalization-places'], 'icon' => 'bi-geo-alt', 'admin_only' => true],
+                    ['label_key' => 'inpatient_approval_statuses', 'route' => 'modules.admission-inpatient.reference.index', 'route_params' => ['type' => 'medical-approval-statuses'], 'icon' => 'bi-check2-square'],
+                    ['label_key' => 'inpatient_approval_reasons', 'route' => 'modules.admission-inpatient.reference.index', 'route_params' => ['type' => 'medical-approval-rejection-reasons'], 'icon' => 'bi-x-square'],
+                    ['label_key' => 'inpatient_report9_sections', 'route' => 'modules.admission-inpatient.reference.index', 'route_params' => ['type' => 'rep9-sections'], 'icon' => 'bi-diagram-3', 'admin_only' => true],
+                    ['label_key' => 'inpatient_report9_notices', 'route' => 'modules.admission-inpatient.reference.index', 'route_params' => ['type' => 'rep9-notices'], 'icon' => 'bi-chat-left-text', 'admin_only' => true],
+                    ['label_key' => 'inpatient_report9_actions', 'route' => 'modules.admission-inpatient.reference.index', 'route_params' => ['type' => 'rep9-actions'], 'icon' => 'bi-lightning', 'admin_only' => true],
+                    ['label_key' => 'inpatient_consent_templates', 'route' => 'modules.admission-inpatient.consent-templates.index', 'icon' => 'bi-file-earmark-text', 'active_prefix' => 'modules.admission-inpatient.consent-templates', 'branch_ids' => [1, 9, 34], 'admin_only' => true],
+                    ['label_key' => 'inpatient_approval_contacts', 'route' => 'modules.admission-inpatient.contacts.index', 'route_params' => ['kind' => 'cc'], 'icon' => 'bi-people', 'active_prefix' => 'modules.admission-inpatient.contacts', 'branch_ids' => [10]],
+                ],
+            ],
+            [
+                'type' => 'group',
                 'label_key' => 'corporate_communication',
                 'icon' => 'bi-journal-bookmark',
                 'children' => [
+                    [
+                        'type' => 'group',
+                        'label_key' => 'licenses',
+                        'icon' => 'bi-patch-check',
+                        'children' => [
+                            [
+                                'label_key' => 'licenses_list',
+                                'route' => 'modules.licenses.index',
+                                'icon' => 'bi-card-list',
+                                'active_route_patterns' => [
+                                    'modules.licenses.index',
+                                    'modules.licenses.show',
+                                    'modules.licenses.edit',
+                                    'modules.licenses.update',
+                                    'modules.licenses.assign',
+                                    'modules.licenses.undertaking*',
+                                    'modules.licenses.pdf',
+                                    'modules.licenses.export',
+                                    'modules.licenses.attachments.*',
+                                    'modules.licenses.notifications*',
+                                    'modules.licenses.stage',
+                                    'modules.licenses.comments.*',
+                                    'modules.licenses.external-communications.*',
+                                    'modules.licenses.renewal.*',
+                                    'modules.licenses.payment-requests.*',
+                                ],
+                                'subtitle_key' => 'licenses.subtitle',
+                                'permission' => 'licenses.view',
+                            ],
+                            [
+                                'label_key' => 'licenses_create',
+                                'route' => 'modules.licenses.create',
+                                'icon' => 'bi-plus-circle',
+                                'active_prefix' => 'modules.licenses.create',
+                                'active_route_patterns' => ['modules.licenses.create'],
+                                'subtitle_key' => 'licenses.create_subtitle',
+                                'permission' => 'licenses_admin',
+                            ],
+                            [
+                                'label_key' => 'licenses_dashboard',
+                                'route' => 'modules.licenses.dashboard',
+                                'icon' => 'bi-speedometer2',
+                                'active_prefix' => 'modules.licenses.dashboard',
+                                'active_route_patterns' => ['modules.licenses.dashboard'],
+                                'subtitle_key' => 'licenses.dashboard.subtitle',
+                                'permission' => 'licenses.view',
+                            ],
+                            [
+                                'label_key' => 'licenses_finance',
+                                'route' => 'modules.licenses.finance.index',
+                                'icon' => 'bi-cash-coin',
+                                'active_prefix' => 'modules.licenses.finance.',
+                                'active_route_patterns' => ['modules.licenses.finance.*'],
+                                'subtitle_key' => 'licenses.finance.subtitle',
+                                'permission' => 'licenses_finance',
+                            ],
+                            [
+                                'label_key' => 'licenses_settings',
+                                'route' => 'modules.licenses.admin.index',
+                                'icon' => 'bi-sliders',
+                                'active_prefix' => 'modules.licenses.admin.',
+                                'active_route_patterns' => ['modules.licenses.admin.*'],
+                                'subtitle_key' => 'licenses.admin.subtitle',
+                                'permission' => 'licenses_admin',
+                            ],
+                        ],
+                    ],
+                    [
+                        'type' => 'group',
+                        'label_key' => 'gov_accounts',
+                        'icon' => 'bi-person-vcard',
+                        'children' => [
+                            [
+                                'label_key' => 'gov_accounts_dashboard',
+                                'route' => 'modules.gov-accounts.dashboard',
+                                'icon' => 'bi-speedometer2',
+                                'active_prefix' => 'modules.gov-accounts.dashboard',
+                            ],
+                            [
+                                'label_key' => 'gov_accounts_list',
+                                'route' => 'modules.gov-accounts.accounts.index',
+                                'icon' => 'bi-person-vcard',
+                                'active_prefix' => 'modules.gov-accounts.accounts.',
+                            ],
+                            [
+                                'label_key' => 'gov_accounts_requests',
+                                'route' => 'modules.gov-accounts.requests.index',
+                                'icon' => 'bi-file-earmark-person',
+                                'active_prefix' => 'modules.gov-accounts.requests.',
+                            ],
+                            [
+                                'label_key' => 'gov_accounts_processing',
+                                'route' => 'modules.gov-accounts.requests.index',
+                                'icon' => 'bi-check2-square',
+                                'active_prefix' => 'modules.gov-accounts.requests.',
+                                'permission' => 'gov_accounts.process',
+                            ],
+                            [
+                                'label_key' => 'gov_accounts_my_area',
+                                'route' => 'modules.gov-accounts.my-accounts.index',
+                                'icon' => 'bi-person',
+                                'active_prefix' => 'modules.gov-accounts.my-accounts.',
+                            ],
+                            [
+                                'label_key' => 'gov_accounts_hr',
+                                'route' => 'modules.gov-accounts.hr.index',
+                                'icon' => 'bi-people',
+                                'active_prefix' => 'modules.gov-accounts.hr.',
+                                'permission' => 'gov_accounts.hr',
+                            ],
+                            [
+                                'label_key' => 'gov_accounts_notices',
+                                'route' => 'modules.gov-accounts.notices.index',
+                                'icon' => 'bi-calendar-event',
+                                'active_prefix' => 'modules.gov-accounts.notices.',
+                                'permission' => 'gov_accounts.process',
+                            ],
+                            [
+                                'label_key' => 'gov_accounts_settings',
+                                'route' => 'modules.gov-accounts.admin.index',
+                                'icon' => 'bi-sliders',
+                                'active_prefix' => 'modules.gov-accounts.admin.',
+                                'active_route_patterns' => ['modules.gov-accounts.admin.*'],
+                                'subtitle_key' => 'gov_accounts.settings_subtitle',
+                                'permission' => 'gov_accounts_admin',
+                            ],
+                        ],
+                    ],
                     [
                         'label_key' => 'government_circulars',
                         'route' => 'modules.government-circulars.index',
@@ -366,12 +570,64 @@ return [
                 ],
             ],
             [
-                'label_key' => 'legal_claims',
-                'route' => 'modules.legal-claims.index',
+                'type' => 'group',
+                'label_key' => 'cases',
                 'icon' => 'bi-briefcase',
-                'active_prefix' => 'modules.legal-claims.',
-                'subtitle_key' => 'legal_claims.scope',
-                'permission' => 'admin',
+                // This is the old branch-3 "القضايا" menu.  The financial
+                // claim screen is one child of the group, not a second,
+                // competing top-level menu item.
+                'children' => [
+                    ['label_key' => 'cases_financial_claims', 'route' => 'modules.legal-claims.index', 'icon' => 'bi-cash-stack', 'active_prefix' => 'modules.legal-claims.', 'branch_ids' => [3]],
+                    ['label_key' => 'cases_commercial', 'route' => 'modules.legacy-sidebar.index', 'route_params' => ['page' => 'commercial_cases'], 'icon' => 'bi-briefcase-fill', 'branch_ids' => [3]],
+                    ['label_key' => 'cases_labor', 'route' => 'modules.legacy-sidebar.index', 'route_params' => ['page' => 'labor_cases'], 'icon' => 'bi-person-workspace', 'branch_ids' => [3]],
+                    ['label_key' => 'cases_medical', 'route' => 'modules.legacy-sidebar.index', 'route_params' => ['page' => 'medical_cases'], 'icon' => 'bi-heart-pulse', 'branch_ids' => [3]],
+                    ['label_key' => 'cases_administrative', 'route' => 'modules.legacy-sidebar.index', 'route_params' => ['page' => 'administrative_cases'], 'icon' => 'bi-building-check', 'branch_ids' => [3]],
+                    ['label_key' => 'cases_executive_titles', 'route' => 'modules.legacy-sidebar.index', 'route_params' => ['page' => 'executive_title'], 'icon' => 'bi-file-earmark-lock', 'branch_ids' => [3]],
+                ],
+            ],
+            [
+                'type' => 'group',
+                'label_key' => 'financial_claims',
+                'icon' => 'bi-cash-stack',
+                'branch_ids' => [2],
+                'children' => [
+                    // These have the same underlying workflows as entries in
+                    // "القضايا".  Keep a menu context in the URL so the
+                    // sidebar's duplicate-url guard does not remove them from
+                    // this separate, legacy financial-claims menu.
+                    ['label_key' => 'financial_claims_cases', 'route' => 'modules.legal-claims.index', 'route_params' => ['menu' => 'financial-claims'], 'icon' => 'bi-briefcase', 'active_prefix' => 'modules.legal-claims.', 'branch_ids' => [2]],
+                    ['label_key' => 'financial_claims_executive_titles', 'route' => 'modules.legacy-sidebar.index', 'route_params' => ['page' => 'executive_title', 'menu' => 'financial-claims'], 'icon' => 'bi-file-earmark-lock', 'branch_ids' => [2]],
+                    ['label_key' => 'financial_claims_claim_documents', 'route' => 'modules.legacy-sidebar.index', 'route_params' => ['page' => 'lawsuit_complete_documents'], 'icon' => 'bi-folder-check', 'branch_ids' => [2]],
+                    ['label_key' => 'financial_claims_executive_documents', 'route' => 'modules.legacy-sidebar.index', 'route_params' => ['page' => 'executive_title_complete_documents'], 'icon' => 'bi-file-earmark-check', 'branch_ids' => [2]],
+                    ['label_key' => 'financial_claims_payment_guarantee', 'route' => 'modules.medical-agreements.index', 'route_params' => ['variant' => 'sadq'], 'icon' => 'bi-patch-check', 'active_prefix' => 'modules.medical-agreements.', 'branch_ids' => [2], 'legacy_scope' => 'sadq', 'legacy_privilege' => 'Medical Services Provision Agreement Yaqeen'],
+                    ['label_key' => 'financial_claims_payment_guarantee_archive', 'route' => 'modules.medical-agreements.index', 'route_params' => ['variant' => 'standard'], 'icon' => 'bi-archive', 'active_prefix' => 'modules.medical-agreements.', 'branch_ids' => [2], 'legacy_scope' => 'sadq', 'legacy_privilege' => 'Medical Services Provision Agreement non Yaqeen'],
+                    ['label_key' => 'financial_claims_notice', 'route' => 'modules.legacy-sidebar.index', 'route_params' => ['page' => 'financial_claim_notice'], 'icon' => 'bi-cash-coin', 'branch_ids' => [2]],
+                    ['label_key' => 'financial_claims_approval', 'route' => 'modules.legacy-sidebar.index', 'route_params' => ['page' => 'lawsuitapproval'], 'icon' => 'bi-check2-square', 'branch_ids' => [2]],
+                    ['label_key' => 'financial_claims_inquiry', 'route' => 'modules.legacy-sidebar.index', 'route_params' => ['page' => 'sit_rep2'], 'icon' => 'bi-question-circle', 'branch_ids' => [2]],
+                    ['label_key' => 'financial_claims_legal_inquiry', 'route' => 'modules.legacy-sidebar.index', 'route_params' => ['page' => 'archives'], 'icon' => 'bi-journal-text', 'branch_ids' => [2]],
+                    ['label_key' => 'financial_claims_medical_report', 'route' => 'modules.legacy-sidebar.index', 'route_params' => ['page' => 'rep_ss'], 'icon' => 'bi-file-medical', 'branch_ids' => [2]],
+                ],
+            ],
+            [
+                'type' => 'group',
+                'label_key' => 'department_reports',
+                'icon' => 'bi-bar-chart-line',
+                'children' => [
+                    [
+                        'label_key' => 'collection_report',
+                        'route' => 'modules.department-reports.index',
+                        'route_params' => ['department' => 'collection'],
+                        'icon' => 'bi-cash-stack',
+                        'active_prefix' => 'modules.department-reports.',
+                    ],
+                    [
+                        'label_key' => 'legal_report',
+                        'route' => 'modules.department-reports.index',
+                        'route_params' => ['department' => 'legal'],
+                        'icon' => 'bi-briefcase',
+                        'active_prefix' => 'modules.department-reports.',
+                    ],
+                ],
             ],
             [
                 'type' => 'group',
@@ -386,6 +642,20 @@ return [
                         'icon' => 'bi-calendar-plus',
                         'active_prefix' => 'modules.medical-appointments.',
                         'subtitle_key' => 'medical_appointments.subtitle',
+                        'branch_ids' => MedicalAppointmentScope::BRANCH_IDS,
+                        'company_ids' => MedicalAppointmentScope::COMPANY_IDS,
+                    ],
+                    [
+                        'label_key' => 'medical_appointment_clinics',
+                        // شاشة مستقلة تكافئ clinicians_view.php داخل تصميم المشروع الجديد.
+                        // Link directly to the new screen. The legacy alias
+                        // remains available for old bookmarks, but using it
+                        // in the sidebar made the SPA transition resolve a
+                        // relative .php URL on the production Nginx setup.
+                        'route' => 'modules.clinics-directory.index',
+                        'icon' => 'bi-building',
+                        'active_prefixes' => ['legacy.clinicians-view', 'modules.clinics-directory.'],
+                        'subtitle_key' => 'service_locations.subtitle',
                         'branch_ids' => MedicalAppointmentScope::BRANCH_IDS,
                         'company_ids' => MedicalAppointmentScope::COMPANY_IDS,
                     ],
@@ -425,20 +695,6 @@ return [
             ],
             [
                 'type' => 'group',
-                'label_key' => 'legacy_agreements_services',
-                'icon' => 'bi-file-earmark-text',
-                'user_levels' => [1, 2, 4],
-                'children' => [
-                    ['label_key' => 'agreement_sadq', 'route' => 'modules.medical-agreements.index', 'route_params' => ['variant' => 'sadq'], 'icon' => 'bi-patch-check', 'branch_ids' => [1, 5, 8], 'user_levels' => [1, 2, 4], 'legacy_privilege' => 'Medical Services Provision Agreement Yaqeen', 'legacy_scope' => 'sadq'],
-                    ['label_key' => 'agreement_sadq_manual', 'route' => 'modules.medical-agreements.index', 'route_params' => ['variant' => 'sadq-manual'], 'icon' => 'bi-pencil-square', 'branch_ids' => [1, 5, 8], 'user_levels' => [1, 2, 4], 'legacy_privilege' => 'Medical Services Provision Agreement non Yaqeen', 'legacy_scope' => 'sadq'],
-                    ['label_key' => 'agreement_archive', 'route' => 'modules.medical-agreements.index', 'route_params' => ['variant' => 'standard'], 'icon' => 'bi-archive', 'branch_ids' => [1, 5, 8], 'user_levels' => [1, 2, 4]],
-                    ['label_key' => 'governmental_workflows', 'route' => 'modules.governmental-services.index', 'icon' => 'bi-building-check', 'active_prefix' => 'modules.governmental-services.', 'branch_ids' => [1, 5, 7], 'company_ids' => [1], 'user_levels' => [1, 2, 4]],
-                    ['label_key' => 'holiday_inquiries', 'route' => 'modules.legacy-office.holidays.index', 'icon' => 'bi-calendar2-check', 'active_prefix' => 'modules.legacy-office.holidays.', 'branch_ids' => [1, 5, 7], 'user_levels' => [1, 2, 4]],
-                    ['label_key' => 'medical_report_approvals', 'route' => 'modules.legacy-office.medical-reports.index', 'icon' => 'bi-file-medical', 'active_prefix' => 'modules.legacy-office.medical-reports.', 'branch_ids' => [1, 5, 7], 'user_levels' => [1, 2, 4]],
-                ],
-            ],
-            [
-                'type' => 'group',
                 'label_key' => 'legacy_memos',
                 'icon' => 'bi-sticky',
                 'user_levels' => [0, 1, 2, 4],
@@ -446,6 +702,35 @@ return [
                     ['label_key' => 'outgoing_memos', 'route' => 'modules.legacy-office.memos.index', 'icon' => 'bi-send', 'active_prefix' => 'modules.legacy-office.memos.', 'user_levels' => [0, 1, 2, 4]],
                     ['label_key' => 'received_memos', 'route' => 'modules.legacy-office.memos.received', 'icon' => 'bi-inbox', 'active_prefix' => 'modules.legacy-office.memos.', 'user_levels' => [0, 1, 2, 4]],
                     ['label_key' => 'coverage_memos', 'route' => 'modules.legacy-office.coverage.index', 'icon' => 'bi-file-earmark-medical', 'active_prefix' => 'modules.legacy-office.coverage.', 'branch_ids' => [1, 2, 8], 'user_levels' => [0, 1, 2, 4]],
+                ],
+            ],
+            [
+                'type' => 'group',
+                'label_key' => 'legacy_sidebar_pages',
+                'icon' => 'bi-arrow-repeat',
+                'children' => [
+                    ['label_key' => 'legacy_sidebar_adm_country', 'route' => 'modules.legacy-sidebar.index', 'route_params' => ['page' => 'adm_country'], 'icon' => 'bi-globe2', 'admin_only' => true],
+                    ['label_key' => 'legacy_sidebar_archives', 'route' => 'modules.legacy-sidebar.index', 'route_params' => ['page' => 'archives'], 'icon' => 'bi-archive', 'excluded_branch_ids' => [2]],
+                    ['label_key' => 'legacy_sidebar_birth_notification', 'route' => 'modules.legacy-sidebar.index', 'route_params' => ['page' => 'birth_notification'], 'icon' => 'bi-person-heart'],
+                    ['label_key' => 'legacy_sidebar_branches_emails', 'route' => 'modules.legacy-sidebar.index', 'route_params' => ['page' => 'branches_emails'], 'icon' => 'bi-envelope'],
+                    ['label_key' => 'legacy_sidebar_central_follow_up', 'route' => 'modules.legacy-sidebar.index', 'route_params' => ['page' => 'central_follow_up'], 'icon' => 'bi-telephone-forward'],
+                    ['label_key' => 'legacy_sidebar_central_ext', 'route' => 'modules.legacy-sidebar.index', 'route_params' => ['page' => 'central_ext'], 'icon' => 'bi-telephone'],
+                    ['label_key' => 'legacy_sidebar_centralsections', 'route' => 'modules.legacy-sidebar.index', 'route_params' => ['page' => 'centralsections'], 'icon' => 'bi-diagram-2'],
+                    ['label_key' => 'legacy_sidebar_city', 'route' => 'modules.legacy-sidebar.index', 'route_params' => ['page' => 'city'], 'icon' => 'bi-buildings', 'admin_only' => true],
+                    ['label_key' => 'legacy_sidebar_emergency_new_call', 'route' => 'modules.legacy-sidebar.index', 'route_params' => ['page' => 'emergency_new_call'], 'icon' => 'bi-broadcast-pin'],
+                    ['label_key' => 'legacy_sidebar_executive_title_complete_documents', 'route' => 'modules.legacy-sidebar.index', 'route_params' => ['page' => 'executive_title_complete_documents'], 'icon' => 'bi-file-earmark-check', 'excluded_branch_ids' => [2]],
+                    ['label_key' => 'legacy_sidebar_financial_claim_notice', 'route' => 'modules.legacy-sidebar.index', 'route_params' => ['page' => 'financial_claim_notice'], 'icon' => 'bi-cash-coin', 'excluded_branch_ids' => [2]],
+                    ['label_key' => 'legacy_sidebar_info', 'route' => 'modules.legacy-sidebar.index', 'route_params' => ['page' => 'info'], 'icon' => 'bi-info-circle'],
+                    ['label_key' => 'legacy_sidebar_lawsuit_complete_documents', 'route' => 'modules.legacy-sidebar.index', 'route_params' => ['page' => 'lawsuit_complete_documents'], 'icon' => 'bi-folder-check', 'excluded_branch_ids' => [2]],
+                    ['label_key' => 'legacy_sidebar_lawsuit_users_mobile', 'route' => 'modules.legacy-sidebar.index', 'route_params' => ['page' => 'lawsuit_users_mobile'], 'icon' => 'bi-phone'],
+                    ['label_key' => 'legacy_sidebar_lawsuitapproval', 'route' => 'modules.legacy-sidebar.index', 'route_params' => ['page' => 'lawsuitapproval'], 'icon' => 'bi-check2-square', 'excluded_branch_ids' => [2]],
+                    ['label_key' => 'legacy_sidebar_medica_report', 'route' => 'modules.legacy-sidebar.index', 'route_params' => ['page' => 'medica_report'], 'icon' => 'bi-file-medical'],
+                    ['label_key' => 'legacy_sidebar_onlinetody', 'route' => 'modules.legacy-sidebar.index', 'route_params' => ['page' => 'onlinetody'], 'icon' => 'bi-calendar2-check', 'admin_only' => true],
+                    ['label_key' => 'legacy_sidebar_psychosocial_assessment_all', 'route' => 'modules.legacy-sidebar.index', 'route_params' => ['page' => 'psychosocial_assessment_all'], 'icon' => 'bi-people-fill'],
+                    ['label_key' => 'legacy_sidebar_sanad_reg', 'route' => 'modules.legacy-sidebar.index', 'route_params' => ['page' => 'sanad_reg'], 'icon' => 'bi-journal-plus', 'admin_only' => true],
+                    ['label_key' => 'legacy_sidebar_sanad_track1', 'route' => 'modules.legacy-sidebar.index', 'route_params' => ['page' => 'sanad_track1'], 'icon' => 'bi-journal-check', 'admin_only' => true],
+                    ['label_key' => 'legacy_sidebar_shift_schedule', 'route' => 'modules.legacy-sidebar.index', 'route_params' => ['page' => 'shift_schedule'], 'icon' => 'bi-calendar3'],
+                    ['label_key' => 'legacy_sidebar_sms', 'route' => 'modules.legacy-sidebar.index', 'route_params' => ['page' => 'sms'], 'icon' => 'bi-chat-dots'],
                 ],
             ],
             [
@@ -675,8 +960,8 @@ return [
         // (matches legacy clinic_details.php — Nuzha + Suwaidi).
         'outpatient_branch_ids' => [1, 3],
         'branch_images' => [
-            1 => 'images/branches/nuzha.jpg',
-            3 => 'images/branches/suwaidi.jpg',
+            1 => 'النزهة.jpeg',
+            3 => 'السويدي.jpeg',
         ],
         // Doctor codes assigned primarily to Suwaidi — strip erroneous Nuzha rows after cleanup.
         'suwaidi_primary_doctor_codes' => [
@@ -698,7 +983,6 @@ return [
                 'route' => 'modules.doctors-admin.dashboard',
                 'icon' => 'bi-gear-wide-connected',
             ],
-            ['label_key' => 'groups', 'route' => 'modules.system-admin.reference.index', 'route_params' => ['type' => 'groups'], 'icon' => 'bi-people'],
             ['label_key' => 'job_titles', 'route' => 'modules.system-admin.reference.index', 'route_params' => ['type' => 'job-titles'], 'icon' => 'bi-person-badge'],
             ['label_key' => 'governmental_services', 'route' => 'modules.system-admin.reference.index', 'route_params' => ['type' => 'governmental-services'], 'icon' => 'bi-building-check'],
             ['label_key' => 'companies', 'route' => 'modules.system-admin.reference.index', 'route_params' => ['type' => 'companies'], 'icon' => 'bi-buildings'],
@@ -806,6 +1090,17 @@ return [
         ],
     ],
 
+    'gov_accounts' => [
+        'notifications' => [
+            'mail' => (bool) env('HM_GOV_ACCOUNTS_MAIL_ENABLED', false),
+            'sms' => false,
+        ],
+        'employee_status' => [
+            'enabled' => (bool) env('HM_GOV_ACCOUNTS_EMPLOYEE_STATUS_ENABLED', false),
+            'scheduler_at' => env('HM_GOV_ACCOUNTS_EMPLOYEE_STATUS_AT', '07:30'),
+        ],
+    ],
+
     'government_circulars' => [
         'per_page' => (int) env('HM_GOVERNMENT_CIRCULARS_PER_PAGE', 15),
     ],
@@ -824,6 +1119,24 @@ return [
 
     'outgoing_correspondence' => [
         'per_page' => (int) env('HM_OUTGOING_CORRESPONDENCE_PER_PAGE', 15),
+    ],
+
+    'licenses' => [
+        'per_page' => max(5, (int) env('HM_LICENSES_PER_PAGE', 15)),
+        'alert_days' => [
+            max(1, (int) env('HM_LICENSES_YELLOW_DAYS', 90)),
+            max(1, (int) env('HM_LICENSES_REMINDER_DAYS', 60)),
+            max(1, (int) env('HM_LICENSES_RED_DAYS', 30)),
+        ],
+        'undertaking_escalation_days' => max(1, (int) env('HM_LICENSES_UNDERTAKING_DAYS', 3)),
+        'expired_reescalate_days' => max(1, (int) env('HM_LICENSES_EXPIRED_REESCALATE_DAYS', 7)),
+        'scheduler_at' => env('HM_LICENSES_SCHEDULER_AT', '07:15'),
+        'timezone' => env('HM_LICENSES_TIMEZONE', 'Asia/Riyadh'),
+        'notifications' => [
+            'enabled' => (bool) env('HM_LICENSES_NOTIFICATIONS_ENABLED', true),
+            'mail' => (bool) env('HM_LICENSES_MAIL_ENABLED', true),
+            'sms' => (bool) env('HM_LICENSES_SMS_ENABLED', false),
+        ],
     ],
 
     'inquiries' => [

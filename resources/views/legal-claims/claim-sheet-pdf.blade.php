@@ -1,0 +1,6 @@
+<html dir="rtl" lang="ar"><head><meta charset="utf-8"><style>body{font-family:dejavusans,sans-serif;color:#172b4d}h1{text-align:center;color:#17437a}.grid{width:100%;border-collapse:collapse;margin-top:18px}.grid td,.grid th{border:1px solid #b9cbe0;padding:8px;text-align:right}.grid th{background:#eaf3fc}.muted{color:#62748a}</style></head><body>
+<h1>صحيفة الدعوى</h1>
+<p class="muted">رقم الملف: {{ $record->file_number }} — رقم القضية: {{ $record->case_number ?: 'غير مسجل' }}</p>
+<table class="grid"><tr><th>اسم المريض</th><td>{{ $record->patient_name }}</td><th>رقم الهوية</th><td>{{ $record->patient_idno }}</td></tr><tr><th>المتعهد</th><td>{{ $record->liable_name }}</td><th>هوية المتعهد</th><td>{{ $record->liable_idno }}</td></tr><tr><th>الخدمة</th><td>{{ $record->service_provided_to_patient }}</td><th>المبلغ المتبقي</th><td>{{ $record->amount_rest }}</td></tr><tr><th>الحالة</th><td colspan="3">{{ $record->status_name_ar ?: $record->status }}</td></tr></table>
+<h3>إجراءات القضية</h3><table class="grid"><tr><th>التاريخ</th><th>الإجراء</th><th>التفاصيل</th></tr>@forelse($record->actions as $action)<tr><td>{{ $action->created_at }}</td><td>{{ $action->status_name_ar ?: 'إجراء' }}</td><td>{{ $action->details }}</td></tr>@empty<tr><td colspan="3">لا توجد إجراءات مسجلة</td></tr>@endforelse</table>
+</body></html>

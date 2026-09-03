@@ -1,7 +1,6 @@
 @extends('layouts.app')
 
 @push('styles')
-    <link href="{{ asset('css/hm-components.css') }}?v={{ $hmAssetVersion ?? filemtime(public_path('css/hm-components.css')) }}" rel="stylesheet">
     <link href="{{ asset('css/hm-inquiries.css') }}?v={{ filemtime(public_path('css/hm-inquiries.css')) }}" rel="stylesheet">
 @endpush
 
@@ -9,6 +8,7 @@
 
 @section('sidebar_heading', __('inquiries.title'))
 @section('sidebar_subheading', __('inquiries.subtitle'))
+@section('figma_page_header', true)
 
 @section('content')
     @php
@@ -18,46 +18,63 @@
         $pageTitle = $direction === 'incoming'
             ? __('inquiries.incoming_page_title')
             : __('inquiries.outgoing_page_title');
+        $crumbCurrent = $direction === 'incoming'
+            ? __('inquiries.incoming')
+            : __('inquiries.outgoing');
         $inquiryService = app(\App\Services\Inquiries\InquiryAndServiceService::class);
+        $statIcons = [
+            'new' => asset('images/figma/inquiries/stat-new.svg'),
+            'in_progress' => asset('images/figma/inquiries/stat-review.svg'),
+            'contacted' => asset('images/figma/inquiries/stat-phone.svg'),
+            'contacted_not_booked' => asset('images/figma/inquiries/stat-bell-off.svg'),
+            'completed' => asset('images/figma/inquiries/stat-check.svg'),
+        ];
+        $statVariants = ['primary', 'dark', 'primary', 'dark', 'primary'];
+        $canCreateOutgoing = $direction === 'outgoing' && in_array((int) session('companies_groups_id'), [1, 3], true);
     @endphp
 
-    <div class="hm-inq hm-inq--list">
-        @include('inquiries.partials.inq-breadcrumb', [
-            'items' => [
-                ['label' => $pageTitle, 'chip' => true],
+    <div class="hm-fm hm-inq hm-inq--list">
+        @include('layouts.partials.figma-module-header', [
+            'compact' => true,
+            'title' => $pageTitle,
+            'crumbs' => [
+                ['label' => __('dashboard.modules')],
+                ['label' => __('inquiries.services_group')],
+                ['label' => $crumbCurrent],
             ],
         ])
 
-        <section class="inq-page-hero" aria-labelledby="inqPageTitle">
-            <div>
-                <div class="inq-nav-tabs">
-                    <a
-                        href="{{ route('modules.inquiries.outgoing.index', request()->except('page')) }}"
-                        class="inq-nav-tabs__item {{ $direction === 'outgoing' ? 'is-active' : '' }}"
-                    >
-                        {{ __('inquiries.nav.outgoing') }}
-                    </a>
-                    <a
-                        href="{{ route('modules.inquiries.incoming.index', request()->except('page')) }}"
-                        class="inq-nav-tabs__item {{ $direction === 'incoming' ? 'is-active' : '' }}"
-                    >
-                        {{ __('inquiries.nav.incoming') }}
-                    </a>
-                </div>
+        <div class="fm-hero fm-hero--split fm-inq-toolbar">
+            <div class="fm-hero__copy">
                 <h1 id="inqPageTitle">{{ $pageTitle }}</h1>
+                @include('layouts.partials.figma.tabs', [
+                    'ariaLabel' => __('inquiries.title'),
+                    'tabs' => [
+                        [
+                            'label' => __('inquiries.nav.outgoing'),
+                            'url' => route('modules.inquiries.outgoing.index', request()->except('page')),
+                            'active' => $direction === 'outgoing',
+                            'iconHtml' => '<img src="'.e(asset($direction === 'outgoing' ? 'images/figma/inquiries/tab-send-on.svg' : 'images/figma/inquiries/tab-send-off.svg')).'" alt="" width="18" height="18">',
+                        ],
+                        [
+                            'label' => __('inquiries.nav.incoming'),
+                            'url' => route('modules.inquiries.incoming.index', request()->except('page')),
+                            'active' => $direction === 'incoming',
+                            'iconHtml' => '<img src="'.e(asset($direction === 'incoming' ? 'images/figma/inquiries/tab-inbox-on.svg' : 'images/figma/inquiries/tab-inbox-off.svg')).'" alt="" width="18" height="18">',
+                        ],
+                    ],
+                ])
             </div>
-            <div class="d-flex align-items-center gap-3">
-                @if ($direction === 'outgoing' && in_array((int) session('companies_groups_id'), [1, 3], true))
-                    <a href="{{ route('modules.inquiries.outgoing.create') }}" class="btn btn-primary">
-                        <i class="bi bi-plus-lg" aria-hidden="true"></i>
-                        {{ __('inquiries.new_inquiry') }}
-                    </a>
-                @endif
-                <div class="inq-page-hero-art" aria-hidden="true"></div>
-            </div>
-        </section>
+            @if ($canCreateOutgoing)
+                <a href="{{ route('modules.inquiries.outgoing.create') }}" class="fm-btn--cta">
+                    <img src="{{ asset('images/figma/inquiries/plus.svg') }}" alt="" width="18" height="18">
+                    {{ __('inquiries.new_inquiry') }}
+                </a>
+            @endif
+        </div>
 
-        <div class="inq-stat-grid">
+        <div class="fm-stats">
+            @php $statIndex = 0; @endphp
             @foreach (config('hm.inquiries.stat_statuses', []) as $statKey => $statusIds)
                 @php
                     $statQuery = array_merge(
@@ -66,111 +83,85 @@
                     );
                     $isActive = ($filters['stat'] ?? '') === $statKey;
                 @endphp
-                <a
-                    href="{{ $listRoute.'?'.http_build_query($statQuery) }}"
-                    class="inq-stat-card {{ $isActive ? 'is-active' : '' }}"
-                >
-                    <span class="inq-stat-card__label">{{ __('inquiries.stats.'.$statKey) }}</span>
-                    <span class="inq-stat-card__value">{{ number_format($statusCounts[$statKey] ?? 0) }}</span>
-                </a>
+                @include('layouts.partials.figma.stat-status', [
+                    'label' => __('inquiries.stats.'.$statKey),
+                    'value' => number_format($statusCounts[$statKey] ?? 0),
+                    'url' => $listRoute.'?'.http_build_query($statQuery),
+                    'variant' => $statVariants[$statIndex] ?? 'primary',
+                    'isActive' => $isActive,
+                    'iconHtml' => '<img src="'.e($statIcons[$statKey]).'" alt="" width="20" height="20">',
+                ])
+                @php $statIndex++; @endphp
             @endforeach
         </div>
 
-        <div class="inq-filter-panel">
-            <form method="GET" action="{{ $listRoute }}" class="hm-clinician-filter-form">
+        <section class="fm-search" aria-labelledby="inqFiltersTitle">
+            <div class="fm-search__head">
+                <h2 id="inqFiltersTitle">{{ __('inquiries.filters_title') }}</h2>
+            </div>
+            <form method="GET" action="{{ $listRoute }}" class="fm-search__row">
                 @if (($filters['stat'] ?? '') !== '')
                     <input type="hidden" name="stat" value="{{ $filters['stat'] }}">
                 @endif
 
-                <div class="hm-clinician-filter-form__grid inq-filter-grid">
-                    <div class="hm-clinician-filter-field">
-                        <label class="hm-clinician-filter-field__label" for="inqDateFrom">{{ __('inquiries.filters.date_from') }}</label>
-                        <input
-                            type="date"
-                            id="inqDateFrom"
-                            name="date_from"
-                            value="{{ $filters['date_from'] }}"
-                            class="hm-clinician-filter-field__input"
-                        >
-                    </div>
-
-                    <div class="hm-clinician-filter-field">
-                        <label class="hm-clinician-filter-field__label" for="inqDateTo">{{ __('inquiries.filters.date_to') }}</label>
-                        <input
-                            type="date"
-                            id="inqDateTo"
-                            name="date_to"
-                            value="{{ $filters['date_to'] }}"
-                            class="hm-clinician-filter-field__input"
-                        >
-                    </div>
-
-                    <div class="hm-clinician-filter-field">
-                        <label class="hm-clinician-filter-field__label" for="inqStatus">{{ __('inquiries.filters.status') }}</label>
-                        <select id="inqStatus" name="status" class="hm-clinician-filter-field__input">
-                            <option value="">{{ __('inquiries.filters.status_all') }}</option>
-                            <option value="999999" @selected((string) $filters['status'] === '999999')>
-                                {{ __('inquiries.status.new') }}
+                <div class="fm-field">
+                    <label for="inqDateFrom">{{ __('inquiries.filters.date_from') }}</label>
+                    <input class="fm-input" type="date" id="inqDateFrom" name="date_from" value="{{ $filters['date_from'] }}">
+                </div>
+                <div class="fm-field">
+                    <label for="inqDateTo">{{ __('inquiries.filters.date_to') }}</label>
+                    <input class="fm-input" type="date" id="inqDateTo" name="date_to" value="{{ $filters['date_to'] }}">
+                </div>
+                <div class="fm-field">
+                    <label for="inqStatus">{{ __('inquiries.filters.status') }}</label>
+                    <select class="fm-input" id="inqStatus" name="status">
+                        <option value="">{{ __('inquiries.filters.status_all') }}</option>
+                        <option value="999999" @selected((string) $filters['status'] === '999999')>
+                            {{ __('inquiries.status.new') }}
+                        </option>
+                        @foreach ($statusOptions as $statusOption)
+                            <option value="{{ $statusOption->id }}" @selected((string) $filters['status'] === (string) $statusOption->id)>
+                                {{ $statusOption->localizedName() }}
                             </option>
-                            @foreach ($statusOptions as $statusOption)
-                                <option value="{{ $statusOption->id }}" @selected((string) $filters['status'] === (string) $statusOption->id)>
-                                    {{ $statusOption->localizedName() }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
-
-                    <div class="hm-clinician-filter-field">
-                        <label class="hm-clinician-filter-field__label" for="inqDepartment">{{ __('inquiries.filters.department') }}</label>
-                        <select id="inqDepartment" name="department" class="hm-clinician-filter-field__input">
-                            <option value="">{{ __('inquiries.filters.department_all') }}</option>
-                            @foreach ($departmentOptions as $department)
-                                <option value="{{ $department->id }}" @selected((string) $filters['department'] === (string) $department->id)>
-                                    {{ $department->legacyNavName() }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
-
-                    <div class="hm-clinician-filter-field">
-                        <label class="hm-clinician-filter-field__label" for="inqMobile">{{ __('inquiries.filters.mobile') }}</label>
-                        <input
-                            type="text"
-                            id="inqMobile"
-                            name="mobile"
-                            value="{{ $filters['mobile'] }}"
-                            class="hm-clinician-filter-field__input"
-                            maxlength="20"
-                        >
-                    </div>
+                        @endforeach
+                    </select>
                 </div>
-
-                <div class="hm-clinician-filter-form__actions">
-                    <button type="submit" class="btn hm-btn hm-btn--primary hm-inq-btn">
-                        <i class="bi bi-search" aria-hidden="true"></i>
-                        {{ __('inquiries.search') }}
-                    </button>
-                    @if ($hasFilters)
-                        <a href="{{ $listRoute }}" class="btn hm-btn hm-btn--outline hm-inq-btn">
-                            <i class="bi bi-arrow-counterclockwise" aria-hidden="true"></i>
-                            {{ __('inquiries.reset') }}
-                        </a>
-                    @endif
+                <div class="fm-field">
+                    <label for="inqDepartment">{{ __('inquiries.filters.department') }}</label>
+                    <select class="fm-input" id="inqDepartment" name="department">
+                        <option value="">{{ __('inquiries.filters.department_all') }}</option>
+                        @foreach ($departmentOptions as $department)
+                            <option value="{{ $department->id }}" @selected((string) $filters['department'] === (string) $department->id)>
+                                {{ $department->legacyNavName() }}
+                            </option>
+                        @endforeach
+                    </select>
                 </div>
+                <div class="fm-field">
+                    <label for="inqMobile">{{ __('inquiries.filters.mobile') }}</label>
+                    <input class="fm-input" type="text" id="inqMobile" name="mobile" value="{{ $filters['mobile'] }}" maxlength="20">
+                </div>
+                <button type="submit" class="fm-btn--search">{{ __('inquiries.search') }}</button>
+                @if ($hasFilters)
+                    <a href="{{ $listRoute }}" class="fm-btn--reset">
+                        {{ __('inquiries.reset') }}
+                        <img src="{{ asset('images/figma/doctors/reset.svg') }}" alt="" width="18" height="18">
+                    </a>
+                @endif
             </form>
-        </div>
+        </section>
 
-        <div class="inq-list-toolbar">
-            <div class="inq-list-toolbar__summary">
-                {{ __('inquiries.total_records', ['count' => number_format($inquiries->total())]) }}
-            </div>
-        </div>
+        <section class="fm-section">
+            @include('layouts.partials.figma.section-head', [
+                'title' => $crumbCurrent,
+                'countLabel' => __('inquiries.total_records', ['count' => number_format($inquiries->total())]),
+                'iconHtml' => '<img src="'.e(asset('images/figma/inquiries/tab-send-off.svg')).'" alt="" width="18" height="18">',
+            ])
 
-        <div class="inq-table-panel">
-            @if ($inquiries->count() > 0)
-                <div class="hm-inq-table-wrap">
-                    <div class="hm-inq-table-scroll">
-                        <table class="hm-inq-table hm-inq-table--list">
+            <div class="fm-table-wrap">
+                @if ($inquiries->count() > 0)
+                    <div class="fm-table-scroll">
+                        <table class="fm-table">
                             <thead>
                                 <tr>
                                     <th scope="col">{{ __('inquiries.columns.date') }}</th>
@@ -181,8 +172,8 @@
                                     @if ($direction === 'incoming')
                                         <th scope="col">{{ __('inquiries.columns.status') }}</th>
                                     @endif
-                                    <th scope="col" class="hm-inq-table__col-action">{{ __('inquiries.columns.timeline') }}</th>
-                                    <th scope="col" class="hm-inq-table__col-action">{{ __('inquiries.columns.form') }}</th>
+                                    <th scope="col">{{ __('inquiries.columns.timeline') }}</th>
+                                    <th scope="col">{{ __('inquiries.columns.form') }}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -191,33 +182,48 @@
                                         $itemStatusLabel = $inquiryService->statusLabel($item);
                                         $itemStatusColor = $inquiryService->statusColor($item);
                                         $canUpdateStatus = $inquiryService->canUpdateStatus($item);
-                                        $dateParts = explode(' ', $item->formattedDate(), 2);
+                                        $enquirerName = $item->enquirerDisplayName();
+                                        $nameParts = preg_split('/\s+/u', trim($enquirerName)) ?: [];
+                                        $initials = $enquirerName === '—'
+                                            ? '؟'
+                                            : mb_substr($nameParts[0] ?? '', 0, 1).mb_substr($nameParts[1] ?? '', 0, 1);
+                                        $timestamp = (int) $item->date;
+                                        $dateObj = $timestamp > 0
+                                            ? \Carbon\Carbon::createFromTimestamp($timestamp)->locale(app()->getLocale())
+                                            : null;
                                     @endphp
                                     <tr>
-                                        <td class="hm-inq-table__cell hm-inq-table__cell--date">
-                                            <span class="hm-inq-date">
-                                                <span class="hm-inq-date__day">{{ $dateParts[0] ?? '—' }}</span>
-                                                @if (! empty($dateParts[1]))
-                                                    <span class="hm-inq-date__time">{{ $dateParts[1] }}</span>
+                                        <td>
+                                            <span class="fm-date">
+                                                <span class="fm-date__day">{{ $dateObj?->translatedFormat('j F Y') ?? '—' }}</span>
+                                                @if ($dateObj)
+                                                    <span class="fm-date__time">{{ $dateObj->format('H:i:s') }}</span>
                                                 @endif
                                             </span>
                                         </td>
-                                        <td class="hm-inq-table__cell hm-inq-table__cell--name">
-                                            <a href="{{ route('modules.inquiries.show', ['direction' => $direction, 'inquiry' => $item->id]) }}" class="hm-inq-patient">
-                                                {{ $item->enquirerDisplayName() }}
+                                        <td>
+                                            <a
+                                                href="{{ route('modules.inquiries.show', ['direction' => $direction, 'inquiry' => $item->id]) }}"
+                                                class="fm-person"
+                                            >
+                                                <span class="fm-avatar">{{ $initials }}</span>
+                                                <span>{{ $enquirerName }}</span>
                                             </a>
                                         </td>
-                                        <td class="hm-inq-table__cell hm-inq-table__cell--mobile">
-                                            <span class="hm-inq-mobile">{{ $item->mobile ?: '—' }}</span>
+                                        <td>{{ $item->mobile ?: '—' }}</td>
+                                        <td>
+                                            @include('layouts.partials.figma.badge', [
+                                                'label' => $item->inquiredSection?->legacyNavName() ?? '—',
+                                            ])
                                         </td>
-                                        <td class="hm-inq-table__cell hm-inq-table__cell--dept">
-                                            {{ $item->inquiredSection?->legacyNavName() ?? '—' }}
-                                        </td>
-                                        <td class="hm-inq-table__cell hm-inq-table__cell--dept">
-                                            {{ $item->senderBranch?->localizedName() ?? '—' }}
+                                        <td>
+                                            @include('layouts.partials.figma.badge', [
+                                                'label' => $item->senderBranch?->localizedName() ?? '—',
+                                                'tone' => 'muted',
+                                            ])
                                         </td>
                                         @if ($direction === 'incoming')
-                                            <td class="hm-inq-table__cell hm-inq-table__cell--status">
+                                            <td>
                                                 <div class="inq-status-cell">
                                                     <span class="inq-status-pill" style="--inq-status-color: {{ $itemStatusColor }}">
                                                         {{ $itemStatusLabel }}
@@ -229,40 +235,40 @@
                                                             data-inq-status-modal
                                                             data-no-transition="true"
                                                             data-inq-status-url="{{ route('modules.inquiries.status', ['direction' => $direction, 'inquiry' => $item->id]) }}"
-                                                            data-inq-status-subtitle="#{{ $item->id }} — {{ $item->enquirerDisplayName() }}"
+                                                            data-inq-status-subtitle="#{{ $item->id }} — {{ $enquirerName }}"
                                                             title="{{ __('inquiries.add_status') }}"
                                                             aria-label="{{ __('inquiries.add_status') }}"
                                                         >
-                                                            <i class="bi bi-plus-lg" aria-hidden="true"></i>
+                                                            <img src="{{ asset('images/figma/inquiries/stat-new.svg') }}" alt="" width="14" height="14">
                                                         </button>
                                                     @endif
                                                 </div>
                                             </td>
                                         @endif
-                                        <td class="hm-inq-table__col-action">
+                                        <td>
                                             <a
                                                 href="{{ route('modules.inquiries.timeline', ['direction' => $direction, 'inquiry' => $item->id]) }}"
-                                                class="inq-icon-btn"
+                                                class="fm-badge"
                                                 data-inq-timeline-modal
                                                 data-no-transition="true"
                                                 data-inq-timeline-url="{{ route('modules.inquiries.timeline', ['direction' => $direction, 'inquiry' => $item->id]) }}"
-                                                data-inq-timeline-subtitle="#{{ $item->id }} — {{ $item->enquirerDisplayName() }}"
+                                                data-inq-timeline-subtitle="#{{ $item->id }} — {{ $enquirerName }}"
                                                 title="{{ __('inquiries.timeline') }}"
                                                 aria-label="{{ __('inquiries.timeline') }}"
                                             >
-                                                <i class="bi bi-clock-history" aria-hidden="true"></i>
+                                                <img src="{{ asset('images/figma/system/pkg-clock.svg') }}" alt="" width="15" height="15">
                                             </a>
                                         </td>
-                                        <td class="hm-inq-table__col-action">
+                                        <td>
                                             <a
                                                 href="{{ route('modules.inquiries.pdf', ['direction' => $direction, 'inquiry' => $item->id]) }}"
-                                                class="inq-pdf-link"
+                                                class="fm-badge"
                                                 download
                                                 data-no-transition="true"
                                                 title="{{ __('inquiries.view_pdf') }}"
                                                 aria-label="{{ __('inquiries.view_pdf') }}"
                                             >
-                                                <i class="bi bi-file-earmark-pdf" aria-hidden="true"></i>
+                                                <img src="{{ asset('images/figma/inquiries/file.svg') }}" alt="" width="15" height="15">
                                             </a>
                                         </td>
                                     </tr>
@@ -270,18 +276,17 @@
                             </tbody>
                         </table>
                     </div>
-                </div>
 
-                <div class="d-flex justify-content-center inq-pagination">
-                    {{ $inquiries->links('pagination.hm') }}
-                </div>
-            @else
-                <div class="hm-empty-state hm-empty-state--in-card">
-                    <i class="bi bi-chat-left-text" aria-hidden="true"></i>
-                    <p class="mb-0">{{ $hasFilters ? __('inquiries.no_results') : __('inquiries.no_inquiries') }}</p>
-                </div>
-            @endif
-        </div>
+                    @include('layouts.partials.figma.pagination', [
+                        'paginator' => $inquiries,
+                    ])
+                @else
+                    <div class="fm-empty">
+                        <p class="mb-0">{{ $hasFilters ? __('inquiries.no_results') : __('inquiries.no_inquiries') }}</p>
+                    </div>
+                @endif
+            </div>
+        </section>
     </div>
 
     <div class="modal fade inq-timeline-modal" id="inqTimelineModal" tabindex="-1" aria-labelledby="inqTimelineModalLabel" aria-hidden="true">

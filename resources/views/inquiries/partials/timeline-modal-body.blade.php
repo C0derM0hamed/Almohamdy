@@ -3,27 +3,25 @@
 @endphp
 
 <div class="inq-timeline-modal-body hm-inq" data-inquiry-id="{{ $inquiry->id }}">
-    <div class="inq-summary-grid inq-summary-grid--modal" aria-label="{{ __('inquiries.timeline') }}">
-        <article class="inq-summary-card">
-            <small>{{ __('inquiries.form_fields.date') }}</small>
-            <strong>#{{ $inquiry->id }}</strong>
-        </article>
-        <article class="inq-summary-card">
-            <small>{{ __('inquiries.form_fields.enquirer') }}</small>
-            <strong>{{ $inquiry->enquirerDisplayName() }}</strong>
-        </article>
-        <article class="inq-summary-card">
-            <small>{{ __('inquiries.form_fields.status') }}</small>
-            <strong>
-                <span class="inq-status-pill" style="--inq-status-color: {{ $statusColor }};">
-                    {{ $statusLabel }}
+    <div
+        class="inq-summary-grid inq-summary-grid--modal"
+        aria-label="{{ __('inquiries.timeline') }}"
+        dir="{{ app()->getLocale() === 'ar' ? 'rtl' : 'ltr' }}"
+    >
+        @foreach ([
+            ['label' => __('inquiries.inquiry_number'), 'value' => '#'.$inquiry->id, 'hint' => $inquiry->mobile, 'icon' => 'bi-hash', 'tone' => 'primary'],
+            ['label' => __('inquiries.form_fields.enquirer'), 'value' => $inquiry->enquirerDisplayName(), 'hint' => __('inquiries.form_fields.department').': '.($inquiry->inquiredSection?->legacyNavName() ?? '—'), 'icon' => 'bi-person', 'tone' => 'dark'],
+            ['label' => __('inquiries.form_fields.status'), 'value' => $statusLabel, 'hint' => __('inquiries.timeline_subtitle'), 'icon' => 'bi-activity', 'tone' => 'primary'],
+        ] as $summary)
+            <article class="inq-summary-card inq-summary-card--{{ $summary['tone'] }}">
+                <span class="inq-summary-card__icon" aria-hidden="true"><i class="bi {{ $summary['icon'] }}"></i></span>
+                <span class="inq-summary-card__copy">
+                    <small>{{ $summary['label'] }}</small>
+                    <strong>{{ $summary['value'] }}</strong>
+                    <span>{{ $summary['hint'] }}</span>
                 </span>
-            </strong>
-        </article>
-        <article class="inq-summary-card">
-            <small>{{ __('inquiries.form_fields.department') }}</small>
-            <strong>{{ $inquiry->inquiredSection?->legacyNavName() ?? '—' }}</strong>
-        </article>
+            </article>
+        @endforeach
     </div>
 
     @include('inquiries.partials.timeline-horizontal', ['timeline' => $timeline])

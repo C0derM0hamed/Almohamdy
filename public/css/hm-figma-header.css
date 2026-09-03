@@ -1,0 +1,266 @@
+/* Figma header tools — frame 37:12 (file GSqeiriywPn3cbzHr5ivtz). */
+
+/* Brand cluster: logo + mobile sidebar toggle stay together so the toggle is
+   always beside the brand instead of floating alone on the far edge. */
+.hm-navbar-head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 0 0 auto;
+    min-width: 0;
+}
+
+/* Page heads (breadcrumbs) host the mobile toggle in the same leading row. */
+.hm-figma-crumb-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+}
+
+.hm-figma-tools {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+    direction: ltr;
+}
+
+/* The Arabic shell is RTL, but these controls are a physical-left group in
+   the Figma header. Keep them as the trailing flex item so RTL cannot move
+   the group to the title side. */
+.hm-fm .fm-head__row > .hm-figma-tools,
+.hm-dd--figma .dd-figma-head__row > .hm-figma-tools {
+    order: 2;
+    margin-inline: 0;
+    flex: 0 0 auto;
+}
+
+.hm-figma-tools__icon,
+.hm-figma-tools__lang {
+    appearance: none;
+    -webkit-appearance: none;
+    background: #fff;
+    border: 1px solid #e8edf4;
+    border-radius: 12px;
+    color: #64748b;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    margin: 0;
+    box-shadow: none;
+    cursor: pointer;
+    font-family: inherit;
+    line-height: 1;
+}
+
+.hm-figma-tools__icon {
+    width: 40px;
+    height: 40px;
+    position: relative;
+    flex: 0 0 40px;
+}
+
+.hm-figma-tools__icon img,
+.hm-figma-tools__lang img {
+    width: 18px;
+    height: 18px;
+    display: block;
+    object-fit: contain;
+    flex: 0 0 18px;
+}
+
+.hm-figma-tools__lang img:last-child {
+    width: 16px;
+    height: 16px;
+    flex-basis: 16px;
+}
+
+.hm-figma-tools__lang {
+    height: 40px;
+    gap: 8px;
+    padding: 8px 12px;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 20px;
+    color: #64748b;
+    white-space: nowrap;
+    direction: ltr;
+}
+
+.hm-figma-tools__mobile-sidebar {
+    display: none;
+}
+
+.hm-figma-tools__lang span {
+    color: #64748b;
+}
+
+.hm-figma-tools__dot {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    width: 8px;
+    height: 8px;
+    border-radius: 9999px;
+    background: #6366f1;
+    pointer-events: none;
+}
+
+.hm-figma-tools__menu {
+    min-width: 220px;
+    border: 1px solid #e8edf4;
+    border-radius: 12px;
+    padding: 8px 0;
+    box-shadow: 0 8px 24px rgba(23, 24, 39, 0.08);
+    text-align: start;
+}
+
+/* Keep header utility menus readable even when Hope UI's dropdown animation
+   is interrupted during a page transition. */
+.hm-figma-tools .dropdown-menu {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+}
+
+html[dir="rtl"] .hm-figma-tools__menu {
+    direction: rtl;
+    text-align: right;
+}
+
+.hm-figma-tools__menu-title,
+.hm-figma-tools__menu-item,
+.hm-figma-tools__menu-empty {
+    padding: 8px 16px;
+    font-size: 14px;
+}
+
+.hm-figma-tools__menu-title {
+    font-weight: 600;
+    color: #171827;
+}
+
+.hm-figma-tools__menu-empty {
+    color: #64748b;
+}
+
+.hm-figma-tools__menu .dropdown-item.active {
+    background: #eef2ff;
+    color: #6366f1;
+}
+
+/* Doctors page header row — same 124px Figma bar */
+.hm-content-inner:has(.hm-dd--figma) {
+    padding-top: 8px;
+}
+
+.hm-dd--figma .dd-figma-head {
+    width: 100%;
+    padding-block: 16px 8px;
+}
+
+.hm-dd--figma .dd-figma-head__row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    min-height: 124px;
+    width: 100%;
+}
+
+.hm-dd--figma .dd-figma-head__page {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 24px;
+    min-width: 0;
+    flex: 1 1 auto;
+}
+
+.hm-dd--figma .dd-breadcrumb-sep-icon {
+    width: 18px;
+    height: 18px;
+    display: block;
+}
+
+html[dir="ltr"] .hm-dd--figma .dd-breadcrumb-sep-icon {
+    transform: scaleX(-1);
+}
+
+@media (max-width: 1199.98px) {
+    .hm-figma-tools__mobile-sidebar {
+        display: inline-flex;
+    }
+
+    .hm-dd--figma .dd-figma-head__row {
+        flex-wrap: wrap;
+        min-height: 0;
+        align-items: flex-start;
+    }
+
+    .hm-dd--figma .dd-figma-head .hm-figma-tools {
+        margin-inline-start: auto;
+    }
+
+    .hm-dd--figma .dd-figma-head__page {
+        flex: 1 0 100%;
+    }
+}
+
+/* Standalone Figma navbar for other pages */
+body.hm-app-body .hm-hope-banner .iq-navbar.hm-figma-navbar {
+    background: transparent;
+    border: 0;
+    border-block-end: 0;
+    box-shadow: none;
+    min-height: 0;
+    padding: 24px 0 0;
+}
+
+body.hm-app-body .hm-figma-navbar .navbar-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-inline: 0;
+    width: 100%;
+}
+
+body.hm-app-body .hm-figma-navbar .hm-figma-tools {
+    margin-inline-start: auto;
+}
+
+/* In the Arabic shell the tools component itself is LTR, so the logical
+   margin above resolves to the physical left and keeps the group beside the
+   sidebar. Pin it to the physical left edge of the content instead. */
+html[dir="rtl"] body.hm-app-body .hm-figma-navbar .hm-figma-tools {
+    margin-inline-start: 0;
+    margin-left: 0 !important;
+    margin-right: auto !important;
+}
+
+@media (max-width: 575.98px) {
+    body.hm-app-body .hm-figma-navbar .navbar-inner {
+        flex-wrap: wrap;
+        row-gap: 12px;
+    }
+
+    body.hm-app-body .hm-figma-navbar .hm-navbar-head {
+        justify-content: space-between;
+        width: 100%;
+    }
+
+    body.hm-app-body .hm-figma-navbar .hm-figma-tools,
+    html[dir="rtl"] body.hm-app-body .hm-figma-navbar .hm-figma-tools {
+        justify-content: flex-start;
+        margin: 0 !important;
+        width: 100%;
+    }
+}
+
+body.hm-app-body .hm-hope-banner--hidden {
+    display: none;
+}

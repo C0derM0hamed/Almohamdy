@@ -13,6 +13,7 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class InquiryAndServiceRepository
 {
@@ -230,7 +231,7 @@ class InquiryAndServiceRepository
     {
         return Branch::query()
             ->select(['id', 'name_en', 'name_ar'])
-            ->where('publish', 1)
+            ->when(Schema::hasColumn('branches', 'publish'), fn (Builder $query) => $query->where('publish', 1))
             ->orderBy('name_en')
             ->get();
     }

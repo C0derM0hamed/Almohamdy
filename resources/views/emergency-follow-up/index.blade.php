@@ -1,12 +1,14 @@
 @extends('layouts.app')
 
 @section('title', __('emergency_follow_up.title'))
+@section('figma_page_header', 'true')
+@push('workflow_styles')
+    <link href="{{ asset('css/hm-figma-workflows.css') }}?v={{ filemtime(public_path('css/hm-figma-workflows.css')) }}" rel="stylesheet">
+@endpush
 
 @section('content')
-    <div class="d-flex flex-wrap justify-content-between align-items-end gap-3 mb-4">
-        <div><h1 class="h4 mb-1">{{ __('emergency_follow_up.title') }}</h1><p class="text-muted mb-0">{{ __('emergency_follow_up.subtitle') }}</p></div>
-        <a class="btn btn-primary" href="{{ route('modules.emergency-follow-up.create') }}"><i class="bi bi-plus-lg me-1" aria-hidden="true"></i>{{ __('emergency_follow_up.add') }}</a>
-    </div>
+    <div class="hm-fm hm-workflow">
+    @include('layouts.partials.figma-module-header', ['crumbs' => [['label' => __('dashboard.modules')], ['label' => __('emergency_follow_up.title')]], 'title' => __('emergency_follow_up.title'), 'subtitle' => __('emergency_follow_up.subtitle'), 'heroIconSrc' => asset('images/figma/workflows/emergency.svg'), 'heroIconSize' => 32, 'actionUrl' => route('modules.emergency-follow-up.create'), 'actionLabel' => __('emergency_follow_up.add'), 'actionIconSrc' => asset('images/figma/technical-failures/add.svg')])
 
     @if (session('success'))<div class="alert alert-success" role="status">{{ session('success') }}</div>@endif
     <div class="card border-0 shadow-sm">
@@ -18,7 +20,7 @@
                     <tr>
                         <td dir="ltr">{{ date('Y-m-d', (int) $followUp->date) }}</td>
                         <td>{{ $followUp->file_number }}</td>
-                        <td>{{ app()->getLocale() === 'ar' ? $followUp->noticeType?->name_ar : $followUp->noticeType?->name_en }}</td>
+                        <td>{{ \App\Support\LocaleText::localizedValue($followUp->noticeType?->name_ar ?? null, $followUp->noticeType?->name_en ?? null) }}</td>
                         <td>{{ $followUp->description }}</td>
                         <td>{{ $followUp->action }}</td>
                         <td>{{ $followUp->latestNotice?->notice ?: '—' }}</td>
@@ -31,5 +33,6 @@
             </table>
         </div>
         @if ($followUps->hasPages())<div class="card-footer bg-transparent">{{ $followUps->links() }}</div>@endif
+    </div>
     </div>
 @endsection

@@ -23,22 +23,38 @@
             </button>
         </header>
 
-        <div class="cp-timeline-modal__summary">
-            <div class="cp-timeline-summary-card">
-                <span class="cp-timeline-summary-card__label">{{ __('complaints.fields.complaint_no') }}</span>
-                <strong class="cp-timeline-summary-card__value">{{ $displayNumber }}</strong>
+        <div class="cp-timeline-modal__summary hm-detail-stats hm-detail-stats--four">
+            <div class="cp-timeline-summary-card hm-detail-stat hm-detail-stat--primary">
+                <span class="hm-detail-stat__icon" aria-hidden="true"><i class="bi bi-hash"></i></span>
+                <span class="hm-detail-stat__copy">
+                    <span class="cp-timeline-summary-card__label hm-detail-stat__label">{{ __('complaints.fields.complaint_no') }}</span>
+                    <strong class="cp-timeline-summary-card__value hm-detail-stat__value">{{ $displayNumber }}</strong>
+                    <span class="hm-detail-stat__meta">{{ __('complaints.timeline') }}</span>
+                </span>
             </div>
-            <div class="cp-timeline-summary-card">
-                <span class="cp-timeline-summary-card__label">{{ __('complaints.fields.department') }}</span>
-                <strong class="cp-timeline-summary-card__value">{{ $departmentName }}</strong>
+            <div class="cp-timeline-summary-card hm-detail-stat hm-detail-stat--dark">
+                <span class="hm-detail-stat__icon" aria-hidden="true"><i class="bi bi-building"></i></span>
+                <span class="hm-detail-stat__copy">
+                    <span class="cp-timeline-summary-card__label hm-detail-stat__label">{{ __('complaints.fields.department') }}</span>
+                    <strong class="cp-timeline-summary-card__value hm-detail-stat__value">{{ $departmentName }}</strong>
+                    <span class="hm-detail-stat__meta">{{ __('complaints.sections.complaint_info') }}</span>
+                </span>
             </div>
-            <div class="cp-timeline-summary-card">
-                <span class="cp-timeline-summary-card__label">{{ __('complaints.fields.status') }}</span>
-                <strong class="cp-timeline-summary-card__value">{{ $statusLabel }}</strong>
+            <div class="cp-timeline-summary-card hm-detail-stat hm-detail-stat--primary">
+                <span class="hm-detail-stat__icon" aria-hidden="true"><i class="bi bi-activity"></i></span>
+                <span class="hm-detail-stat__copy">
+                    <span class="cp-timeline-summary-card__label hm-detail-stat__label">{{ __('complaints.fields.status') }}</span>
+                    <strong class="cp-timeline-summary-card__value hm-detail-stat__value">{{ $statusLabel }}</strong>
+                    <span class="hm-detail-stat__meta">{{ __('complaints.detail') }}</span>
+                </span>
             </div>
-            <div class="cp-timeline-summary-card">
-                <span class="cp-timeline-summary-card__label">{{ __('complaints.timeline_last_update') }}</span>
-                <strong class="cp-timeline-summary-card__value">{{ $complaint->formattedUpdatedAt() }}</strong>
+            <div class="cp-timeline-summary-card hm-detail-stat hm-detail-stat--dark">
+                <span class="hm-detail-stat__icon" aria-hidden="true"><i class="bi bi-calendar-check"></i></span>
+                <span class="hm-detail-stat__copy">
+                    <span class="cp-timeline-summary-card__label hm-detail-stat__label">{{ __('complaints.timeline_last_update') }}</span>
+                    <strong class="cp-timeline-summary-card__value hm-detail-stat__value">{{ $complaint->formattedUpdatedAt() }}</strong>
+                    <span class="hm-detail-stat__meta">{{ __('complaints.timeline') }}</span>
+                </span>
             </div>
         </div>
 

@@ -101,6 +101,8 @@
         const sortFilter = document.getElementById('specialitySortFilter');
         const availabilityFilter = document.getElementById('specialityAvailabilityFilter');
         const clearButton = document.getElementById('specialityClearFilters');
+        const applyButton = document.getElementById('specialityApplyFilters');
+        const visibleNumber = document.getElementById('specialityVisibleNumber');
 
         if (!grid) {
             return;
@@ -112,7 +114,7 @@
             const query = input ? input.value.trim() : '';
             const sortValue = sortFilter ? sortFilter.value : 'default';
             const availabilityValue = availabilityFilter ? availabilityFilter.value : 'all';
-            let visibleCount = 0;
+            let matchCount = 0;
 
             sortCards(cards, sortValue).forEach(function (card) {
                 grid.appendChild(card);
@@ -133,12 +135,16 @@
                 }
 
                 if (isMatch) {
-                    visibleCount += 1;
+                    matchCount += 1;
                 }
             });
 
             if (emptyState) {
-                emptyState.hidden = visibleCount !== 0;
+                emptyState.hidden = matchCount !== 0;
+            }
+
+            if (visibleNumber) {
+                visibleNumber.textContent = String(matchCount);
             }
         }
 
@@ -173,6 +179,10 @@
 
         if (clearButton) {
             clearButton.addEventListener('click', clearFilters);
+        }
+
+        if (applyButton) {
+            applyButton.addEventListener('click', applyFilter);
         }
     }
 

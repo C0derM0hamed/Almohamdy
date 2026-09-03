@@ -1,5 +1,31 @@
 @extends('layouts.app')
-@section('title', __('transferal.title'))
+@php($homeTitle = app()->getLocale() === 'ar' ? 'تحويل واستقبال الحالات' : 'Transfer and Receive Cases')
+@php($homeScope = app()->getLocale() === 'ar' ? 'إدارة وتنظيم عمليات تحويل الحالات واستقبالها بين المنشآت الصحية.' : 'Manage and organize case transfers and reception between healthcare facilities.')
+@section('title', $homeTitle)
+@section('figma_page_header', 'true')
+@push('workflow_styles')
+    <link href="{{ asset('css/hm-transferal-home.css') }}?v={{ filemtime(public_path('css/hm-transferal-home.css')) }}" rel="stylesheet">
+@endpush
 @section('content')
-<div class="row g-3 justify-content-center"><div class="col-md-5"><a class="text-decoration-none" href="{{ route('modules.transferal.outgoing') }}"><div class="card border-0 shadow-sm h-100"><div class="card-body text-center p-5"><i class="bi bi-box-arrow-up fs-1 text-primary"></i><h1 class="h5 mt-3">{{ __('transferal.outgoing') }}</h1></div></div></a></div><div class="col-md-5"><a class="text-decoration-none" href="{{ route('modules.transferal.incoming') }}"><div class="card border-0 shadow-sm h-100"><div class="card-body text-center p-5"><i class="bi bi-box-arrow-in-down fs-1 text-secondary"></i><h1 class="h5 mt-3">{{ __('transferal.incoming') }}</h1></div></div></a></div></div>
+<div class="hm-fm hm-transferal-home">
+    @include('layouts.partials.figma-module-header', [
+        'crumbs' => [['label' => __('dashboard.modules')], ['label' => $homeTitle]],
+        'title' => $homeTitle,
+        'subtitle' => $homeScope,
+        'heroIcon' => 'bi-arrow-left-right',
+        'actionUrl' => route('modules.emergency-follow-up.create'),
+        'actionLabel' => __('emergency_follow_up.add'),
+        'actionIcon' => 'bi-plus-lg',
+    ])
+    <section class="transferal-choice-grid" aria-label="{{ $homeTitle }}">
+        <a class="transferal-choice" href="{{ route('modules.transferal.outgoing') }}">
+            <span class="transferal-choice__icon" aria-hidden="true"><i class="bi bi-file-earmark-arrow-up transferal-choice__icon--outgoing"></i></span>
+            <strong>{{ __('transferal.outgoing') }}</strong>
+        </a>
+        <a class="transferal-choice" href="{{ route('modules.transferal.incoming') }}">
+            <span class="transferal-choice__icon" aria-hidden="true"><i class="bi bi-inbox"></i></span>
+            <strong>{{ __('transferal.incoming') }}</strong>
+        </a>
+    </section>
+</div>
 @endsection

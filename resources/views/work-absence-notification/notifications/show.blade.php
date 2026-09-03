@@ -3,6 +3,7 @@
 @push('styles')
     <link href="{{ asset('css/hm-services-redesign.css') }}?v={{ filemtime(public_path('css/hm-services-redesign.css')) }}" rel="stylesheet">
     <link href="{{ asset('css/hm-work-absence-notification.css') }}?v={{ filemtime(public_path('css/hm-work-absence-notification.css')) }}" rel="stylesheet">
+    <link href="{{ asset('css/hm-detail-stat-cards.css') }}?v={{ filemtime(public_path('css/hm-detail-stat-cards.css')) }}" rel="stylesheet">
 @endpush
 
 @section('title', __('work_absence_notification.notification_details'))
@@ -61,22 +62,38 @@
             <div class="wan-detail-head__art" aria-hidden="true"></div>
         </header>
 
-        <div class="wan-summary-grid" aria-label="{{ __('work_absence_notification.notification_details') }}">
-            <article class="wan-summary-card">
-                <small>{{ __('work_absence_notification.fields.notification_type') }}</small>
-                <strong>{{ $notification->notificationTypeLabel() }}</strong>
+        <div class="wan-summary-grid hm-detail-stats hm-detail-stats--four" aria-label="{{ __('work_absence_notification.notification_details') }}">
+            <article class="wan-summary-card hm-detail-stat hm-detail-stat--primary">
+                <span class="hm-detail-stat__icon" aria-hidden="true"><i class="bi bi-file-earmark-medical"></i></span>
+                <span class="hm-detail-stat__copy">
+                    <small class="hm-detail-stat__label">{{ __('work_absence_notification.fields.notification_type') }}</small>
+                    <strong class="hm-detail-stat__value">{{ $notification->notificationTypeLabel() }}</strong>
+                    <span class="hm-detail-stat__meta">#{{ $notification->id }}</span>
+                </span>
             </article>
-            <article class="wan-summary-card">
-                <small>{{ __('work_absence_notification.summary.period') }}</small>
-                <strong>{{ $notification->formattedBeginDate() }} → {{ $notification->formattedEndDate() }}</strong>
+            <article class="wan-summary-card hm-detail-stat hm-detail-stat--dark">
+                <span class="hm-detail-stat__icon" aria-hidden="true"><i class="bi bi-calendar-range"></i></span>
+                <span class="hm-detail-stat__copy">
+                    <small class="hm-detail-stat__label">{{ __('work_absence_notification.summary.period') }}</small>
+                    <strong class="hm-detail-stat__value">{{ $notification->formattedBeginDate() }} → {{ $notification->formattedEndDate() }}</strong>
+                    <span class="hm-detail-stat__meta">{{ $notification->workflowStatusLabel() }}</span>
+                </span>
             </article>
-            <article class="wan-summary-card">
-                <small>{{ __('work_absence_notification.fields.absence_days') }}</small>
-                <strong>{{ $notification->absence_days ?? '—' }}</strong>
+            <article class="wan-summary-card hm-detail-stat hm-detail-stat--primary">
+                <span class="hm-detail-stat__icon" aria-hidden="true"><i class="bi bi-clock-history"></i></span>
+                <span class="hm-detail-stat__copy">
+                    <small class="hm-detail-stat__label">{{ __('work_absence_notification.fields.absence_days') }}</small>
+                    <strong class="hm-detail-stat__value">{{ $notification->absence_days ?? '—' }}</strong>
+                    <span class="hm-detail-stat__meta">{{ __('work_absence_notification.notification_details') }}</span>
+                </span>
             </article>
-            <article class="wan-summary-card">
-                <small>{{ __('work_absence_notification.fields.created_date') }}</small>
-                <strong>{{ $notification->formattedCreatedDate() }}</strong>
+            <article class="wan-summary-card hm-detail-stat hm-detail-stat--dark">
+                <span class="hm-detail-stat__icon" aria-hidden="true"><i class="bi bi-calendar-check"></i></span>
+                <span class="hm-detail-stat__copy">
+                    <small class="hm-detail-stat__label">{{ __('work_absence_notification.fields.created_date') }}</small>
+                    <strong class="hm-detail-stat__value">{{ $notification->formattedCreatedDate() }}</strong>
+                    <span class="hm-detail-stat__meta">{{ $employeeName }}</span>
+                </span>
             </article>
         </div>
 

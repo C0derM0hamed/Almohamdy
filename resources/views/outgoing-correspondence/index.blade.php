@@ -3,6 +3,7 @@
 @section('title', __('outgoing_correspondence.list'))
 @section('sidebar_heading', __('outgoing_correspondence.title'))
 @section('sidebar_subheading', __('outgoing_correspondence.subtitle'))
+@section('figma_page_header', true)
 
 @push('styles')
     <link href="{{ asset('css/hm-government-circulars.css') }}?v={{ filemtime(public_path('css/hm-government-circulars.css')) }}" rel="stylesheet">
@@ -11,22 +12,27 @@
 
 @section('content')
     @php $isRtl = app()->getLocale() === 'ar'; @endphp
-    <div class="hm-gc hm-iv {{ $isRtl ? 'hm-gc--rtl' : 'hm-gc--ltr' }}" data-gc-rtl="{{ $isRtl ? '1' : '0' }}">
-        <nav class="gc-breadcrumb" aria-label="breadcrumb">
-            <a href="{{ route($homeRoute) }}">{{ __('dashboard.title') }}</a>
-            <span>/</span>
-            <span>{{ __('corporate_communication.title') }}</span>
-            <span>/</span>
-            <span class="is-chip">{{ __('outgoing_correspondence.list') }}</span>
-        </nav>
+    <div class="hm-fm hm-gc hm-iv hm-corporate-list {{ $isRtl ? 'hm-gc--rtl' : 'hm-gc--ltr' }}" data-gc-rtl="{{ $isRtl ? '1' : '0' }}">
+        @include('layouts.partials.figma-module-header', [
+            'compact' => true,
+            'title' => __('outgoing_correspondence.list'),
+            'crumbs' => [
+                ['label' => __('dashboard.modules')],
+                ['label' => __('dashboard.nav.corporate_communication')],
+                ['label' => __('outgoing_correspondence.list')],
+            ],
+        ])
 
-        <div class="gc-page-head">
-            <div>
-                <h1>{{ __('outgoing_correspondence.list') }}</h1>
-                <p>{{ __('outgoing_correspondence.list_subtitle') }}</p>
+        <div class="fm-hero fm-hero--split fm-inq-toolbar">
+            <div class="cc-hero__main">
+                <span class="cc-hero__icon" aria-hidden="true"><i class="bi bi-send"></i></span>
+                <div class="fm-hero__copy">
+                    <h1>{{ __('outgoing_correspondence.list') }}</h1>
+                    <p>{{ __('outgoing_correspondence.list_subtitle') }}</p>
+                </div>
             </div>
-            <a href="{{ route('modules.outgoing-correspondence.create') }}" class="btn btn-primary">
-                <i class="bi bi-plus-lg me-1" aria-hidden="true"></i>
+            <a href="{{ route('modules.outgoing-correspondence.create') }}" class="fm-btn--cta">
+                <img src="{{ asset('images/figma/inquiries/plus.svg') }}" alt="" width="18" height="18">
                 {{ __('outgoing_correspondence.create') }}
             </a>
         </div>
@@ -144,6 +150,7 @@
             </form>
 
             <div class="gc-table-wrap">
+                @include('layouts.partials.corporate-list-head', ['title' => __('outgoing_correspondence.list'), 'count' => $items->total(), 'countLabel' => __('outgoing_correspondence.counters.title')])
                 @if ($items->isEmpty())
                     <div class="gc-empty">
                         {{ $hasFilters ? __('outgoing_correspondence.table.empty_filtered') : __('outgoing_correspondence.table.empty') }}

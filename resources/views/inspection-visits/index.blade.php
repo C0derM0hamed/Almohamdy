@@ -3,6 +3,7 @@
 @section('title', __('inspection_visits.list'))
 @section('sidebar_heading', __('inspection_visits.title'))
 @section('sidebar_subheading', __('inspection_visits.subtitle'))
+@section('figma_page_header', true)
 
 @push('styles')
     <link href="{{ asset('css/hm-government-circulars.css') }}?v={{ filemtime(public_path('css/hm-government-circulars.css')) }}" rel="stylesheet">
@@ -11,22 +12,27 @@
 
 @section('content')
     @php $isRtl = app()->getLocale() === 'ar'; @endphp
-    <div class="hm-gc hm-iv {{ $isRtl ? 'hm-gc--rtl' : 'hm-gc--ltr' }}" data-gc-rtl="{{ $isRtl ? '1' : '0' }}">
-        <nav class="gc-breadcrumb" aria-label="breadcrumb">
-            <a href="{{ route($homeRoute) }}">{{ __('dashboard.title') }}</a>
-            <span>/</span>
-            <span>{{ __('corporate_communication.title') }}</span>
-            <span>/</span>
-            <span class="is-chip">{{ __('inspection_visits.list') }}</span>
-        </nav>
+    <div class="hm-fm hm-gc hm-iv hm-corporate-list {{ $isRtl ? 'hm-gc--rtl' : 'hm-gc--ltr' }}" data-gc-rtl="{{ $isRtl ? '1' : '0' }}">
+        @include('layouts.partials.figma-module-header', [
+            'compact' => true,
+            'title' => __('inspection_visits.list'),
+            'crumbs' => [
+                ['label' => __('dashboard.modules')],
+                ['label' => __('dashboard.nav.corporate_communication')],
+                ['label' => __('inspection_visits.list')],
+            ],
+        ])
 
-        <div class="gc-page-head">
-            <div>
-                <h1>{{ __('inspection_visits.list') }}</h1>
-                <p>{{ __('inspection_visits.list_subtitle') }}</p>
+        <div class="fm-hero fm-hero--split fm-inq-toolbar">
+            <div class="cc-hero__main">
+                <span class="cc-hero__icon" aria-hidden="true"><i class="bi bi-briefcase"></i></span>
+                <div class="fm-hero__copy">
+                    <h1>{{ __('inspection_visits.list') }}</h1>
+                    <p>{{ __('inspection_visits.list_subtitle') }}</p>
+                </div>
             </div>
-            <a href="{{ route('modules.inspection-visits.create') }}" class="btn btn-primary">
-                <i class="bi bi-plus-lg me-1" aria-hidden="true"></i>
+            <a href="{{ route('modules.inspection-visits.create') }}" class="fm-btn--cta">
+                <img src="{{ asset('images/figma/inquiries/plus.svg') }}" alt="" width="18" height="18">
                 {{ __('inspection_visits.create') }}
             </a>
         </div>
@@ -148,6 +154,7 @@
             </form>
 
             <div class="gc-table-wrap">
+                @include('layouts.partials.corporate-list-head', ['title' => __('inspection_visits.list'), 'count' => $visits->total(), 'countLabel' => __('inspection_visits.counters.title')])
                 @if ($visits->isEmpty())
                     <div class="gc-empty">
                         {{ $hasFilters ? __('inspection_visits.table.empty_filtered') : __('inspection_visits.table.empty') }}
@@ -225,6 +232,10 @@
                                                 <a class="gc-actions__item" role="menuitem" href="{{ route('modules.inspection-visits.receipt', $visit->id) }}">
                                                     <i class="bi bi-clipboard-check" aria-hidden="true"></i>
                                                     <span>{{ __('inspection_visits.actions.receipt') }}</span>
+                                                </a>
+                                                <a class="gc-actions__item" role="menuitem" href="{{ route('modules.inspection-visits.pdf', $visit->id) }}">
+                                                    <i class="bi bi-file-earmark-pdf" aria-hidden="true"></i>
+                                                    <span>PDF</span>
                                                 </a>
                                                 <a class="gc-actions__item" role="menuitem" href="{{ route('modules.inspection-visits.show', $visit->id) }}#status-update">
                                                     <i class="bi bi-arrow-repeat" aria-hidden="true"></i>

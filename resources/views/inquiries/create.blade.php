@@ -3,6 +3,7 @@
 @section('title', __('inquiries.create_title'))
 @section('sidebar_heading', __('inquiries.title'))
 @section('sidebar_subheading', __('inquiries.subtitle'))
+@section('figma_page_header', 'true')
 
 @push('styles')
     <link href="{{ asset('css/hm-government-circulars.css') }}?v={{ filemtime(public_path('css/hm-government-circulars.css')) }}" rel="stylesheet">
@@ -10,17 +11,25 @@
 @endpush
 
 @section('content')
-    <div class="hm-gc hm-inq">
-        <nav class="gc-breadcrumb" aria-label="breadcrumb">
-            <a href="{{ route($homeRoute) }}">{{ __('dashboard.title') }}</a>
-            <span>/</span>
-            <a href="{{ route('modules.inquiries.outgoing.index') }}">{{ __('inquiries.outgoing') }}</a>
-            <span>/</span>
-            <span class="is-chip">{{ __('inquiries.create_title') }}</span>
-        </nav>
+    <div class="hm-fm hm-gc hm-inq hm-inq-create">
+        @include('layouts.partials.figma-module-header', [
+            'compact' => true,
+            'crumbs' => [
+                ['label' => __('inquiries.outgoing'), 'url' => route('modules.inquiries.outgoing.index')],
+                ['label' => __('inquiries.create_title')],
+            ],
+            'title' => __('inquiries.create_title'),
+            'subtitle' => '',
+        ])
 
-        <div class="gc-page-head">
-            <div><h1>{{ __('inquiries.create_title') }}</h1><p>{{ __('inquiries.create_subtitle') }}</p></div>
+        <div class="inq-create-hero">
+            <span class="inq-create-hero__icon" aria-hidden="true">
+                <img src="{{ asset('images/figma/inquiries/create.svg') }}" alt="" width="32" height="32">
+            </span>
+            <div>
+                <h1>{{ __('inquiries.create_title') }}</h1>
+                <p>{{ __('inquiries.create_subtitle') }}</p>
+            </div>
         </div>
 
         <section class="gc-panel">
@@ -34,7 +43,7 @@
                     </div>
                     <div class="gc-field">
                         <label for="mobile">{{ __('inquiries.form_fields.mobile') }}</label>
-                        <input id="mobile" name="mobile" value="{{ old('mobile') }}" inputmode="numeric" maxlength="10" class="form-control @error('mobile') is-invalid @enderror" required>
+                        <input id="mobile" name="mobile" value="{{ old('mobile') }}" type="tel" inputmode="numeric" maxlength="10" pattern="05[0-9]{8}" autocomplete="tel" class="form-control @error('mobile') is-invalid @enderror" required>
                         @error('mobile') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
                     </div>
                     <div class="gc-field">
@@ -74,9 +83,9 @@
                         @error('inquiry_details') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
                     </div>
                 </div>
-                <div class="d-flex flex-wrap gap-2 mt-4">
-                    <button class="btn btn-primary" type="submit">{{ __('inquiries.save') }}</button>
+                <div class="inq-create-actions">
                     <a class="btn btn-outline-secondary" href="{{ route('modules.inquiries.outgoing.index') }}">{{ __('inquiries.cancel') }}</a>
+                    <button class="btn btn-primary" type="submit">{{ __('inquiries.save') }}</button>
                 </div>
             </form>
         </section>

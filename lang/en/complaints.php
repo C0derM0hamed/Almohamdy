@@ -6,7 +6,7 @@ return [
     'subtitle' => 'Overview of complaints and follow-up workflows.',
     'dashboard' => 'Complaints dashboard',
     'dashboard_subtitle' => 'Overview of complaint status and quick access to the list.',
-    'filters_title' => 'Filter complaints',
+    'filters_title' => 'Search and filter',
     'list' => 'Complaints list',
     'list_subtitle' => 'Search and filter complaints by file number or status.',
     'detail' => 'Complaint details',
@@ -23,6 +23,13 @@ return [
     'view_timeline' => 'View timeline',
     'search' => 'Search',
     'reset' => 'Reset',
+    'sort' => 'Sort',
+    'refresh' => 'Refresh',
+    'export' => 'Export',
+    'columns_settings' => 'Column settings',
+    'table_tools' => 'Complaint table tools',
+    'complaints_count' => ':count complaints',
+    'results_summary' => 'Showing :shown of :total complaints',
     'no_complaints' => 'No complaints found.',
     'no_results' => 'No complaints match your filters.',
     'no_timeline' => 'No timeline events recorded for this complaint.',
@@ -56,7 +63,9 @@ return [
 
     'filters' => [
         'search' => 'File or complaint number',
+        'search_placeholder' => 'Enter file or complaint number',
         'status' => 'Status',
+        'all_statuses' => 'All statuses',
     ],
 
     'columns' => [

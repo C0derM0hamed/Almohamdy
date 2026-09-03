@@ -2,91 +2,105 @@
 @section('title', __('medical_appointments.details'))
 @section('sidebar_heading', __('medical_appointments.title'))
 @section('sidebar_subheading', __('medical_appointments.subtitle'))
+@push('styles')
+    <link href="{{ asset('css/hm-doctors-redesign.css') }}?v={{ filemtime(public_path('css/hm-doctors-redesign.css')) }}" rel="stylesheet">
+    <link href="{{ asset('css/hm-doctors-directory.css') }}?v={{ filemtime(public_path('css/hm-doctors-directory.css')) }}" rel="stylesheet">
+    <link href="{{ asset('css/hm-medical-appointments.css') }}?v={{ filemtime(public_path('css/hm-medical-appointments.css')) }}" rel="stylesheet">
+@endpush
 @section('content')
-<div class="hm-module-page">
+<div class="hm-dd hm-dd--medical-appointments hm-medical-appointments hm-ma-detail">
     @if(session('success'))
         <div class="alert alert-success">{{ session('success') }}</div>
     @endif
 
-    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
-        <div>
-            <h1 class="h3 mb-1">{{ __('medical_appointments.details') }} #{{ $appointment->id }}</h1>
-            <span class="badge bg-primary">{{ $appointment->statusRecord?->localizedName() }}</span>
-        </div>
-        <a class="btn btn-outline-secondary" href="{{ route($routes['index']) }}">{{ __('medical_appointments.back') }}</a>
-    </div>
+    <nav aria-label="{{ __('breadcrumbs.aria_label') }}" class="dd-breadcrumb dd-breadcrumb--bar">
+        <a href="{{ route('dashboard') }}">{{ __('dashboard.title') }}</a>
+        <span class="dd-breadcrumb-sep" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="m9 18 6-6-6-6"/></svg></span>
+        <a href="{{ route($routes['index']) }}">{{ __('medical_appointments.title') }}</a>
+        <span class="dd-breadcrumb-sep" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="m9 18 6-6-6-6"/></svg></span>
+        <span class="dd-chip">{{ __('medical_appointments.details') }} #{{ $appointment->id }}</span>
+    </nav>
 
-    <div class="row g-4">
-        <div class="col-lg-7">
-            <div class="card h-100">
-                <div class="card-body">
-                    <dl class="row mb-0">
-                        <dt class="col-sm-4">{{ __('medical_appointments.patient_name') }}</dt>
-                        <dd class="col-sm-8">{{ $appointment->localizedPatientName() }}</dd>
-                        <dt class="col-sm-4">{{ __('medical_appointments.file_number') }}</dt>
-                        <dd class="col-sm-8">{{ $appointment->file_number }}</dd>
-                        <dt class="col-sm-4">{{ __('medical_appointments.doctor') }}</dt>
-                        <dd class="col-sm-8">{{ $appointment->physicianRecord?->localizedDisplayName() }}</dd>
-                        <dt class="col-sm-4">{{ __('medical_appointments.department') }}</dt>
-                        <dd class="col-sm-8">{{ $appointment->departmentRecord?->localizedName() }}</dd>
-                        <dt class="col-sm-4">{{ __('medical_appointments.procedure_place') }}</dt>
-                        <dd class="col-sm-8">{{ $appointment->procedurePlaceRecord?->localizedName() }}</dd>
-                        <dt class="col-sm-4">{{ __('medical_appointments.coverage_status') }}</dt>
-                        <dd class="col-sm-8">{{ $appointment->coverageStatusRecord?->localizedName() }}</dd>
-                        <dt class="col-sm-4">{{ __('medical_appointments.procedure_type') }}</dt>
-                        <dd class="col-sm-8">{{ $appointment->localizedProcedureType() }}</dd>
-                        <dt class="col-sm-4">{{ __('medical_appointments.procedure_duration') }}</dt>
-                        <dd class="col-sm-8">{{ $appointment->localizedProcedureDuration() }}</dd>
-                        <dt class="col-sm-4">{{ __('medical_appointments.status') }}</dt>
-                        <dd class="col-sm-8">{{ $appointment->statusRecord?->localizedName() }}</dd>
-                    </dl>
-                </div>
+    <section class="dd-hero hm-ma-hero">
+        <div class="dd-hero-info">
+            <div class="dd-hero-icon" aria-hidden="true"><i class="bi bi-calendar2-check"></i></div>
+            <div>
+                <h1>{{ __('medical_appointments.details') }} #{{ $appointment->id }}</h1>
+                <p>{{ $appointment->statusRecord?->localizedName() ?? '—' }}</p>
             </div>
         </div>
-        <div class="col-lg-5">
-            <div class="card h-100">
-                <div class="card-header"><h2 class="h5 mb-0">{{ __('medical_appointments.update_status') }}</h2></div>
-                <div class="card-body">
-                    <form method="POST" action="{{ route($routes['status'], $appointment->id) }}">
-                        @csrf
-                        <label class="form-label">{{ __('medical_appointments.status') }}</label>
-                        <select class="form-select mb-3 medical-status" data-target="detail" name="status_id" id="medicalStatus" required>
+        <a class="dd-btn dd-btn-outline" href="{{ route($routes['index']) }}"><i class="bi bi-arrow-right"></i> {{ __('medical_appointments.back') }}</a>
+    </section>
+
+    <div class="hm-ma-detail-grid">
+        <section class="dd-doctor-card hm-ma-info-card">
+            <div class="dd-section-head">
+                <div class="dd-section-icon" aria-hidden="true"><i class="bi bi-person-vcard"></i></div>
+                <h2>{{ __('medical_appointments.details') }}</h2>
+            </div>
+            <dl class="hm-ma-detail-list">
+                <div><dt>{{ __('medical_appointments.patient_name') }}</dt><dd>{{ $appointment->localizedPatientName() }}</dd></div>
+                <div><dt>{{ __('medical_appointments.file_number') }}</dt><dd>{{ $appointment->file_number ?: '—' }}</dd></div>
+                <div><dt>{{ __('medical_appointments.doctor') }}</dt><dd>{{ $appointment->physicianRecord?->localizedDisplayName() ?? '—' }}</dd></div>
+                <div><dt>{{ __('medical_appointments.department') }}</dt><dd>{{ $appointment->departmentRecord?->localizedName() ?? '—' }}</dd></div>
+                <div><dt>{{ __('medical_appointments.procedure_place') }}</dt><dd>{{ $appointment->procedurePlaceRecord?->localizedName() ?? '—' }}</dd></div>
+                <div><dt>{{ __('medical_appointments.coverage_status') }}</dt><dd>{{ $appointment->coverageStatusRecord?->localizedName() ?? '—' }}</dd></div>
+                <div><dt>{{ __('medical_appointments.procedure_type') }}</dt><dd>{{ $appointment->localizedProcedureType() ?: '—' }}</dd></div>
+                <div><dt>{{ __('medical_appointments.procedure_duration') }}</dt><dd>{{ $appointment->localizedProcedureDuration() ?: '—' }}</dd></div>
+                <div><dt>{{ __('medical_appointments.status') }}</dt><dd><span class="badge">{{ $appointment->statusRecord?->localizedName() ?? '—' }}</span></dd></div>
+            </dl>
+        </section>
+
+        <section class="dd-doctor-card hm-ma-action-card">
+            <div class="dd-section-head">
+                <div class="dd-section-icon" aria-hidden="true"><i class="bi bi-arrow-repeat"></i></div>
+                <h2>{{ __('medical_appointments.update_status') }}</h2>
+            </div>
+            <div class="hm-ma-action-body">
+                <form method="POST" action="{{ route($routes['status'], $appointment->id) }}">
+                    @csrf
+                    <div class="dd-form-field">
+                        <label class="dd-red" for="medicalStatus">{{ __('medical_appointments.status') }}</label>
+                        <select class="dd-form-select medical-status" data-target="detail" name="status_id" id="medicalStatus" required>
                             <option value="">—</option>
                             @foreach($statusOptions as $status)
                                 <option value="{{ $status->id }}">{{ $status->localizedName() }}</option>
                             @endforeach
                         </select>
-                        <div id="detailDate" hidden>
-                            <label class="form-label">{{ __('medical_appointments.choose_date') }}</label>
-                            <input type="datetime-local" name="date" class="form-control mb-3">
-                        </div>
-                        <div id="detailReason" hidden>
-                            <label class="form-label">{{ __('medical_appointments.reason') }}</label>
-                            <input type="text" name="cleint_cancel_reason" class="form-control mb-3" maxlength="200">
-                        </div>
-                        <button class="btn btn-primary">{{ __('medical_appointments.save') }}</button>
-                    </form>
-                </div>
+                    </div>
+                    <div id="detailDate" class="dd-form-field" hidden>
+                        <label class="dd-red" for="detailDateInput">{{ __('medical_appointments.choose_date') }}</label>
+                        <input id="detailDateInput" type="datetime-local" name="date" class="dd-input">
+                    </div>
+                    <div id="detailReason" class="dd-form-field" hidden>
+                        <label class="dd-red" for="detailReasonInput">{{ __('medical_appointments.reason') }}</label>
+                        <input id="detailReasonInput" type="text" name="cleint_cancel_reason" class="dd-input" maxlength="200">
+                    </div>
+                    <button class="dd-btn dd-btn-primary" type="submit">{{ __('medical_appointments.save') }}</button>
+                </form>
             </div>
-        </div>
+        </section>
     </div>
 
-    <div class="card mt-4">
-        <div class="card-header"><h2 class="h5 mb-0">{{ __('medical_appointments.documents') }}</h2></div>
-        <div class="card-body d-flex flex-wrap gap-2">
-            <a class="btn btn-outline-dark" target="_blank" href="{{ route($routes['document'], [$appointment->id, 'request']) }}">{{ __('medical_appointments.request_pdf') }}</a>
+    <section class="dd-doctor-card hm-ma-documents-card">
+        <div class="dd-section-head">
+            <div class="dd-section-icon" aria-hidden="true"><i class="bi bi-folder2-open"></i></div>
+            <h2>{{ __('medical_appointments.documents') }}</h2>
+        </div>
+        <div class="hm-ma-document-actions">
+            <a class="dd-btn dd-btn-outline" target="_blank" href="{{ route($routes['document'], [$appointment->id, 'request']) }}">{{ __('medical_appointments.request_pdf') }}</a>
             @if($appointment->patient_confirm_date)
-                <a class="btn btn-outline-dark" target="_blank" href="{{ route($routes['document'], [$appointment->id, 'patient-accepted']) }}">{{ __('medical_appointments.patient_accept_pdf') }}</a>
+                <a class="dd-btn dd-btn-outline" target="_blank" href="{{ route($routes['document'], [$appointment->id, 'patient-accepted']) }}">{{ __('medical_appointments.patient_accept_pdf') }}</a>
             @endif
             @if($appointment->patient_confirm_date_notice)
-                <a class="btn btn-outline-dark" target="_blank" href="{{ route($routes['document'], [$appointment->id, 'patient-rejected']) }}">{{ __('medical_appointments.patient_reject_pdf') }}</a>
+                <a class="dd-btn dd-btn-outline" target="_blank" href="{{ route($routes['document'], [$appointment->id, 'patient-rejected']) }}">{{ __('medical_appointments.patient_reject_pdf') }}</a>
             @endif
             @if((int) $appointment->doctor_action > 0)
-                <a class="btn btn-outline-dark" target="_blank" href="{{ route($routes['document'], [$appointment->id, 'doctor-reply']) }}">{{ __('medical_appointments.doctor_reply_pdf') }}</a>
+                <a class="dd-btn dd-btn-outline" target="_blank" href="{{ route($routes['document'], [$appointment->id, 'doctor-reply']) }}">{{ __('medical_appointments.doctor_reply_pdf') }}</a>
             @endif
-            <a class="btn btn-outline-primary" href="{{ route($routes['timeline'], $appointment->id) }}">{{ __('medical_appointments.timeline') }}</a>
+            <a class="dd-btn dd-btn-primary" href="{{ route($routes['timeline'], $appointment->id) }}">{{ __('medical_appointments.timeline') }}</a>
         </div>
-    </div>
+    </section>
 </div>
 @endsection
 

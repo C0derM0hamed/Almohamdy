@@ -64,7 +64,7 @@ class NotificationController extends Controller
             $request->notificationTypeId(),
             $request->employeeSearch(),
             $request->workflowStatus(),
-            $request->format(),
+            $request->exportFormat(),
         );
     }
 

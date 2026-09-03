@@ -8,7 +8,7 @@ return [
     'employee_number' => 'Employee number', 'actions' => 'Actions', 'details' => 'Training details', 'empty' => 'No matching records.',
     'coordinator' => 'Training coordinator', 'begin_date' => 'Training start', 'end_date' => 'Training end', 'days' => 'Days',
     'hours' => 'Training hours', 'time_from' => 'Time from', 'time_to' => 'Time to', 'save' => 'Save', 'back' => 'Back',
-    'branch' => 'Branch', 'schedule' => 'Schedule', 'day' => 'days', 'hour_daily' => 'hours daily', 'update_status' => 'Update status',
+    'branch' => 'Branch', 'schedule' => 'Schedule', 'day' => 'days', 'hour_daily' => 'hours daily', 'employee_info' => 'Employee information', 'update_status' => 'Update status',
     'reason' => 'Reason', 'manager_ack' => 'I confirm that I tested the employee and verified their understanding of the work requirements, procedures, policies and systems.',
     'documents' => 'Training file', 'plan_pdf' => 'Training plan', 'signed_pdf' => 'Signed training declaration',
     'document_coordinator-passed' => 'Coordinator evaluation — passed', 'document_coordinator-failed' => 'Coordinator evaluation — failed',

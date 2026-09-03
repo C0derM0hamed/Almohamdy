@@ -35,7 +35,10 @@
                     {{ __('inspection_visits.actions.receipt') }}
                     <span class="badge text-bg-light ms-1">{{ $recipientsCount }}</span>
                 </a>
-                @if ((int) $visit->status === 1 || (int) $visit->status === 7)
+                <a href="{{ route('modules.inspection-visits.pdf', $visit->id) }}" class="btn btn-outline-primary btn-sm">
+                    PDF
+                </a>
+                @if ($departmentReplyUrl && ((int) $visit->status === 1 || (int) $visit->status === 7))
                     <a href="{{ $departmentReplyUrl }}" class="btn btn-outline-success btn-sm" target="_blank" rel="noopener">
                         {{ (int) $visit->status === 7
                             ? __('inspection_visits.department_reply.open_returned_link')
@@ -188,7 +191,14 @@
                                     <td>
                                         {{ $finding->isViolation() ? __('inspection_visits.fields.violation') : __('inspection_visits.fields.note') }}
                                     </td>
-                                    <td>{{ $finding->abuse_note_title }}</td>
+                                    <td>
+                                        {{ $finding->abuse_note_title ?: '—' }}
+                                        @if ($finding->uploaded_file)
+                                            <a class="gc-link-count ms-2" href="{{ route('modules.inspection-visits.findings.download', [$visit->id, $finding->id]) }}">
+                                                {{ __('inspection_visits.attachments.open') }}
+                                            </a>
+                                        @endif
+                                    </td>
                                 </tr>
                             @endforeach
                         </tbody>
@@ -288,6 +298,34 @@
         </section>
 
         <section class="gc-panel mt-3">
+            <h2 class="iv-section-title">{{ __('inspection_visits.replies.title') }}</h2>
+            @if ($visit->replies->isEmpty())
+                <div class="gc-empty">{{ __('inspection_visits.replies.empty') }}</div>
+            @else
+                <div class="gc-table-wrap">
+                    <table class="gc-table">
+                        <thead>
+                            <tr>
+                                <th>{{ __('inspection_visits.replies.reply') }}</th>
+                                <th>{{ __('inspection_visits.replies.date') }}</th>
+                                <th>{{ __('inspection_visits.replies.source') }}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($visit->replies->sortByDesc('id') as $reply)
+                                <tr>
+                                    <td>{{ $reply->reply }}</td>
+                                    <td>{{ optional($reply->created_at)->format('Y-m-d H:i') ?: '—' }}</td>
+                                    <td>{{ (int) $reply->created_by_type === 2 ? __('inspection_visits.replies.management') : __('inspection_visits.replies.department') }}</td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            @endif
+        </section>
+
+        <section class="gc-panel mt-3">
             <h2 class="iv-section-title">{{ __('inspection_visits.returns.title') }}</h2>
             @if ($visit->returnedItems->isEmpty())
                 <div class="gc-empty">{{ __('inspection_visits.returns.empty') }}</div>
@@ -306,7 +344,14 @@
                                 <tr>
                                     <td>{{ $item->finding?->abuse_note_title ?: '—' }}</td>
                                     <td>{{ $item->reason }}</td>
-                                    <td>{{ optional($item->created_at)->format('Y-m-d H:i') ?: '—' }}</td>
+                                    <td>
+                                        {{ optional($item->created_at)->format('Y-m-d H:i') ?: '—' }}
+                                        @if ($item->uploaded_file)
+                                            <a class="gc-link-count ms-2" href="{{ route('modules.inspection-visits.returned.download', [$visit->id, $item->id]) }}">
+                                                {{ __('inspection_visits.attachments.open') }}
+                                            </a>
+                                        @endif
+                                    </td>
                                 </tr>
                             @endforeach
                         </tbody>
@@ -323,8 +368,8 @@
                 <ul class="iv-timeline">
                     @foreach ($visit->timelineEntries->sortByDesc('id') as $entry)
                         <li>
-                            <span class="gc-badge" style="background-color: {{ $entry->status?->badgeColor() ?: '#64748b' }};">
-                                {{ $entry->status?->localizedName() ?: __('inspection_visits.status_unknown') }}
+                            <span class="gc-badge" style="background-color: {{ $entry->statusRelation?->badgeColor() ?: '#64748b' }};">
+                                {{ $entry->statusRelation?->localizedName() ?: __('inspection_visits.status_unknown') }}
                             </span>
                             <span class="iv-timeline__date">
                                 @if (is_numeric($entry->date))

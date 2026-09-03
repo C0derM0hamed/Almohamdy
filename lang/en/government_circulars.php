@@ -29,6 +29,20 @@ return [
         'reset' => 'Reset',
     ],
 
+    'circulars_count' => ':count circulars',
+    'results_summary' => 'Showing :shown of :total',
+    'view_details' => 'View details',
+
+    'toolbar' => [
+        'columns' => 'Column settings',
+        'export' => 'Export',
+        'refresh' => 'Refresh',
+        'sort' => 'Sort',
+        'sort_date' => 'Issue date',
+        'sort_subject' => 'Subject',
+        'sort_status' => 'Status',
+    ],
+
     'table' => [
         'sent_date' => 'Sent / Issue date',
         'authority' => 'Issuing entity',

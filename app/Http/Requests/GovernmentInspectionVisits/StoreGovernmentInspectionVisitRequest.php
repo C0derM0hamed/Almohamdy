@@ -5,6 +5,8 @@ namespace App\Http\Requests\GovernmentInspectionVisits;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Validator;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class StoreGovernmentInspectionVisitRequest extends FormRequest
 {
@@ -66,6 +68,19 @@ class StoreGovernmentInspectionVisitRequest extends FormRequest
     public function withValidator(Validator $validator): void
     {
         $validator->after(function (Validator $validator) {
+            $branch = DB::table('branches')
+                ->where('id', (int) $this->input('branch_id'))
+                ->where('companies_groups_id', (int) session('companies_groups_id', 0))
+                ->when((int) session('hr_user_level', 0) !== 3 && (int) session('hr_branch_id', 0) > 0,
+                    fn ($query) => $query->where('id', (int) session('hr_branch_id')))
+                ->when(Schema::hasColumn('branches', 'publish'),
+                    fn ($query) => $query->where('publish', 1))
+                ->exists();
+
+            if (! $branch) {
+                $validator->errors()->add('branch_id', __('inspection_visits.validation.invalid_branch'));
+            }
+
             $hasViolations = (string) $this->input('abuses_status') === '1';
             $hasNotes = (string) $this->input('notes_status') === '1';
             $findings = collect($this->input('findings', []));

@@ -78,9 +78,9 @@ class ComplaintService
     /**
      * @return LengthAwarePaginator<int, Complaint>
      */
-    public function listPaginated(string $search, ?int $status): LengthAwarePaginator
+    public function listPaginated(string $search, ?int $status, ?int $perPage = null): LengthAwarePaginator
     {
-        $perPage = (int) config('hm.complaints.per_page', 15);
+        $perPage ??= (int) config('hm.complaints.per_page', 15);
 
         return $this->complaintRepository->paginateFiltered($search, $status, $perPage);
     }

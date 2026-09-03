@@ -6,6 +6,7 @@
 
 @php
     use App\Support\HospitalServices\ServiceIcon;
+    use Illuminate\Support\Str;
 
     $modalId = 'svc-'.$package->id;
     $isRooms = $cardLayout === 'rooms';
@@ -20,10 +21,22 @@
         ? $package->attachments->count()
         : ($package->hasPhotos() ? 1 : 0);
     $duration = $package->localizedResultDuration();
-    $priceDisplay = $package->hasPrice() ? $package->formattedPriceWithCurrency() : '—';
+    $durationLabel = $isDiagnostics
+        ? __('hospital_services.fields.result_duration')
+        : __('hospital_services.fields.duration');
+    $details = $package->localizedDetails();
+    $note = $package->localizedNote();
+    $noteLabel = $isDiagnostics
+        ? __('hospital_services.fields.preparation')
+        : __('hospital_services.fields.note');
+    $roomIcon = $isRooms
+        ? (Str::contains(Str::lower($name), ['royal', 'ملكي'])
+            ? 'crown'
+            : (Str::contains(Str::lower($name), ['suite', 'جناح']) ? 'bed' : 'door'))
+        : null;
 @endphp
 
-<article class="hs-svc-card">
+<article class="fm-pkg{{ $isRooms ? ' fm-pkg--rooms' : '' }}{{ $isAgreements ? ' fm-pkg--agreements' : '' }}">
     <div id="{{ $modalId }}" hidden class="hm-clinician-modal-source">
         <article class="hm-clinician-popup-card hm-clinician-popup-card--full">
             <div class="hm-clinician-popup-card__accent" aria-hidden="true"></div>
@@ -52,112 +65,135 @@
         </article>
     </div>
 
-    <header class="hs-svc-card__head">
-        <div class="hs-svc-card__icon" aria-hidden="true">
-            @include('hospital-services.partials.hs-icon', [
-                'svg' => ServiceIcon::packageSvg($package),
-                'size' => 27,
-            ])
+    <header class="fm-pkg__hero">
+        <div class="fm-pkg__tools">
+            <button
+                type="button"
+                class="fm-pkg__more"
+                data-hm-doctor-modal
+                data-modal-target="{{ $modalId }}"
+                aria-label="{{ $modalLabel }}"
+            >
+                <img src="{{ asset('images/figma/system/pkg-more.svg') }}" alt="" width="18" height="18">
+            </button>
+            <span class="fm-pkg__mark" aria-hidden="true">
+                @if ($isAgreements)
+                    <img src="{{ asset('images/figma/services/pkg-heart.svg') }}" alt="" width="20" height="20">
+                @elseif ($isRooms)
+                    <img src="{{ asset('images/figma/services/pkg-room-'.$roomIcon.'.svg') }}" alt="" width="20" height="20">
+                @else
+                    @include('hospital-services.partials.hs-icon', [
+                        'svg' => ServiceIcon::packageSvg($package),
+                        'size' => 20,
+                    ])
+                @endif
+            </span>
         </div>
-        <div class="hs-svc-card__head-copy">
-            <h3 class="hs-svc-card__title">{{ $name }}</h3>
-            <span class="hs-svc-card__code">{{ $code }}</span>
-        </div>
-        <button
-            type="button"
-            class="hs-svc-card__menu"
-            data-hm-doctor-modal
-            data-modal-target="{{ $modalId }}"
-            aria-label="{{ $modalLabel }}"
-        >
-            <i class="bi bi-three-dots" aria-hidden="true"></i>
-        </button>
+        <h3 class="fm-pkg__title">{{ $name }}</h3>
+        @unless ($isRooms)
+            <span class="fm-pkg__code">{{ $code }}</span>
+        @endunless
     </header>
 
-    <div class="hs-svc-card__body">
+    <div class="fm-pkg__body">
         @if ($isAgreements)
-            <div class="hs-svc-card__discounts">
-                <div class="hs-svc-card__discount">
-                    <span class="hs-svc-card__discount-label">{{ __('hospital_services.columns.consultation') }}</span>
-                    <span class="hs-svc-card__discount-value">{{ $package->discountValue($package->consultation_discount) }}</span>
+            <div class="fm-pkg__discounts">
+                <div class="fm-pkg__discount">
+                    <span class="fm-pkg__label">{{ __('hospital_services.columns.consultation') }}</span>
+                    <span class="fm-pkg__percent">{{ $package->discountValue($package->consultation_discount) }}</span>
                 </div>
-                <div class="hs-svc-card__discount">
-                    <span class="hs-svc-card__discount-label">{{ __('hospital_services.columns.lab_radiology') }}</span>
-                    <span class="hs-svc-card__discount-value">{{ $package->discountValue($package->lab_x_rays_discount) }}</span>
+                <div class="fm-pkg__discount">
+                    <span class="fm-pkg__label">{{ __('hospital_services.columns.operations') }}</span>
+                    <span class="fm-pkg__percent">{{ $package->discountValue($package->operations_hypnosis_discount) }}</span>
                 </div>
-                <div class="hs-svc-card__discount">
-                    <span class="hs-svc-card__discount-label">{{ __('hospital_services.columns.operations') }}</span>
-                    <span class="hs-svc-card__discount-value">{{ $package->discountValue($package->operations_hypnosis_discount) }}</span>
+                <div class="fm-pkg__discount">
+                    <span class="fm-pkg__label">{{ __('hospital_services.columns.delivery') }}</span>
+                    <span class="fm-pkg__percent">{{ $package->discountValue($package->delivery_discount) }}</span>
                 </div>
-                <div class="hs-svc-card__discount">
-                    <span class="hs-svc-card__discount-label">{{ __('hospital_services.columns.delivery') }}</span>
-                    <span class="hs-svc-card__discount-value">{{ $package->discountValue($package->delivery_discount) }}</span>
+                <div class="fm-pkg__discount">
+                    <span class="fm-pkg__label">{{ __('hospital_services.columns.lab_radiology') }}</span>
+                    <span class="fm-pkg__percent">{{ $package->discountValue($package->lab_x_rays_discount) }}</span>
                 </div>
             </div>
-        @elseif ($isRooms)
-            <div class="hs-svc-card__stats">
-                <div class="hs-svc-card__stat">
-                    <div class="hs-svc-card__stat-label">{{ __('hospital_services.fields.service_price') }}</div>
-                    <div class="hs-svc-card__stat-value">{{ $priceDisplay }}</div>
+        @else
+            <div class="fm-pkg__meta">
+                <div class="fm-pkg__meta-item">
+                    <span class="fm-pkg__label">{{ $isRooms ? __('hospital_services.fields.photo') : $durationLabel }}</span>
+                    <span class="fm-pkg__value">
+                        @if ($isRooms)
+                            {{ $photoCount > 0 ? __('hospital_services.photos_count', ['count' => $photoCount]) : '—' }}
+                        @elseif ($duration !== '')
+                            <img src="{{ asset('images/figma/system/pkg-clock.svg') }}" alt="" width="15" height="15">
+                            {{ $duration }}
+                        @else
+                            —
+                        @endif
+                    </span>
                 </div>
-                <div class="hs-svc-card__stat">
-                    <div class="hs-svc-card__stat-label">{{ __('hospital_services.fields.photo') }}</div>
-                    <div class="hs-svc-card__stat-value">{{ $photoCount > 0 ? __('hospital_services.photos_count', ['count' => $photoCount]) : '—' }}</div>
+                <div class="fm-pkg__meta-item">
+                    <span class="fm-pkg__label">{{ __('hospital_services.fields.service_price') }}</span>
+                    <span class="fm-pkg__value">
+                        @if ($package->hasPrice())
+                            <span class="fm-pkg__price">{{ $package->formattedPrice() }}</span>
+                            <span class="fm-pkg__currency">{{ __('hospital_services.currency') }}</span>
+                        @else
+                            —
+                        @endif
+                    </span>
                 </div>
             </div>
 
-            @if ($package->hasPhotos())
+            @if ($isRooms && $package->hasPhotos())
                 @include('hospital-services.partials.service-package-photos', [
                     'package' => $package,
                     'variant' => 'preview',
                 ])
             @endif
-        @else
-            <div class="hs-svc-card__stats">
-                <div class="hs-svc-card__stat">
-                    <div class="hs-svc-card__stat-label">{{ __('hospital_services.fields.service_price') }}</div>
-                    <div class="hs-svc-card__stat-value">{{ $priceDisplay }}</div>
-                </div>
-                <div class="hs-svc-card__stat">
-                    <div class="hs-svc-card__stat-label">{{ $isDiagnostics ? __('hospital_services.fields.result_duration') : __('hospital_services.fields.duration') }}</div>
-                    <div class="hs-svc-card__stat-value hs-svc-card__duration">
-                        @if ($duration !== '')
-                            <i class="bi bi-clock" aria-hidden="true"></i>
-                            {{ $duration }}
-                        @else
-                            —
-                        @endif
-                    </div>
-                </div>
-            </div>
 
-            @if ($package->localizedDetails() !== '')
-                <div class="hs-svc-card__info">
-                    <span class="hs-svc-card__info-label">{{ __('hospital_services.fields.service_details') }}</span>
-                    <p class="hs-svc-card__info-text">{!! nl2br(e($package->localizedDetails())) !!}</p>
+            @if ($details !== '')
+                <div>
+                    <div class="fm-pkg__desc-head">
+                        <span class="fm-icon-20">
+                            <img src="{{ asset('images/figma/system/pkg-desc.svg') }}" alt="" width="12" height="12">
+                        </span>
+                        {{ __('hospital_services.fields.service_details') }}
+                    </div>
+                    <p class="fm-pkg__desc">{!! nl2br(e($details)) !!}</p>
                 </div>
             @endif
 
-            @if ($package->localizedNote() !== '')
-                <div class="hs-svc-card__info hs-svc-card__info--note">
-                    <span class="hs-svc-card__info-label">{{ $isDiagnostics ? __('hospital_services.fields.preparation') : __('hospital_services.fields.note') }}</span>
-                    <p class="hs-svc-card__info-text">{!! nl2br(e($package->localizedNote())) !!}</p>
+            @if ($note !== '')
+                <div class="fm-pkg__note">
+                    <p class="fm-pkg__note-title">
+                        <span class="fm-icon-22">
+                            <img src="{{ asset('images/figma/system/pkg-note.svg') }}" alt="" width="12" height="12">
+                        </span>
+                        {{ $noteLabel }}
+                    </p>
+                    <p>{!! nl2br(e($note)) !!}</p>
                 </div>
             @endif
         @endif
 
-        <div class="hs-svc-card__view-row">
+        <div class="fm-pkg__foot">
             <button
                 type="button"
-                class="hs-svc-card__view-btn"
+                class="fm-btn--icon"
                 data-hm-doctor-modal
                 data-modal-target="{{ $modalId }}"
                 aria-label="{{ $modalLabel }}"
             >
-                <i class="bi bi-eye" aria-hidden="true"></i>
-                {{ __('hospital_services.view_details') }}
+                <img src="{{ asset('images/figma/system/pkg-arrow.svg') }}" alt="" width="18" height="18">
             </button>
-            <i class="bi {{ app()->getLocale() === 'ar' ? 'bi-chevron-left' : 'bi-chevron-right' }} hs-svc-card__view-arrow" aria-hidden="true"></i>
+            <button
+                type="button"
+                class="fm-btn--ghost"
+                data-hm-doctor-modal
+                data-modal-target="{{ $modalId }}"
+            >
+                {{ $modalLabel }}
+                <img src="{{ asset('images/figma/system/pkg-eye.svg') }}" alt="" width="17" height="17">
+            </button>
         </div>
     </div>
 </article>

@@ -30,10 +30,15 @@ class SaveUserRequest extends FormRequest
                 ->whereNotIn('hr_username', DemoAccounts::usernames())],
             'hr_username' => ['required', 'string', 'max:25', Rule::unique('ra_users', 'hr_username')->ignore($userId, 'hr_id')],
             'password' => [$userId ? 'nullable' : 'required', 'string', 'min:8', 'max:64', 'confirmed'],
-            'mobile' => ['nullable', 'string', 'max:20'],
+            'mobile' => ['nullable', 'string', 'regex:/^05[0-9]{8}$/'],
             'hr_user_level' => ['required', Rule::in(['0', '1', '2', '3', '4'])],
             'companies_groups_id' => ['required', 'integer', 'min:1'],
+            // branch_id is retained as the primary legacy branch. New forms
+            // submit branch_ids[] so one user can be assigned to multiple
+            // branches without breaking older modules.
             'branch_id' => ['required', 'integer', 'min:1'],
+            'branch_ids' => ['nullable', 'array', 'min:1'],
+            'branch_ids.*' => ['integer', 'distinct', 'min:1'],
             'groupid' => ['required', 'integer', 'min:0'],
             'activated' => ['required', Rule::in(['0', '1'])],
             'permissions' => ['sometimes', 'array'],

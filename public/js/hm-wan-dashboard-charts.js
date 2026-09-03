@@ -111,39 +111,41 @@
             });
 
             new Chart(typeCanvas, {
-                type: 'doughnut',
+                type: 'bar',
                 data: {
                     labels: charts.type_distribution.labels,
                     datasets: [{
+                        label: labels.notifications || 'Notifications',
                         data: charts.type_distribution.values,
                         backgroundColor: typeColors,
-                        borderColor: '#fff',
-                        borderWidth: 3,
-                        hoverOffset: 6,
+                        borderRadius: 7,
+                        borderSkipped: false,
+                        maxBarThickness: 46,
                     }],
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    cutout: '70%',
                     plugins: {
                         legend: { display: false },
                         tooltip: Object.assign({}, sharedTooltip, {
                             callbacks: {
                                 label: function (context) {
-                                    var total = context.dataset.data.reduce(function (s, i) { return s + i; }, 0);
-                                    var percent = total > 0 ? Math.round((context.parsed / total) * 100) : 0;
-                                    return context.label + ': ' + context.parsed + ' (' + percent + '%)';
+                                    return (labels.notifications || 'Notifications') + ': ' + context.parsed.y;
                                 },
                             },
                         }),
                     },
+                    scales: {
+                        x: { grid: { display: false }, ticks: { font: { size: 10 }, maxRotation: 0 } },
+                        y: {
+                            beginAtZero: true,
+                            ticks: { precision: 0, font: { size: 10 } },
+                            grid: { color: 'rgba(231, 230, 238, .8)' },
+                        },
+                    },
                 },
             });
-
-            renderLegend(document.getElementById('hmWanTypeLegend'), charts.type_distribution.labels.map(function (label, index) {
-                return { label: label, value: charts.type_distribution.values[index], color: typeColors[index] };
-            }));
         }
     }
 
@@ -158,7 +160,7 @@
             });
 
             new Chart(workflowCanvas, {
-                type: 'pie',
+                type: 'doughnut',
                 data: {
                     labels: charts.workflow_distribution.labels,
                     datasets: [{
@@ -172,6 +174,7 @@
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                    cutout: '62%',
                     plugins: {
                         legend: { display: false },
                         tooltip: Object.assign({}, sharedTooltip, {
@@ -192,4 +195,50 @@
             }));
         }
     }
+
+    (window.hmWanReportCharts || []).forEach(function (panel, index) {
+        var canvas = document.getElementById('hmWanReportChart' + index);
+        if (!canvas || !panel.rows || !panel.rows.length) {
+            return;
+        }
+
+        var tone = panel.variant === 'pending' ? palette.primary
+            : panel.variant === 'action_taken' ? palette.primary
+                : panel.variant === 'activated' ? palette.activated
+                    : palette.pending;
+
+        new Chart(canvas, {
+            type: 'bar',
+            data: {
+                labels: panel.rows.map(function (row) { return row.label; }),
+                datasets: [{
+                    label: labels.count || 'Count',
+                    data: panel.rows.map(function (row) { return row.total; }),
+                    backgroundColor: tone,
+                    borderRadius: 7,
+                    borderSkipped: false,
+                    maxBarThickness: 48,
+                }],
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: sharedTooltip,
+                },
+                scales: {
+                    x: {
+                        grid: { display: false },
+                        ticks: { font: { size: 10 }, maxRotation: 0, autoSkip: false },
+                    },
+                    y: {
+                        beginAtZero: true,
+                        ticks: { precision: 0, font: { size: 10 } },
+                        grid: { color: 'rgba(231, 230, 238, .8)' },
+                    },
+                },
+            },
+        });
+    });
 })();

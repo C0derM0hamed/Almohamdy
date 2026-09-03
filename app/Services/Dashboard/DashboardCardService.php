@@ -24,6 +24,11 @@ class DashboardCardService
                 continue;
             }
 
+            $permission = trim((string) ($card['permission'] ?? ''));
+            if ($permission !== '' && ! $this->permissions->can($permission)) {
+                continue;
+            }
+
             $routeName = (string) ($card['route'] ?? '');
 
             if ($routeName === '' || ! Route::has($routeName)) {

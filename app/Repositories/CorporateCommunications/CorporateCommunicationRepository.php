@@ -19,6 +19,7 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class CorporateCommunicationRepository
 {
@@ -427,9 +428,9 @@ class CorporateCommunicationRepository
     public function branchOptions(): Collection
     {
         return Branch::query()
-            ->where('publish', 1)
+            ->when(Schema::hasColumn('branches', 'publish'), fn (Builder $query) => $query->where('publish', 1))
             ->where('companies_groups_id', (int) session('companies_groups_id', 0))
-            ->orderBy('ranking')
+            ->when(Schema::hasColumn('branches', 'ranking'), fn (Builder $query) => $query->orderBy('ranking'))
             ->orderBy('id')
             ->get(['id', 'name_en', 'name_ar']);
     }

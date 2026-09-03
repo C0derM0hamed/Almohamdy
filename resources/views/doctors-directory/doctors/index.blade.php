@@ -9,6 +9,10 @@
 
 @section('title', $pageTitle)
 
+@if (!empty($branchContext))
+    @section('figma_page_header', true)
+@endif
+
 @if (!empty($serviceLocationContext))
     @section('sidebar_heading', $opdLabel)
     @section('sidebar_subheading', $departmentName)
@@ -33,8 +37,22 @@
 @endpush
 
 @section('content')
-    <div class="hm-dd hm-dd--doctors">
-        <nav aria-label="{{ __('breadcrumbs.aria_label') }}" class="dd-breadcrumb dd-breadcrumb--bar">@if (!empty($serviceLocationContext))
+    <div class="hm-dd hm-dd--doctors {{ !empty($branchContext) ? 'hm-fm hm-dd--branch-figma' : '' }}">
+        @if (!empty($branchContext))
+            @include('layouts.partials.figma-module-header', [
+                'crumbs' => [
+                    ['label' => __('dashboard.modules')],
+                    ['label' => __('doctors_directory.title'), 'url' => route('modules.doctors.specialities.index')],
+                    ['label' => $speciality->localizedName(), 'url' => route('modules.doctors.specialities.departments', $speciality->id)],
+                    ['label' => $branchLabel],
+                ],
+                'title' => $pageTitle,
+                'subtitle' => __('doctors_directory.doctors_subtitle'),
+                'heroIconSrc' => asset('images/figma/doctors/branch-doctors.svg'),
+                'heroIconSize' => 32,
+            ])
+        @else
+            <nav aria-label="{{ __('breadcrumbs.aria_label') }}" class="dd-breadcrumb dd-breadcrumb--bar">@if (!empty($serviceLocationContext))
                 <a href="{{ route('modules.service-locations.index') }}">{{ __('service_locations.title') }}</a>
                 <span class="dd-breadcrumb-sep" aria-hidden="true">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
@@ -91,14 +109,24 @@
                     <span class="dd-chip">{{ __('doctors_directory.doctors') }}</span>
                 @endif
             @endif
-        </nav>
+            </nav>
+        @endif
 
         <section class="dd-search-card">
             <div class="dd-section-head">
                 <div class="dd-section-icon" aria-hidden="true">
-                    <svg viewBox="0 0 24 24"><path d="M3 4h18l-7 8v6l-4 2v-8L3 4Z"/></svg>
+                    @if (!empty($branchContext))
+                        <img src="{{ asset('images/figma/doctors/branch/filter.svg') }}" alt="" width="24" height="24">
+                    @else
+                        <svg viewBox="0 0 24 24"><path d="M3 4h18l-7 8v6l-4 2v-8L3 4Z"/></svg>
+                    @endif
                 </div>
                 <h2>{{ __('doctors_directory.filters_title') }}</h2>
+                @if (!empty($branchContext))
+                    <span class="dd-search-expand" aria-hidden="true">
+                        <img src="{{ asset('images/figma/doctors/branch/expand.svg') }}" alt="" width="20" height="20">
+                    </span>
+                @endif
             </div>
 
             <form
@@ -125,13 +153,6 @@
                             'searchPlaceholder' => __('doctors_directory.search_placeholder'),
                         ])
 
-                        <div class="dd-form-field">
-                            <label class="dd-red">{{ __('doctors_directory.all_branches') }}</label>
-                            <label class="dd-checkbox-row" title="{{ __('doctors_directory.all_branches_hint') }}">
-                                <input class="dd-check" type="checkbox" name="all" value="1" @checked(!empty($filters['all']))>
-                                <span>{{ __('doctors_directory.all_branches') }}</span>
-                            </label>
-                        </div>
                     @elseif (!empty($hospitalFilterContext) && !empty($branchOptions))
                         <div class="dd-form-field">
                             <label class="dd-red" for="filterClinic">{{ __('doctors_directory.clinic') }}</label>
@@ -203,8 +224,18 @@
                 </div>
 
                 <div class="dd-search-actions">
+                    @if (!empty($branchContext))
+                        <label class="dd-checkbox-row" title="{{ __('doctors_directory.all_branches_hint') }}">
+                            <input class="dd-check" type="checkbox" name="all" value="1" @checked(!empty($filters['all']))>
+                            <span>{{ __('doctors_directory.all_branches') }}</span>
+                        </label>
+                    @endif
                     <button type="submit" class="dd-btn dd-btn-primary">
-                        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+                        @if (!empty($branchContext))
+                            <img src="{{ asset('images/figma/doctors/search.svg') }}" alt="" width="18" height="18">
+                        @else
+                            <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+                        @endif
                         {{ __('doctors_directory.search') }}
                     </button>
                     @if ($hasFilters)
@@ -220,7 +251,25 @@
             </form>
         </section>
 
+        @if (!empty($branchContext))
+            <section class="dd-results-head" aria-labelledby="ddResultsTitle">
+                <div class="dd-results-heading">
+                    <span class="dd-results-icon" aria-hidden="true">
+                        <img src="{{ asset('images/figma/doctors/branch/profile.svg') }}" alt="" width="22" height="22">
+                    </span>
+                    <div>
+                        <h2 id="ddResultsTitle">{{ __('doctors_directory.doctors') }}</h2>
+                        <p>{{ $speciality->localizedName() }} <span aria-hidden="true">·</span> {{ $branchLabel }}</p>
+                    </div>
+                </div>
+                <span class="dd-results-count">
+                    {{ trans_choice('doctors_directory.doctors_count_label', $doctors->total(), ['count' => $doctors->total()]) }}
+                </span>
+            </section>
+        @endif
+
         @if ($doctors->count() > 0)
+            <div class="dd-doctor-grid">
             @foreach ($doctors as $doctor)
                 @php
                     $doctorDisplayName = $doctor->localizedDisplayName();
@@ -250,7 +299,11 @@
                         data-modal-target="card-{{ $doctor->id }}"
                         aria-label="{{ __('doctors_directory.view_profile') }}"
                     >
-                        <svg viewBox="0 0 24 24"><path d="M8 3H5a2 2 0 0 0-2 2v3M16 3h3a2 2 0 0 1 2 2v3M8 21H5a2 2 0 0 1-2-2v-3M16 21h3a2 2 0 0 0 2-2v-3"/></svg>
+                        @if (!empty($branchContext))
+                            <img src="{{ asset('images/figma/doctors/branch/expand.svg') }}" alt="" width="18" height="18">
+                        @else
+                            <svg viewBox="0 0 24 24"><path d="M8 3H5a2 2 0 0 0-2 2v3M16 3h3a2 2 0 0 1 2 2v3M8 21H5a2 2 0 0 1-2-2v-3M16 21h3a2 2 0 0 0 2-2v-3"/></svg>
+                        @endif
                     </button>
 
                     <div id="card-{{ $doctor->id }}" hidden class="hm-clinician-modal-source">
@@ -315,7 +368,11 @@
                                     onerror="this.remove();"
                                 >
                             @else
-                                <svg viewBox="0 0 64 64"><circle cx="32" cy="22" r="13"></circle><path d="M12 58c2.2-13 10.4-21 20-21s17.8 8 20 21H12z"></path></svg>
+                                @if (!empty($branchContext))
+                                    <img src="{{ asset('images/figma/doctors/branch/back.svg') }}" alt="" width="40" height="40">
+                                @else
+                                    <svg viewBox="0 0 64 64"><circle cx="32" cy="22" r="13"></circle><path d="M12 58c2.2-13 10.4-21 20-21s17.8 8 20 21H12z"></path></svg>
+                                @endif
                             @endif
                         </div>
                         <div class="dd-doctor-info">
@@ -331,10 +388,24 @@
                             @endif
                             <div class="dd-doctor-meta">
                                 @if ($doctor->code)
-                                    <span><i class="bi bi-person-badge"></i> {{ $doctor->code }}</span>
+                                    <span>
+                                        @if (!empty($branchContext))
+                                            <img src="{{ asset('images/figma/doctors/branch/calendar.svg') }}" alt="" width="16" height="16">
+                                        @else
+                                            <i class="bi bi-person-badge"></i>
+                                        @endif
+                                        {{ $doctor->code }}
+                                    </span>
                                 @endif
                                 @if ($doctor->country?->localizedName())
-                                    <span><i class="bi bi-globe2"></i> {{ $doctor->country->localizedName() }}</span>
+                                    <span>
+                                        @if (!empty($branchContext))
+                                            <img src="{{ asset('images/figma/doctors/branch/nationality.svg') }}" alt="" width="16" height="16">
+                                        @else
+                                            <i class="bi bi-globe2"></i>
+                                        @endif
+                                        {{ $doctor->country->localizedName() }}
+                                    </span>
                                 @endif
                             </div>
                         </div>
@@ -350,6 +421,7 @@
                     ])
                 </article>
             @endforeach
+            </div>
 
             <div class="dd-pagination">
                 {{ $doctors->links('pagination.hm') }}
@@ -372,7 +444,9 @@
                         : __('doctors_directory.back_to_departments'));
             @endphp
             <a href="{{ $backHref }}" class="dd-back-btn">
-                @if ($isArabic)
+                @if (!empty($branchContext))
+                    <img class="dd-action-icon" src="{{ asset('images/figma/doctors/branch/back-arrow.svg') }}" alt="" width="18" height="18">
+                @elseif ($isArabic)
                     <svg viewBox="0 0 24 24"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
                 @else
                     <svg viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
@@ -383,7 +457,11 @@
             @if ((!empty($branchContext) || !empty($hospitalFilterContext)) && !empty($departmentsRoute))
                 <a href="{{ $departmentsRoute }}" class="dd-btn-primary">
                     {{ __('doctors_directory.view_departments') }}
-                    <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+                    @if (!empty($branchContext))
+                        <img class="dd-action-icon" src="{{ asset('images/figma/doctors/branch/grid.svg') }}" alt="" width="18" height="18">
+                    @else
+                        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+                    @endif
                 </a>
             @endif
         </div>

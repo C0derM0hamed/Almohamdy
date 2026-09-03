@@ -56,10 +56,6 @@ class LegacyNavigationParityTest extends TestCase
         $this->assertContains('modules.emergency-reception.guide', $routes);
         $this->assertContains('modules.emergency-reception.index', $routes);
         $this->assertContains('modules.medical-referrals.index', $routes);
-        $this->assertContains('modules.medical-agreements.index', $routes);
-        $this->assertContains('modules.governmental-services.index', $routes);
-        $this->assertContains('modules.legacy-office.holidays.index', $routes);
-        $this->assertContains('modules.legacy-office.medical-reports.index', $routes);
         $this->assertContains('modules.legacy-office.memos.index', $routes);
         $this->assertContains('modules.legacy-office.memos.received', $routes);
         $this->assertContains('modules.legacy-office.coverage.index', $routes);
@@ -71,8 +67,8 @@ class LegacyNavigationParityTest extends TestCase
         $this->assertContains('modules.technical-failures.index', $routes);
 
         $titles = $this->titlesFor($this->auditSession(10, 2, 1));
-        $this->assertContains(__('dashboard.nav.agreement_sadq'), $titles);
-        $this->assertContains(__('dashboard.nav.agreement_sadq_manual'), $titles);
+        $this->assertNotContains(__('dashboard.nav.legacy_agreements_services'), $titles);
+        $this->assertNotContains(__('dashboard.nav.agreement_sadq'), $titles);
     }
 
     public function test_branch_two_role_only_receives_its_legacy_memo_workflows(): void
@@ -94,6 +90,99 @@ class LegacyNavigationParityTest extends TestCase
         $this->assertNotContains('modules.medical-agreements.index', $routes);
         $this->assertNotContains('modules.governmental-services.index', $routes);
         $this->assertNotContains('modules.legacy-office.holidays.index', $routes);
+
+        $titles = $this->titlesFor($this->auditSession(20, 4, 2));
+        foreach ([
+            'financial_claims_cases',
+            'financial_claims_executive_titles',
+            'financial_claims_claim_documents',
+            'financial_claims_executive_documents',
+            'financial_claims_notice',
+            'financial_claims_approval',
+            'financial_claims_inquiry',
+            'financial_claims_legal_inquiry',
+            'financial_claims_medical_report',
+            'medical_appointment_clinics',
+        ] as $key) {
+            $this->assertContains(__('dashboard.nav.'.$key), $titles, $key.' must be visible for branch 2');
+        }
+        $this->assertNotContains(__('dashboard.nav.financial_claims_payment_guarantee'), $titles);
+        $this->assertNotContains(__('dashboard.nav.financial_claims_payment_guarantee_archive'), $titles);
+
+        $financialClaims = collect(app(NavigationService::class)->sidebar())
+            ->first(fn (NavigationItem $item): bool => $item->collapseId === 'sidebar-financial-claims');
+        $this->assertNotNull($financialClaims);
+        $this->assertSame(array_map(fn (string $key): string => __('dashboard.nav.'.$key), [
+            'financial_claims_cases', 'financial_claims_executive_titles', 'financial_claims_claim_documents',
+            'financial_claims_executive_documents', 'financial_claims_notice', 'financial_claims_approval',
+            'financial_claims_inquiry', 'financial_claims_legal_inquiry', 'financial_claims_medical_report',
+        ]), collect($financialClaims->children)->pluck('title')->all());
+    }
+
+    public function test_inpatient_service_sections_are_nested_and_keep_their_company_rule(): void
+    {
+        $this->startSession();
+        session()->flush();
+        session($this->auditSession(50, 3, 1));
+
+        $services = collect(app(NavigationService::class)->sidebar())
+            ->first(fn (NavigationItem $item): bool => $item->collapseId === 'sidebar-services');
+
+        $this->assertNotNull($services);
+        $inpatient = collect($services->children)
+            ->first(fn (NavigationItem $item): bool => $item->title === __('dashboard.nav.services_inpatient'));
+
+        $this->assertNotNull($inpatient);
+        $this->assertSame(
+            [
+                __('dashboard.nav.services_inpatient_rooms'),
+                __('dashboard.nav.services_inpatient_reproduction'),
+                __('dashboard.nav.services_inpatient_endoscopy'),
+                __('dashboard.nav.services_inpatient_dialysis'),
+            ],
+            collect($inpatient->children)->pluck('title')->all(),
+        );
+
+        session(['companies_groups_id' => 3]);
+        $services = collect(app(NavigationService::class)->sidebar())
+            ->first(fn (NavigationItem $item): bool => $item->collapseId === 'sidebar-services');
+        $inpatient = collect($services->children)
+            ->first(fn (NavigationItem $item): bool => $item->title === __('dashboard.nav.services_inpatient'));
+
+        $this->assertNotNull($inpatient);
+        $this->assertNotContains(__('dashboard.nav.services_inpatient_reproduction'), collect($inpatient->children)->pluck('title')->all());
+    }
+
+    public function test_branch_three_receives_the_old_cases_menu_without_a_duplicate_legal_claims_entry(): void
+    {
+        $this->startSession();
+        session()->flush();
+        session($this->auditSession(60, 2, 3));
+
+        $cases = collect(app(NavigationService::class)->sidebar())
+            ->first(fn (NavigationItem $item): bool => $item->collapseId === 'sidebar-cases');
+
+        $this->assertNotNull($cases);
+        $this->assertSame([
+            __('dashboard.nav.cases_financial_claims'),
+            __('dashboard.nav.cases_commercial'),
+            __('dashboard.nav.cases_labor'),
+            __('dashboard.nav.cases_medical'),
+            __('dashboard.nav.cases_administrative'),
+            __('dashboard.nav.cases_executive_titles'),
+        ], collect($cases->children)->pluck('title')->all());
+
+        $urls = $this->urlsFor($this->auditSession(60, 2, 3));
+        foreach ([
+            route('modules.legal-claims.index'),
+            route('modules.legacy-sidebar.index', ['page' => 'commercial_cases']),
+            route('modules.legacy-sidebar.index', ['page' => 'labor_cases']),
+            route('modules.legacy-sidebar.index', ['page' => 'medical_cases']),
+            route('modules.legacy-sidebar.index', ['page' => 'administrative_cases']),
+            route('modules.legacy-sidebar.index', ['page' => 'executive_title']),
+        ] as $url) {
+            $this->assertSame(1, count(array_keys($urls, $url)), 'The case menu target must appear once: '.$url);
+        }
     }
 
     public function test_sadq_links_require_the_same_legacy_privileges_as_the_pages(): void
@@ -107,19 +196,27 @@ class LegacyNavigationParityTest extends TestCase
 
         $titles = $this->titlesFor($this->auditSession(30, 1, 1));
 
-        $this->assertContains(__('dashboard.nav.agreement_sadq'), $titles);
-        $this->assertContains(__('dashboard.nav.agreement_sadq_manual'), $titles);
+        $this->assertNotContains(__('dashboard.nav.agreement_sadq'), $titles);
+        $this->assertNotContains(__('dashboard.nav.agreement_sadq_manual'), $titles);
     }
 
-    public function test_super_admin_does_not_receive_branch_shell_only_legacy_groups(): void
+    public function test_super_admin_receives_every_branch_workflow_without_duplicate_urls(): void
     {
         $routes = $this->routesFor($this->auditSession(40, 3, 1));
 
-        $this->assertNotContains('modules.emergency-reception.index', $routes);
-        $this->assertNotContains('modules.medical-referrals.index', $routes);
-        $this->assertNotContains('modules.medical-agreements.index', $routes);
-        $this->assertNotContains('modules.governmental-services.index', $routes);
-        $this->assertNotContains('modules.legacy-office.memos.index', $routes);
+        foreach ([
+            'modules.emergency-reception.index',
+            'modules.medical-referrals.index',
+            'modules.medical-agreements.index',
+            'modules.legacy-office.memos.index',
+            'modules.legal-claims.index',
+            'modules.admission-inpatient.approvals.index',
+        ] as $route) {
+            $this->assertContains($route, $routes, $route.' must be visible to the global administrator');
+        }
+
+        $urls = $this->urlsFor($this->auditSession(40, 3, 1));
+        $this->assertSame(count($urls), count(array_unique($urls)), 'Global navigation must not repeat the same action.');
     }
 
     public function test_all_audit_roles_can_reach_the_dashboard_from_the_sidebar(): void
@@ -195,7 +292,7 @@ class LegacyNavigationParityTest extends TestCase
         }
 
         $superUrls = $this->urlsFor($this->auditSession(40, 3, 1));
-        $this->assertNotContains($targets[0], $superUrls);
+        $this->assertContains($targets[0], $superUrls);
     }
 
     public function test_sidebar_has_no_duplicate_visible_urls_for_any_audit_role(): void

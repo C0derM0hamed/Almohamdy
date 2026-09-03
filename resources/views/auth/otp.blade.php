@@ -43,6 +43,13 @@
                 </div>
             @endif
 
+            @if (! empty($demoCode))
+                <div class="hm-auth-alert hm-auth-alert--success" role="status">
+                    <i class="bi bi-info-circle" aria-hidden="true"></i>
+                    <span>{{ __('otp.demo_code', ['code' => $demoCode]) }}</span>
+                </div>
+            @endif
+
             <form method="POST" action="{{ route('otp.verify') }}" id="otp-form" class="hm-hope-otp__form">
                 @csrf
 
@@ -53,10 +60,10 @@
                             name="{{ $field }}"
                             id="{{ $field }}"
                             class="form-control hm-hope-otp-digit @error($field) is-invalid @enderror"
-                            maxlength="1"
+                            maxlength="{{ $loop->first ? (int) $otpLength : 1 }}"
                             inputmode="numeric"
-                            pattern="[0-9]"
-                            autocomplete="one-time-code"
+                            pattern="[0-9]*"
+                            autocomplete="{{ $loop->first ? 'one-time-code' : 'off' }}"
                             dir="ltr"
                             @if ($loop->first) autofocus @endif
                             required
@@ -113,6 +120,29 @@
                 });
             }
 
+            function fillFromCode(code) {
+                var digits = String(code || '').replace(/\D/g, '').slice(0, otpLength);
+
+                digits.split('').forEach(function (digit, i) {
+                    if (inputs[i]) {
+                        inputs[i].value = digit;
+                    }
+                });
+
+                for (var i = digits.length; i < inputs.length; i++) {
+                    inputs[i].value = '';
+                }
+
+                if (digits.length === otpLength) {
+                    submitWhenComplete();
+                    return;
+                }
+
+                if (inputs[digits.length]) {
+                    inputs[digits.length].focus();
+                }
+            }
+
             function submitWhenComplete() {
                 if (isSubmitting || !form || !allDigitsFilled()) {
                     return;
@@ -152,7 +182,14 @@
 
             inputs.forEach(function (input, index) {
                 input.addEventListener('input', function () {
-                    this.value = this.value.replace(/\D/g, '').slice(0, 1);
+                    var raw = String(this.value || '').replace(/\D/g, '');
+
+                    if (raw.length > 1) {
+                        fillFromCode(raw);
+                        return;
+                    }
+
+                    this.value = raw.slice(0, 1);
                     if (this.value && inputs[index + 1]) {
                         inputs[index + 1].focus();
                     }
@@ -167,16 +204,7 @@
 
                 input.addEventListener('paste', function (e) {
                     e.preventDefault();
-                    var pasted = (e.clipboardData || window.clipboardData).getData('text').replace(/\D/g, '').slice(0, otpLength);
-                    pasted.split('').forEach(function (digit, i) {
-                        if (inputs[i]) {
-                            inputs[i].value = digit;
-                        }
-                    });
-                    if (inputs[Math.min(pasted.length, otpLength) - 1]) {
-                        inputs[Math.min(pasted.length, otpLength) - 1].focus();
-                    }
-                    submitWhenComplete();
+                    fillFromCode((e.clipboardData || window.clipboardData).getData('text'));
                 });
             });
 

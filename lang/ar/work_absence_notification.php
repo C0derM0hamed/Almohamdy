@@ -9,7 +9,7 @@ return [
     'notifications_list_subtitle' => 'استعراض ومراجعة طلبات إشعار التغيب',
     'service_title' => 'خدمة إشعار التغيب عن العمل',
     'service_subtitle' => 'بحث في إشعارات التغيب ومراجعة المستندات المرفقة',
-    'filters_title' => 'تصفية الإشعارات',
+    'filters_title' => 'البحث والتصفية',
     'new_notification' => 'إشعار جديد',
     'total_records' => ':count سجل',
     'notification_details' => 'تفاصيل إشعار التغيب عن العمل',

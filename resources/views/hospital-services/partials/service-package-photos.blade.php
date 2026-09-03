@@ -38,6 +38,12 @@
                         decoding="async"
                         onerror="this.hidden=true; var fallback=this.parentElement.querySelector('.hm-service-card__photo-fallback'); if (fallback) fallback.hidden=false;"
                     >
+                    @if ($package->attachments->count() > 1)
+                        <span class="hm-service-card__photo-count-overlay" aria-hidden="true">
+                            <i class="bi bi-image"></i>
+                            {{ __('hospital_services.photos_count', ['count' => $package->attachments->count()]) }}
+                        </span>
+                    @endif
                     <span class="hm-service-card__photo-zoom-hint" aria-hidden="true">
                         <i class="bi bi-zoom-in"></i>
                     </span>

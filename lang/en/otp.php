@@ -14,6 +14,7 @@ return [
     'time_remaining' => 'Time remaining',
     'back_to_login' => 'Back to sign in',
     'digit' => 'Digit :number',
+    'demo_code' => 'Demo mode: your verification code is :code',
     'email_subject' => 'Login Verification Code',
     'sms' => 'Your login verification code is :code. It expires in :minutes minutes.',
 

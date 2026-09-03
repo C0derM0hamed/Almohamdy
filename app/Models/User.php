@@ -48,6 +48,13 @@ class User extends Model
         return trim((string) $this->hr_username) ?: '#'.$this->hr_id;
     }
 
+    /** @param \Illuminate\Database\Eloquent\Builder<self> $query */
+    public function scopeActivated($query)
+    {
+        // ra_users.activated is enum('0','1') — never compare with integer 1 (matches wrong rows).
+        return $query->where('activated', '1');
+    }
+
     public function jobTitle(): BelongsTo
     {
         return $this->belongsTo(JobTitle::class, 'job_title');

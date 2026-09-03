@@ -2,5 +2,12 @@
     "noto_kufi_arabic": {
         "normal": "C:\\xampp82\\htdocs\\hm\\storage\\fonts\/noto_kufi_arabic_normal_a3f0d1e7c2b6e220ee159c04385d36a9",
         "bold": "noto_kufi_arabic_bold_95ec2110b236207444e98b3f2c91e3b9"
+    },
+    "arabicpdf": {
+        "normal": "\/home\/mohamed\/Downloads\/medicalLaravel\/NewProject\/storage\/fonts\/arabicpdf_normal_599148c270ea079ec79fbf109b7b5375",
+        "bold": "arabicpdf_bold_a4824c5f2eab3d59d02190598da666fd"
+    },
+    "noto": {
+        "normal": "noto_normal_599148c270ea079ec79fbf109b7b5375"
     }
 }

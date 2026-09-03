@@ -42,6 +42,14 @@ class SpecialityIcon
         );
     }
 
+    /**
+     * Resolve the same lightweight medical icon set for an overview unit.
+     */
+    public static function svgForText(string $text): string
+    {
+        return self::resolveSvg($text);
+    }
+
     private static function resolve(string $text): string
     {
         $haystack = strtolower($text);

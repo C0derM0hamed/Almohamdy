@@ -15,7 +15,12 @@
 </head>
 <body>
 
-    <div class="hero">
+    <div class="hero" id="heroSlider">
+        {{-- سلايدر صور الفروع — لإضافة صورة جديدة: ارفع الملف في public/landingPage وضيف سلايد جديد بنفس الشكل --}}
+        <div class="hero-slides">
+            <div class="hero-slide is-active" style="background-image: url('{{ asset('landingPage/hero.png') }}');"></div>
+            <div class="hero-slide hero-slide--cover" style="background-image: url('{{ asset('landingPage/hero-2.png') }}');"></div>
+        </div>
         <div class="hero-overlay"></div>
         <div class="hero-watermark">
             <svg width="100%" height="100%" viewBox="0 0 200 430" fill="none" stroke="white" stroke-width="3" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMaxYMid slice">
@@ -25,7 +30,7 @@
             </svg>
         </div>
         <div class="hero-content">
-            <img src="{{ asset('landingPage/logo.png') }}" class="hero-logo" alt="Logo">
+            <img src="{{ asset('images/brand/hh-logo-horizontal.png') }}?v={{ filemtime(public_path('images/brand/hh-logo-horizontal.png')) }}" class="hero-logo" alt="مستشفيات الحمادي" width="1024" height="209" decoding="async">
             <a href="{{ route('login') }}" class="hero-login-btn">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
@@ -46,6 +51,13 @@
                 <div class="hero-ornament-line"></div>
             </div>
         </div>
+        <button type="button" class="hero-side-arrow hero-side-arrow--prev" aria-label="الصورة السابقة" hidden>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+        </button>
+        <button type="button" class="hero-side-arrow hero-side-arrow--next" aria-label="الصورة التالية" hidden>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+        </button>
+        <div class="hero-dots" aria-label="صور الفروع"></div>
     </div>
 
     <div class="portal-container portal-cards-wrapper">
@@ -62,13 +74,10 @@
                     <h2 class="card-title">التعاميم</h2>
                     <p class="card-subtitle">جميع التعاميم والإشعارات الرسمية</p>
                 </div>
-                <div class="card-chevron">
-                    <svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
-                </div>
             </a>
             
             <!-- اللوائح والأنظمة -->
-            <a href="#" class="portal-card">
+            <div class="portal-card portal-card--unavailable" aria-disabled="true">
                 <div class="card-icon">
                     <svg viewBox="0 0 24 24">
                         <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
@@ -79,15 +88,12 @@
                 </div>
                 <div class="card-text">
                     <h2 class="card-title">اللوائح والأنظمة</h2>
-                    <p class="card-subtitle">اللوائح والأنظمة والسياسات الداخلية</p>
+                    <p class="card-subtitle">اللوائح والأنظمة والسياسات الداخلية — قريباً</p>
                 </div>
-                <div class="card-chevron">
-                    <svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
-                </div>
-            </a>
+            </div>
             
             <!-- الإجراءات -->
-            <a href="#" class="portal-card">
+            <div class="portal-card portal-card--unavailable" aria-disabled="true">
                 <div class="card-icon">
                     <svg viewBox="0 0 24 24">
                         <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
@@ -98,12 +104,9 @@
                 </div>
                 <div class="card-text">
                     <h2 class="card-title">الإجراءات</h2>
-                    <p class="card-subtitle">دليل الإجراءات والسياسات المعتمدة</p>
+                    <p class="card-subtitle">دليل الإجراءات والسياسات المعتمدة — قريباً</p>
                 </div>
-                <div class="card-chevron">
-                    <svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
-                </div>
-            </a>
+            </div>
         </div>
     </div>
 
@@ -115,64 +118,39 @@
         </h2>
         <div class="accreditation-grid">
             <div class="acc-card" style="flex-direction: column;">
-                <div class="acc-icon" style="color: #E53935;">
-                    <svg width="44" height="44" viewBox="0 0 40 40" fill="currentColor">
-                        <path d="M20 4 L24 14 L34 16 L26 23 L28 34 L20 28 L12 34 L14 23 L6 16 L16 14 Z"/>
-                    </svg>
+                <div class="acc-icon">
+                    <img src="{{ asset('landingPage/accreditation-canada.png') }}" alt="Accreditation Canada">
                 </div>
                 <div class="acc-text" style="direction:ltr;">ACCREDITATION CANADA<br>Accredited</div>
             </div>
             <div class="acc-card">
-                <div class="acc-icon" style="color: #D4AF37;">
-                    <svg width="44" height="44" viewBox="0 0 40 40">
-                        <circle cx="20" cy="20" r="18" fill="url(#goldGrad)"/>
-                        <defs>
-                            <linearGradient id="goldGrad" x1="0" y1="0" x2="1" y2="1">
-                                <stop offset="0%" stop-color="#FFF2CD"/>
-                                <stop offset="50%" stop-color="#D4AF37"/>
-                                <stop offset="100%" stop-color="#997A00"/>
-                            </linearGradient>
-                        </defs>
-                        <circle cx="20" cy="20" r="14" fill="none" stroke="#FFF" stroke-width="1.5"/>
-                    </svg>
+                <div class="acc-icon">
+                    <img src="{{ asset('landingPage/accreditation-sbmah.png') }}" alt="المجلس الصحي السعودي">
                 </div>
                 <div class="acc-text">الاعتماد المؤسسي سباهي<br>معتمد</div>
             </div>
             <div class="acc-card">
-                <div class="acc-icon" style="color: var(--navy-800);">
-                    <svg width="44" height="44" viewBox="0 0 40 40" fill="currentColor">
-                        <circle cx="20" cy="20" r="16" fill="none" stroke="currentColor" stroke-width="2"/>
-                        <circle cx="20" cy="20" r="10"/>
-                    </svg>
+                <div class="acc-icon">
+                    <img src="{{ asset('landingPage/accreditation-scfhs.png') }}" alt="الهيئة السعودية للتخصصات الصحية">
                 </div>
                 <div class="acc-text">الهيئة السعودية للتخصصات الصحية</div>
             </div>
             <div class="acc-card">
-                <div class="acc-icon" style="color: #4CAF50;">
-                    <svg width="44" height="44" viewBox="0 0 40 40" fill="currentColor">
-                        <path d="M20 5 L23 15 L33 15 L25 22 L28 32 L20 26 L12 32 L15 22 L7 15 L17 15 Z" fill-opacity="0.3"/>
-                        <path d="M20 10 L21 16 L27 16 L22 20 L24 26 L20 22 L16 26 L18 20 L13 16 L19 16 Z"/>
-                    </svg>
+                <div class="acc-icon">
+                    <img src="{{ asset('landingPage/accreditation-moh.png') }}" alt="وزارة الصحة">
                 </div>
                 <div class="acc-text">وزارة الصحة<br>Ministry of Health</div>
             </div>
             <div class="acc-card" style="flex-direction: row; gap: 8px;">
                 <div class="acc-text" style="text-align: right;">المركز السعودي لاعتماد المنشآت الصحية<br>معتمد</div>
-                <div class="acc-icon" style="color: #4CAF50; margin:0;">
-                    <svg width="44" height="44" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="3">
-                        <circle cx="20" cy="20" r="16"/>
-                        <path d="M20 4 A16 16 0 0 1 36 20" stroke="#FF9800"/>
-                        <text x="50%" y="24" dominant-baseline="middle" text-anchor="middle" font-family="sans-serif" font-weight="900" font-size="10" stroke="none" fill="#4CAF50">CBAHI</text>
-                    </svg>
+                <div class="acc-icon" style="margin:0;">
+                    <img src="{{ asset('landingPage/accreditation-cbahi.png') }}" alt="المركز السعودي لاعتماد المنشآت الصحية">
                 </div>
             </div>
             <div class="acc-card" style="flex-direction: row; gap: 8px;">
                 <div class="acc-text" style="text-align: right;">نظام إدارة الجودة<br>معتمد</div>
-                <div class="acc-icon" style="color: var(--navy-800); margin:0; flex-direction: column; align-items: center; justify-content: center;">
-                    <svg width="50" height="24" viewBox="0 0 50 24" fill="currentColor">
-                        <text x="50%" y="16" dominant-baseline="middle" text-anchor="middle" font-family="sans-serif" font-weight="900" font-size="18">ISO⊕</text>
-                    </svg>
-                    <div style="font-size: 9px; font-weight: bold; direction: ltr; font-family: sans-serif; line-height: 1;">9001:2015</div>
+                <div class="acc-icon" style="margin:0; flex-direction: column; align-items: center; justify-content: center;">
+                    <img src="{{ asset('landingPage/accreditation-iso.png') }}" alt="ISO 9001:2015">
                 </div>
             </div>
         </div>
@@ -257,30 +235,65 @@
                 <div class="footer-copy">مستشفيات الحمادي 2026 © جميع الحقوق محفوظة</div>
             </div>
             <div class="footer-center">
-                <a href="#" class="footer-link">سياسة الخصوصية</a>
+                <span class="footer-link footer-link--unavailable" aria-disabled="true">سياسة الخصوصية</span>
                 <div class="footer-sep"></div>
-                <a href="#" class="footer-link">الشروط والأحكام</a>
+                <span class="footer-link footer-link--unavailable" aria-disabled="true">الشروط والأحكام</span>
                 <div class="footer-sep"></div>
-                <a href="#" class="footer-link">خريطة الموقع</a>
+                <span class="footer-link footer-link--unavailable" aria-disabled="true">خريطة الموقع</span>
             </div>
-            <div class="footer-left">
-                <a href="#" class="social-icon">
-                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
-                </a>
-                <a href="#" class="social-icon">
-                    <svg viewBox="0 0 24 24" style="stroke: var(--navy-800); fill: none;" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><circle cx="12" cy="12" r="4"></circle><circle cx="17.5" cy="6.5" r="1"></circle></svg>
-                </a>
-                <a href="#" class="social-icon">
-                    <svg viewBox="0 0 24 24" fill="currentColor"><rect x="2" y="6" width="20" height="12" rx="3"></rect><polygon points="10,9 10,15 15,12" fill="white"></polygon></svg>
-                </a>
-                <a href="#" class="social-icon">
-                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-                </a>
-                <a href="#" class="social-icon">
-                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
-                </a>
-            </div>
+            <div class="footer-left" aria-hidden="true"></div>
         </div>
     </div>
+
+    <script>
+        (function () {
+            var hero = document.getElementById('heroSlider');
+            if (!hero) return;
+
+            var slides = hero.querySelectorAll('.hero-slide');
+            var dotsBox = hero.querySelector('.hero-dots');
+            if (!dotsBox || slides.length < 2) return;
+
+            var prevBtn = hero.querySelector('.hero-side-arrow--prev');
+            var nextBtn = hero.querySelector('.hero-side-arrow--next');
+            prevBtn.addEventListener('click', function () { go(index - 1); restart(); });
+            nextBtn.addEventListener('click', function () { go(index + 1); restart(); });
+            prevBtn.hidden = false;
+            nextBtn.hidden = false;
+
+            var index = 0;
+            var timer = null;
+            var INTERVAL = 6000;
+
+            slides.forEach(function (slide, i) {
+                var dot = document.createElement('button');
+                dot.type = 'button';
+                dot.className = 'hero-dot' + (i === 0 ? ' is-active' : '');
+                dot.setAttribute('aria-label', 'صورة الفرع ' + (i + 1));
+                dot.addEventListener('click', function () {
+                    go(i);
+                    restart();
+                });
+                dotsBox.appendChild(dot);
+            });
+
+            var dots = dotsBox.querySelectorAll('.hero-dot');
+
+            function go(i) {
+                slides[index].classList.remove('is-active');
+                dots[index].classList.remove('is-active');
+                index = (i + slides.length) % slides.length;
+                slides[index].classList.add('is-active');
+                dots[index].classList.add('is-active');
+            }
+
+            function restart() {
+                clearInterval(timer);
+                timer = setInterval(function () { go(index + 1); }, INTERVAL);
+            }
+
+            restart();
+        })();
+    </script>
 </body>
 </html>

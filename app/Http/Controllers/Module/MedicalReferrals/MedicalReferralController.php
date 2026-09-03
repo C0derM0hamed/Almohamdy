@@ -33,9 +33,13 @@ class MedicalReferralController extends Controller
         ]);
     }
 
-    public function create(string $type): View
+    public function create(Request $request, string $type): View
     {
-        return view('medical-referrals.create', $this->service->options() + ['definition' => $this->service->definition($type), 'type' => $type]);
+        return view('medical-referrals.create', $this->service->options() + [
+            'definition' => $this->service->definition($type),
+            'type' => $type,
+            'legacyLanguage' => $request->query('lang', 'ar') === 'en' ? 'en' : 'ar',
+        ]);
     }
 
     public function store(Request $request, string $type): RedirectResponse

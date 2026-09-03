@@ -4,6 +4,7 @@ namespace App\Http\Requests\Complaints;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Schema;
 
 class StoreComplaintRequest extends FormRequest
 {
@@ -18,13 +19,18 @@ class StoreComplaintRequest extends FormRequest
 
     public function rules(): array
     {
+        $departmentRule = Rule::exists('branches_departments', 'id');
+        if (Schema::hasColumn('branches_departments', 'publish')) {
+            $departmentRule->where('publish', 1);
+        }
+
         return [
             'complainant_name' => ['required', 'string', 'max:100'],
             'patient_name' => ['nullable', 'string', 'max:255'],
             'mobile' => ['nullable', 'regex:/^[0-9+ ]{8,20}$/'],
             'id_no' => ['nullable', 'digits_between:1,12'],
             'file_number' => ['nullable', 'string', 'max:20'],
-            'branches_departments_id' => ['required', 'integer', Rule::exists('branches_departments', 'id')->where('publish', 1)],
+            'branches_departments_id' => ['required', 'integer', $departmentRule],
             'defendant' => ['required', 'string', 'max:100'],
             'details' => ['required', 'string', 'max:10000'],
             'type' => ['required', 'integer', Rule::in([1, 2])],

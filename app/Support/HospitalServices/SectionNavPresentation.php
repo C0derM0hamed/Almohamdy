@@ -138,6 +138,38 @@ final class SectionNavPresentation
         return self::ICONS[$sectionId] ?? 'bi-grid';
     }
 
+    public static function figmaCardIcon(int $sectionId): string
+    {
+        $map = [
+            1 => 'images/figma/services/card-hospital.svg',
+            2 => 'images/figma/services/card-scan.svg',
+            3 => 'images/figma/services/card-flask.svg',
+            4 => 'images/figma/services/card-physio.svg',
+            6 => 'images/figma/services/card-hospital.svg',
+            7 => 'images/figma/services/card-buildings.svg',
+            8 => 'images/figma/services/card-hospital.svg',
+            9 => 'images/figma/services/card-scan.svg',
+            10 => 'images/figma/services/card-flask.svg',
+            11 => 'images/figma/services/card-percent.svg',
+            12 => 'images/figma/services/card-buildings.svg',
+        ];
+
+        return asset($map[$sectionId] ?? 'images/figma/services/card-hospital.svg');
+    }
+
+    public static function figmaHeroIcon(int $sectionId): string
+    {
+        if ($sectionId === 11) {
+            return asset('images/figma/services/hero-percent.svg');
+        }
+
+        if (in_array($sectionId, [12, 7], true)) {
+            return asset('images/figma/services/hero-buildings.svg');
+        }
+
+        return asset('images/figma/services/hero.svg');
+    }
+
     public static function descriptionFor(int $sectionId): string
     {
         $locale = app()->getLocale() === 'ar' ? 'ar' : 'en';

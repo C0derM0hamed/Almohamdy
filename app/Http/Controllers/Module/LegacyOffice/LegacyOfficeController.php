@@ -353,7 +353,20 @@ class LegacyOfficeController extends Controller
             DB::table('memo_send_to')->where('user_id', session('hr_user_id'))->whereNull('seen_at')->update(['seen_at' => now()]);
         }
 
-        return view('legacy-office.memos', $this->common(['records' => $query->orderByDesc('memo.id')->paginate(25)->withQueryString(), 'types' => $this->types('memo_types'), 'received' => $received, 'users' => $this->branchUsers()]));
+        $records = $query->orderByDesc('memo.id')->paginate(25)->withQueryString();
+        $recipientIds = DB::table('memo_send_to')
+            ->whereIn('memo_id', $records->getCollection()->pluck('id')->all())
+            ->get(['memo_id', 'user_id'])
+            ->groupBy('memo_id')
+            ->map(fn ($rows) => $rows->pluck('user_id')->map(fn ($id) => (int) $id)->all());
+
+        return view('legacy-office.memos', $this->common([
+            'records' => $records,
+            'recipientIds' => $recipientIds,
+            'types' => $this->types('memo_types'),
+            'received' => $received,
+            'users' => $this->branchUsers(),
+        ]));
     }
 
     private function validateMemo(Request $request): array

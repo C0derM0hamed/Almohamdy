@@ -1,0 +1,1175 @@
+/* Shared Figma components extracted from iSWZv3mAjNs7RjuhrnXtUl.
+   Use with .hm-fm. Do not restyle dashboard/doctors/sidebar from here. */
+
+.hm-fm .fm-btn--cta {
+    height: var(--hm-size-btn);
+    padding: 0 20px;
+    border: 0;
+    border-radius: var(--hm-radius-12);
+    background: var(--hm-primary-cta);
+    color: var(--hm-on-primary);
+    box-shadow: var(--hm-shadow-cta);
+    font-size: 16px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.hm-fm .fm-btn--cta:hover {
+    color: var(--hm-on-primary);
+    background: var(--hm-primary-deep);
+}
+
+.hm-fm .fm-btn--ghost {
+    height: 44px;
+    padding: 0 20px;
+    border: 1px solid var(--hm-primary);
+    border-radius: var(--hm-radius-12);
+    background: var(--hm-surface);
+    color: var(--hm-primary);
+    font-size: 14px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    text-decoration: none;
+}
+
+.hm-fm .fm-btn--ghost:hover {
+    background: var(--hm-tint);
+    color: var(--hm-primary);
+}
+
+.hm-fm .fm-btn--icon {
+    width: 44px;
+    height: 44px;
+    border: 0;
+    border-radius: var(--hm-radius-12);
+    background: var(--hm-chip);
+    color: var(--hm-primary);
+    display: inline-grid;
+    place-items: center;
+}
+
+.hm-fm .fm-card__badge {
+    border-radius: var(--hm-radius-pill);
+    background: var(--hm-chip-2);
+}
+
+.hm-fm .fm-card__dot {
+    background: var(--hm-primary);
+}
+
+.hm-fm .fm-tabs {
+    background: var(--hm-surface);
+    border: 1px solid var(--hm-line-3);
+    border-radius: var(--hm-radius-14);
+    padding: 4px;
+    height: 60px;
+    gap: 4px;
+}
+
+.hm-fm .fm-tabs a {
+    color: var(--hm-heading);
+    font-size: 16px;
+}
+
+.hm-fm .fm-tabs a.is-active {
+    background: var(--hm-primary-cta);
+    color: var(--hm-on-primary);
+    box-shadow: var(--hm-shadow-tab);
+}
+
+.hm-fm .fm-stat--fill {
+    color: var(--hm-on-primary);
+    box-shadow: var(--hm-shadow-stat);
+}
+
+.hm-fm .fm-stat--fill.fm-stat--primary {
+    background: var(--hm-primary);
+}
+
+.hm-fm .fm-stat--fill.fm-stat--dark {
+    background: var(--hm-dark);
+}
+
+.hm-fm .fm-stat--fill .fm-stat__label,
+.hm-fm .fm-stat--fill .fm-stat__value {
+    color: var(--hm-on-primary);
+}
+
+.hm-fm .fm-stat--fill .fm-stat__icon {
+    background: var(--hm-surface);
+    color: var(--hm-primary);
+    border-radius: var(--hm-radius-pill);
+}
+
+.hm-fm .fm-badge {
+    display: inline-flex;
+    align-items: center;
+    height: 30px;
+    padding: 0 12px;
+    border-radius: var(--hm-radius-10);
+    background: var(--hm-chip-3);
+    color: var(--hm-primary);
+    font-size: 14px;
+    font-weight: 500;
+    gap: 6px;
+    text-decoration: none;
+}
+
+.hm-fm .fm-badge--muted {
+    background: var(--hm-chip-4);
+    color: var(--hm-muted);
+}
+
+.hm-fm .fm-avatar {
+    width: var(--hm-size-avatar);
+    height: var(--hm-size-avatar);
+    border-radius: var(--hm-radius-pill);
+    background: var(--hm-primary);
+    color: var(--hm-on-primary);
+    display: inline-grid;
+    place-items: center;
+    font-size: 14px;
+    font-weight: 700;
+    flex: 0 0 var(--hm-size-avatar);
+}
+
+.hm-fm .fm-avatar--danger {
+    background: var(--hm-danger);
+}
+
+.hm-fm .fm-table-wrap {
+    border-radius: var(--hm-radius-20);
+    box-shadow: var(--hm-shadow-table);
+}
+
+.hm-fm .fm-table th {
+    background: var(--hm-table-head);
+    border-bottom-color: var(--hm-line-3);
+    color: var(--hm-muted);
+    letter-spacing: 0.325px;
+}
+
+.hm-fm .fm-table td {
+    border-bottom-color: var(--hm-line-row);
+}
+
+.hm-fm .fm-table tbody tr:last-child td {
+    border-bottom: 0;
+}
+
+.hm-fm .fm-pager {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 16px 24px;
+    border-top: 1px solid var(--hm-line-3);
+    background: var(--hm-surface);
+}
+
+.hm-fm .fm-pager__btns {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.hm-fm .fm-pager a,
+.hm-fm .fm-pager span.fm-pager__num {
+    min-width: var(--hm-size-pager);
+    height: var(--hm-size-pager);
+    padding: 0 12px;
+    border: 1px solid var(--hm-line-3);
+    border-radius: var(--hm-radius-10);
+    background: var(--hm-surface);
+    color: var(--hm-muted);
+    font-size: 13px;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    text-decoration: none;
+}
+
+.hm-fm .fm-pager .fm-pager__num.is-active,
+.hm-fm .fm-pager a[aria-current="page"] {
+    background: var(--hm-primary-cta);
+    border-color: var(--hm-primary-cta);
+    color: var(--hm-on-primary);
+    font-weight: 600;
+}
+
+.hm-fm .fm-pager__meta {
+    color: var(--hm-muted-2);
+    font-size: 14px;
+}
+
+.hm-fm .fm-pager__meta strong {
+    color: var(--hm-heading);
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.hm-fm .fm-input:focus,
+.hm-fm .fm-search__query:focus-within,
+.hm-fm select.fm-input:focus {
+    outline: 0;
+    border-color: var(--hm-primary);
+}
+
+.hm-fm .fm-btn--search:hover,
+.hm-fm .fm-btn--primary:hover {
+    background: var(--hm-primary-deep);
+}
+
+.hm-fm .fm-btn--reset:hover {
+    background: var(--hm-chip);
+    color: var(--hm-primary-deep);
+}
+
+.hm-fm .fm-pkg {
+    background: var(--hm-surface);
+    border: 1px solid var(--hm-line-4);
+    border-radius: var(--hm-radius-24);
+    box-shadow: var(--hm-shadow-pkg);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    width: 100%;
+    max-width: none;
+}
+
+.hm-fm .fm-pkg__hero {
+    position: relative;
+    height: 136px;
+    background: var(--hm-primary);
+    overflow: hidden;
+    padding: 16px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-end;
+    gap: 8px;
+}
+
+.hm-hs--section .fm-pkg--rooms .fm-pkg__hero {
+    height: 107px;
+}
+
+.hm-fm .fm-pkg__hero::before {
+    content: "";
+    position: absolute;
+    left: -32px;
+    bottom: -36px;
+    width: 112px;
+    height: 112px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: var(--hm-radius-pill);
+}
+
+.hm-fm .fm-pkg__tools {
+    position: absolute;
+    inset-inline: 16px 20px;
+    top: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.hm-fm .fm-pkg__more,
+.hm-fm .fm-pkg__mark {
+    width: 36px;
+    height: 36px;
+    border-radius: var(--hm-radius-pill);
+    display: grid;
+    place-items: center;
+    border: 0;
+}
+
+.hm-fm .fm-pkg__more {
+    background: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(2px);
+}
+
+.hm-fm .fm-pkg__mark {
+    background: rgba(255, 255, 255, 0.95);
+    box-shadow: var(--hm-shadow-pkg-icon);
+}
+
+.hm-fm .fm-pkg__title {
+    margin: 0;
+    color: var(--hm-on-primary);
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 22.4px;
+    text-align: start;
+    position: relative;
+}
+
+.hm-hs--section .fm-pkg--rooms .fm-pkg__title {
+    max-width: calc(100% - 44px);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.hm-hs--section .fm-pkg--agreements .fm-pkg__title {
+    max-width: calc(100% - 44px);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.hm-hs--section .fm-pkg--rooms .fm-pkg__tools {
+    left: 16px;
+    right: 20px;
+    direction: ltr;
+}
+
+.hm-fm .fm-pkg__code {
+    position: relative;
+    height: 27px;
+    padding: 0 10px;
+    border-radius: var(--hm-radius-pill);
+    background: rgba(255, 255, 255, 0.18);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: var(--hm-on-primary);
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.66px;
+    display: inline-flex;
+    align-items: center;
+}
+
+.hm-fm .fm-pkg__body {
+    padding: 16px 20px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    flex: 1 1 auto;
+}
+
+.hm-fm .fm-pkg__meta {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--hm-line-pkg);
+}
+
+.hm-fm .fm-pkg__meta-item {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+}
+
+.hm-fm .fm-pkg__meta-item:first-child {
+    padding-inline-end: 12px;
+    border-inline-end: 1px solid var(--hm-line-4);
+}
+
+.hm-fm .fm-pkg__label {
+    color: var(--hm-primary);
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.hm-fm .fm-pkg__value {
+    color: var(--hm-heading);
+    font-size: 14px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.hm-fm .fm-pkg__price {
+    color: var(--hm-price);
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 21px;
+}
+
+.hm-fm .fm-pkg__currency {
+    color: var(--hm-muted-2);
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.hm-fm .fm-pkg__note {
+    background: var(--hm-note-bg);
+    border: 1px solid var(--hm-line-4);
+    border-radius: var(--hm-radius-14);
+    padding: 12px 16px;
+}
+
+.hm-fm .fm-pkg__note-title {
+    color: var(--hm-heading);
+    font-size: 14px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0 0 4px;
+}
+
+.hm-fm .fm-pkg__note p {
+    margin: 0;
+    color: var(--hm-note);
+    font-size: 14px;
+    line-height: 21px;
+}
+
+.hm-fm .fm-pkg__desc-head {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 8px;
+    color: var(--hm-primary);
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.hm-fm .fm-pkg__desc {
+    margin: 0;
+    color: var(--hm-body-soft);
+    font-size: 14px;
+    line-height: 25px;
+}
+
+.hm-fm .fm-pkg__foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 16px;
+    border-top: 1px solid var(--hm-line-pkg);
+    margin-top: auto;
+}
+
+.hm-fm .fm-icon-20 {
+    width: 20px;
+    height: 20px;
+    border-radius: 6px;
+    background: var(--hm-chip);
+    display: inline-grid;
+    place-items: center;
+    flex: 0 0 20px;
+}
+
+.hm-fm .fm-icon-22 {
+    width: 22px;
+    height: 22px;
+    border-radius: var(--hm-radius-pill);
+    background: var(--hm-chip);
+    display: inline-grid;
+    place-items: center;
+    flex: 0 0 22px;
+}
+
+.hm-fm .fm-field {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+    flex: 1 1 160px;
+    min-width: 0;
+}
+
+.hm-fm .fm-btn--cta img {
+    width: 18px;
+    height: 18px;
+    display: block;
+}
+
+html[dir="ltr"] .hm-fm .fm-pkg__foot .fm-btn--icon img {
+    transform: scaleX(-1);
+}
+
+.hm-fm .fm-section > .fm-pager {
+    background: transparent;
+    border: 0;
+    padding: 16px 0 0;
+}
+
+.hm-fm .fm-pkg-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    justify-content: stretch;
+    gap: var(--hm-gap);
+}
+
+.hm-fm button.fm-pkg__more,
+.hm-fm button.fm-btn--icon,
+.hm-fm button.fm-btn--ghost {
+    cursor: pointer;
+    font: inherit;
+}
+
+.hm-fm .fm-pkg__mark {
+    color: var(--hm-primary);
+}
+
+.hm-fm .fm-pkg__discounts {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px 8px;
+    width: 100%;
+}
+
+.hm-fm .fm-pkg__discount {
+    position: relative;
+    height: 68px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 14px;
+    border-radius: 14px;
+    background: #faf9fe;
+    border: 1px solid #efedf6;
+    overflow: hidden;
+}
+
+.hm-fm .fm-pkg__discount::before {
+    content: "";
+    position: absolute;
+    inset-inline-start: 0;
+    top: 1px;
+    width: 3px;
+    height: 66px;
+    background: var(--hm-primary);
+}
+
+.hm-fm .fm-pkg__discount .fm-pkg__label {
+    color: var(--hm-muted-2, #8c8a98);
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 18px;
+    text-align: center;
+}
+
+.hm-fm .fm-pkg__percent {
+    color: var(--hm-primary);
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 20px;
+}
+
+.hm-fm .fm-pkg .hm-service-card__photos {
+    margin: 0;
+}
+
+/* Room cards in the Figma section frames use the full card-body width for the
+   16:10 photograph.  The legacy gallery preview constrained it to 14rem and
+   added its own padding/header, making the image substantially undersized. */
+.hm-hs--section .fm-pkg .hm-service-card__photos--preview {
+    width: 100%;
+    padding: 0;
+}
+
+.hm-hs--section .fm-pkg .hm-service-card__photos--preview .hm-service-card__photos-head {
+    display: none;
+}
+
+.hm-hs--section .fm-pkg .hm-service-card__photos--preview .hm-service-card__photo-preview {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16 / 10;
+    flex: none;
+    max-width: none;
+    max-height: none;
+    margin: 0;
+    border-radius: 18px;
+}
+
+.hm-hs--section .fm-pkg--rooms .fm-pkg__meta {
+    height: 63px;
+    box-sizing: border-box;
+}
+
+.hm-hs--section .fm-pkg .hm-service-card__photo-count-overlay {
+    position: absolute;
+    right: 11px;
+    bottom: 8px;
+    z-index: 1;
+    width: 74px;
+    height: 32px;
+    padding: 0 10px;
+    box-sizing: border-box;
+    border-radius: 999px;
+    background: rgba(26, 20, 51, 0.55);
+    color: #fff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1;
+    white-space: nowrap;
+    pointer-events: none;
+}
+
+.hm-hs--section .fm-pkg .hm-service-card__photo-count-overlay .bi {
+    font-size: 14px;
+    line-height: 1;
+}
+
+.hm-hs--section .fm-pkg .hm-service-card__photo-count-overlay + .hm-service-card__photo-zoom-hint {
+    display: none;
+}
+
+.hm-fm .hs-dash-group {
+    position: relative;
+}
+
+.hm-fm .hs-dash-group__flyout {
+    position: absolute;
+    inset-inline-start: 0;
+    top: calc(100% + 10px);
+    min-width: 18rem;
+    display: none;
+    flex-direction: column;
+    background: var(--hm-surface);
+    border: 1px solid var(--hm-line-4);
+    border-radius: var(--hm-radius-16);
+    box-shadow: var(--hm-shadow-card);
+    z-index: 30;
+    padding: 6px 0;
+}
+
+.hm-fm .hs-dash-group:hover .hs-dash-group__flyout,
+.hm-fm .hs-dash-group:focus-within .hs-dash-group__flyout {
+    display: flex;
+}
+
+.hm-fm .hs-dash-group__item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 16px;
+    color: var(--hm-ink);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.hm-fm .hs-dash-group__item:hover {
+    background: var(--hm-tint);
+    color: var(--hm-primary);
+}
+
+.hm-fm .hs-dash-group__item.is-empty {
+    opacity: 0.72;
+}
+
+.hm-fm .fm-stat--fill.is-active {
+    box-shadow: var(--hm-shadow-stat), 0 0 0 2px #fff, 0 0 0 4px var(--hm-primary-cta);
+}
+
+.hm-fm .fm-stat--fill .fm-stat__icon img {
+    width: 20px;
+    height: 20px;
+    display: block;
+    object-fit: contain;
+}
+
+.hm-fm .fm-tabs a img {
+    width: 18px;
+    height: 18px;
+    display: block;
+}
+
+.hm-fm .fm-table-scroll {
+    overflow-x: auto;
+}
+
+.hm-fm .fm-date {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    white-space: nowrap;
+}
+
+.hm-fm .fm-date__day {
+    color: var(--hm-heading);
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.hm-fm .fm-date__time {
+    color: var(--hm-muted);
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.hm-fm .fm-person {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--hm-heading);
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.hm-fm .fm-person:hover {
+    color: var(--hm-primary);
+}
+
+.hm-fm .fm-search .hm-searchable-select {
+    width: 100%;
+}
+
+.hm-fm .fm-search .hm-clinician-filter-field__label,
+.hm-fm .hm-searchable-select .hm-clinician-filter-field__label {
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--fm-ink);
+    margin-bottom: 8px;
+}
+
+.hm-fm .fm-search .hm-searchable-select__trigger {
+    height: 52px;
+    min-height: 52px;
+    border: 1px solid var(--fm-line);
+    border-radius: 16px;
+    padding: 0 16px;
+    font-size: 16px;
+    box-shadow: none;
+}
+
+.hm-fm .fm-search .hm-searchable-select__trigger:hover,
+.hm-fm .fm-search .hm-searchable-select__trigger:focus-visible {
+    border-color: var(--hm-primary);
+    box-shadow: none;
+}
+
+.hm-fm .fm-inq--list .inq-status-cell {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.hm-fm .fm-inq--list .inq-icon-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 10px;
+    border: 1px solid var(--hm-line-3);
+    background: var(--hm-surface);
+    display: inline-grid;
+    place-items: center;
+    padding: 0;
+    cursor: pointer;
+}
+
+.hm-fm .fm-inq--list .inq-icon-btn img {
+    width: 14px;
+    height: 14px;
+    display: block;
+}
+
+@media (max-width: 1199.98px) {
+    .hm-fm .fm-pkg-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 767.98px) {
+    .hm-fm .fm-pkg__meta {
+        grid-template-columns: 1fr;
+    }
+
+    .hm-fm .fm-pkg__meta-item:first-child {
+        padding-inline-end: 0;
+        border-inline-end: 0;
+        padding-bottom: 12px;
+        border-bottom: 1px solid var(--hm-line-4);
+    }
+
+    .hm-fm .fm-pkg-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .hm-fm .fm-pager {
+        flex-wrap: wrap;
+    }
+
+    .hm-fm .fm-inq-toolbar {
+        flex-wrap: wrap;
+    }
+}
+
+/* Remaining application pages
+   ---------------------------
+   Frames after the corporate-communications group reuse the same Figma
+   surface, form, table and action primitives. Keep this layer global and
+   structural so workflow-specific Blade and permissions remain untouched. */
+.hm-app-body {
+    background: var(--hm-page);
+}
+
+.hm-app-body .hm-page-root {
+    color: var(--hm-ink);
+}
+
+.hm-page-root > :is(.container-fluid, .hm-module-page, .hm-wan, .hm-el, .hm-hs, .hm-cp, .hm-dda):not(.hm-fm),
+.hm-page-root > form,
+.hm-page-root > .row,
+.hm-page-root > .card,
+.hm-page-root > .alert,
+.hm-page-root > .d-flex,
+.hm-page-root > .mb-4 {
+    width: 100%;
+    max-width: var(--hm-content);
+    margin-inline-end: auto;
+}
+
+/* Page title/primary action rows used by the remaining plain Blade pages. */
+.hm-page-root > .d-flex:first-child,
+.hm-page-root > .mb-4:first-child,
+.hm-page-root > .container-fluid > .d-flex:first-child,
+.hm-page-root > .hm-module-page > .d-flex:first-child {
+    min-height: 88px;
+    padding: 18px 24px;
+    border: 1px solid var(--hm-line-3);
+    border-radius: var(--hm-radius-20);
+    background: var(--hm-surface);
+    box-shadow: var(--hm-shadow-card);
+}
+
+.hm-page-root > .d-flex:first-child h1,
+.hm-page-root > .mb-4:first-child h1,
+.hm-page-root > .container-fluid > .d-flex:first-child h1,
+.hm-page-root > .hm-module-page > .d-flex:first-child h1,
+.hm-page-root .wan-head h1 {
+    margin: 0 0 6px;
+    color: var(--hm-heading);
+    font-size: 21px;
+    font-weight: 700;
+    line-height: 1.45;
+}
+
+.hm-page-root > .d-flex:first-child p,
+.hm-page-root > .mb-4:first-child p,
+.hm-page-root > .container-fluid > .d-flex:first-child p,
+.hm-page-root > .hm-module-page > .d-flex:first-child p,
+.hm-page-root .wan-head p {
+    margin: 0;
+    color: var(--hm-muted);
+    font-size: 13px;
+    line-height: 1.7;
+}
+
+/* Cards and panels shared by lists, dashboards, forms and detail pages. */
+.hm-page-root :is(.card, .hs-filter-card, .hs-list-panel, .wan-panel, .wan-summary-card,
+    .wan-detail-panel, .el-filter-panel, .el-list-panel, .cp-insight-card,
+    .cp-panel, .dda-stat-card, .dda-list-panel, .dda-filter-card,
+    .hm-search-form, .hm-hope-module-card) {
+    border: 1px solid var(--hm-line-3) !important;
+    border-radius: var(--hm-radius-20) !important;
+    background: var(--hm-surface) !important;
+    box-shadow: var(--hm-shadow-card) !important;
+}
+
+.hm-page-root .card-header,
+.hm-page-root .card-footer {
+    padding: 16px 24px;
+    border-color: var(--hm-line-3);
+    background: var(--hm-surface);
+}
+
+.hm-page-root .card-body {
+    padding: 24px;
+}
+
+/* Primary actions use the exact shared CTA dimensions and tone. */
+.hm-page-root :is(.btn-primary, .hm-btn--primary, .hs-btn--primary):not(.btn-sm) {
+    min-height: var(--hm-size-btn);
+    padding-inline: 20px;
+    border: 0;
+    border-radius: var(--hm-radius-12);
+    background: var(--hm-primary-cta);
+    color: var(--hm-on-primary);
+    box-shadow: var(--hm-shadow-cta);
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.hm-page-root :is(.btn-primary, .hm-btn--primary, .hs-btn--primary):not(.btn-sm):hover,
+.hm-page-root :is(.btn-primary, .hm-btn--primary, .hs-btn--primary):not(.btn-sm):focus {
+    background: var(--hm-primary-deep);
+    color: var(--hm-on-primary);
+}
+
+.hm-page-root :is(.btn-outline-primary, .hm-btn--outline, .btn-outline-secondary):not(.btn-sm) {
+    min-height: var(--hm-size-btn);
+    padding-inline: 18px;
+    border-color: var(--hm-line-3);
+    border-radius: var(--hm-radius-12);
+    background: var(--hm-surface);
+    color: var(--hm-primary);
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.hm-page-root :is(.btn-outline-primary, .hm-btn--outline, .btn-outline-secondary):not(.btn-sm):hover {
+    border-color: var(--hm-primary);
+    background: var(--hm-tint);
+    color: var(--hm-primary-deep);
+}
+
+/* Shared filter fields from absence, leave, training, reports and admin. */
+.hm-page-root :is(.form-control, .form-select, .hm-search-field__input) {
+    min-height: var(--hm-size-input);
+    border: 1px solid var(--hm-line);
+    border-radius: var(--hm-radius-16);
+    background-color: var(--hm-surface);
+    color: var(--hm-heading);
+    font-size: 13px;
+    box-shadow: none;
+}
+
+.hm-page-root textarea.form-control {
+    min-height: 120px;
+    padding-block: 14px;
+}
+
+.hm-page-root :is(.form-control, .form-select, .hm-search-field__input):focus {
+    border-color: var(--hm-primary);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.hm-page-root :is(.form-label, .hs-field label, .hm-search-field label) {
+    margin-bottom: 8px;
+    color: var(--hm-heading);
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.hm-page-root .input-group > :is(.form-control, .form-select):not(:first-child) {
+    border-start-start-radius: 0;
+    border-end-start-radius: 0;
+}
+
+.hm-page-root .input-group > :is(.btn, .input-group-text) {
+    border-color: var(--hm-line);
+    background: var(--hm-tint);
+    color: var(--hm-primary);
+}
+
+/* Data tables across the remaining Figma frames. */
+.hm-page-root .table-responsive {
+    border-radius: var(--hm-radius-20);
+}
+
+.hm-page-root table.table {
+    margin-bottom: 0;
+    color: var(--hm-heading);
+}
+
+.hm-page-root table.table > thead > tr > th {
+    height: 50px;
+    padding: 0 14px;
+    border-bottom: 1px solid var(--hm-line-3);
+    background: var(--hm-table-head);
+    color: var(--hm-muted);
+    font-size: 12px;
+    font-weight: 600;
+    vertical-align: middle;
+    white-space: nowrap;
+}
+
+.hm-page-root table.table > tbody > tr > td {
+    min-height: 72px;
+    padding: 14px;
+    border-color: var(--hm-line-row);
+    color: var(--hm-heading);
+    font-size: 13px;
+    vertical-align: middle;
+}
+
+.hm-page-root table.table > tbody > tr:last-child > td {
+    border-bottom: 0;
+}
+
+.hm-page-root table.table-hover > tbody > tr:hover > * {
+    --bs-table-accent-bg: #fcfbff;
+    background: #fcfbff;
+    color: var(--hm-heading);
+}
+
+.hm-page-root .btn-sm {
+    min-width: 34px;
+    min-height: 34px;
+    border-color: var(--hm-line-3);
+    border-radius: var(--hm-radius-10);
+    background: var(--hm-surface);
+    color: var(--hm-primary);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.hm-page-root .btn-sm:hover {
+    border-color: var(--hm-primary);
+    background: var(--hm-tint);
+    color: var(--hm-primary-deep);
+}
+
+.hm-page-root .badge {
+    padding: 7px 11px;
+    border-radius: var(--hm-radius-pill);
+    font-size: 11px;
+    font-weight: 600;
+}
+
+/* Dashboard KPI families from absence, leave, complaints and administration. */
+.hm-page-root :is(.wan-stat-grid, .hm-leave-stat-row, .cp-insights, .dda-stat-grid) {
+    gap: 16px;
+}
+
+.hm-page-root :is(.wan-stat, .hm-stat-card, .cp-insight-card, .dda-stat-card) {
+    min-height: 116px;
+    border: 0 !important;
+    border-radius: var(--hm-radius-16) !important;
+    box-shadow: var(--hm-shadow-stat) !important;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.hm-page-root :is(.wan-stat, .hm-stat-card, .cp-insight-card, .dda-stat-card):hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 22px rgba(40, 30, 80, 0.1) !important;
+}
+
+.hm-page-root :is(.wan-stat__icon, .hm-stat-card__icon, .cp-insight-card__icon, .dda-stat-card__icon) {
+    width: 44px;
+    height: 44px;
+    border-radius: var(--hm-radius-12);
+    display: inline-grid;
+    place-items: center;
+}
+
+.hm-page-root :is(.wan-stat__value, .hm-stat-card__value, .cp-insight-card__value, .dda-stat-card__value) {
+    color: var(--hm-ink);
+    font-size: 25px;
+    font-weight: 700;
+}
+
+/* Settings and module-launcher cards share the Figma action-card behavior. */
+.hm-page-root > .row .card.h-100,
+.hm-page-root .hs-dash-grid .card,
+.hm-page-root .hm-module-tile__card {
+    transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+}
+
+.hm-page-root > .row .card.h-100:hover,
+.hm-page-root .hs-dash-grid .card:hover,
+.hm-page-root .hm-module-tile__card:hover {
+    transform: translateY(-2px);
+    border-color: rgba(99, 102, 241, 0.25) !important;
+    box-shadow: 0 12px 26px rgba(40, 30, 80, 0.09) !important;
+}
+
+.hm-page-root > .row .card.h-100 a,
+.hm-page-root .card-body > a.d-block {
+    padding: 10px 12px;
+    border-radius: var(--hm-radius-10);
+    color: var(--hm-heading);
+    text-decoration: none;
+}
+
+.hm-page-root > .row .card.h-100 a:hover,
+.hm-page-root .card-body > a.d-block:hover {
+    background: var(--hm-tint);
+    color: var(--hm-primary-deep);
+}
+
+/* Pagination and overlays. */
+.hm-page-root .pagination {
+    gap: 6px;
+    margin: 0;
+}
+
+.hm-page-root .page-link {
+    min-width: var(--hm-size-pager);
+    height: var(--hm-size-pager);
+    padding: 0 10px;
+    border: 1px solid var(--hm-line-3);
+    border-radius: var(--hm-radius-10) !important;
+    background: var(--hm-surface);
+    color: var(--hm-muted);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.hm-page-root .page-item.active .page-link {
+    border-color: var(--hm-primary-cta);
+    background: var(--hm-primary-cta);
+    color: var(--hm-on-primary);
+}
+
+.hm-page-root .modal-content {
+    border: 1px solid var(--hm-line-3);
+    border-radius: var(--hm-radius-20);
+    box-shadow: 0 24px 60px rgba(40, 30, 80, 0.18);
+    overflow: hidden;
+}
+
+.hm-page-root .modal-header,
+.hm-page-root .modal-footer {
+    padding: 18px 24px;
+    border-color: var(--hm-line-3);
+}
+
+.hm-page-root .modal-body {
+    padding: 24px;
+}
+
+@media (min-width: 1200px) {
+    .hm-page-root > :is(.container-fluid, .hm-module-page, .hm-wan, .hm-el, .hm-hs, .hm-cp, .hm-dda):not(.hm-fm),
+    .hm-page-root > form,
+    .hm-page-root > .row,
+    .hm-page-root > .card,
+    .hm-page-root > .alert,
+    .hm-page-root > .d-flex,
+    .hm-page-root > .mb-4 {
+        max-width: var(--hm-content);
+    }
+}
+
+@media (max-width: 767.98px) {
+    .hm-page-root > .d-flex:first-child,
+    .hm-page-root > .mb-4:first-child,
+    .hm-page-root > .container-fluid > .d-flex:first-child,
+    .hm-page-root > .hm-module-page > .d-flex:first-child {
+        align-items: stretch !important;
+        padding: 16px;
+    }
+
+    .hm-page-root > .d-flex:first-child > .btn,
+    .hm-page-root > .container-fluid > .d-flex:first-child > .btn,
+    .hm-page-root > .hm-module-page > .d-flex:first-child > .btn {
+        width: 100%;
+    }
+
+    .hm-page-root .card-body,
+    .hm-page-root .modal-body {
+        padding: 16px;
+    }
+}

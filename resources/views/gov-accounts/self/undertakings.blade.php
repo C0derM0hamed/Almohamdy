@@ -1,0 +1,5 @@
+@extends('layouts.app')
+@section('title', __('gov_accounts.undertakings.title'))
+@section('sidebar_heading', __('gov_accounts.title'))
+@push('styles')<link href="{{ asset('css/hm-licenses.css') }}?v={{ filemtime(public_path('css/hm-licenses.css')) }}" rel="stylesheet">@endpush
+@section('content')<div class="hm-licenses">@include('licenses.partials.page-header',['title'=>__('gov_accounts.undertakings.title'),'subtitle'=>__('gov_accounts.undertakings.subtitle'),'icon'=>'bi-shield-check'])@include('licenses.partials.feedback')<section class="lic-panel"><div class="lic-table-wrap"><table class="lic-table"><tbody>@forelse($requests as $request)<tr><td>#{{ $request->id }}</td><td>{{ $request->authority?->localizedName() }}</td><td>{{ $request->service?->localizedName() }}</td><td><a class="lic-btn lic-btn--primary" href="{{ route('modules.gov-accounts.undertakings.show',$request) }}">{{ __('gov_accounts.actions.review') }}</a></td></tr>@empty<tr><td class="lic-empty">{{ __('gov_accounts.undertakings.none') }}</td></tr>@endforelse</tbody></table></div></section></div>@endsection

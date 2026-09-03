@@ -36,8 +36,8 @@
 </head>
 <body class="hm-auth-body {{ $isRtl ? 'hm-locale-ar' : 'hm-locale-en' }} @yield('auth_body_class')">
     <nav class="hm-auth-lang hm-auth-lang-hope" aria-label="{{ __('dashboard.language') }}">
-        <a href="{{ route('lang.ar') }}" class="hm-auth-lang__btn {{ $locale === 'ar' ? 'is-active' : '' }}" lang="ar">{{ __('dashboard.language_ar') }}</a>
-        <a href="{{ route('lang.en') }}" class="hm-auth-lang__btn {{ $locale === 'en' ? 'is-active' : '' }}" lang="en">{{ __('dashboard.language_en') }}</a>
+        <a href="{{ route('lang.ar') }}" class="hm-auth-lang__btn {{ $locale === 'ar' ? 'is-active' : '' }}" lang="ar" data-no-transition="true">{{ __('dashboard.language_ar') }}</a>
+        <a href="{{ route('lang.en') }}" class="hm-auth-lang__btn {{ $locale === 'en' ? 'is-active' : '' }}" lang="en" data-no-transition="true">{{ __('dashboard.language_en') }}</a>
     </nav>
 
     <div class="hm-page-root hm-auth-page-root">

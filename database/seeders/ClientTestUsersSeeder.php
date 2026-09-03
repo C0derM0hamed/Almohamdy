@@ -70,12 +70,17 @@ class ClientTestUsersSeeder extends Seeder
 
         $hashedPassword = hash('sha256', $password);
         $now = now();
+        // Test schemas used by the project deliberately keep ra_users small,
+        // while imported legacy databases contain additional profile fields.
+        // Only write columns that exist so this account can always be
+        // recreated locally without weakening the full legacy schema.
+        $availableColumns = array_flip(Schema::getColumnListing('ra_users'));
 
-        DB::transaction(function () use ($hashedPassword, $now): void {
+        DB::transaction(function () use ($hashedPassword, $now, $availableColumns): void {
             foreach (self::USERS as $user) {
                 DB::table('ra_users')->updateOrInsert(
                     ['hr_username' => $user['username']],
-                    [
+                    array_intersect_key([
                         'hr_first_name' => $user['username'],
                         'hr_last_name' => 'Client Test',
                         'hr_email_address' => $user['email'],
@@ -100,7 +105,7 @@ class ClientTestUsersSeeder extends Seeder
                         'idno' => null,
                         'created_at' => $now,
                         'updated_at' => $now,
-                    ],
+                    ], $availableColumns),
                 );
             }
         });

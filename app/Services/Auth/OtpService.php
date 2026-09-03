@@ -38,6 +38,16 @@ class OtpService
             'otp_channel' => $channel,
         ]);
 
+        if ($this->demoMode()) {
+            Session::put('otp_demo_code', $code);
+            logger()->info('HM OTP demo code', [
+                'hr_id' => $user->hr_id,
+                'code' => $code,
+            ]);
+        } else {
+            Session::forget('otp_demo_code');
+        }
+
         return $channel === 'sms'
             ? $this->sendOtpSms($user, $code)
             : $this->sendOtpEmail($user, $code);
@@ -116,6 +126,7 @@ class OtpService
             'otp_expires_at',
             'otp_failed_attempts',
             'otp_channel',
+            'otp_demo_code',
         ]);
 
         $this->users->touchLastLogin($hrId);
@@ -147,6 +158,7 @@ class OtpService
         ];
     }
 
+
     public function remainingSeconds(): int
     {
         $expiresAt = (int) Session::get('otp_expires_at', 0);
@@ -177,7 +189,7 @@ class OtpService
 
     public function dashboardRouteForLevel(int $level): string
     {
-        return route($this->navigation->homeRouteName());
+        return $this->navigation->homeUrl();
     }
 
     private function generateCode(): string
@@ -193,6 +205,17 @@ class OtpService
     public function codeLength(): int
     {
         return max(4, min(8, (int) config('hm.otp.length', 6)));
+    }
+
+    public function demoCode(): ?string
+    {
+        if (! $this->demoMode()) {
+            return null;
+        }
+
+        $code = (string) Session::get('otp_demo_code', '');
+
+        return $code !== '' ? $code : null;
     }
 
     /**
@@ -280,6 +303,12 @@ class OtpService
         ]);
 
         return ['success' => true];
+    }
+
+    private function demoMode(): bool
+    {
+        return (bool) config('hm.otp.demo_mode', false)
+            && app()->environment(['local', 'testing']);
     }
 
     private function expirySeconds(): int

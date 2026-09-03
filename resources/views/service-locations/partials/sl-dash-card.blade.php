@@ -13,7 +13,11 @@
 >
     <div class="hs-dash-card__content">
         <div class="hs-dash-card__icon" aria-hidden="true">
-            <i class="bi {{ $icon ?? 'bi-building' }}"></i>
+            @if (! empty($iconSrc))
+                <img src="{{ $iconSrc }}" alt="" width="22" height="22">
+            @else
+                <i class="bi {{ $icon ?? 'bi-building' }}"></i>
+            @endif
         </div>
         <h{{ $headingLevel }} class="hs-dash-card__title">{{ $title }}</h{{ $headingLevel }}>
         <span class="hs-dash-card__line" aria-hidden="true"></span>
@@ -29,7 +33,11 @@
         @endif
         @if ($isLink)
             <span class="hs-dash-card__arrow" aria-hidden="true">
-                <i class="bi {{ app()->getLocale() === 'ar' ? 'bi-arrow-left' : 'bi-arrow-right' }}"></i>
+                @if (! empty($iconSrc))
+                    <img src="{{ asset('images/figma/locations/card-arrow.svg') }}" alt="" width="20" height="20">
+                @else
+                    <i class="bi {{ app()->getLocale() === 'ar' ? 'bi-arrow-left' : 'bi-arrow-right' }}"></i>
+                @endif
             </span>
         @endif
     </div>

@@ -26,7 +26,7 @@ class NotificationExportRequest extends NotificationIndexRequest
         ]);
     }
 
-    public function format(): string
+    public function exportFormat(): string
     {
         return (string) $this->input('format');
     }

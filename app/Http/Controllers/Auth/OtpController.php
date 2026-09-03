@@ -33,6 +33,7 @@ class OtpController extends Controller
             'resendInSeconds' => $this->otpService->resendAvailableInSeconds(),
             'maskedDestination' => $this->maskedDestination(),
             'otpLength' => $this->otpService->codeLength(),
+            'demoCode' => $this->otpService->demoCode(),
             'otpFields' => array_map(
                 static fn (int $i): string => 'n'.$i,
                 range(1, $this->otpService->codeLength()),

@@ -6,7 +6,7 @@ return [
     'subtitle' => 'نظرة عامة على الشكاوى ومسارات المتابعة.',
     'dashboard' => 'لوحة الشكاوى',
     'dashboard_subtitle' => 'نظرة عامة على حالة الشكاوى والوصول السريع إلى القائمة.',
-    'filters_title' => 'تصفية الشكاوى',
+    'filters_title' => 'البحث والتصفية',
     'list' => 'قائمة الشكاوى',
     'list_subtitle' => 'البحث وتصفية الشكاوى برقم الملف أو الحالة.',
     'detail' => 'تفاصيل الشكوى',
@@ -23,6 +23,13 @@ return [
     'view_timeline' => 'عرض الخط الزمني',
     'search' => 'بحث',
     'reset' => 'إعادة تعيين',
+    'sort' => 'ترتيب',
+    'refresh' => 'تحديث',
+    'export' => 'تصدير',
+    'columns_settings' => 'إعدادات الأعمدة',
+    'table_tools' => 'أدوات جدول الشكاوى',
+    'complaints_count' => ':count شكوى',
+    'results_summary' => 'عرض :shown من أصل :total شكوى',
     'no_complaints' => 'لا توجد شكاوى.',
     'no_results' => 'لا توجد شكاوى تطابق عوامل التصفية.',
     'no_timeline' => 'لا توجد أحداث في الخط الزمني لهذه الشكوى.',
@@ -56,7 +63,9 @@ return [
 
     'filters' => [
         'search' => 'رقم الملف أو الشكوى',
+        'search_placeholder' => 'أدخل رقم الملف أو الشكوى',
         'status' => 'الحالة',
+        'all_statuses' => 'كل الحالات',
     ],
 
     'columns' => [

@@ -4,6 +4,7 @@
 
 @section('sidebar_heading', $label)
 @section('sidebar_subheading', __('service_locations.subtitle'))
+@section('figma_page_header', true)
 
 @push('styles')
     <link href="{{ asset('css/hm-services-redesign.css') }}?v={{ filemtime(public_path('css/hm-services-redesign.css')) }}" rel="stylesheet">
@@ -11,47 +12,43 @@
 @endpush
 
 @section('content')
-    <div class="hm-hs">
-        @include('hospital-services.partials.hs-breadcrumb', [
-            'items' => [
+    <div class="hm-fm hm-hs sl-opd-figma">
+        @include('layouts.partials.figma-module-header', [
+            'crumbs' => [
+                ['label' => __('dashboard.modules')],
                 ['label' => __('service_locations.title'), 'url' => route('modules.service-locations.index')],
-                ['label' => $label, 'chip' => true],
+                ['label' => $label],
             ],
+            'title' => $label,
+            'subtitle' => __('service_locations.subtitle'),
+            'heroIconSrc' => asset('images/figma/locations/hero.svg'),
+            'heroIconSize' => 32,
         ])
 
-        <section class="hs-page-hero" aria-labelledby="opdLocationTitle">
-            <div>
-                <h1 id="opdLocationTitle">{{ $label }}</h1>
-                <p>{{ __('service_locations.subtitle') }}</p>
-            </div>
-            <div class="hs-page-hero-art" aria-hidden="true"></div>
-        </section>
-
-        <div class="hs-list-panel sl-duty-panel">
-            <table class="hm-opd-info-table">
-                <thead>
-                    <tr>
-                        <th scope="col">{{ __('service_locations.extension_number') }}</th>
-                        <th scope="col">{{ __('service_locations.working_days') }}</th>
-                        <th scope="col">{{ __('service_locations.working_hours') }}</th>
-                        <th scope="col">{{ __('service_locations.floor') }}</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>{{ trim((string) ($duty?->phone_ext ?? '')) ?: '—' }}</td>
-                        <td>{{ $dutyDays }}</td>
-                        <td>{{ $dutyTime }}</td>
-                        <td>{{ $floorName }}</td>
-                    </tr>
-                </tbody>
-            </table>
+        <div class="sl-opd-facts" aria-label="{{ __('service_locations.service_times') }}">
+            @foreach ([
+                ['number' => 1, 'label' => __('service_locations.extension_number'), 'value' => trim((string) ($duty?->phone_ext ?? '')) ?: '—'],
+                ['number' => 2, 'label' => __('service_locations.working_days'), 'value' => $dutyDays],
+                ['number' => 3, 'label' => __('service_locations.working_hours'), 'value' => $dutyTime],
+                ['number' => 4, 'label' => __('service_locations.floor'), 'value' => $floorName],
+            ] as $fact)
+                <article class="sl-opd-fact">
+                    <span class="sl-opd-fact__number" aria-hidden="true">{{ $fact['number'] }}</span>
+                    <span class="sl-opd-fact__copy">
+                        <span class="sl-opd-fact__label">{{ $fact['label'] }}</span>
+                        <strong>{{ $fact['value'] }}</strong>
+                    </span>
+                </article>
+            @endforeach
         </div>
 
         @if (count($departmentCards) > 0)
             <div class="hs-filter-head sl-section-head">
-                <span class="hs-filter-icon" aria-hidden="true"><i class="bi bi-hospital"></i></span>
+                <span class="hs-filter-icon" aria-hidden="true">
+                    <img src="{{ asset('images/figma/locations/section.svg') }}" alt="" width="22" height="22">
+                </span>
                 <h2>{{ __('service_locations.departments') }}</h2>
+                <span class="sl-section-count">{{ __('service_locations.departments_count', ['count' => count($departmentCards)]) }}</span>
             </div>
 
             <div class="hs-dash-grid">
@@ -61,6 +58,8 @@
                         'url' => $card->url,
                         'description' => $card->url ? __('service_locations.department_card_description') : '',
                         'icon' => 'bi-hospital',
+                        'iconSrc' => asset('images/figma/locations/card-building.svg'),
+                        'countLabel' => $card->url ? __('service_locations.view_departments') : '',
                         'headingLevel' => 3,
                     ])
                 @endforeach

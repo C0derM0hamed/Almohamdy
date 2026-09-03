@@ -7,7 +7,7 @@
 <div class="col-md-6"><label class="form-label">اسم المريض</label><input class="form-control" name="patient_name" value="{{ old('patient_name') }}" required></div>
 @endif
 @if(in_array($type, ['accept-referral','referral-apology'], true))
-<div class="col-md-6"><label class="form-label">الجنسية</label><select class="form-select" name="nationality" required><option value="">اختر...</option>@foreach($countries as $option)<option value="{{ $option->id }}" @selected(old('nationality') == $option->id)>{{ $option->country_nationality_ar }}</option>@endforeach</select></div>
+<div class="col-md-6"><label class="form-label">{{ app()->getLocale() === 'ar' ? 'الجنسية' : 'Nationality' }}</label><select class="form-select" name="nationality" required><option value="">{{ app()->getLocale() === 'ar' ? 'اختر...' : 'Choose...' }}</option>@foreach($countries as $option)<option value="{{ $option->id }}" @selected(old('nationality') == $option->id)>{{ \App\Support\LocaleText::localizedValue($option->country_nationality_ar ?? null, $option->country_nationality_en ?? null) }}</option>@endforeach</select></div>
 @endif
 @if(in_array($type, ['bed-reservation','accept-referral','referral-apology'], true))
 <div class="col-md-6"><label class="form-label">رقم الهوية</label><input class="form-control" inputmode="numeric" minlength="10" maxlength="10" name="idno" value="{{ old('idno') }}" required></div>
@@ -17,7 +17,7 @@
 <div class="col-md-3"><label class="form-label">الجنس</label><select class="form-select" name="gender" required><option value="1">ذكر</option><option value="2">أنثى</option></select></div>
 <div class="col-md-6"><label class="form-label">الطبيب</label><input class="form-control" name="doctor" value="{{ old('doctor') }}" required></div>
 <div class="col-md-6"><label class="form-label">جهة الخطاب</label><input class="form-control" name="letter_side" value="{{ old('letter_side') }}" required></div>
-<div class="col-md-6"><label class="form-label">لغة النموذج</label><select class="form-select" name="lang"><option value="ar">عربي</option><option value="en">English</option></select></div>
+<div class="col-md-6"><label class="form-label">لغة النموذج</label><select class="form-select" name="lang"><option value="ar" @selected(($legacyLanguage ?? 'ar') === 'ar')>عربي</option><option value="en" @selected(($legacyLanguage ?? 'ar') === 'en')>English</option></select></div>
 @endif
 @if($type === 'accept-referral')
 <div class="col-md-6"><label class="form-label">رقم التواصل</label><input class="form-control" name="contact_number" maxlength="14" value="{{ old('contact_number') }}" required></div>
@@ -27,11 +27,11 @@
 @if($type === 'referral-apology')<div class="col-md-6"><label class="form-label">رقم الإحالة</label><input class="form-control" name="ehala_number" maxlength="14" value="{{ old('ehala_number') }}" required></div>@endif
 @if($type === 'crisis-management')<div class="col-md-6"><label class="form-label">رقم التواصل</label><input class="form-control" name="contact_number" maxlength="14" value="{{ old('contact_number') }}" required></div>@endif
 @if(in_array($type, ['bed-reservation','accept-referral','crisis-management','red-crescent'], true))
-<div class="col-md-6"><label class="form-label">{{ in_array($type, ['crisis-management','red-crescent'], true) ? 'الوحدة' : 'القسم' }}</label><select class="form-select" name="room_type" required><option value="">اختر...</option>@foreach($rooms as $option)<option value="{{ $option->id }}">{{ $option->name_ar }}</option>@endforeach</select></div>
-<div class="col-md-6"><label class="form-label">{{ $type === 'bed-reservation' ? 'مدة الحجز' : 'المدة المتوقعة' }}</label><select class="form-select" name="booking_period" required><option value="">اختر...</option>@foreach($periods as $option)<option value="{{ $option->id }}">{{ $option->name_ar }}</option>@endforeach</select></div>
+<div class="col-md-6"><label class="form-label">{{ app()->getLocale() === 'ar' ? (in_array($type, ['crisis-management','red-crescent'], true) ? 'الوحدة' : 'القسم') : (in_array($type, ['crisis-management','red-crescent'], true) ? 'Unit' : 'Department') }}</label><select class="form-select" name="room_type" required><option value="">{{ app()->getLocale() === 'ar' ? 'اختر...' : 'Choose...' }}</option>@foreach($rooms as $option)<option value="{{ $option->id }}">{{ \App\Support\LocaleText::localizedValue($option->name_ar ?? null, $option->name_en ?? null) }}</option>@endforeach</select></div>
+<div class="col-md-6"><label class="form-label">{{ app()->getLocale() === 'ar' ? ($type === 'bed-reservation' ? 'مدة الحجز' : 'المدة المتوقعة') : ($type === 'bed-reservation' ? 'Booking period' : 'Expected duration') }}</label><select class="form-select" name="booking_period" required><option value="">{{ app()->getLocale() === 'ar' ? 'اختر...' : 'Choose...' }}</option>@foreach($periods as $option)<option value="{{ $option->id }}">{{ \App\Support\LocaleText::localizedValue($option->name_ar ?? null, $option->name_en ?? null) }}</option>@endforeach</select></div>
 @endif
 @if(in_array($type, ['referral-apology','crisis-management','red-crescent'], true))
-<div class="col-md-6"><label class="form-label">سبب الاعتذار</label><select class="form-select" name="apology" required><option value="">اختر...</option>@foreach($apologies as $option)<option value="{{ $option->id }}">{{ $option->name_ar }}</option>@endforeach</select></div>
+<div class="col-md-6"><label class="form-label">{{ app()->getLocale() === 'ar' ? 'سبب الاعتذار' : 'Apology reason' }}</label><select class="form-select" name="apology" required><option value="">{{ app()->getLocale() === 'ar' ? 'اختر...' : 'Choose...' }}</option>@foreach($apologies as $option)<option value="{{ $option->id }}">{{ \App\Support\LocaleText::localizedValue($option->name_ar ?? null, $option->name_en ?? null) }}</option>@endforeach</select></div>
 @endif
 @if($type === 'pulse-status')
 <div class="col-md-6"><label class="form-label">الاسم</label><input class="form-control" name="name" required></div><div class="col-md-6"><label class="form-label">رقم البلاغ</label><input class="form-control" name="Report_number" required></div>

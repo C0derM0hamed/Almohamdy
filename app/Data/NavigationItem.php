@@ -16,6 +16,7 @@ readonly class NavigationItem
         public array $children = [],
         public bool $isGroup = false,
         public string $collapseId = '',
+        public array $routeParams = [],
     ) {}
 
     public function hasChildren(): bool

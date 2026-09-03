@@ -42,7 +42,15 @@ class LegalClaimTest extends TestCase
         $service->markInstallmentPaid($id, $installment->id);
         $service->addSuspension($id, ['status_id' => 1, 'total_amount' => 100, 'amount_waived' => 10], null);
         $this->assertDatabaseHas('lawsuit_suspend_case_request', ['lawsuit_id' => $id, 'amount_waived' => 10]);
+        $this->assertSame(1, $service->list(['from' => date('Y-m-d'), 'to' => date('Y-m-d'), 'status_id' => 0, 'mobile' => 'L-1', 'patient_name' => ''])->total());
+        $this->assertSame(1, $service->statusDashboard(['from' => date('Y-m-d'), 'to' => date('Y-m-d'), 'status_id' => 0, 'mobile' => '', 'patient_name' => ''])->first()->count);
+        $service->addStatement($id, 'طلب إفادة', null);
+        $this->assertSame(1, $service->list(['from' => date('Y-m-d'), 'to' => date('Y-m-d'), 'status_id' => 0, 'mobile' => '', 'patient_name' => '', 'statement_filter' => 'has_statements'])->total());
+        $this->assertSame(0, $service->list(['from' => date('Y-m-d'), 'to' => date('Y-m-d'), 'status_id' => 0, 'mobile' => '', 'patient_name' => '', 'statement_filter' => 'without_statements'])->total());
         session(['companies_groups_id' => 2]);
         $this->assertNull($service->find($id));
+
+        session(['hr_user_level' => 3]);
+        $this->assertSame('مريض', $service->find($id)->patient_name);
     }
 }

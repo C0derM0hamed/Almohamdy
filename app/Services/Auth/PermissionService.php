@@ -11,23 +11,18 @@ class PermissionService
 
     public const MANAGE_PERMISSIONS = 'user_groups_permissins';
 
+    /** @var array<string, array{decision: string, source: string}>|null */
+    private ?array $requestPermissionStates = null;
+
     public function __construct(
         private readonly PermissionRepository $repository,
         private readonly LegacyScopeService $legacyScopes,
+        private readonly PermissionRegistry $registry,
     ) {}
 
     public function can(string $permission): bool
     {
-        if (config('hm.permissions.bypass', false)) {
-            return true;
-        }
-
-        if ($this->hasAdminGrantAll()) {
-            return true;
-        }
-
-        return in_array($permission, $this->sessionPermissions(), true)
-            || $this->legacyScopes->allowsPermission($permission);
+        return $this->decision($permission) === PermissionDecision::Allow;
     }
 
     public function isAdmin(): bool
@@ -56,9 +51,48 @@ class PermissionService
 
     public function refreshSessionPermissions(int $userId, int $groupId): void
     {
+        $states = $this->repository->permissionStatesForUser($userId, $groupId);
+        $this->requestPermissionStates = $states;
         session([
-            'hm_permissions' => $this->repository->permissionsForUser($userId, $groupId),
+            'hm_permissions' => collect($states)->filter(fn (array $state): bool => $state['decision'] === 'allow')->keys()->values()->all(),
+            'hm_permission_states' => $states,
         ]);
+    }
+
+    public function decision(string $permission): PermissionDecision
+    {
+        if (config('hm.permissions.bypass', false) || $this->hasAdminGrantAll()) {
+            return PermissionDecision::Allow;
+        }
+
+        $states = $this->sessionPermissionStates();
+        $hasAllow = false;
+        foreach ($this->registry->storageCodes($permission) as $code) {
+            $state = $states[$code]['decision'] ?? 'none';
+            if ($state === 'deny') {
+                return PermissionDecision::Deny;
+            }
+            $hasAllow = $hasAllow || $state === 'allow';
+        }
+
+        if ($hasAllow) {
+            return PermissionDecision::Allow;
+        }
+
+        // Compatibility mode preserves the existing implicit scopes until the
+        // backfill command has materialised them as explicit grants.
+        if (config('hm.permissions.enforcement_mode', 'compat') === 'compat'
+            && $this->legacyScopes->allowsPermission($permission)) {
+            return PermissionDecision::Allow;
+        }
+
+        return PermissionDecision::None;
+    }
+
+    /** @return list<string> */
+    public function effectivePermissions(): array
+    {
+        return $this->sessionPermissions();
     }
 
     /**
@@ -66,19 +100,39 @@ class PermissionService
      */
     private function sessionPermissions(): array
     {
-        $permissions = session('hm_permissions');
+        $states = $this->sessionPermissionStates();
 
-        if ($permissions === null) {
-            $userId = (int) session('hr_user_id', 0);
-            $groupId = (int) session('groupid', 0);
+        return collect($states)
+            ->filter(fn (array $state): bool => $state['decision'] === 'allow')
+            ->keys()
+            ->values()
+            ->all();
+    }
 
-            if ($userId > 0) {
-                $this->refreshSessionPermissions($userId, $groupId);
-                $permissions = session('hm_permissions', []);
-            }
+    /** @return array<string, array{decision: string, source: string}> */
+    private function currentPermissionStates(): array
+    {
+        if ($this->requestPermissionStates !== null) {
+            return $this->requestPermissionStates;
         }
 
-        return is_array($permissions) ? array_values($permissions) : [];
+        $userId = (int) session('hr_user_id', 0);
+        $groupId = (int) session('groupid', 0);
+
+        if ($userId > 0) {
+            // Reload on the first permission check of each request. This makes
+            // a grant or revoke effective on the next request even when the
+            // session still contains the previous snapshot.
+            $this->refreshSessionPermissions($userId, $groupId);
+        }
+
+        return $this->requestPermissionStates ?? [];
+    }
+
+    /** @return array<string, array{decision: string, source: string}> */
+    private function sessionPermissionStates(): array
+    {
+        return $this->currentPermissionStates();
     }
 
     private function hasAdminGrantAll(): bool

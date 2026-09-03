@@ -12,6 +12,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 use InvalidArgumentException;
 
 class GovernmentInspectionVisitService
@@ -55,6 +56,12 @@ class GovernmentInspectionVisitService
      */
     public function store(array $payload, array $attachmentFiles = []): GovernmentInspectionVisit
     {
+        if (! $this->repository->branchIsAllowed((int) $payload['branch_id'])) {
+            throw ValidationException::withMessages([
+                'branch_id' => __('inspection_visits.validation.invalid_branch'),
+            ]);
+        }
+
         $adminIds = [];
 
         $created = DB::transaction(function () use ($payload, $attachmentFiles, &$adminIds) {
@@ -226,7 +233,7 @@ class GovernmentInspectionVisitService
                 'attachments',
                 'returnedItems.finding',
                 'replySubmissions',
-                'timelineEntries.status',
+                'timelineEntries.statusRelation',
             ]) ?? $visit;
         });
     }
@@ -330,9 +337,11 @@ class GovernmentInspectionVisitService
         $parsed = \App\Support\CorporateCommunications\DepartmentReplyToken::parse($rawToken);
         $visit = $this->repository->findBySmsToken($parsed->token);
 
-        if ($visit === null) {
+        if ($visit === null || ! $this->repository->administratorCanAccess((int) $visit->id, $parsed->administratorId)) {
             throw new InvalidArgumentException(__('inspection_visits.department_reply.invalid_link'));
         }
+
+        $this->repository->markReceiptSeen((int) $visit->id, $parsed->administratorId, $parsed->channel);
 
         return [$visit, $parsed];
     }
@@ -451,8 +460,14 @@ class GovernmentInspectionVisitService
         });
     }
 
-    public function departmentReplyUrl(GovernmentInspectionVisit $visit, int $administratorId = 1, bool $returned = false): string
+    public function departmentReplyUrl(GovernmentInspectionVisit $visit, ?int $administratorId = null, bool $returned = false): ?string
     {
+        $administratorId ??= (int) (preg_split('/\s*,\s*/', (string) $visit->users)[0] ?? 0);
+
+        if ($administratorId < 1) {
+            return null;
+        }
+
         $raw = \App\Support\CorporateCommunications\DepartmentReplyToken::build(
             (string) $visit->sms_tocken,
             $administratorId,

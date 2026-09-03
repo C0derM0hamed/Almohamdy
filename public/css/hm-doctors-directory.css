@@ -2338,6 +2338,127 @@ body.hm-clinician-modal-open {
     border-bottom: none;
 }
 
+/* Doctor profile dialog: keep long Arabic values readable and the actions reachable. */
+.hm-clinician-modal-center {
+    width: min(100%, 48rem);
+    max-width: 48rem;
+}
+
+.hm-clinician-modal-panel {
+    max-height: calc(100vh - 2rem);
+    overflow-x: hidden;
+    scrollbar-gutter: stable;
+}
+
+.hm-clinician-popup-card--full {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-height: calc(100vh - 2rem);
+    border: 1px solid #e2e8f5 !important;
+    border-top: 0 !important;
+    border-radius: 22px !important;
+    box-shadow: 0 24px 70px rgba(22, 34, 76, .22) !important;
+}
+
+.hm-clinician-popup-card--full .hm-clinician-popup-card__head {
+    flex: 0 0 auto;
+    padding: 1.15rem 1.4rem;
+    background: linear-gradient(110deg, #fff 0%, #fff 62%, #f5f3ff 100%);
+}
+
+.hm-clinician-popup-card--full .hm-clinician-popup-card__title {
+    max-width: 100%;
+    overflow-wrap: anywhere;
+    color: #292052;
+    font-size: 1.15rem;
+    line-height: 1.55;
+}
+
+.hm-clinician-popup-card--full .hm-clinician-popup-card__body {
+    min-height: 0;
+    flex: 1 1 auto;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 0;
+    scrollbar-gutter: stable;
+}
+
+.hm-clinician-popup-card--full .hm-clinician-table {
+    width: 100%;
+    table-layout: fixed;
+    border-collapse: collapse;
+}
+
+.hm-clinician-popup-card--full .hm-clinician-table th,
+.hm-clinician-popup-card--full .hm-clinician-table td {
+    width: auto;
+    max-width: 0;
+    padding: .95rem 1.35rem;
+    border-bottom: 1px solid #edf0f7;
+    vertical-align: top;
+    white-space: normal !important;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    line-height: 1.75;
+}
+
+.hm-clinician-popup-card--full .hm-clinician-table th {
+    width: 31%;
+    color: #6c78a0;
+    background: #fbfbff;
+    font-size: .78rem;
+    font-weight: 750;
+}
+
+.hm-clinician-popup-card--full .hm-clinician-table td {
+    color: #202a46;
+    font-size: .93rem;
+    font-weight: 700;
+    text-align: start;
+}
+
+.hm-clinician-popup-card--full .hm-clinician-table__rich,
+.hm-clinician-popup-card--full .hm-clinician-table__rich * {
+    max-width: 100%;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    white-space: normal !important;
+}
+
+.hm-clinician-popup-card--full .hm-clinician-popup-card__footer {
+    flex: 0 0 auto;
+    padding: .95rem 1.35rem;
+    background: #fafaff;
+}
+
+.hm-clinician-popup-card--full .hm-clinician-popup-card__close-btn {
+    min-width: 7rem;
+    border-radius: 11px;
+}
+
+@media (max-width: 639.98px) {
+    .hm-clinician-popup-card--full .hm-clinician-table,
+    .hm-clinician-popup-card--full .hm-clinician-table tbody,
+    .hm-clinician-popup-card--full .hm-clinician-table tr,
+    .hm-clinician-popup-card--full .hm-clinician-table th,
+    .hm-clinician-popup-card--full .hm-clinician-table td {
+        display: block;
+        width: 100%;
+    }
+
+    .hm-clinician-popup-card--full .hm-clinician-table th {
+        max-width: none;
+        padding-bottom: .2rem;
+        border-bottom: 0;
+    }
+
+    .hm-clinician-popup-card--full .hm-clinician-table td {
+        max-width: none;
+        padding-top: .15rem;
+    }
+}
+
 .hm-clinician-card__expand {
     position: absolute;
     top: 0.75rem;
@@ -2974,7 +3095,9 @@ body.hm-clinician-modal-open {
     }
 
     .hm-searchable-select__list {
-        overflow: visible;
+        max-height: min(24rem, 60vh);
+        overflow-y: auto;
+        overflow-x: hidden;
     }
 
     .hm-searchable-select__sublist {

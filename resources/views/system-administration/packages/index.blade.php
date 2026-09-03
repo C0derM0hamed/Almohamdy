@@ -24,12 +24,25 @@
                 <h1 id="sysAdminPackagesTitle">{{ __('system_administration.packages') }}</h1>
                 <p>{{ __('system_administration.packages_subtitle') }}</p>
             </div>
-            <div class="hs-page-hero-art" aria-hidden="true"></div>
+            <div class="d-flex gap-2 align-items-start">
+                <a class="hs-btn hs-btn--primary" href="{{ route('modules.system-admin.packages.create') }}"><i class="bi bi-plus-lg"></i> إضافة خدمة</a>
+                <div class="hs-page-hero-art" aria-hidden="true"></div>
+            </div>
         </section>
 
         @if (session('success'))
             <div class="hm-alert-success mb-3">{{ session('success') }}</div>
         @endif
+
+        <div class="hs-filter-card mb-3">
+            <div class="hs-filter-head"><span class="hs-filter-icon" aria-hidden="true"><i class="bi bi-file-earmark-spreadsheet"></i></span><h2>استيراد خدمات من Excel / CSV</h2></div>
+            <form method="POST" action="{{ route('modules.system-admin.packages.import') }}" enctype="multipart/form-data" class="d-flex flex-wrap gap-2 align-items-end">
+                @csrf
+                <div class="hs-field"><label for="packageImportSection">القسم</label><select id="packageImportSection" name="service_id" required><option value="">اختر القسم</option>@foreach($sectionOptions as $sectionId => $sectionLabel)<option value="{{ $sectionId }}">{{ $sectionLabel }}</option>@endforeach</select></div>
+                <div class="hs-field"><label for="packageImportFile">الملف</label><input id="packageImportFile" type="file" name="file" accept=".xlsx,.csv,.txt" required></div>
+                <button class="hs-btn hs-btn--ghost" type="submit"><i class="bi bi-upload"></i> استيراد</button>
+            </form>
+        </div>
 
         <div class="hs-filter-card">
             <div class="hs-filter-head">

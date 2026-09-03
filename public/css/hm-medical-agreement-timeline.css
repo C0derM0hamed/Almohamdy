@@ -1,0 +1,96 @@
+.hm-agreement-timeline-modal {
+    --hm-timeline-primary: #625cf1;
+    --hm-timeline-ink: #292553;
+    --hm-timeline-muted: #8390a3;
+    --hm-timeline-border: #e4e8f2;
+    position: fixed;
+    inset: 0;
+    z-index: 1080;
+    display: grid;
+    place-items: center;
+    padding: 1.25rem;
+    background: rgba(22, 25, 52, .58);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity .18s ease, visibility .18s ease;
+}
+
+.hm-agreement-timeline-modal[hidden] { display: none; }
+.hm-agreement-timeline-modal.is-open { opacity: 1; visibility: visible; }
+.hm-agreement-timeline-open { overflow: hidden; }
+
+.hm-agreement-timeline-dialog {
+    width: min(900px, 100%);
+    max-height: min(900px, calc(100vh - 2.5rem));
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    color: var(--hm-timeline-ink);
+    background: #fff;
+    border: 1px solid rgba(226, 230, 241, .9);
+    border-radius: 24px;
+    box-shadow: 0 28px 75px rgba(26, 30, 66, .24);
+    transform: translateY(14px) scale(.985);
+    transition: transform .2s ease;
+}
+
+.hm-agreement-timeline-modal.is-open .hm-agreement-timeline-dialog { transform: translateY(0) scale(1); }
+.hm-agreement-timeline-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; padding: 1.35rem 1.5rem 1.15rem; border-bottom: 1px solid var(--hm-timeline-border); }
+.hm-agreement-timeline-heading { display: flex; align-items: center; gap: .85rem; min-width: 0; }
+.hm-agreement-timeline-heading-icon { display: grid; place-items: center; flex: 0 0 48px; width: 48px; height: 48px; color: #fff; background: linear-gradient(145deg, #746cff, var(--hm-timeline-primary)); border-radius: 15px; font-size: 1.35rem; box-shadow: 0 8px 18px rgba(98, 92, 241, .22); }
+.hm-agreement-timeline-eyebrow { margin: 0 0 .2rem; color: var(--hm-timeline-primary); font-size: .72rem; font-weight: 800; }
+.hm-agreement-timeline-header h2 { margin: 0; color: var(--hm-timeline-ink); font-size: 1.2rem; font-weight: 800; }
+.hm-agreement-timeline-header p:last-child { margin: .25rem 0 0; color: var(--hm-timeline-muted); font-size: .78rem; }
+.hm-agreement-timeline-close { display: grid; place-items: center; flex: 0 0 36px; width: 36px; height: 36px; color: #6d7890; background: #f7f8fc; border: 1px solid var(--hm-timeline-border); border-radius: 11px; cursor: pointer; transition: .18s ease; }
+.hm-agreement-timeline-close:hover, .hm-agreement-timeline-close:focus-visible { color: var(--hm-timeline-primary); background: #eef0ff; border-color: #cfd1ff; outline: 0; }
+.hm-agreement-timeline-body { min-height: 0; padding: 1.2rem 1.5rem 1.35rem; overflow: hidden; }
+.hm-agreement-timeline-summary { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .65rem; margin-bottom: 1.2rem; }
+.hm-agreement-timeline-summary-card { min-width: 0; padding: .8rem .9rem; background: #f8f9fd; border: 1px solid #edf0f7; border-radius: 14px; }
+.hm-agreement-timeline-summary-card span { display: block; margin-bottom: .3rem; color: var(--hm-timeline-muted); font-size: .67rem; }
+.hm-agreement-timeline-summary-card strong { display: block; overflow: hidden; color: var(--hm-timeline-ink); font-size: .8rem; font-weight: 800; text-overflow: ellipsis; white-space: nowrap; }
+.hm-agreement-timeline-section-head { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: .8rem; }
+.hm-agreement-timeline-section-head h3 { margin: 0; font-size: 1rem; font-weight: 800; }
+.hm-agreement-timeline-section-head p { margin: .2rem 0 0; color: var(--hm-timeline-muted); font-size: .7rem; }
+.hm-agreement-timeline-count { padding: .35rem .65rem; color: var(--hm-timeline-primary); background: #f0efff; border-radius: 999px; font-size: .7rem; font-weight: 800; white-space: nowrap; }
+.hm-agreement-timeline-scroll { width: 100%; max-width: 100%; min-width: 0; max-height: 480px; padding: .2rem .35rem .2rem .15rem; overflow-x: hidden; overflow-y: auto; scrollbar-color: #bbb8fa transparent; scrollbar-width: thin; }
+.hm-agreement-timeline-events { position: relative; display: grid; width: 100%; max-width: 100%; min-width: 0; gap: .9rem; margin: 0; padding: .25rem .1rem .25rem 0; list-style: none; }
+.hm-agreement-timeline-events::before { position: absolute; top: 1.8rem; bottom: 1.8rem; inset-inline-end: 1.1rem; width: 2px; content: ''; background: linear-gradient(#d0cdfd, #e8e9f7); }
+.hm-agreement-timeline-event { position: relative; display: grid; width: 100%; max-width: 100%; min-width: 0; grid-template-columns: 42px minmax(0, 1fr); gap: .8rem; align-items: start; }
+.hm-agreement-timeline-event-card { width: 100%; max-width: 100%; min-width: 0; box-sizing: border-box; overflow: hidden; padding: .85rem 1rem; background: #fff; border: 1px solid var(--hm-timeline-border); border-radius: 16px; box-shadow: 0 5px 15px rgba(45, 50, 91, .04); }
+.hm-agreement-timeline-event-top { display: flex; align-items: center; justify-content: space-between; gap: .6rem; }
+.hm-agreement-timeline-event-top h4 { min-width: 0; margin: 0; color: var(--hm-timeline-ink); font-size: .86rem; font-weight: 800; overflow-wrap: anywhere; }
+.hm-agreement-timeline-event-badge { flex: 0 0 auto; padding: .27rem .55rem; color: #64748b; background: #f1f3f7; border-radius: 999px; font-size: .62rem; font-weight: 800; }
+.is-completed .hm-agreement-timeline-event-badge { color: #14916b; background: #e6f8f0; }
+.is-current .hm-agreement-timeline-event-badge { color: #5c55d7; background: #eeedff; }
+.is-rejected .hm-agreement-timeline-event-badge { color: #c44b5e; background: #fff0f2; }
+.hm-agreement-timeline-event-card p { margin: .35rem 0 0; color: #7b879a; font-size: .7rem; line-height: 1.75; overflow-wrap: anywhere; }
+.hm-agreement-timeline-event-date { display: block; margin-top: .55rem; color: #9aa4b6; font-size: .64rem; }
+.hm-agreement-timeline-event-marker { position: relative; z-index: 1; display: grid; place-items: center; width: 36px; height: 36px; margin-top: .75rem; color: #7d83a1; background: #f2f3f9; border: 5px solid #fff; border-radius: 50%; box-shadow: 0 0 0 1px var(--hm-timeline-border); font-size: .76rem; }
+.is-completed .hm-agreement-timeline-event-marker { color: #fff; background: #18ad7d; box-shadow: 0 0 0 1px #8be1c4; }
+.is-current .hm-agreement-timeline-event-marker { color: #fff; background: var(--hm-timeline-primary); box-shadow: 0 0 0 1px #c3c0ff; }
+.is-rejected .hm-agreement-timeline-event-marker { color: #fff; background: #e26778; box-shadow: 0 0 0 1px #f2b2bc; }
+.hm-agreement-timeline-event-meta { display: flex; flex-wrap: wrap; gap: .45rem; margin-top: .7rem; padding-top: .65rem; border-top: 1px dashed #e7eaf2; }
+.hm-agreement-timeline-event-meta-item { display: inline-flex; align-items: baseline; gap: .35rem; max-width: 100%; padding: .35rem .5rem; color: #7c8799; background: #fafbfe; border-radius: 8px; font-size: .62rem; overflow-wrap: anywhere; }
+.hm-agreement-timeline-event-meta-item strong { color: var(--hm-timeline-ink); font-weight: 700; }
+.hm-agreement-timeline-state { display: flex; align-items: center; justify-content: center; gap: .55rem; min-height: 150px; color: var(--hm-timeline-muted); font-size: .8rem; }
+.hm-agreement-timeline-state[data-timeline-state="error"] { color: #c44b5e; }
+.hm-agreement-timeline-spinner { width: 1.05rem; height: 1.05rem; border: 2px solid #dedfff; border-top-color: var(--hm-timeline-primary); border-radius: 50%; animation: hmAgreementTimelineSpin .7s linear infinite; }
+.hm-agreement-timeline-state[data-timeline-state="error"] .hm-agreement-timeline-spinner { display: none; }
+@keyframes hmAgreementTimelineSpin { to { transform: rotate(360deg); } }
+.hm-agreement-timeline-footer { display: flex; align-items: center; justify-content: space-between; gap: .75rem; padding: .85rem 1.5rem; border-top: 1px solid var(--hm-timeline-border); background: #fcfcfe; }
+.hm-agreement-timeline-footer-actions { display: flex; gap: .55rem; }
+.hm-agreement-timeline-footer .btn { border-radius: 10px; font-size: .74rem; }
+
+@media (max-width: 680px) {
+    .hm-agreement-timeline-modal { padding: .55rem; }
+    .hm-agreement-timeline-dialog { max-height: calc(100vh - 1.1rem); border-radius: 18px; }
+    .hm-agreement-timeline-header, .hm-agreement-timeline-body, .hm-agreement-timeline-footer { padding-inline: 1rem; }
+    .hm-agreement-timeline-summary { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .hm-agreement-timeline-section-head { align-items: flex-start; flex-direction: column; gap: .45rem; }
+    .hm-agreement-timeline-event { grid-template-columns: 35px minmax(0, 1fr); gap: .45rem; }
+    .hm-agreement-timeline-events::before { inset-inline-end: .85rem; }
+    .hm-agreement-timeline-event-marker { width: 30px; height: 30px; margin-top: .75rem; font-size: .67rem; }
+    .hm-agreement-timeline-footer { align-items: stretch; flex-direction: column-reverse; }
+    .hm-agreement-timeline-footer-actions { display: grid; grid-template-columns: 1fr 1fr; }
+    .hm-agreement-timeline-footer .btn { width: 100%; }
+}

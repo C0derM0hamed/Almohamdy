@@ -5,6 +5,7 @@ namespace App\Repositories\SystemAdministration;
 use App\Models\ServicePackage;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Schema;
 
 class ServicePackageAdminRepository
 {
@@ -17,6 +18,8 @@ class ServicePackageAdminRepository
         'code1',
         'name_ar',
         'name_en',
+        'notice_ar',
+        'notice_en',
         'price',
         'publish',
         'companies_groups_id',
@@ -32,6 +35,8 @@ class ServicePackageAdminRepository
         'code1',
         'name_ar',
         'name_en',
+        'notice_ar',
+        'notice_en',
         'price',
         'publish',
         'companies_groups_id',
@@ -39,6 +44,13 @@ class ServicePackageAdminRepository
         'updated_at',
         'created_by',
         'updated_by',
+        'notice1_ar',
+        'notice1_en',
+        'service_details',
+        'consultation_discount',
+        'lab_x_rays_discount',
+        'operations_hypnosis_discount',
+        'delivery_discount',
     ];
 
     public function baseQuery(): Builder
@@ -103,20 +115,34 @@ class ServicePackageAdminRepository
             ->first();
     }
 
-    /**
-     * @param  array{code1: string, name_ar: string, name_en: string, price: string, publish: string, updated_by: int}  $attributes
-     */
-    public function update(ServicePackage $package, array $attributes): ServicePackage
+    /** @param array<string, mixed> $attributes */
+    public function create(array $attributes): ServicePackage
     {
-        $package->code1 = $attributes['code1'];
-        $package->name_ar = $attributes['name_ar'];
-        $package->name_en = $attributes['name_en'];
-        $package->price = $attributes['price'];
-        $package->publish = $attributes['publish'];
-        $package->updated_by = $attributes['updated_by'];
+        $package = new ServicePackage;
+        $this->applyAttributes($package, $attributes);
         $package->save();
 
         return $package;
+    }
+
+    /** @param array<string, mixed> $attributes */
+    public function update(ServicePackage $package, array $attributes): ServicePackage
+    {
+        $this->applyAttributes($package, $attributes);
+        $package->save();
+
+        return $package;
+    }
+
+    /** @param array<string, mixed> $attributes */
+    private function applyAttributes(ServicePackage $package, array $attributes): void
+    {
+        $columns = Schema::getColumnListing('service_packages');
+        foreach ($attributes as $column => $value) {
+            if (in_array($column, $columns, true)) {
+                $package->{$column} = is_string($value) ? trim($value) : $value;
+            }
+        }
     }
 
     public function togglePublish(ServicePackage $package, int $updatedBy): ServicePackage

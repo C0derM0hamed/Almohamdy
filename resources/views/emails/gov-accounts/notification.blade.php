@@ -1,0 +1,1 @@
+<!doctype html><html lang="{{ app()->getLocale() }}" dir="{{ app()->getLocale()==='ar'?'rtl':'ltr' }}"><body><p>{{ __('gov_accounts.email.greeting',['name'=>$recipientName]) }}</p><p>{{ $messageText }}</p><p><a href="{{ $actionUrl }}">{{ __('gov_accounts.email.open') }}</a></p><p>{{ __('gov_accounts.email.no_credentials') }}</p></body></html>

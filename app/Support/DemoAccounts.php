@@ -23,6 +23,18 @@ final class DemoAccounts
         'bader_permission',
         'bader_brancha',
         'bader_branchb',
+        'lic_cc_super_mohamed',
+        'lic_responsible_mohamed',
+        'lic_finance_mohamed',
+        'lic_super_mohamed',
+        'lic_cc_super_bader',
+        'lic_responsible_bader',
+        'lic_finance_bader',
+        'lic_super_bader',
+        'lic_mo_cc_super',
+        'lic_mo_responsible',
+        'lic_mo_finance',
+        'lic_mo_super',
     ];
 
     /**

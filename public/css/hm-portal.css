@@ -23,9 +23,10 @@ body {
 }
 
 .portal-container {
-  max-width: 1344px;
+  width: 100%;
+  max-width: none;
   margin: 0 auto;
-  padding: 0 96px;
+  padding-inline: clamp(20px, 3vw, 64px);
   box-sizing: border-box;
 }
 
@@ -35,10 +36,114 @@ body {
   height: 430px;
   width: 100%;
   display: flex;
-  background-image: url('/landingPage/hero.png');
+  overflow: hidden;
+}
+
+.hero-slides {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 0;
+}
+
+.hero-slide {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   background-position: left center;
   background-size: auto 100%;
   background-repeat: no-repeat;
+  opacity: 0;
+  transition: opacity 1.2s ease;
+}
+
+.hero-slide.is-active {
+  opacity: 1;
+  animation: heroSlideZoom 7s ease-out forwards;
+}
+
+.hero-slide--cover {
+  background-size: cover;
+  background-position: center;
+}
+
+@keyframes heroSlideZoom {
+  from { transform: scale(1); }
+  to { transform: scale(1.05); }
+}
+
+.hero-dots {
+  position: absolute;
+  bottom: 24px;
+  left: 70px;
+  z-index: 3;
+  display: flex;
+  gap: 8px;
+}
+
+.hero-side-arrow {
+  position: absolute;
+  top: 290px;
+  z-index: 3;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 999px;
+  background: rgba(1, 45, 121, 0.35);
+  color: #FFFFFF;
+  cursor: pointer;
+  transition: background 0.3s ease, border-color 0.3s ease;
+}
+
+.hero-side-arrow[hidden] {
+  display: none;
+}
+
+.hero-side-arrow--prev {
+  right: 25px;
+}
+
+.hero-side-arrow--next {
+  left: 25px;
+}
+
+.hero-side-arrow:hover {
+  background: rgba(1, 45, 121, 0.6);
+  border-color: rgba(255, 255, 255, 0.6);
+}
+
+.hero-side-arrow svg {
+  width: 18px;
+  height: 18px;
+}
+
+.hero-dot {
+  width: 10px;
+  height: 10px;
+  padding: 0;
+  border: none;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.45);
+  cursor: pointer;
+  transition: width 0.3s ease, background 0.3s ease;
+}
+
+.hero-dot.is-active {
+  width: 28px;
+  background: #FFFFFF;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-slide { transition: none; }
+  .hero-slide.is-active { animation: none; }
 }
 
 .hero-overlay {
@@ -80,7 +185,8 @@ body {
   width: 265px;
   height: auto;
   filter: brightness(0) invert(1);
-  clip-path: inset(0 0 16% 0);
+  /* The canonical horizontal mark has no trailing transparent strip. */
+  clip-path: none;
 }
 
 .hero-login-btn {
@@ -185,6 +291,15 @@ body {
   box-shadow: 0 16px 40px rgba(1, 45, 121, 0.12);
 }
 
+.portal-card--unavailable {
+  cursor: default;
+}
+
+.portal-card--unavailable:hover {
+  transform: none;
+  box-shadow: var(--shadow-card);
+}
+
 .card-icon {
   width: 90px;
   height: 90px;
@@ -224,28 +339,6 @@ body {
   font-size: 15px;
   margin: 0;
   line-height: 1.5;
-}
-
-.card-chevron {
-  width: 36px;
-  height: 36px;
-  min-width: 36px;
-  min-height: 36px;
-  border-radius: 50%;
-  border: 1px solid #D8E0F0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  margin-right: auto;
-  box-sizing: border-box;
-}
-
-.card-chevron svg {
-  stroke: var(--blue-600);
-  fill: none;
-  width: 14px;
-  height: 14px;
 }
 
 /* Accreditation Section */
@@ -293,7 +386,7 @@ body {
 }
 
 .acc-card .acc-icon {
-  height: 44px;
+  height: 52px;
   margin-bottom: 6px;
   display: flex;
   align-items: center;
@@ -302,6 +395,13 @@ body {
 
 .acc-card svg {
   max-height: 100%;
+}
+
+.acc-icon img {
+  max-height: 100%;
+  max-width: 100%;
+  width: auto;
+  object-fit: contain;
 }
 
 .acc-text {
@@ -336,10 +436,16 @@ body {
   box-shadow: 0 4px 12px rgba(1, 45, 121, 0.02);
 }
 
-.c-main { width: 410px; flex-shrink: 0; position: relative; }
-.c-olaya { width: 265px; flex-shrink: 0; }
-.c-unified { width: 288px; flex-shrink: 0; }
-.c-email { width: 316px; flex-shrink: 0; }
+.c-main,
+.c-olaya,
+.c-unified,
+.c-email {
+  width: auto;
+  min-width: 0;
+  flex: 1 1 0;
+}
+
+.c-main { position: relative; }
 
 .contact-icon {
   width: 60px;
@@ -462,6 +568,10 @@ body {
   text-decoration: none;
 }
 
+.footer-link--unavailable {
+  cursor: default;
+}
+
 .footer-sep {
   width: 1px;
   height: 18px;
@@ -500,8 +610,15 @@ body {
   .hero-login-btn { left: 40px; }
   .hero-text-block { right: 40px; left: 20px; }
   .hero-ornament { right: 40px; }
+  .hero-dots { left: 40px; }
+  .hero-side-arrow--prev { right: 15px; }
+  .hero-side-arrow--next { left: 15px; }
   .contact-grid { flex-wrap: wrap; }
-  .c-main, .c-olaya, .c-unified, .c-email { width: calc(50% - 8px); flex-shrink: 1; }
+  .c-main, .c-olaya, .c-unified, .c-email {
+    width: calc(50% - 8px);
+    flex: 1 1 calc(50% - 8px);
+    flex-shrink: 1;
+  }
 }
 
 @media (max-width: 1280px) {
@@ -526,6 +643,10 @@ body {
   .hero-login-btn { left: 20px; top: 32px; padding: 10px 20px; font-size: 15px; }
   .hero-text-block { right: 20px; left: 20px; }
   .hero-ornament { right: 20px; left: 20px; justify-content: flex-start; }
+  .hero-dots { left: 20px; bottom: 16px; }
+  .hero-dot { width: 8px; height: 8px; }
+  .hero-dot.is-active { width: 22px; }
+  .hero-side-arrow { display: none; }
   .portal-container { padding: 0 20px; }
   .footer { height: auto; padding: 30px 0; }
   .footer-inner { flex-direction: column; gap: 20px; text-align: center; }

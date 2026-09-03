@@ -32,6 +32,7 @@
             @include('system-administration.packages._form', [
                 'package' => $package,
                 'sectionOptions' => $sectionOptions,
+                'isCreate' => false,
             ])
         </div>
     </div>

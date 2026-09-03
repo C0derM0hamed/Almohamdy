@@ -62,6 +62,7 @@ class LoginService
             'code_time',
             'otp_expires_at',
             'otp_failed_attempts',
+            'otp_demo_code',
         ];
     }
 
@@ -97,12 +98,10 @@ class LoginService
             ];
         }
 
-        if (! $this->canReceiveOtp($user, $channel)) {
+        if (! $this->canReceiveOtp($user)) {
             return [
                 'success' => false,
-                'message' => $channel === 'sms'
-                    ? __('login.errors.mobile_required')
-                    : __('login.errors.email_required'),
+                'message' => __('login.errors.email_required'),
             ];
         }
 
@@ -129,10 +128,9 @@ class LoginService
     /**
      * Resolves the login identifier to an active user and the OTP channel to use.
      *
-     * Username and email matching is unchanged from the original behavior
-     * (delegated to findActiveByUsernameOrEmail, tried first). A numeric,
-     * phone-shaped identifier that doesn't match a username is tried against
-     * the mobile column as a new, additive lookup path.
+     * Login identifiers are deliberately limited to the employee number
+     * (legacy hr_username) or a unique email address. Mobile numbers are not
+     * accepted as platform login identifiers.
      *
      * @return array{0: ?User, 1: string}
      */
@@ -144,23 +142,7 @@ class LoginService
             return [$this->users->findActiveByUsernameOrEmail($login), 'email'];
         }
 
-        $user = $this->users->findActiveByUsernameOrEmail($login);
-
-        if ($user !== null) {
-            return [$user, 'email'];
-        }
-
-        $digits = preg_replace('/\D+/', '', $login) ?? '';
-
-        if (strlen($digits) >= 9) {
-            $mobileUser = $this->users->findActiveByMobile($login);
-
-            if ($mobileUser !== null) {
-                return [$mobileUser, 'sms'];
-            }
-        }
-
-        return [null, 'email'];
+        return [$this->users->findActiveByUsernameOrEmail($login), 'email'];
     }
 
     public function pendingUser(): ?User
@@ -182,16 +164,9 @@ class LoginService
             && hash_equals($normalized, hash('sha256', $plain));
     }
 
-    private function canReceiveOtp(User $user, string $channel): bool
+    private function canReceiveOtp(User $user): bool
     {
-        return $channel === 'sms'
-            ? $this->hasValidMobile($user)
-            : $this->hasValidEmail($user);
-    }
-
-    private function hasValidMobile(User $user): bool
-    {
-        return strlen((string) $user->mobile) >= 9;
+        return $this->hasValidEmail($user);
     }
 
     private function hasValidEmail(User $user): bool
@@ -200,6 +175,7 @@ class LoginService
 
         return $email !== '' && filter_var($email, FILTER_VALIDATE_EMAIL) !== false;
     }
+
 
     private function storePendingUserSession(User $user, string $channel): void
     {

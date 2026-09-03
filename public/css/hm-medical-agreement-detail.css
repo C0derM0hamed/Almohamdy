@@ -1,0 +1,289 @@
+/* Medical agreement detail — calm, high-trust workflow layout. */
+.hm-medical-agreement-detail {
+    --mad-ink: #20243a;
+    --mad-navy: #303464;
+    --mad-muted: #7c86a0;
+    --mad-primary: #5f5bed;
+    --mad-primary-dark: #4845c9;
+    --mad-soft: #f3f3ff;
+    --mad-line: #e6e8f2;
+    --mad-shadow: 0 14px 35px rgba(43, 44, 105, .075);
+    padding-bottom: 3rem;
+    color: var(--mad-ink);
+}
+
+body.hm-app-body:has(.hm-medical-agreement-detail):not(.modal-open) {
+    overflow-y: auto !important;
+}
+
+.hm-medical-agreement-detail .mad-alert {
+    display: flex;
+    align-items: center;
+    gap: .7rem;
+    margin: 1rem 0 0;
+    padding: .85rem 1rem;
+    border: 0;
+    border-radius: 14px;
+    box-shadow: 0 8px 18px rgba(37, 43, 100, .06);
+}
+
+.hm-medical-agreement-detail .mad-alert i { font-size: 1.05rem; }
+
+.hm-medical-agreement-detail .mad-hero {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.25rem;
+    margin-top: 1.3rem;
+    padding: 1.4rem 1.5rem;
+    border: 1px solid rgba(221, 224, 239, .95);
+    border-radius: 24px;
+    background:
+        radial-gradient(circle at 8% 20%, rgba(120, 119, 246, .13), transparent 30%),
+        linear-gradient(135deg, #fff 0%, #fafaff 100%);
+    box-shadow: var(--mad-shadow);
+}
+
+.hm-medical-agreement-detail .mad-hero__identity,
+.hm-medical-agreement-detail .mad-hero__actions,
+.hm-medical-agreement-detail .mad-panel__heading,
+.hm-medical-agreement-detail .mad-inline-actions,
+.hm-medical-agreement-detail .mad-timeline-content__top,
+.hm-medical-agreement-detail .mad-timeline-meta,
+.hm-medical-agreement-detail .mad-attachment-item {
+    display: flex;
+    align-items: center;
+}
+
+.hm-medical-agreement-detail .mad-hero__identity { min-width: 0; gap: 1rem; }
+.hm-medical-agreement-detail .mad-hero__icon {
+    display: grid;
+    place-items: center;
+    width: 62px;
+    height: 62px;
+    flex: 0 0 62px;
+    border-radius: 19px;
+    color: #fff;
+    background: linear-gradient(145deg, #7774fa, var(--mad-primary-dark));
+    box-shadow: 0 12px 22px rgba(95, 91, 237, .22);
+    font-size: 1.65rem;
+}
+
+.hm-medical-agreement-detail .mad-eyebrow {
+    margin-bottom: .3rem;
+    color: var(--mad-primary);
+    font-size: .73rem;
+    font-weight: 800;
+}
+
+.hm-medical-agreement-detail .mad-hero h1 {
+    margin: 0;
+    color: var(--mad-ink);
+    font-size: clamp(1.25rem, 2vw, 1.75rem);
+    font-weight: 900;
+    line-height: 1.35;
+}
+
+.hm-medical-agreement-detail .mad-hero p {
+    margin: .35rem 0 0;
+    color: var(--mad-muted);
+    font-size: .78rem;
+    font-weight: 600;
+}
+
+.hm-medical-agreement-detail .mad-hero__actions {
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: .55rem;
+}
+
+.hm-medical-agreement-detail .mad-btn,
+.hm-medical-agreement-detail .mad-icon-action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: .45rem;
+    min-height: 42px;
+    padding: .55rem .85rem;
+    border: 1px solid transparent;
+    border-radius: 11px;
+    font: inherit;
+    font-size: .74rem;
+    font-weight: 800;
+    line-height: 1.2;
+    text-decoration: none;
+    cursor: pointer;
+    transition: transform .18s ease, box-shadow .18s ease, background .18s ease, border-color .18s ease;
+}
+
+.hm-medical-agreement-detail .mad-btn:hover,
+.hm-medical-agreement-detail .mad-icon-action:hover { transform: translateY(-1px); }
+.hm-medical-agreement-detail .mad-btn--primary { color: #fff; background: var(--mad-primary); box-shadow: 0 9px 18px rgba(95, 91, 237, .22); }
+.hm-medical-agreement-detail .mad-btn--primary:hover { color: #fff; background: var(--mad-primary-dark); }
+.hm-medical-agreement-detail .mad-btn--light { color: #59627d; border-color: var(--mad-line); background: #fff; }
+.hm-medical-agreement-detail .mad-btn--light:hover { color: var(--mad-primary); border-color: #c9c9f4; background: var(--mad-soft); }
+.hm-medical-agreement-detail .mad-btn--full { width: 100%; }
+
+.hm-medical-agreement-detail .mad-status {
+    display: inline-flex;
+    align-items: center;
+    gap: .38rem;
+    padding: .48rem .7rem;
+    border-radius: 999px;
+    font-size: .68rem;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+.hm-medical-agreement-detail .mad-status i { font-size: .45rem; }
+.hm-medical-agreement-detail .mad-status--completed { color: #118d6a; background: #e6f8f0; }
+.hm-medical-agreement-detail .mad-status--progress { color: #5a55d8; background: #eeedff; }
+.hm-medical-agreement-detail .mad-status--pending { color: #9a6a17; background: #fff6df; }
+.hm-medical-agreement-detail .mad-status--rejected,
+.hm-medical-agreement-detail .mad-status--failed { color: #bf4e61; background: #fff0f2; }
+
+.hm-medical-agreement-detail .mad-stat-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: .8rem;
+    margin-top: 1rem;
+}
+
+.hm-medical-agreement-detail .mad-stat-card {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    min-width: 0;
+    padding: 1rem;
+    border: 1px solid var(--mad-line);
+    border-radius: 17px;
+    background: #fff;
+    box-shadow: 0 8px 22px rgba(43, 44, 105, .045);
+}
+
+.hm-medical-agreement-detail .mad-stat-card__icon {
+    display: grid;
+    place-items: center;
+    width: 39px;
+    height: 39px;
+    flex: 0 0 39px;
+    border-radius: 12px;
+    color: var(--mad-primary);
+    background: var(--mad-soft);
+    font-size: 1rem;
+}
+
+.hm-medical-agreement-detail .mad-stat-card small,
+.hm-medical-agreement-detail .mad-stat-card strong { display: block; }
+.hm-medical-agreement-detail .mad-stat-card small { margin-bottom: .25rem; color: var(--mad-muted); font-size: .66rem; font-weight: 700; }
+.hm-medical-agreement-detail .mad-stat-card strong { overflow: hidden; color: var(--mad-navy); font-size: .9rem; font-weight: 900; text-overflow: ellipsis; white-space: nowrap; }
+
+.hm-medical-agreement-detail .mad-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1.55fr) minmax(300px, .85fr);
+    gap: 1rem;
+    align-items: start;
+    margin-top: 1rem;
+}
+
+.hm-medical-agreement-detail .mad-main-column,
+.hm-medical-agreement-detail .mad-side-column { display: grid; gap: 1rem; min-width: 0; }
+.hm-medical-agreement-detail .mad-panel { min-width: 0; border: 1px solid var(--mad-line); border-radius: 20px; background: #fff; box-shadow: var(--mad-shadow); overflow: hidden; }
+.hm-medical-agreement-detail .mad-panel__header { display: flex; align-items: center; justify-content: space-between; gap: .8rem; padding: 1rem 1.1rem; border-bottom: 1px solid #edf0f6; background: linear-gradient(135deg, #fff, #fbfbff); }
+.hm-medical-agreement-detail .mad-panel__heading { min-width: 0; gap: .7rem; }
+.hm-medical-agreement-detail .mad-panel__icon { display: grid; place-items: center; width: 41px; height: 41px; flex: 0 0 41px; border-radius: 13px; color: #5d5aea; background: #eeedff; font-size: 1rem; }
+.hm-medical-agreement-detail .mad-panel__icon--teal { color: #149a91; background: #e8fbf8; }
+.hm-medical-agreement-detail .mad-panel__icon--purple { color: #8a55d3; background: #f3eaff; }
+.hm-medical-agreement-detail .mad-panel__icon--orange { color: #d58136; background: #fff2e4; }
+.hm-medical-agreement-detail .mad-panel__icon--blue { color: #4779cd; background: #eaf2ff; }
+.hm-medical-agreement-detail .mad-panel h2 { margin: 0; color: var(--mad-navy); font-size: .95rem; font-weight: 900; }
+.hm-medical-agreement-detail .mad-panel__heading p { margin: .2rem 0 0; color: var(--mad-muted); font-size: .67rem; }
+.hm-medical-agreement-detail .mad-detail-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0; }
+.hm-medical-agreement-detail .mad-detail-item { min-width: 0; padding: .95rem 1.1rem; border-bottom: 1px solid #eff1f6; }
+.hm-medical-agreement-detail .mad-detail-item:nth-child(odd) { border-inline-end: 1px solid #eff1f6; }
+.hm-medical-agreement-detail .mad-detail-item--wide { grid-column: 1 / -1; border-inline-end: 0 !important; background: #fcfcff; }
+.hm-medical-agreement-detail .mad-detail-item span { display: block; margin-bottom: .35rem; color: var(--mad-muted); font-size: .68rem; font-weight: 700; }
+.hm-medical-agreement-detail .mad-detail-item strong { display: block; overflow-wrap: anywhere; color: var(--mad-ink); font-size: .8rem; font-weight: 800; line-height: 1.6; }
+
+.hm-medical-agreement-detail .mad-count-badge { display: grid; place-items: center; min-width: 28px; height: 26px; padding: 0 .55rem; border-radius: 999px; color: var(--mad-primary-dark); background: var(--mad-soft); font-size: .68rem; font-weight: 900; }
+.hm-medical-agreement-detail .mad-attachments-list { padding: .45rem 1.1rem; }
+.hm-medical-agreement-detail .mad-attachment-item { gap: .65rem; padding: .7rem 0; border-bottom: 1px solid #eff1f6; }
+.hm-medical-agreement-detail .mad-attachment-item:last-child { border-bottom: 0; }
+.hm-medical-agreement-detail .mad-attachment-item__icon { display: grid; place-items: center; width: 35px; height: 35px; flex: 0 0 35px; border-radius: 10px; color: #d77a3a; background: #fff2e4; }
+.hm-medical-agreement-detail .mad-attachment-item__name { min-width: 0; flex: 1 1 auto; }
+.hm-medical-agreement-detail .mad-attachment-item__name a { display: block; overflow: hidden; color: var(--mad-navy); font-size: .72rem; font-weight: 800; text-overflow: ellipsis; white-space: nowrap; }
+.hm-medical-agreement-detail .mad-attachment-item__name a:hover { color: var(--mad-primary); }
+.hm-medical-agreement-detail .mad-attachment-item__name small { display: block; margin-top: .18rem; color: var(--mad-muted); font-size: .6rem; }
+.hm-medical-agreement-detail .mad-delete-action { display: grid; place-items: center; width: 31px; height: 31px; flex: 0 0 31px; border: 0; border-radius: 9px; color: #ba6472; background: #fff2f4; cursor: pointer; }
+.hm-medical-agreement-detail .mad-delete-action:hover { color: #fff; background: #d96b7b; }
+.hm-medical-agreement-detail .mad-upload-form { margin: .25rem 1.1rem 1.1rem; padding: .9rem; border: 1px dashed #cfd2ef; border-radius: 14px; background: #fafaff; }
+.hm-medical-agreement-detail .mad-upload-form label { display: flex; align-items: center; gap: .45rem; margin-bottom: .7rem; color: var(--mad-navy); font-size: .73rem; font-weight: 800; cursor: pointer; }
+.hm-medical-agreement-detail .mad-upload-form label i { color: var(--mad-primary); font-size: 1.15rem; }
+.hm-medical-agreement-detail .mad-upload-form label small { display: block; margin-inline-start: auto; color: var(--mad-muted); font-size: .58rem; font-weight: 600; }
+.hm-medical-agreement-detail .mad-upload-form input[type="file"] { display: block; width: 100%; margin-bottom: .7rem; color: var(--mad-muted); font-size: .65rem; }
+
+.hm-medical-agreement-detail .mad-record-list { margin: 0; padding: .45rem 1.1rem 1rem; }
+.hm-medical-agreement-detail .mad-record-list > div { display: flex; justify-content: space-between; gap: 1rem; padding: .72rem 0; border-bottom: 1px solid #eff1f6; }
+.hm-medical-agreement-detail .mad-record-list > div:last-child { border-bottom: 0; }
+.hm-medical-agreement-detail .mad-record-list dt { color: var(--mad-muted); font-size: .68rem; font-weight: 700; }
+.hm-medical-agreement-detail .mad-record-list dd { max-width: 65%; margin: 0; overflow-wrap: anywhere; color: var(--mad-ink); font-size: .7rem; font-weight: 800; text-align: end; }
+.hm-medical-agreement-detail .mad-reference { color: var(--mad-primary-dark) !important; font-size: .62rem !important; }
+
+.hm-medical-agreement-detail .mad-inline-actions { flex-wrap: wrap; justify-content: flex-end; gap: .4rem; }
+.hm-medical-agreement-detail .mad-inline-actions form { margin: 0; }
+.hm-medical-agreement-detail .mad-icon-action { min-height: 35px; padding: .4rem .62rem; color: var(--mad-primary-dark); border-color: #d8d8f7; background: #fff; font-size: .64rem; }
+.hm-medical-agreement-detail .mad-icon-action--soft { color: #4779cd; border-color: #d8e7ff; background: #f4f8ff; }
+.hm-medical-agreement-detail .mad-timeline-list { padding: 1rem 1.1rem 1.15rem; }
+.hm-medical-agreement-detail .mad-timeline-row { position: relative; display: grid; grid-template-columns: 38px minmax(0, 1fr); gap: .75rem; align-items: start; }
+.hm-medical-agreement-detail .mad-timeline-row:not(:last-child) { padding-bottom: 1rem; }
+.hm-medical-agreement-detail .mad-timeline-row:not(:last-child)::before { position: absolute; top: 2.35rem; bottom: .15rem; inset-inline-start: 18px; width: 2px; content: ''; background: #e4e5f7; }
+.hm-medical-agreement-detail .mad-timeline-marker { position: relative; z-index: 1; display: grid; place-items: center; width: 38px; height: 38px; border: 5px solid #fff; border-radius: 50%; color: #fff; background: #aaaec1; box-shadow: 0 0 0 1px #e2e4ee; font-size: .75rem; }
+.hm-medical-agreement-detail .mad-timeline-row--completed .mad-timeline-marker { background: #18ad7d; box-shadow: 0 0 0 1px #8be1c4; }
+.hm-medical-agreement-detail .mad-timeline-row--progress .mad-timeline-marker { background: var(--mad-primary); box-shadow: 0 0 0 1px #c8c6ff; }
+.hm-medical-agreement-detail .mad-timeline-row--rejected .mad-timeline-marker,
+.hm-medical-agreement-detail .mad-timeline-row--failed .mad-timeline-marker { background: #df6b7b; box-shadow: 0 0 0 1px #f1b5bd; }
+.hm-medical-agreement-detail .mad-timeline-content { min-width: 0; padding: .75rem .85rem; border: 1px solid var(--mad-line); border-radius: 14px; background: #fff; box-shadow: 0 5px 14px rgba(45, 50, 91, .035); }
+.hm-medical-agreement-detail .mad-timeline-content__top { justify-content: space-between; gap: .7rem; }
+.hm-medical-agreement-detail .mad-timeline-content__top strong { display: block; color: var(--mad-navy); font-size: .78rem; font-weight: 900; }
+.hm-medical-agreement-detail .mad-timeline-content__top small { display: block; margin-top: .25rem; color: #9aa3b5; font-size: .6rem; }
+.hm-medical-agreement-detail .mad-timeline-meta { flex-wrap: wrap; gap: .45rem; margin-top: .65rem; padding-top: .55rem; border-top: 1px dashed #e8eaf2; }
+.hm-medical-agreement-detail .mad-timeline-meta span { display: inline-flex; align-items: center; gap: .25rem; max-width: 100%; padding: .3rem .45rem; border-radius: 7px; color: #727d94; background: #fafbfe; font-size: .6rem; overflow-wrap: anywhere; }
+.hm-medical-agreement-detail .mad-timeline-meta i { color: var(--mad-primary); }
+.hm-medical-agreement-detail .mad-timeline-meta .mad-timeline-note { color: #b45f6c; background: #fff5f6; }
+.hm-medical-agreement-detail .mad-empty { display: grid; place-items: center; gap: .3rem; min-height: 145px; color: var(--mad-muted); text-align: center; }
+.hm-medical-agreement-detail .mad-empty i { color: #b8b9ef; font-size: 2rem; }
+.hm-medical-agreement-detail .mad-empty strong { color: var(--mad-navy); font-size: .78rem; }
+.hm-medical-agreement-detail .mad-empty span { font-size: .65rem; }
+.hm-medical-agreement-detail .mad-empty--small { min-height: 90px; }
+.hm-medical-agreement-detail .mad-empty--small i { font-size: 1.55rem; }
+
+@media (max-width: 1199.98px) {
+    .hm-medical-agreement-detail .mad-layout { grid-template-columns: minmax(0, 1.35fr) minmax(270px, .9fr); }
+    .hm-medical-agreement-detail .mad-hero { align-items: flex-start; flex-direction: column; }
+    .hm-medical-agreement-detail .mad-hero__actions { justify-content: flex-start; }
+}
+
+@media (max-width: 820px) {
+    .hm-medical-agreement-detail .mad-stat-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .hm-medical-agreement-detail .mad-layout { grid-template-columns: 1fr; }
+    .hm-medical-agreement-detail .mad-side-column { grid-row: 1; }
+}
+
+@media (max-width: 575.98px) {
+    .hm-medical-agreement-detail .mad-hero { padding: 1.1rem; border-radius: 18px; }
+    .hm-medical-agreement-detail .mad-hero__identity { align-items: flex-start; }
+    .hm-medical-agreement-detail .mad-hero__icon { width: 48px; height: 48px; flex-basis: 48px; border-radius: 14px; font-size: 1.2rem; }
+    .hm-medical-agreement-detail .mad-hero__actions { width: 100%; }
+    .hm-medical-agreement-detail .mad-hero__actions .mad-btn { flex: 1 1 auto; }
+    .hm-medical-agreement-detail .mad-stat-card { padding: .75rem; }
+    .hm-medical-agreement-detail .mad-stat-card__icon { width: 33px; height: 33px; flex-basis: 33px; }
+    .hm-medical-agreement-detail .mad-stat-card strong { font-size: .78rem; }
+    .hm-medical-agreement-detail .mad-detail-grid { grid-template-columns: 1fr; }
+    .hm-medical-agreement-detail .mad-detail-item,
+    .hm-medical-agreement-detail .mad-detail-item:nth-child(odd) { grid-column: 1 / -1; border-inline-end: 0; }
+    .hm-medical-agreement-detail .mad-panel__header { align-items: flex-start; flex-direction: column; }
+    .hm-medical-agreement-detail .mad-inline-actions { width: 100%; justify-content: flex-start; }
+    .hm-medical-agreement-detail .mad-upload-form label { align-items: flex-start; flex-wrap: wrap; }
+    .hm-medical-agreement-detail .mad-upload-form label small { width: 100%; margin-inline-start: 1.6rem; }
+    .hm-medical-agreement-detail .mad-timeline-content__top { align-items: flex-start; flex-direction: column; }
+}

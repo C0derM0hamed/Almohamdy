@@ -150,6 +150,24 @@
             });
         }
 
+        function revealInlineSubmenu(parent) {
+            if (!root.closest('.hm-hs') || !parent || !parent.classList.contains('is-submenu-open')) {
+                return;
+            }
+
+            var sublist = parent.querySelector('.hm-searchable-select__sublist');
+            if (!sublist) {
+                return;
+            }
+
+            // Inline submenus live inside the scrollable list on Hospital Services.
+            // Bring the expanded children into that viewport instead of allowing
+            // their labels to continue below the dropdown card.
+            window.requestAnimationFrame(function () {
+                sublist.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+            });
+        }
+
         list.querySelectorAll('.hm-searchable-select__option--parent').forEach(function (parent) {
             parent.addEventListener('mouseenter', positionFlyoutSubmenus);
         });
@@ -177,6 +195,7 @@
                 if (parentBtn) {
                     parentBtn.setAttribute('aria-expanded', 'true');
                 }
+                revealInlineSubmenu(parentToOpen);
                 positionFlyoutSubmenus();
             }
         }
@@ -221,16 +240,17 @@
                     var sublist = parentItem.querySelector('.hm-searchable-select__sublist');
                     var parentHasChildren = !!(sublist && sublist.querySelector('.hm-searchable-select__option--child'));
 
-                    if (parentHasChildren) {
-                        event.preventDefault();
-                        parentItem.classList.toggle('is-submenu-open');
-                        button.setAttribute(
-                            'aria-expanded',
-                            parentItem.classList.contains('is-submenu-open') ? 'true' : 'false'
-                        );
-                        positionFlyoutSubmenus();
-                        return;
-                    }
+                if (parentHasChildren) {
+                    event.preventDefault();
+                    parentItem.classList.toggle('is-submenu-open');
+                    button.setAttribute(
+                        'aria-expanded',
+                        parentItem.classList.contains('is-submenu-open') ? 'true' : 'false'
+                    );
+                    revealInlineSubmenu(parentItem);
+                    positionFlyoutSubmenus();
+                    return;
+                }
                 }
 
                 var label = button.textContent.trim();

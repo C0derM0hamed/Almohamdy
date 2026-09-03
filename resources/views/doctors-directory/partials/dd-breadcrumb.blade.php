@@ -16,7 +16,9 @@
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
                 </span>
             @else
-                <span class="dd-breadcrumb-sep-char" aria-hidden="true">›</span>
+                <span class="dd-breadcrumb-sep-char" aria-hidden="true">
+                    <img class="dd-breadcrumb-sep-icon" src="{{ asset('images/figma/header/crumb-sep.svg') }}" alt="" width="18" height="18">
+                </span>
             @endif
         @endif
 

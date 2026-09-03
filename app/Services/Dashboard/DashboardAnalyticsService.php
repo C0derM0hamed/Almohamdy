@@ -28,7 +28,7 @@ class DashboardAnalyticsService
 {
     private const CACHE_TTL_SECONDS = 300;
 
-    private const TREND_DAYS = 30;
+    private const TREND_DAYS = 90;
 
     public function __construct(
         private readonly PermissionService $permissions,
@@ -55,7 +55,7 @@ class DashboardAnalyticsService
             )),
         ]));
 
-        return 'hm.dashboard.analytics.v1.'.$permissionSignature;
+        return 'hm.dashboard.analytics.v2.'.$permissionSignature;
     }
 
     /**
@@ -65,20 +65,22 @@ class DashboardAnalyticsService
     {
         $modules = $this->allowedModules();
         $today = Carbon::today();
-        $since30 = $today->copy()->subDays(self::TREND_DAYS - 1);
+        $sinceTrend = $today->copy()->subDays(self::TREND_DAYS - 1);
+        $since30 = $today->copy()->subDays(29);
         $since7 = $today->copy()->subDays(6);
+        $monthStart = $today->copy()->startOfMonth();
 
         $stats = [];
         $daily = [];
 
         foreach ($modules as $module) {
-            $stats[$module['key']] = $this->moduleStats($module, $since7, $since30);
-            $daily[$module['key']] = $this->moduleDailyCounts($module, $since30);
+            $stats[$module['key']] = $this->moduleStats($module, $since7, $since30, $monthStart);
+            $daily[$module['key']] = $this->moduleDailyCounts($module, $sinceTrend);
         }
 
         return [
             'kpis' => $this->kpis($stats),
-            'trend' => $this->trend($modules, $daily, $since30, $today),
+            'trend' => $this->trend($modules, $daily, $sinceTrend, $today),
             'moduleTotals' => $this->moduleTotals($modules, $stats),
             'statusByModule' => $this->statusByModule($modules, $stats),
             'branchComparison' => $this->branchComparison(),
@@ -120,7 +122,7 @@ class DashboardAnalyticsService
                 'attention_key' => 'inquiries_new',
                 'route' => 'modules.inquiries.incoming.index',
                 'company_scoped' => true,
-                'gate' => fn (): bool => true,
+                'gate' => fn (): bool => $this->permissions->can('inquiries_and_services'),
             ],
             [
                 'key' => 'correspondence',
@@ -265,9 +267,9 @@ class DashboardAnalyticsService
 
     /**
      * @param  array<string, mixed>  $module
-     * @return array{total: int, last7: int, last30: int, pending: int|null, completed: int|null, attention: int|null}
+     * @return array{total: int, last7: int, last30: int, mtd: int, pending: int|null, completed: int|null, mtd_pending: int|null, mtd_completed: int|null, attention: int|null}
      */
-    private function moduleStats(array $module, Carbon $since7, Carbon $since30): array
+    private function moduleStats(array $module, Carbon $since7, Carbon $since30, Carbon $monthStart): array
     {
         $dateExpr = $module['date'] === 'created_at' ? '`created_at`' : $module['date'];
         $statusColumn = $module['status_column'] ?? 'status';
@@ -276,14 +278,21 @@ class DashboardAnalyticsService
             'COUNT(*) AS total',
             "SUM(CASE WHEN {$dateExpr} >= ? THEN 1 ELSE 0 END) AS last7",
             "SUM(CASE WHEN {$dateExpr} >= ? THEN 1 ELSE 0 END) AS last30",
+            "SUM(CASE WHEN {$dateExpr} >= ? THEN 1 ELSE 0 END) AS mtd",
         ];
-        $bindings = [$since7->toDateString(), $since30->toDateString()];
+        $bindings = [$since7->toDateString(), $since30->toDateString(), $monthStart->toDateString()];
 
         $hasStatuses = isset($module['pending']) || ! empty($module['pending_null']);
 
         if ($hasStatuses) {
-            $selects[] = 'SUM(CASE WHEN '.$this->statusCondition($statusColumn, $module['pending'] ?? [], ! empty($module['pending_null'])).' THEN 1 ELSE 0 END) AS pending';
-            $selects[] = 'SUM(CASE WHEN '.$this->statusCondition($statusColumn, $module['completed'] ?? [], false).' THEN 1 ELSE 0 END) AS completed';
+            $pendingCondition = $this->statusCondition($statusColumn, $module['pending'] ?? [], ! empty($module['pending_null']));
+            $completedCondition = $this->statusCondition($statusColumn, $module['completed'] ?? [], false);
+            $selects[] = "SUM(CASE WHEN {$pendingCondition} THEN 1 ELSE 0 END) AS pending";
+            $selects[] = "SUM(CASE WHEN {$completedCondition} THEN 1 ELSE 0 END) AS completed";
+            $selects[] = "SUM(CASE WHEN {$pendingCondition} AND {$dateExpr} >= ? THEN 1 ELSE 0 END) AS mtd_pending";
+            $selects[] = "SUM(CASE WHEN {$completedCondition} AND {$dateExpr} >= ? THEN 1 ELSE 0 END) AS mtd_completed";
+            $bindings[] = $monthStart->toDateString();
+            $bindings[] = $monthStart->toDateString();
         }
 
         if (isset($module['attention'])) {
@@ -298,8 +307,11 @@ class DashboardAnalyticsService
             'total' => (int) ($row->total ?? 0),
             'last7' => (int) ($row->last7 ?? 0),
             'last30' => (int) ($row->last30 ?? 0),
+            'mtd' => (int) ($row->mtd ?? 0),
             'pending' => $hasStatuses ? (int) ($row->pending ?? 0) : null,
             'completed' => $hasStatuses ? (int) ($row->completed ?? 0) : null,
+            'mtd_pending' => $hasStatuses ? (int) ($row->mtd_pending ?? 0) : null,
+            'mtd_completed' => $hasStatuses ? (int) ($row->mtd_completed ?? 0) : null,
             'attention' => isset($module['attention'])
                 ? (int) ($row->attention ?? 0)
                 : (! empty($module['pending_null']) && isset($module['attention_key']) ? (int) ($row->pending ?? 0) : null),
@@ -352,12 +364,31 @@ class DashboardAnalyticsService
             $stats,
         ));
 
-        return [
-            ['key' => 'total', 'value' => $sum('total'), 'icon' => 'bi-collection', 'variant' => 'primary'],
-            ['key' => 'last7', 'value' => $sum('last7'), 'icon' => 'bi-activity', 'variant' => 'teal'],
-            ['key' => 'pending', 'value' => $sum('pending'), 'icon' => 'bi-hourglass-split', 'variant' => 'warning'],
-            ['key' => 'completed', 'value' => $sum('completed'), 'icon' => 'bi-check2-circle', 'variant' => 'success'],
+        // Month-to-date growth: MTD records relative to the pre-month baseline.
+        $growth = function (int $value, int $mtd): int {
+            if ($mtd <= 0) {
+                return 0;
+            }
+
+            $baseline = $value - $mtd;
+
+            return $baseline > 0 ? (int) round($mtd / $baseline * 100) : 100;
+        };
+
+        $rows = [
+            ['key' => 'total', 'value' => $sum('total'), 'mtd' => $sum('mtd'), 'icon' => 'bi-folder2-open', 'variant' => 'primary'],
+            ['key' => 'last7', 'value' => $sum('last7'), 'mtd' => $sum('mtd'), 'icon' => 'bi-activity', 'variant' => 'dark'],
+            ['key' => 'pending', 'value' => $sum('pending'), 'mtd' => $sum('mtd_pending'), 'icon' => 'bi-clock', 'variant' => 'primary'],
+            ['key' => 'completed', 'value' => $sum('completed'), 'mtd' => $sum('mtd_completed'), 'icon' => 'bi-check2-circle', 'variant' => 'dark'],
         ];
+
+        foreach ($rows as $i => $row) {
+            $rows[$i]['growth'] = $row['key'] === 'last7'
+                ? $growth($sum('total'), $sum('mtd'))
+                : $growth((int) $row['value'], (int) $row['mtd']);
+        }
+
+        return $rows;
     }
 
     /**
@@ -365,12 +396,12 @@ class DashboardAnalyticsService
      * @param  array<string, array<string, int>>  $daily
      * @return array{labels: list<string>, total: list<int>, last7: int, last30: int}
      */
-    private function trend(array $modules, array $daily, Carbon $since30, Carbon $today): array
+    private function trend(array $modules, array $daily, Carbon $sinceTrend, Carbon $today): array
     {
         $labels = [];
         $totals = [];
 
-        for ($day = $since30->copy(); $day->lte($today); $day->addDay()) {
+        for ($day = $sinceTrend->copy(); $day->lte($today); $day->addDay()) {
             $key = $day->toDateString();
             $labels[] = $key;
             $sum = 0;
@@ -386,7 +417,7 @@ class DashboardAnalyticsService
             'labels' => $labels,
             'total' => $totals,
             'last7' => array_sum(array_slice($totals, -7)),
-            'last30' => array_sum($totals),
+            'last30' => array_sum(array_slice($totals, -30)),
         ];
     }
 

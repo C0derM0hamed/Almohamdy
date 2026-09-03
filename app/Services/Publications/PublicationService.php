@@ -7,6 +7,7 @@ use App\Support\ProtectedFileDownload;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class PublicationService
 {
@@ -41,7 +42,10 @@ class PublicationService
     public function branches(): \Illuminate\Support\Collection
     {
         $this->authorizeScope();
-        $query = DB::table('branches')->where('companies_groups_id', $this->companyId())->where('publish', 1)->orderBy('name_ar');
+        $query = DB::table('branches')
+            ->where('companies_groups_id', $this->companyId())
+            ->when(Schema::hasColumn('branches', 'publish'), fn ($query) => $query->where('publish', 1))
+            ->orderBy('name_ar');
         if (! $this->permissions->isAdmin()) $query->where('id', $this->branchId());
         return $query->get();
     }

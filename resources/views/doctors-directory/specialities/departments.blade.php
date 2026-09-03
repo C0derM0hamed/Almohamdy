@@ -1,7 +1,6 @@
 @extends('layouts.app')
 
 @php
-    $specialityIconSvg = \App\Support\DoctorsDirectory\SpecialityIcon::svgFor($speciality);
     $isRtl = app()->getLocale() === 'ar';
     $overviewContent = \App\Support\DoctorsDirectory\SpecialityDescription::overviewContent($speciality);
     $hospitalLabel = $selectedHospital !== null
@@ -11,47 +10,33 @@
         )
         : null;
 
-    $breadcrumbItems = [
-        ['label' => __('doctors_directory.title'), 'url' => route('modules.doctors.specialities.index')],
-    ];
-
-    if (count($hospitals) >= 1) {
-        $breadcrumbItems[] = [
-            'label' => $speciality->localizedName(),
-            'url' => route('modules.doctors.specialities.departments', $speciality->id),
-        ];
-    }
-
-    $breadcrumbItems[] = [
-        'label' => $hospitalLabel ?? $speciality->localizedName(),
-        'chip' => true,
-    ];
 @endphp
 
 @section('title', $speciality->localizedName())
 
 @section('sidebar_heading', $speciality->localizedName())
 @section('sidebar_subheading', __('doctors_directory.departments_subtitle'))
+@section('figma_page_header', true)
 
-@push('styles')
+@push('workflow_styles')
     <link href="{{ asset('css/hm-doctors-redesign.css') }}?v={{ filemtime(public_path('css/hm-doctors-redesign.css')) }}" rel="stylesheet">
 @endpush
 
 @section('content')
-    <div class="hm-dd hm-dd--departments">
-        @include('doctors-directory.partials.dd-breadcrumb', [
-            'variant' => 'bar',
-            'items' => $breadcrumbItems,
+    <div class="hm-fm hm-dd hm-dd--departments hm-dd--speciality-figma">
+        @include('layouts.partials.figma-module-header', [
+            'crumbs' => [
+                ['label' => __('dashboard.modules')],
+                ['label' => __('doctors_directory.title'), 'url' => route('modules.doctors.specialities.index')],
+                ['label' => $hospitalLabel ?? $speciality->localizedName()],
+            ],
+            'title' => $speciality->localizedName(),
+            'subtitle' => '',
+            'heroIconSrc' => asset('images/figma/doctors/speciality-hero.svg'),
+            'heroIconSize' => 32,
         ])
 
         <section class="dd-panel dd-specialty">
-            <div class="dd-title-line">
-                <span class="dd-title-icon" aria-hidden="true">
-                    <svg viewBox="0 0 24 24">{!! $specialityIconSvg !!}</svg>
-                </span>
-                <h2>{{ $speciality->localizedName() }}</h2>
-            </div>
-
             @if ($overviewContent->intro)
                 <div class="dd-description-card" dir="rtl">
                     <p>{{ $overviewContent->intro }}</p>
@@ -72,6 +57,9 @@
                     @foreach ($overviewContent->units as $unit)
                         <div class="dd-unit-row">
                             <span class="dd-unit-no">{{ $unit->number }}</span>
+                            <span class="dd-unit-icon" aria-hidden="true">
+                                <svg viewBox="0 0 24 24">{!! \App\Support\DoctorsDirectory\SpecialityIcon::svgForText($unit->text) !!}</svg>
+                            </span>
                             <span>{{ $unit->text }}</span>
                         </div>
                     @endforeach

@@ -1,8 +1,11 @@
 @extends('layouts.app')
 
 @push('styles')
+    <link href="{{ asset('css/hm-doctors-figma.css') }}?v={{ filemtime(public_path('css/hm-doctors-figma.css')) }}" rel="stylesheet">
     <link href="{{ asset('css/hm-inquiries.css') }}?v={{ filemtime(public_path('css/hm-inquiries.css')) }}" rel="stylesheet">
 @endpush
+
+@section('figma_page_header', true)
 
 @section('title', __('inquiries.timeline'))
 
@@ -16,30 +19,34 @@
             : route('modules.inquiries.outgoing.index');
     @endphp
 
-    <div class="hm-inq hm-inq--timeline">
-        @include('inquiries.partials.inq-breadcrumb', [
-            'items' => [
-                ['label' => __('inquiries.title'), 'url' => $listRoute],
-                ['label' => __('inquiries.timeline'), 'chip' => true],
-            ],
-        ])
+    <div class="hm-dd hm-dd--figma hm-inq hm-inq--timeline inq-detail-page">
+        <header class="dd-figma-head">
+            <div class="dd-figma-head__row">
+                <div class="dd-figma-head__page">
+                    @include('doctors-directory.partials.dd-breadcrumb', [
+                        'variant' => 'plain',
+                        'items' => [
+                            ['label' => __('dashboard.modules')],
+                            ['label' => __('inquiries.title'), 'url' => $listRoute],
+                            ['label' => __('inquiries.timeline'), 'chip' => true],
+                        ],
+                    ])
 
-        <section class="inq-page-hero inq-page-hero--timeline" aria-labelledby="inqTimelineTitle">
-            <div>
-                <h1 id="inqTimelineTitle">{{ __('inquiries.timeline') }}</h1>
-                <p>{{ __('inquiries.timeline_subtitle') }}</p>
-                <div class="inq-page-hero__actions">
-                    <a
-                        href="{{ route('modules.inquiries.pdf', ['direction' => $direction, 'inquiry' => $inquiry->id]) }}"
-                        class="btn hm-btn hm-btn--outline hm-inq-btn"
-                    >
-                        <i class="bi bi-file-earmark-pdf" aria-hidden="true"></i>
-                        {{ __('inquiries.download_pdf') }}
-                    </a>
+                    <div class="dd-figma-hero inq-detail-hero">
+                        <div class="dd-figma-hero__icon" aria-hidden="true"><i class="bi bi-clock-history"></i></div>
+                        <div class="dd-figma-hero__copy">
+                            <h1 id="inqTimelineTitle">{{ __('inquiries.timeline') }}</h1>
+                            <p>{{ __('inquiries.timeline_subtitle') }}</p>
+                        </div>
+                        <a href="{{ route('modules.inquiries.pdf', ['direction' => $direction, 'inquiry' => $inquiry->id]) }}" class="inq-detail-hero__action">
+                            <i class="bi bi-file-earmark-pdf" aria-hidden="true"></i>
+                            {{ __('inquiries.download_pdf') }}
+                        </a>
+                    </div>
                 </div>
+                @include('layouts.partials.figma-header-tools')
             </div>
-            <div class="inq-page-hero-art" aria-hidden="true"></div>
-        </section>
+        </header>
 
         @include('inquiries.partials.timeline-modal-body', [
             'direction' => $direction,

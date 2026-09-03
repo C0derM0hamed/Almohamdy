@@ -1,0 +1,13 @@
+@extends('layouts.app')
+@section('title',__('licenses.admin.escalation_groups'))
+@section('sidebar_heading',__('licenses.title'))
+@push('styles')<link href="{{ asset('css/hm-licenses.css') }}?v={{ filemtime(public_path('css/hm-licenses.css')) }}" rel="stylesheet">@endpush
+@section('content')
+@php $url=static fn($n,$p=[])=>\Illuminate\Support\Facades\Route::has($n)?route($n,$p):'#';$items=$groups ?? $escalationGroups ?? collect(); @endphp
+<div class="hm-licenses">
+@include('licenses.partials.page-header',['title'=>__('licenses.admin.escalation_groups'),'subtitle'=>__('licenses.admin.subtitle'),'icon'=>'bi-people','actions'=>new \Illuminate\Support\HtmlString('<a class="lic-btn" href="'.e($url('modules.licenses.admin.index')).'"><i class="bi bi-arrow-left"></i>'.e(__('licenses.back')).'</a><a class="lic-btn lic-btn--primary" href="'.e($url('modules.licenses.admin.escalation-groups.create')).'"><i class="bi bi-plus-lg"></i>'.e(__('licenses.admin.add',['item'=>__('licenses.admin.escalation_groups')])).'</a>')])
+@include('licenses.partials.feedback')
+<section class="lic-panel"><div class="lic-table-wrap"><table class="lic-table"><thead><tr><th>{{ __('licenses.admin.group_name') }}</th><th>{{ __('licenses.admin.members') }}</th><th>{{ __('licenses.fields.publish') }}</th><th>{{ __('licenses.actions') }}</th></tr></thead><tbody>
+@forelse($items as $group)<tr><td><a class="lic-table__primary" href="{{ $url('modules.licenses.admin.escalation-groups.edit',$group->getRouteKey()) }}">{{ $group->name }}</a></td><td>{{ $group->members_count ?? $group->members?->count() ?? 0 }}</td><td><span class="lic-status {{ (int)$group->publish===1?'lic-status--active':'lic-status--expired' }}">{{ (int)$group->publish===1?__('licenses.enabled'):__('licenses.disabled') }}</span></td><td><div class="lic-table__actions"><a class="lic-btn lic-btn--sm" href="{{ $url('modules.licenses.admin.escalation-groups.edit',$group->getRouteKey()) }}"><i class="bi bi-pencil"></i>{{ __('licenses.edit') }}</a><form method="POST" action="{{ $url('modules.licenses.admin.escalation-groups.publish',$group->getRouteKey()) }}">@csrf @method('PATCH')<input type="hidden" name="publish" value="{{ (int)$group->publish===1?0:1 }}"><button class="lic-btn lic-btn--sm" type="submit">{{ __('licenses.admin.toggle') }}</button></form></div></td></tr>@empty<tr><td colspan="4" class="lic-empty">{{ __('licenses.admin.empty') }}</td></tr>@endforelse
+</tbody></table></div>@if(method_exists($items,'links')&&$items->total()>0)<div class="lic-pagination">{{ $items->withQueryString()->links('pagination.hm') }}</div>@endif</section>
+</div>@endsection

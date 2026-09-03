@@ -876,7 +876,9 @@ body.hm-clinician-modal-open {
     }
 
     .hm-searchable-select__list {
-        overflow: visible;
+        max-height: min(24rem, 60vh);
+        overflow-y: auto;
+        overflow-x: hidden;
     }
 
     .hm-searchable-select__sublist {

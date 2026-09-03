@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Module\CorporateCommunications;
 use App\Http\Controllers\Controller;
 use App\Services\Auth\PermissionService;
 use App\Support\CorporateCommunications\CorporateCommunicationPermissions;
+use App\Support\GovAccounts\GovAccountPermissions;
 use Illuminate\Http\RedirectResponse;
 
 class CorporateCommunicationDashboardController extends Controller
@@ -33,6 +34,10 @@ class CorporateCommunicationDashboardController extends Controller
     private function targets(): array
     {
         return [
+            GovAccountPermissions::VIEW => 'modules.gov-accounts.dashboard',
+            GovAccountPermissions::PROCESS => 'modules.gov-accounts.requests.index',
+            GovAccountPermissions::REQUEST => 'modules.gov-accounts.requests.index',
+            GovAccountPermissions::ADMIN => 'modules.gov-accounts.admin.index',
             CorporateCommunicationPermissions::GOVERNMENT_CIRCULARS => 'modules.government-circulars.index',
             CorporateCommunicationPermissions::INSPECTION_VISITS => 'modules.inspection-visits.index',
             CorporateCommunicationPermissions::DATA_REQUESTS => 'modules.data-requests.index',

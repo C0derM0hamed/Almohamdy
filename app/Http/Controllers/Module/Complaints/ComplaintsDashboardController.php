@@ -27,6 +27,7 @@ class ComplaintsDashboardController extends Controller
             'complaints' => $this->complaintService->listPaginated(
                 $request->search(),
                 $request->status(),
+                5,
             ),
             'filters' => [
                 'search' => $request->search(),

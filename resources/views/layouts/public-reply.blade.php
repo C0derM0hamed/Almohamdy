@@ -23,8 +23,8 @@
     <header class="hm-public-reply__header">
         <img src="{{ asset('images/brand/hh-logo-horizontal.png') }}" alt="{{ __('dashboard.brand_name') }}" class="hm-public-reply__logo">
         <nav class="hm-public-reply__lang" aria-label="{{ __('dashboard.language') }}">
-            <a href="{{ route('lang.ar') }}" class="{{ $locale === 'ar' ? 'is-active' : '' }}" lang="ar">{{ __('dashboard.language_ar') }}</a>
-            <a href="{{ route('lang.en') }}" class="{{ $locale === 'en' ? 'is-active' : '' }}" lang="en">{{ __('dashboard.language_en') }}</a>
+            <a href="{{ route('lang.ar') }}" class="{{ $locale === 'ar' ? 'is-active' : '' }}" lang="ar" data-no-transition="true">{{ __('dashboard.language_ar') }}</a>
+            <a href="{{ route('lang.en') }}" class="{{ $locale === 'en' ? 'is-active' : '' }}" lang="en" data-no-transition="true">{{ __('dashboard.language_en') }}</a>
         </nav>
     </header>
 

@@ -1,0 +1,17 @@
+/* Transfer and reception landing page — matched to the supplied 1440px Figma export. */
+.hm-transferal-home { width: 100%; max-width: var(--hm-content, 1142px); margin-inline-end: auto; padding-bottom: 64px; color: var(--fm-ink, #171827); }
+.hm-transferal-home .fm-head { padding-top: 32px; }
+.hm-transferal-home .fm-hero--split { width: 100%; }
+.hm-transferal-home .fm-hero__action { margin-inline-start: auto; }
+.hm-transferal-home .fm-hero__icon i { font-size: 25px; }
+.transferal-choice-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 412px)); justify-content: center; gap: 32px; margin-top: 78px; }
+.transferal-choice { position: relative; display: flex; flex-direction: column; justify-content: space-between; min-height: 270px; padding: 38px 40px 40px; overflow: hidden; border: 1px solid #efeff4; border-radius: 26px; background: #fff; box-shadow: 0 12px 30px rgba(41, 32, 82, .055); color: #282052; text-decoration: none; transition: transform .18s ease, box-shadow .18s ease; }
+.transferal-choice::after { position: absolute; inset-block: 22px; inset-inline-start: 0; width: 10px; border-radius: 8px 0 0 8px; background: #6865f6; content: ""; }
+[dir="rtl"] .transferal-choice::after { border-radius: 0 8px 8px 0; }
+.transferal-choice:hover { color: #282052; transform: translateY(-3px); box-shadow: 0 18px 38px rgba(41, 32, 82, .10); }
+.transferal-choice__icon { display: grid; place-items: center; width: 82px; height: 82px; border: 1.5px solid #6865f6; border-radius: 24px; color: #6865f6; }
+.transferal-choice__icon i { font-size: 35px; line-height: 1; }
+.transferal-choice__icon--outgoing::before { transform: rotate(90deg); }
+.transferal-choice strong { display: block; font-size: 30px; font-weight: 700; line-height: 1.35; }
+@media (max-width: 991.98px) { .transferal-choice-grid { margin-top: 52px; gap: 22px; } .transferal-choice { min-height: 235px; padding: 30px; } .transferal-choice strong { font-size: 25px; } }
+@media (max-width: 767.98px) { .hm-transferal-home .fm-head { padding-top: 16px; } .hm-transferal-home .fm-head__row { min-height: auto; flex-direction: column; } .hm-transferal-home .fm-hero { align-items: flex-start; flex-wrap: wrap; } .hm-transferal-home .fm-hero__action { width: 100%; margin: 6px 0 0; } .transferal-choice-grid { grid-template-columns: 1fr; margin-top: 32px; } .transferal-choice { min-height: 210px; border-radius: 22px; } .transferal-choice__icon { width: 68px; height: 68px; border-radius: 20px; } .transferal-choice__icon i { font-size: 30px; } .transferal-choice strong { font-size: 23px; } }

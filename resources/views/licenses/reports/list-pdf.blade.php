@@ -1,0 +1,13 @@
+<!doctype html>
+<html lang="{{ app()->getLocale() }}" dir="{{ app()->getLocale()==='ar'?'rtl':'ltr' }}">
+<head><meta charset="utf-8"><title>{{ __('licenses.pdf.list_title') }}</title><style>
+@page{margin:14mm;size:A4 landscape}body{font-family:DejaVu Sans,sans-serif;color:#203449;font-size:9px}h1{color:#18334f;font-size:18px;margin:0 0 4px}.meta{color:#687989;margin-bottom:12px}table{width:100%;border-collapse:collapse}th,td{border:1px solid #ccd9e3;padding:5px;vertical-align:top}th{background:#18334f;color:#fff;text-align:start}tr:nth-child(even)td{background:#f5f8fa}.badge{font-weight:bold}.footer{margin-top:10px;color:#687989;text-align:center}.ltr{direction:ltr}
+</style></head><body>
+@php
+$nameOf=static function($i){if(!$i)return '—';if(is_string($i))return $i;if(method_exists($i,'displayName'))return $i->displayName();if(method_exists($i,'localizedName'))return $i->localizedName();$f=app()->getLocale()==='ar'?'name_ar':'name_en';return data_get($i,$f)?:data_get($i,'name')?:data_get($i,'hr_name')?:'—';};$dateOf=static fn($v)=>$v?($v instanceof \DateTimeInterface?$v->format('Y-m-d'):substr((string)$v,0,10)):'—';$items=$licenses ?? collect();
+@endphp
+<h1>{{ $reportTitle ?? __('licenses.pdf.list_title') }}</h1><div class="meta">{{ __('licenses.pdf.generated_at') }}: {{ ($generatedAt ?? now())->format('Y-m-d H:i') }} @if(!empty($filterSummary)) · {{ __('licenses.pdf.filters') }}: {{ $filterSummary }} @endif</div>
+<table><thead><tr><th>#</th><th>{{ __('licenses.fields.license_number') }}</th><th>{{ __('licenses.fields.type') }}</th><th>{{ __('licenses.fields.authority') }}</th><th>{{ __('licenses.fields.branches') }}</th><th>{{ __('licenses.fields.responsible') }}</th><th>{{ __('licenses.fields.expiry_date') }}</th><th>{{ __('licenses.fields.status') }}</th><th>{{ __('licenses.fields.renewal_stage') }}</th></tr></thead><tbody>
+@forelse($items as $license)<tr><td>{{ $loop->iteration }}</td><td class="ltr">{{ $license->license_number?:'#'.$license->id }}</td><td>{{ $nameOf($license->licenseType ?? $license->type ?? null) }}</td><td>{{ $nameOf($license->authority ?? null) }}</td><td>{{ ($license->branches ?? collect())->map(fn($b)=>$nameOf($b))->implode('، ')?:'—' }}</td><td>{{ $nameOf($license->responsibleUser ?? $license->responsible ?? null) }}</td><td class="ltr">{{ $dateOf($license->expiry_date) }}</td><td class="badge">{{ $nameOf($license->statusRelation ?? $license->status ?? null) }}</td><td>{{ $nameOf($license->renewalStage ?? $license->stage ?? null) }}</td></tr>@empty<tr><td colspan="9">{{ __('licenses.empty') }}</td></tr>@endforelse
+</tbody></table><div class="footer">{{ __('licenses.pdf.confidential') }} · {{ __('licenses.results',['count'=>count($items)]) }}</div>
+</body></html>

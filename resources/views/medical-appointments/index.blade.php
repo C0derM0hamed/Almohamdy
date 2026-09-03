@@ -2,48 +2,80 @@
 @section('title', __('medical_appointments.title'))
 @section('sidebar_heading', __('medical_appointments.title'))
 @section('sidebar_subheading', __('medical_appointments.subtitle'))
+@push('styles')
+    <link href="{{ asset('css/hm-doctors-redesign.css') }}?v={{ filemtime(public_path('css/hm-doctors-redesign.css')) }}" rel="stylesheet">
+    <link href="{{ asset('css/hm-doctors-directory.css') }}?v={{ filemtime(public_path('css/hm-doctors-directory.css')) }}" rel="stylesheet">
+    <link href="{{ asset('css/hm-medical-appointments.css') }}?v={{ filemtime(public_path('css/hm-medical-appointments.css')) }}" rel="stylesheet">
+@endpush
 @section('content')
-<div class="hm-module-page" data-module="medical-appointments">
-    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
-        <div>
-            <h1 class="h3 mb-1">{{ __('medical_appointments.title') }}</h1>
-            <p class="text-muted mb-0">{{ __('medical_appointments.subtitle') }}</p>
+<div class="hm-dd hm-dd--medical-appointments hm-medical-appointments" data-module="medical-appointments">
+    <nav aria-label="{{ __('breadcrumbs.aria_label') }}" class="dd-breadcrumb dd-breadcrumb--bar">
+        <a href="{{ route('dashboard') }}">{{ __('dashboard.title') }}</a>
+        <span class="dd-breadcrumb-sep" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none"><path d="m9 18 6-6-6-6"/></svg>
+        </span>
+        <span class="dd-chip">{{ __('medical_appointments.title') }}</span>
+    </nav>
+
+    <section class="dd-hero hm-ma-hero">
+        <div class="dd-hero-info">
+            <div class="dd-hero-icon" aria-hidden="true"><i class="bi bi-heart-pulse"></i></div>
+            <div>
+                <h1>{{ __('medical_appointments.title') }}</h1>
+                <p>{{ __('medical_appointments.subtitle') }}</p>
+            </div>
         </div>
-        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#medicalCreate"><i class="bi bi-plus-lg"></i> {{ __('medical_appointments.create') }}</button>
-    </div>
+        <button class="dd-btn dd-btn-primary hm-ma-create" data-bs-toggle="modal" data-bs-target="#medicalCreate">
+            <i class="bi bi-plus-lg"></i> {{ __('medical_appointments.create') }}
+        </button>
+    </section>
 
     @if(session('success'))
         <div class="alert alert-success">{{ session('success') }}</div>
     @endif
 
-    <div class="row g-3 mb-4">
+    <div class="dd-stats hm-ma-status-grid" aria-label="{{ __('medical_appointments.status') }}">
         @foreach($statuses as $status)
-            <div class="col-md-2 col-6">
-                <div class="border rounded-3 p-3 bg-body">
-                    <div class="text-muted small">{{ $status->localizedName() }}</div>
-                    <div class="fs-4 fw-semibold">{{ $summary[$status->id] ?? 0 }}</div>
+            <div class="dd-stat hm-ma-status-card">
+                <span class="dd-stat-icon hm-ma-status-icon"><i class="bi bi-heart-pulse"></i></span>
+                <div>
+                    <small>{{ $status->localizedName() }}</small>
+                    <b class="hm-ma-status-value">{{ $summary[$status->id] ?? 0 }}</b>
+                    <p>{{ __('medical_appointments.title') }}</p>
                 </div>
             </div>
         @endforeach
     </div>
 
-    <div class="card mb-4">
-        <div class="card-body">
-            <form method="GET" class="row g-3 align-items-end">
-                <div class="col-md-2"><label class="form-label">{{ __('medical_appointments.from') }}</label><input type="date" class="form-control" name="from" value="{{ $filters['from'] ?? '' }}"></div>
-                <div class="col-md-2"><label class="form-label">{{ __('medical_appointments.to') }}</label><input type="date" class="form-control" name="to" value="{{ $filters['to'] ?? '' }}"></div>
-                <div class="col-md-3"><label class="form-label">{{ __('medical_appointments.status') }}</label><select class="form-select" name="status"><option value="">{{ __('medical_appointments.all') }}</option>@foreach($statuses as $status)<option value="{{ $status->id }}" @selected((string)($filters['status'] ?? '') === (string)$status->id)>{{ $status->localizedName() }}</option>@endforeach</select></div>
-                <div class="col-md-3"><label class="form-label">{{ __('medical_appointments.mobile') }}</label><input class="form-control" name="mobile" value="{{ $filters['mobile'] ?? '' }}"></div>
-                <div class="col-md-2 d-flex gap-2"><button class="btn btn-dark flex-grow-1">{{ __('medical_appointments.search') }}</button><a href="{{ route($routes['index']) }}" class="btn btn-outline-secondary">{{ __('medical_appointments.reset') }}</a></div>
-                <div class="col-md-3"><label class="form-label">{{ __('medical_appointments.department') }}</label><select class="form-select" name="department"><option value="">{{ __('medical_appointments.all') }}</option>@foreach($departments as $department)<option value="{{ $department->id }}" @selected((string)($filters['department'] ?? '') === (string)$department->id)>{{ $department->localizedName() }}</option>@endforeach</select></div>
-                <div class="col-md-3"><label class="form-label">{{ __('medical_appointments.procedure_place') }}</label><select class="form-select" name="procedure_place"><option value="">{{ __('medical_appointments.all') }}</option>@foreach($procedurePlaces as $place)<option value="{{ $place->id }}" @selected((string)($filters['procedure_place'] ?? '') === (string)$place->id)>{{ $place->localizedName() }}</option>@endforeach</select></div>
-            </form>
+    <section class="dd-search-card hm-ma-filter-card">
+        <div class="dd-section-head">
+            <div class="dd-section-icon" aria-hidden="true"><i class="bi bi-sliders2"></i></div>
+            <h2>{{ __('medical_appointments.search') }}</h2>
         </div>
-    </div>
+        <form method="GET">
+            <div class="dd-search-grid hm-ma-filter-form">
+                <div class="dd-form-field"><label class="dd-red" for="medicalFrom">{{ __('medical_appointments.from') }}</label><input id="medicalFrom" type="date" class="dd-input" name="from" value="{{ $filters['from'] ?? '' }}"></div>
+                <div class="dd-form-field"><label class="dd-red" for="medicalTo">{{ __('medical_appointments.to') }}</label><input id="medicalTo" type="date" class="dd-input" name="to" value="{{ $filters['to'] ?? '' }}"></div>
+                <div class="dd-form-field"><label class="dd-red" for="medicalStatus">{{ __('medical_appointments.status') }}</label><select id="medicalStatus" class="dd-form-select" name="status"><option value="">{{ __('medical_appointments.all') }}</option>@foreach($statuses as $status)<option value="{{ $status->id }}" @selected((string)($filters['status'] ?? '') === (string)$status->id)>{{ $status->localizedName() }}</option>@endforeach</select></div>
+                <div class="dd-form-field"><label class="dd-red" for="medicalMobile">{{ __('medical_appointments.mobile') }}</label><input id="medicalMobile" class="dd-input" name="mobile" value="{{ $filters['mobile'] ?? '' }}"></div>
+                <div class="dd-form-field"><label class="dd-red" for="medicalDepartmentFilter">{{ __('medical_appointments.department') }}</label><select id="medicalDepartmentFilter" class="dd-form-select" name="department"><option value="">{{ __('medical_appointments.all') }}</option>@foreach($departments as $department)<option value="{{ $department->id }}" @selected((string)($filters['department'] ?? '') === (string)$department->id)>{{ $department->localizedName() }}</option>@endforeach</select></div>
+                <div class="dd-form-field"><label class="dd-red" for="medicalPlaceFilter">{{ __('medical_appointments.procedure_place') }}</label><select id="medicalPlaceFilter" class="dd-form-select" name="procedure_place"><option value="">{{ __('medical_appointments.all') }}</option>@foreach($procedurePlaces as $place)<option value="{{ $place->id }}" @selected((string)($filters['procedure_place'] ?? '') === (string)$place->id)>{{ $place->localizedName() }}</option>@endforeach</select></div>
+            </div>
+            <div class="dd-search-actions">
+                <button class="dd-btn dd-btn-primary" type="submit"><i class="bi bi-search"></i> {{ __('medical_appointments.search') }}</button>
+                <a href="{{ route($routes['index']) }}" class="dd-btn dd-btn-outline"><i class="bi bi-arrow-counterclockwise"></i> {{ __('medical_appointments.reset') }}</a>
+            </div>
+        </form>
+    </section>
 
-    <div class="card">
+    <section class="dd-doctor-card hm-ma-list-card">
+        <div class="dd-section-head hm-ma-list-heading">
+            <div class="dd-section-icon" aria-hidden="true"><i class="bi bi-calendar2-check"></i></div>
+            <div><h2>{{ __('medical_appointments.title') }}</h2><p>{{ __('medical_appointments.subtitle') }}</p></div>
+            <span class="hm-ma-list-count">{{ $appointments->total() }}</span>
+        </div>
         <div class="table-responsive">
-            <table class="table table-hover align-middle mb-0">
+            <table class="table align-middle mb-0 hm-ma-table">
                 <thead>
                     <tr>
                         <th>{{ __('medical_appointments.patient_name') }}</th>
@@ -92,65 +124,6 @@
                             </td>
                         </tr>
 
-                        <div class="modal fade" id="statusModal{{ $appointment->id }}" tabindex="-1" aria-hidden="true">
-                            <div class="modal-dialog">
-                                <form method="POST" action="{{ route($routes['status'], $appointment->id) }}" class="modal-content">
-                                    @csrf
-                                    <div class="modal-header">
-                                        <h5 class="modal-title">{{ __('medical_appointments.update_status') }} #{{ $appointment->id }}</h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <label class="form-label">{{ __('medical_appointments.status') }}</label>
-                                        <select class="form-select mb-3 medical-status" data-target="{{ $appointment->id }}" name="status_id" required>
-                                            <option value="">—</option>
-                                            @foreach($statusOptions as $status)
-                                                <option value="{{ $status->id }}">{{ $status->localizedName() }}</option>
-                                            @endforeach
-                                        </select>
-
-                                        <div class="medical-status-date" id="statusDate{{ $appointment->id }}" hidden>
-                                            <label class="form-label">{{ __('medical_appointments.choose_date') }}</label>
-                                            <input type="datetime-local" class="form-control mb-3" name="date">
-                                        </div>
-
-                                        <div class="medical-status-reason" id="statusReason{{ $appointment->id }}" hidden>
-                                            <label class="form-label">{{ __('medical_appointments.reason') }}</label>
-                                            <input type="text" class="form-control mb-3" name="cleint_cancel_reason" maxlength="200">
-                                        </div>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button class="btn btn-primary">{{ __('medical_appointments.save') }}</button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-
-                        <div class="modal fade" id="filesModal{{ $appointment->id }}" tabindex="-1" aria-hidden="true">
-                            <div class="modal-dialog modal-lg">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title">{{ __('medical_appointments.documents') }}</h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <table class="table table-bordered mb-0">
-                                            <tr><th>{{ __('medical_appointments.title') }}</th><th>{{ __('medical_appointments.documents') }}</th></tr>
-                                            <tr><td>{{ __('medical_appointments.request_pdf') }}</td><td><a target="_blank" href="{{ route($routes['document'], [$appointment->id, 'request']) }}" class="btn btn-link"><i class="bi bi-file-earmark-pdf"></i></a></td></tr>
-                                            @if($appointment->patient_confirm_date)
-                                                <tr><td>{{ __('medical_appointments.patient_accept_pdf') }}</td><td><a target="_blank" href="{{ route($routes['document'], [$appointment->id, 'patient-accepted']) }}" class="btn btn-link"><i class="bi bi-file-earmark-pdf"></i></a></td></tr>
-                                            @endif
-                                            @if($appointment->patient_confirm_date_notice)
-                                                <tr><td>{{ __('medical_appointments.patient_reject_pdf') }}</td><td><a target="_blank" href="{{ route($routes['document'], [$appointment->id, 'patient-rejected']) }}" class="btn btn-link"><i class="bi bi-file-earmark-pdf"></i></a></td></tr>
-                                            @endif
-                                            @if((int) $appointment->doctor_action > 0)
-                                                <tr><td>{{ __('medical_appointments.doctor_reply_pdf') }}</td><td><a target="_blank" href="{{ route($routes['document'], [$appointment->id, 'doctor-reply']) }}" class="btn btn-link"><i class="bi bi-file-earmark-pdf"></i></a></td></tr>
-                                            @endif
-                                        </table>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
                     @empty
                         <tr><td colspan="8" class="text-center py-5 text-muted">{{ __('medical_appointments.empty') ?? __('medical_appointments.all') }}</td></tr>
                     @endforelse
@@ -160,9 +133,72 @@
         @if($appointments->hasPages())
             <div class="card-footer">{{ $appointments->links() }}</div>
         @endif
-    </div>
+    </section>
+
+    @push('modals')
+    @foreach($appointments as $appointment)
+        <div class="modal fade" id="statusModal{{ $appointment->id }}" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog">
+                <form method="POST" action="{{ route($routes['status'], $appointment->id) }}" class="modal-content">
+                    @csrf
+                    <div class="modal-header">
+                        <h5 class="modal-title">{{ __('medical_appointments.update_status') }} #{{ $appointment->id }}</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <label class="form-label">{{ __('medical_appointments.status') }}</label>
+                        <select class="form-select mb-3 medical-status" data-target="{{ $appointment->id }}" name="status_id" required>
+                            <option value="">—</option>
+                            @foreach($statusOptions as $status)
+                                <option value="{{ $status->id }}">{{ $status->localizedName() }}</option>
+                            @endforeach
+                        </select>
+                        <div class="medical-status-date" id="statusDate{{ $appointment->id }}" hidden>
+                            <label class="form-label">{{ __('medical_appointments.choose_date') }}</label>
+                            <input type="datetime-local" class="form-control mb-3" name="date">
+                        </div>
+                        <div class="medical-status-reason" id="statusReason{{ $appointment->id }}" hidden>
+                            <label class="form-label">{{ __('medical_appointments.reason') }}</label>
+                            <input type="text" class="form-control mb-3" name="cleint_cancel_reason" maxlength="200">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-primary">{{ __('medical_appointments.save') }}</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="modal fade" id="filesModal{{ $appointment->id }}" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">{{ __('medical_appointments.documents') }}</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <table class="table table-bordered mb-0">
+                            <tr><th>{{ __('medical_appointments.title') }}</th><th>{{ __('medical_appointments.documents') }}</th></tr>
+                            <tr><td>{{ __('medical_appointments.request_pdf') }}</td><td><a target="_blank" href="{{ route($routes['document'], [$appointment->id, 'request']) }}" class="btn btn-link"><i class="bi bi-file-earmark-pdf"></i></a></td></tr>
+                            @if($appointment->patient_confirm_date)
+                                <tr><td>{{ __('medical_appointments.patient_accept_pdf') }}</td><td><a target="_blank" href="{{ route($routes['document'], [$appointment->id, 'patient-accepted']) }}" class="btn btn-link"><i class="bi bi-file-earmark-pdf"></i></a></td></tr>
+                            @endif
+                            @if($appointment->patient_confirm_date_notice)
+                                <tr><td>{{ __('medical_appointments.patient_reject_pdf') }}</td><td><a target="_blank" href="{{ route($routes['document'], [$appointment->id, 'patient-rejected']) }}" class="btn btn-link"><i class="bi bi-file-earmark-pdf"></i></a></td></tr>
+                            @endif
+                            @if((int) $appointment->doctor_action > 0)
+                                <tr><td>{{ __('medical_appointments.doctor_reply_pdf') }}</td><td><a target="_blank" href="{{ route($routes['document'], [$appointment->id, 'doctor-reply']) }}" class="btn btn-link"><i class="bi bi-file-earmark-pdf"></i></a></td></tr>
+                            @endif
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endforeach
+    @endpush
 </div>
 
+@push('modals')
 <div class="modal fade" id="medicalCreate" tabindex="-1">
     <div class="modal-dialog modal-xl">
         <form method="POST" action="{{ route($routes['store']) }}" class="modal-content" id="medicalCreateForm">
@@ -284,6 +320,7 @@
         </form>
     </div>
 </div>
+@endpush
 @endsection
 
 @push('scripts')

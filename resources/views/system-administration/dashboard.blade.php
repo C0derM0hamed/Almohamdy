@@ -1,8 +1,9 @@
 @extends('layouts.app')
 
+@section('figma_page_header', true)
+
 @push('styles')
-    <link href="{{ asset('css/hm-services-redesign.css') }}?v={{ filemtime(public_path('css/hm-services-redesign.css')) }}" rel="stylesheet">
-    <link href="{{ asset('css/hm-doctors-directory-admin.css') }}?v={{ filemtime(public_path('css/hm-doctors-directory-admin.css')) }}" rel="stylesheet">
+    <link href="{{ asset('css/hm-doctors-figma.css') }}?v={{ filemtime(public_path('css/hm-doctors-figma.css')) }}" rel="stylesheet">
 @endpush
 
 @push('scripts')
@@ -10,92 +11,75 @@
 @endpush
 
 @section('title', __('system_administration.dashboard'))
-
 @section('sidebar_heading', __('system_administration.title'))
 @section('sidebar_subheading', __('system_administration.dashboard_subtitle'))
 
 @section('content')
-    <div class="hm-hs hm-hs--dashboard hm-dda">
-        @include('hospital-services.partials.hs-breadcrumb', [
-            'items' => [
-                ['label' => __('system_administration.dashboard'), 'chip' => true],
+    @include('layouts.partials.figma-dashboard', [
+        'pageClass' => 'hm-system-administration-dashboard',
+        'breadcrumbs' => [
+            ['label' => __('dashboard.modules')],
+            ['label' => __('system_administration.dashboard'), 'chip' => true],
+        ],
+        'title' => __('system_administration.dashboard'),
+        'subtitle' => __('system_administration.dashboard_subtitle'),
+        'heroIcon' => 'bi-shield-lock',
+        'stats' => [
+            [
+                'label' => __('system_administration.stats.total'),
+                'value' => $summary['total'],
+                'hint' => __('system_administration.stats.total_hint'),
+                'icon' => 'bi-hospital',
+                'variant' => 'primary',
+                'url' => route('modules.system-admin.packages.index'),
             ],
-        ])
-
-        <section class="hs-dash-hero" aria-labelledby="sysAdminDashboardTitle">
-            <div>
-                <h1 id="sysAdminDashboardTitle">{{ __('system_administration.dashboard') }}</h1>
-                <p>{{ __('system_administration.dashboard_subtitle') }}</p>
-
-                @if (count($cards) > 0)
-                    <label class="hs-dash-search" for="servicesDashboardSearch">
-                        <i class="bi bi-search" aria-hidden="true"></i>
-                        <input
-                            type="search"
-                            id="servicesDashboardSearch"
-                            placeholder="{{ __('system_administration.dashboard_search_placeholder') }}"
-                            autocomplete="off"
-                            enterkeyhint="search"
-                        >
-                    </label>
-                @endif
-            </div>
-            <div class="hs-dash-hero-art" aria-hidden="true"></div>
-        </section>
-
-        <div class="dda-stat-grid">
-            <a href="{{ route('modules.system-admin.packages.index') }}" class="dda-stat-card dda-stat-card--primary">
-                <div class="dda-stat-card__body">
-                    <p class="dda-stat-card__label">{{ __('system_administration.stats.total') }}</p>
-                    <p class="dda-stat-card__value">{{ $summary['total'] }}</p>
-                </div>
-                <span class="dda-stat-card__icon" aria-hidden="true"><i class="bi bi-hospital"></i></span>
-            </a>
-
-            <a href="{{ route('modules.system-admin.packages.index', ['publish' => '1']) }}" class="dda-stat-card dda-stat-card--success">
-                <div class="dda-stat-card__body">
-                    <p class="dda-stat-card__label">{{ __('system_administration.stats.published') }}</p>
-                    <p class="dda-stat-card__value">{{ $summary['published'] }}</p>
-                </div>
-                <span class="dda-stat-card__icon" aria-hidden="true"><i class="bi bi-check-circle"></i></span>
-            </a>
-
-            <a href="{{ route('modules.system-admin.packages.index', ['publish' => '0']) }}" class="dda-stat-card dda-stat-card--muted">
-                <div class="dda-stat-card__body">
-                    <p class="dda-stat-card__label">{{ __('system_administration.stats.unpublished') }}</p>
-                    <p class="dda-stat-card__value">{{ $summary['unpublished'] }}</p>
-                </div>
-                <span class="dda-stat-card__icon" aria-hidden="true"><i class="bi bi-eye-slash"></i></span>
-            </a>
-        </div>
-
-        @if (count($cards) > 0)
-            <div class="hs-dash-grid" id="servicesDashboardGrid">
-                @foreach ($cards as $card)
-                    @include('doctors-directory-admin.partials.dda-dash-card', [
-                        'title' => $card->title,
-                        'url' => $card->url,
-                        'description' => $card->description,
-                        'icon' => $card->icon,
-                        'searchText' => strtolower($card->title.' '.$card->description),
-                    ])
-                @endforeach
-            </div>
-        @endif
-
-        <div class="dda-footer-actions">
-            <a href="{{ route('modules.system-admin.packages.index') }}" class="hs-btn hs-btn--primary">
-                <i class="bi bi-list-ul" aria-hidden="true"></i>
-                {{ __('system_administration.manage_packages') }}
-            </a>
-            <a href="{{ route('modules.doctors-admin.dashboard') }}" class="hs-btn hs-btn--ghost">
-                <i class="bi bi-gear-wide-connected" aria-hidden="true"></i>
-                {{ __('system_administration.manage_doctors_directory') }}
-            </a>
-            <a href="{{ route('modules.hospital-services') }}" class="hs-btn hs-btn--ghost" target="_blank" rel="noopener noreferrer">
-                <i class="bi bi-box-arrow-up-right" aria-hidden="true"></i>
-                {{ __('system_administration.view_public_catalog') }}
-            </a>
-        </div>
-    </div>
+            [
+                'label' => __('system_administration.stats.published'),
+                'value' => $summary['published'],
+                'hint' => __('system_administration.stats.published_hint'),
+                'icon' => 'bi-check-circle',
+                'variant' => 'dark',
+                'url' => route('modules.system-admin.packages.index', ['publish' => '1']),
+            ],
+            [
+                'label' => __('system_administration.stats.unpublished'),
+                'value' => $summary['unpublished'],
+                'hint' => __('system_administration.stats.unpublished_hint'),
+                'icon' => 'bi-eye-slash',
+                'variant' => 'primary',
+                'available' => true,
+                'url' => route('modules.system-admin.packages.index', ['publish' => '0']),
+            ],
+        ],
+        'filterTitle' => __('system_administration.filters_title'),
+        'filterSubtitle' => __('system_administration.dashboard_filter_subtitle'),
+        'searchPlaceholder' => __('system_administration.dashboard_search_placeholder'),
+        'searchLabel' => __('system_administration.search'),
+        'resetLabel' => __('system_administration.reset'),
+        'sectionTitle' => __('system_administration.dashboard_section_title'),
+        'sectionSubtitle' => __('system_administration.dashboard_section_subtitle'),
+        'countLabel' => __('system_administration.dashboard_count_label'),
+        'cardActionLabel' => __('system_administration.open_module'),
+        'emptyMessage' => __('system_administration.empty_title'),
+        'cards' => $cards,
+        'actions' => [
+            [
+                'label' => __('system_administration.manage_packages'),
+                'url' => route('modules.system-admin.packages.index'),
+                'icon' => 'bi-list-ul',
+                'primary' => true,
+            ],
+            [
+                'label' => __('system_administration.manage_doctors_directory'),
+                'url' => route('modules.doctors-admin.dashboard'),
+                'icon' => 'bi-gear-wide-connected',
+            ],
+            [
+                'label' => __('system_administration.view_public_catalog'),
+                'url' => route('modules.hospital-services'),
+                'icon' => 'bi-box-arrow-up-right',
+                'external' => true,
+            ],
+        ],
+    ])
 @endsection

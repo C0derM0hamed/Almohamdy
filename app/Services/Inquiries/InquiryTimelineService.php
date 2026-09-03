@@ -18,6 +18,7 @@ class InquiryTimelineService
      *     time: string,
      *     message: string,
      *     status_color: string,
+     *     status_id: int,
      *     sort_key: int
      * }>
      */
@@ -34,6 +35,7 @@ class InquiryTimelineService
                 datetime: $creationTime,
                 message: $this->actionMessage('created'),
                 statusColor: '#cbd5e1',
+                statusId: 0,
                 sortKey: $creationTime->timestamp,
             );
         }
@@ -57,6 +59,7 @@ class InquiryTimelineService
                 datetime: $replyTime,
                 message: $this->replyMessage($reply),
                 statusColor: $reply->status?->badgeColor() ?? '#e2e8f0',
+                statusId: (int) $reply->inquiry_status_id,
                 sortKey: $replyTime->timestamp,
             );
         }
@@ -76,6 +79,7 @@ class InquiryTimelineService
         Carbon $datetime,
         string $message,
         string $statusColor,
+        int $statusId,
         int $sortKey,
     ): array {
         return [
@@ -85,6 +89,7 @@ class InquiryTimelineService
             'time' => $datetime->format('h:i A'),
             'message' => $message,
             'status_color' => $statusColor,
+            'status_id' => $statusId,
             'sort_key' => $sortKey,
         ];
     }

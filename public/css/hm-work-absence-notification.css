@@ -495,6 +495,167 @@
     .wan-stat-grid { grid-template-columns: 1fr; }
 }
 
+/* Figma dashboard shell */
+.hm-wan--figma {
+    --wan-primary: #6366f1;
+    --wan-dark: #302a58;
+    --wan-navy: #29264f;
+    --wan-muted: #77758c;
+    --wan-line: #ecebf2;
+    --wan-shadow: 0 8px 20px rgba(40, 30, 80, .055);
+    padding-bottom: 28px;
+}
+
+.hm-wan--figma .fm-head--compact { margin-bottom: 8px; }
+
+.hm-wan--figma .wan-head {
+    min-height: 92px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin: 0 0 22px;
+}
+
+.hm-wan--figma .wan-head__icon {
+    width: 56px;
+    height: 56px;
+    flex: 0 0 56px;
+    display: grid;
+    place-items: center;
+    border-radius: 16px;
+    background: var(--wan-primary);
+    color: #fff;
+    font-size: 25px;
+    box-shadow: 0 9px 20px rgba(99, 102, 241, .18);
+}
+
+.hm-wan--figma .wan-head h1 {
+    margin-bottom: 6px;
+    color: var(--wan-navy);
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: 0;
+}
+
+.hm-wan--figma .wan-head p { color: var(--wan-muted); font-size: 13px; }
+
+.hm-wan--figma .wan-stat-grid {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 16px;
+    margin-bottom: 28px;
+}
+
+.hm-wan--figma .wan-stat {
+    min-height: 132px;
+    justify-content: center;
+    padding: 20px;
+    border: 0;
+    border-radius: 20px;
+    background: var(--wan-primary);
+    color: #fff;
+    box-shadow: 0 4px 14px rgba(48, 42, 88, .08);
+}
+
+.hm-wan--figma .wan-stat:nth-child(even) { background: var(--wan-dark); }
+.hm-wan--figma .wan-stat:hover { color: #fff; box-shadow: 0 14px 28px rgba(48, 42, 88, .18); }
+.hm-wan--figma .wan-stat__top { align-items: center; }
+.hm-wan--figma .wan-stat__copy { display: flex; flex-direction: column; min-width: 0; }
+.hm-wan--figma .wan-stat__label { margin-bottom: 7px; color: #fff; font-size: 14px; font-weight: 500; }
+.hm-wan--figma .wan-stat__value { color: #fff; font-size: 27px; font-weight: 700; }
+.hm-wan--figma .wan-stat__meta { margin-top: 8px; color: rgba(255,255,255,.78); font-size: 10px; }
+
+.hm-wan--figma .wan-stat .wan-stat__icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: #fff;
+    color: var(--wan-primary);
+    font-size: 19px;
+}
+
+.hm-wan--figma .wan-stat:nth-child(even) .wan-stat__icon { color: var(--wan-dark); }
+
+.hm-wan--figma .wan-recipients { margin-bottom: 24px; }
+.hm-wan--figma .wan-recipients > h2 {
+    margin: 0 0 15px;
+    color: var(--wan-navy);
+    font-size: 17px;
+    font-weight: 700;
+}
+
+.hm-wan--figma .wan-recipient-grid { gap: 16px; }
+
+.hm-wan--figma .wan-mini {
+    min-height: 116px;
+    padding: 20px;
+    border-color: var(--wan-line);
+    border-radius: 20px;
+    background: #fff;
+    box-shadow: var(--wan-shadow);
+}
+
+.hm-wan--figma .wan-mini__icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    background: #efefff;
+    color: var(--wan-primary);
+    font-size: 20px;
+}
+
+.hm-wan--figma .wan-mini__label { color: var(--wan-muted); font-size: 12px; }
+.hm-wan--figma .wan-mini__value { color: var(--wan-navy); font-size: 25px; font-weight: 700; }
+
+.hm-wan--figma .wan-chart-grid--distribution {
+    grid-template-columns: minmax(0, 2fr) minmax(310px, 1fr);
+    gap: 18px;
+    margin-bottom: 18px;
+}
+
+.hm-wan--figma .wan-panel {
+    padding: 20px 22px;
+    border-color: var(--wan-line);
+    border-radius: 22px;
+    box-shadow: var(--wan-shadow);
+}
+
+.hm-wan--figma .wan-panel__head { margin-bottom: 12px; }
+.hm-wan--figma .wan-panel__head h2 { color: var(--wan-navy); font-size: 15px; font-weight: 700; }
+.hm-wan--figma .wan-chart-wrap--bar { height: 290px; }
+.hm-wan--figma .wan-donut-layout { grid-template-columns: 1fr; gap: 8px; }
+.hm-wan--figma .wan-chart-wrap--pie { height: 215px; }
+.hm-wan--figma .wan-legend { flex-direction: row; flex-wrap: wrap; justify-content: center; gap: 8px 14px; }
+.hm-wan--figma .wan-legend__item { display: flex; gap: 6px; }
+.hm-wan--figma .wan-legend__value { display: none; }
+
+.hm-wan--figma .wan-report-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 2fr) minmax(310px, 1fr);
+    gap: 18px;
+}
+
+.hm-wan--figma .wan-panel--action_taken { grid-column: 1; }
+.hm-wan--figma .wan-panel--reasons { grid-column: 2; grid-row: 1; }
+.hm-wan--figma .wan-panel--activated { grid-column: 2; }
+.hm-wan--figma .wan-chart-wrap--report { height: 285px; }
+
+@media (max-width: 1199.98px) {
+    .hm-wan--figma .wan-stat-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+@media (max-width: 991.98px) {
+    .hm-wan--figma .wan-chart-grid--distribution,
+    .hm-wan--figma .wan-report-grid { grid-template-columns: 1fr; }
+    .hm-wan--figma .wan-panel--action_taken,
+    .hm-wan--figma .wan-panel--reasons,
+    .hm-wan--figma .wan-panel--activated { grid-column: auto; grid-row: auto; }
+}
+
+@media (max-width: 767.98px) {
+    .hm-wan--figma .wan-stat-grid { grid-template-columns: 1fr; }
+    .hm-wan--figma .wan-recipient-grid { grid-template-columns: 1fr; }
+}
+
 /* ============================================================
    Legacy list + detail page styles (unchanged)
    ============================================================ */
@@ -1784,4 +1945,162 @@ html[dir="rtl"] .hm-hs.hm-wan--detail .wan-detail-actions .hs-btn .bi-arrow-left
         width: 100%;
         justify-content: center;
     }
+}
+
+/* Employee absence list — exact Figma frame 52:3592. */
+.hm-fm.hm-hs.hm-wan--list .fm-head { padding-top: 32px; padding-bottom: 16px; }
+
+.hm-fm.hm-hs.hm-wan--list .hs-filter-card {
+    margin: 24px 0 16px;
+    padding: 18px 16px 16px 24px;
+    border: 0;
+    border-radius: 24px;
+    background: #fff;
+    box-shadow: 0 8px 15px rgba(40, 30, 80, .05);
+}
+
+.hm-fm.hm-hs.hm-wan--list .hs-filter-head {
+    margin: 0 0 18px;
+}
+
+.hm-fm.hm-hs.hm-wan--list .hs-filter-head .hs-filter-icon { display: none; }
+
+.hm-fm.hm-hs.hm-wan--list .hs-filter-head h2 {
+    color: #171827;
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.hm-fm.hm-hs.hm-wan--list .wan-filter-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) auto auto auto;
+    gap: 16px;
+    align-items: end;
+}
+
+.hm-fm.hm-hs.hm-wan--list .hs-field label {
+    margin-bottom: 8px;
+    color: #302a58;
+    font-size: 16px;
+    font-weight: 400;
+}
+
+.hm-fm.hm-hs.hm-wan--list .hs-field input,
+.hm-fm.hm-hs.hm-wan--list .hs-field select {
+    height: 52px;
+    padding-inline: 16px 42px;
+    border: 1px solid #e7e6ee;
+    border-radius: 16px;
+    background-color: #fff;
+    color: #302a58;
+    font-size: 14px;
+    box-shadow: none;
+}
+
+.hm-fm.hm-hs.hm-wan--list .hs-field select {
+    appearance: none;
+    background-image: url('/images/figma/technical-failures/select.svg');
+    background-repeat: no-repeat;
+    background-position: left 16px center;
+    background-size: 20px 20px;
+}
+
+.hm-fm.hm-hs.hm-wan--list .hs-field input[type="date"] {
+    background-image: url('/images/figma/technical-failures/calendar.svg');
+    background-repeat: no-repeat;
+    background-position: left 16px center;
+    background-size: 16px 16px;
+}
+
+.hm-fm.hm-hs.hm-wan--list .hs-field input[type="date"]::-webkit-calendar-picker-indicator { opacity: 0; }
+
+.hm-fm.hm-hs.hm-wan--list .hs-btn {
+    min-height: 52px;
+    border-radius: 16px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.hm-fm.hm-hs.hm-wan--list .wan-list-toolbar {
+    min-height: 63px;
+    margin: 0;
+    padding: 12px 16px;
+    justify-content: flex-start;
+    border-bottom: 1px solid #e8e7f0;
+    border-radius: 20px 20px 0 0;
+    background: #fff;
+}
+
+.hm-fm.hm-hs.hm-wan--list .wan-list-toolbar__summary {
+    padding: 6px 10px;
+    border-radius: 999px;
+    background: #eeeafe;
+    color: #6366f1;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.hm-fm.hm-hs.hm-wan--list .hs-list-panel {
+    border: 0;
+    border-radius: 0;
+    background: #fff;
+    box-shadow: 0 8px 30px rgba(40, 30, 80, .04);
+}
+
+.hm-fm.hm-hs.hm-wan--list .wan-table thead th {
+    height: 48px;
+    padding: 10px 16px;
+    border: 0;
+    background: #faf8ff;
+    color: #8c8a98;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0;
+    text-transform: none;
+}
+
+.hm-fm.hm-hs.hm-wan--list .wan-table tbody td {
+    height: 63px;
+    padding: 10px 16px;
+    border-color: #f0eff5;
+    color: #20202a;
+    font-size: 13px;
+}
+
+.hm-fm.hm-hs.hm-wan--list .wan-table__model {
+    display: inline-flex;
+    padding: 7px 11px;
+    border-radius: 999px;
+    background: #f1edfe;
+    color: #6366f1;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.hm-fm.hm-hs.hm-wan--list .wan-doc-link {
+    padding: 6px 10px;
+    border-radius: 7px;
+    background: #eeeafe;
+    color: #6366f1;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.hm-fm.hm-hs.hm-wan--list .hs-list-panel .d-flex.justify-content-center {
+    min-height: 56px;
+    justify-content: flex-start !important;
+    padding: 10px 16px !important;
+}
+
+html[dir="ltr"] .hm-fm.hm-hs.hm-wan--list .hs-field select,
+html[dir="ltr"] .hm-fm.hm-hs.hm-wan--list .hs-field input[type="date"] {
+    background-position: right 16px center;
+}
+
+@media (max-width: 1120px) {
+    .hm-fm.hm-hs.hm-wan--list .wan-filter-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 760px) {
+    .hm-fm.hm-hs.hm-wan--list .fm-head { padding-top: 16px; }
+    .hm-fm.hm-hs.hm-wan--list .wan-filter-grid { grid-template-columns: 1fr; }
 }

@@ -1,0 +1,2 @@
+<div class="col-md-12 mb-2"><label for="consent_title" class="col-sm-12 control-label mb-2">عنوان الإقرار</label><input required name="consent_title" type="text" class="form-control mb-2" id="consent_title" value="{{ e($row->title ?? '') }}"></div>
+<div class="col-md-12 mb-2"><label for="consent_content" class="col-sm-12 control-label mb-2">نص الإقرار</label><textarea rows="8" name="consent_content" id="consent_content" class="form-control mb-2">{{ $row->consent_content ?? '' }}</textarea></div>

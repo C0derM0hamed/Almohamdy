@@ -1,0 +1,858 @@
+/* Figma sidebar (file GSqeiriywPn3cbzHr5ivtz, frame 37:507).
+   Design-only layer: keeps existing items, routes, and permissions. */
+
+:root {
+    --hm-figma-primary: #6366f1;
+    --hm-figma-primary-soft: #eef2ff;
+    --hm-figma-primary-tint: #f5f2ff;
+    --hm-figma-dark: #302a58;
+    --hm-figma-ink: #171827;
+    --hm-figma-muted: #475569;
+    --hm-figma-line: #e2e8f0;
+    --hm-figma-page: #f7f8fc;
+    --hm-figma-footer: #f8f8fc;
+    --hm-sidebar-width: 260px;
+    --hm-sidebar-mini-width: 80px;
+}
+
+body.hm-app-body {
+    --sidebar-width: var(--hm-sidebar-width);
+    --hm-primary: var(--hm-figma-primary);
+    --hm-primary-soft: var(--hm-figma-primary-soft);
+    background: var(--hm-figma-page);
+}
+
+body.hm-app-body .sidebar.sidebar-white,
+body.hm-app-body .sidebar.sidebar-default,
+body.hm-app-body .sidebar.sidebar-base {
+    width: var(--hm-sidebar-width);
+    max-width: var(--hm-sidebar-width);
+    background: #fff;
+    border-inline-end: 1px solid var(--hm-figma-line);
+    box-shadow: none;
+}
+
+body.hm-app-body .sidebar .sidebar-header {
+    flex: 0 0 auto;
+    min-height: 85px;
+    padding: 24px 20px;
+    border-block-end: 0;
+    justify-content: center;
+}
+
+body.hm-app-body .hm-figma-sidebar__topbar {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+body.hm-app-body .hm-figma-sidebar__topbar .navbar-brand.hm-hope-logo {
+    width: auto;
+    min-width: 0;
+    flex: 1 1 auto;
+    justify-content: flex-start;
+}
+
+body.hm-app-body .hm-figma-sidebar__toggle {
+    width: 36px;
+    height: 36px;
+    flex: 0 0 36px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: 1px solid #e8edf4;
+    border-radius: 10px;
+    background: #fff;
+    color: #64748b;
+    cursor: pointer;
+    line-height: 1;
+    transition: color .15s ease, background-color .15s ease, border-color .15s ease;
+}
+
+body.hm-app-body .hm-figma-sidebar__toggle:hover,
+body.hm-app-body .hm-figma-sidebar__toggle:focus-visible {
+    border-color: #c7d2fe;
+    background: #eef2ff;
+    color: #6366f1;
+    outline: 0;
+}
+
+body.hm-app-body .hm-figma-sidebar__toggle i {
+    font-size: 18px;
+}
+
+body.hm-app-body .sidebar .navbar-brand.hm-hope-logo {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+body.hm-app-body .sidebar .hm-hope-logo .logo-main {
+    width: 181px;
+    max-width: 100%;
+    justify-content: center;
+}
+
+body.hm-app-body .sidebar .hm-hope-logo .logo-normal {
+    height: 37px;
+    width: auto;
+    max-width: 181px;
+}
+
+body.hm-app-body .sidebar .sidebar-body,
+body.hm-app-body .sidebar .sidebar-body.data-scrollbar {
+    padding-inline: 24px;
+    padding-top: 0;
+    max-height: calc(100dvh - 85px - 67px) !important;
+    /* القوائم الطويلة، ومنها المطالبات المالية ذات العناصر الأحد عشر،
+       يجب أن تُستكمل بالتمرير داخل الشريط ولا تُقص بعد العناصر الظاهرة. */
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+}
+
+/* Fast navigation search. It filters the already-authorized sidebar tree;
+   it never creates links or bypasses the server-side permission gate. */
+body.hm-app-body .hm-sidebar-search {
+    position: sticky;
+    z-index: 5;
+    top: 0;
+    padding: 4px 0 14px;
+    background: #fff;
+}
+
+body.hm-app-body .hm-sidebar-search__field {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 42px;
+    padding: 0 11px;
+    border: 1px solid #e1e6ef;
+    border-radius: 12px;
+    background: #f8faff;
+    color: #8090a6;
+    transition: border-color .15s ease, box-shadow .15s ease, background-color .15s ease;
+}
+
+body.hm-app-body .hm-sidebar-search__field:focus-within {
+    border-color: #a5b4fc;
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(99,102,241,.1);
+}
+
+body.hm-app-body .hm-sidebar-search__field > i { flex: 0 0 auto; font-size: 15px; }
+body.hm-app-body .hm-sidebar-search__input {
+    min-width: 0;
+    flex: 1 1 auto;
+    width: 100%;
+    padding: 0;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    color: var(--hm-figma-dark);
+    font: inherit;
+    font-size: 11px;
+}
+body.hm-app-body .hm-sidebar-search__input::placeholder { color: #8c98aa; opacity: 1; }
+body.hm-app-body .hm-sidebar-search__clear {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 24px;
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    border: 0;
+    border-radius: 7px;
+    background: transparent;
+    color: #7c8ba1;
+    cursor: pointer;
+}
+body.hm-app-body .hm-sidebar-search__clear:hover,
+body.hm-app-body .hm-sidebar-search__clear:focus-visible { background: #eef2ff; color: var(--hm-figma-primary); outline: 0; }
+body.hm-app-body .hm-sidebar-search__status {
+    margin: 7px 4px 0;
+    color: #8c98aa;
+    font-size: 10px;
+    line-height: 1.5;
+}
+
+body.hm-app-body .sidebar .navbar-nav.iq-main-menu {
+    gap: 16px;
+    display: flex;
+    flex-direction: column;
+}
+
+body.hm-app-body .sidebar .nav-item.static-item {
+    margin: 0;
+}
+
+body.hm-app-body .sidebar .nav-link.static-item {
+    min-height: auto;
+    padding: 0 8px;
+}
+
+body.hm-app-body .sidebar .nav-link.static-item .default-icon {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    color: #64748b;
+}
+
+body.hm-app-body .sidebar .navbar-nav > .nav-item > .nav-link:not(.static-item),
+body.hm-app-body .sidebar .navbar-nav > .nav-item > .nav-link:not(.disabled) {
+    height: 46px;
+    min-height: 46px;
+    padding: 10px 8px;
+    border-radius: 12px;
+    gap: 8px;
+    align-items: center;
+    justify-content: flex-start;
+    background: transparent;
+    box-shadow: none;
+    color: var(--hm-figma-muted);
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 19.5px;
+}
+
+body.hm-app-body .sidebar .nav-link .item-name,
+html[dir="rtl"] body.hm-app-body .sidebar .nav-link .item-name {
+    margin: 0 !important;
+    margin-inline-end: 0 !important;
+    color: inherit;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 19.5px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-align: start;
+}
+
+body.hm-app-body .sidebar .nav-link > .icon {
+    width: 20px;
+    height: 20px;
+    min-width: 20px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    color: inherit;
+}
+
+body.hm-app-body .sidebar .nav-link > .icon > .bi {
+    font-size: 20px;
+    line-height: 1;
+    color: inherit;
+}
+
+body.hm-app-body .sidebar .nav-link .right-icon {
+    margin-inline-start: auto;
+    margin-inline-end: 0;
+    color: inherit;
+}
+
+/* The document head selects the compact rail before the sidebar markup is
+   painted. Disable only first-paint transitions so the rail starts at its
+   final width and icons never flash in the expanded layout. */
+html.hm-sidebar-preload body.hm-app-body .sidebar,
+html.hm-sidebar-preload body.hm-app-body .sidebar *,
+html.hm-sidebar-preload body.hm-app-body .sidebar ~ .main-content {
+    transition: none !important;
+    animation: none !important;
+}
+
+body.hm-app-body .sidebar .navbar-nav > .nav-item > .nav-link:hover:not(.active):not(.disabled):not(.static-item) {
+    background: var(--hm-figma-primary-soft);
+    color: var(--hm-figma-primary);
+    box-shadow: 0 2px 4px rgba(59, 130, 246, 0.12);
+}
+
+body.hm-app-body .sidebar .navbar-nav > .nav-item > .nav-link.active {
+    background: var(--hm-figma-primary);
+    color: #fff;
+    font-weight: 500;
+    box-shadow: none;
+}
+
+body.hm-app-body .sidebar .navbar-nav > .nav-item > .nav-link.active .item-name {
+    color: #fff !important;
+    font-weight: 500;
+}
+
+body.hm-app-body .sidebar .navbar-nav > .nav-item > .nav-link.active > .icon,
+body.hm-app-body .sidebar .navbar-nav > .nav-item > .nav-link.active > .icon > .bi,
+body.hm-app-body .sidebar .navbar-nav > .nav-item > .nav-link.active > .right-icon,
+body.hm-app-body .sidebar .navbar-nav > .nav-item > .nav-link.active > .right-icon > .bi {
+    color: #fff !important;
+}
+
+body.hm-app-body .sidebar .navbar-nav > .nav-item > .nav-link.active::before {
+    display: none;
+}
+
+body.hm-app-body .sidebar .sub-nav {
+    padding: 4px 0 0;
+    margin: 0;
+}
+
+body.hm-app-body .sidebar .sub-nav .nav-item .nav-link {
+    height: 40px;
+    min-height: 40px;
+    padding: 8px;
+    padding-inline-end: 28px;
+    border-radius: 10px;
+    color: var(--hm-figma-muted);
+    font-size: 14px;
+    background: transparent;
+}
+
+body.hm-app-body .sidebar .sub-nav .nav-item .nav-link .item-name {
+    font-size: 14px;
+    font-weight: 400;
+}
+
+body.hm-app-body .sidebar .sub-nav .nav-item .nav-link:hover:not(.active) {
+    background: var(--hm-figma-primary-soft);
+    color: var(--hm-figma-primary);
+}
+
+body.hm-app-body .sidebar .sub-nav .nav-item .nav-link.active {
+    background: var(--hm-figma-primary-tint);
+    color: var(--hm-figma-primary);
+    font-weight: 500;
+}
+
+body.hm-app-body .sidebar .sub-nav .nav-item .nav-link.active .item-name,
+body.hm-app-body .sidebar .sub-nav .nav-item .nav-link.active > .icon > .bi {
+    color: var(--hm-figma-primary) !important;
+}
+
+body.hm-app-body .sidebar .sidebar-footer.hm-figma-sidebar-user {
+    flex: 0 0 67px;
+    height: 67px;
+    padding: 13px 24px;
+    background: var(--hm-figma-footer);
+    border-block-start: 1px solid rgba(48, 42, 88, 0.06);
+    display: flex;
+    align-items: center;
+}
+
+body.hm-app-body .hm-figma-sidebar-user__row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    gap: 8px;
+}
+
+body.hm-app-body .hm-figma-sidebar-user__identity {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    min-width: 0;
+    flex: 1;
+}
+
+body.hm-app-body .hm-figma-sidebar-user__meta {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    min-width: 0;
+    text-align: start;
+}
+
+body.hm-app-body .hm-figma-sidebar-user__name {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 19.5px;
+    color: var(--hm-figma-dark);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 122px;
+}
+
+body.hm-app-body .hm-figma-sidebar-user__role {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 16.5px;
+    color: var(--hm-figma-primary);
+    white-space: nowrap;
+}
+
+body.hm-app-body .hm-figma-sidebar-user__avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 9999px;
+    background: var(--hm-figma-primary);
+    color: #fff;
+    display: grid;
+    place-items: center;
+    font-size: 14px;
+    font-weight: 700;
+    flex: 0 0 40px;
+}
+
+body.hm-app-body .hm-figma-sidebar-user__logout {
+    width: 32px;
+    height: 32px;
+    border: 0;
+    background: transparent;
+    color: #ef4444;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+}
+
+body.hm-app-body .hm-figma-sidebar-user__logout:hover {
+    background: #fef2f2;
+}
+
+/* Collapsed rail — icons stay visible */
+html.hm-sidebar-is-collapsed body.hm-app-body .sidebar,
+body.hm-app-body.hm-sidebar-collapsed .sidebar {
+    --sidebar-width: var(--hm-sidebar-mini-width) !important;
+    width: var(--hm-sidebar-mini-width) !important;
+    max-width: var(--hm-sidebar-mini-width) !important;
+}
+
+html.hm-sidebar-is-collapsed body.hm-app-body .sidebar .sidebar-header,
+body.hm-app-body.hm-sidebar-collapsed .sidebar .sidebar-header {
+    padding: 16px 8px;
+    min-height: 72px;
+}
+
+html.hm-sidebar-is-collapsed body.hm-app-body .hm-figma-sidebar__topbar,
+body.hm-app-body.hm-sidebar-collapsed .hm-figma-sidebar__topbar {
+    justify-content: center;
+    gap: 0;
+}
+
+html.hm-sidebar-is-collapsed body.hm-app-body .hm-figma-sidebar__topbar .navbar-brand.hm-hope-logo,
+body.hm-app-body.hm-sidebar-collapsed .hm-figma-sidebar__topbar .navbar-brand.hm-hope-logo {
+    flex: 0 0 32px;
+    width: 32px;
+}
+
+html.hm-sidebar-is-collapsed body.hm-app-body .hm-figma-sidebar__toggle,
+body.hm-app-body.hm-sidebar-collapsed .hm-figma-sidebar__toggle {
+    display: none;
+}
+
+html.hm-sidebar-is-collapsed body.hm-app-body .hm-figma-sidebar__topbar .navbar-brand.hm-hope-logo,
+body.hm-app-body.hm-sidebar-collapsed .hm-figma-sidebar__topbar .navbar-brand.hm-hope-logo {
+    flex: 0 0 40px;
+    width: 40px;
+    cursor: pointer;
+}
+
+html.hm-sidebar-is-collapsed body.hm-app-body .sidebar .sidebar-body,
+body.hm-app-body.hm-sidebar-collapsed .sidebar .sidebar-body {
+    padding-inline: 10px;
+    max-height: calc(100dvh - 72px - 67px) !important;
+}
+
+html.hm-sidebar-is-collapsed body.hm-app-body .hm-sidebar-search,
+body.hm-app-body.hm-sidebar-collapsed .hm-sidebar-search { display: none; }
+
+html.hm-sidebar-is-collapsed body.hm-app-body .sidebar .navbar-nav.iq-main-menu,
+body.hm-app-body.hm-sidebar-collapsed .sidebar .navbar-nav.iq-main-menu {
+    gap: 8px;
+}
+
+html.hm-sidebar-is-collapsed body.hm-app-body .sidebar .navbar-nav > .nav-item > .nav-link:not(.static-item),
+body.hm-app-body.hm-sidebar-collapsed .sidebar .navbar-nav > .nav-item > .nav-link:not(.static-item) {
+    justify-content: center;
+    padding: 0;
+    height: 46px;
+    background: transparent !important;
+    box-shadow: none !important;
+}
+
+html.hm-sidebar-is-collapsed body.hm-app-body .sidebar .nav-link > .icon,
+body.hm-app-body.hm-sidebar-collapsed .sidebar .nav-link > .icon {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    border-radius: 12px;
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+html.hm-sidebar-is-collapsed body.hm-app-body .sidebar .nav-link > .icon > .bi,
+body.hm-app-body.hm-sidebar-collapsed .sidebar .nav-link > .icon > .bi {
+    display: inline-block !important;
+    font-size: 20px;
+    color: var(--hm-figma-muted);
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+html.hm-sidebar-is-collapsed body.hm-app-body .sidebar .nav-link:hover:not(.active) > .icon,
+body.hm-app-body.hm-sidebar-collapsed .sidebar .nav-link:hover:not(.active) > .icon {
+    background: var(--hm-figma-primary-soft);
+}
+
+html.hm-sidebar-is-collapsed body.hm-app-body .sidebar .nav-link:hover:not(.active) > .icon > .bi,
+body.hm-app-body.hm-sidebar-collapsed .sidebar .nav-link:hover:not(.active) > .icon > .bi {
+    color: var(--hm-figma-primary);
+}
+
+html.hm-sidebar-is-collapsed body.hm-app-body .sidebar .nav-link.active > .icon,
+body.hm-app-body.hm-sidebar-collapsed .sidebar .nav-link.active > .icon {
+    background: var(--hm-figma-primary);
+}
+
+html.hm-sidebar-is-collapsed body.hm-app-body .sidebar .nav-link.active > .icon > .bi,
+body.hm-app-body.hm-sidebar-collapsed .sidebar .nav-link.active > .icon > .bi {
+    color: #fff !important;
+}
+
+html.hm-sidebar-is-collapsed body.hm-app-body .hm-figma-sidebar-user__meta,
+html.hm-sidebar-is-collapsed body.hm-app-body .hm-figma-sidebar-user__logout,
+body.hm-app-body.hm-sidebar-collapsed .hm-figma-sidebar-user__meta,
+body.hm-app-body.hm-sidebar-collapsed .hm-figma-sidebar-user__logout {
+    display: none;
+}
+
+html.hm-sidebar-is-collapsed body.hm-app-body .sidebar .sidebar-footer.hm-figma-sidebar-user,
+body.hm-app-body.hm-sidebar-collapsed .sidebar .sidebar-footer.hm-figma-sidebar-user {
+    padding: 12px 8px;
+    justify-content: center;
+}
+
+html.hm-sidebar-is-collapsed body.hm-app-body .hm-figma-sidebar-user__row,
+html.hm-sidebar-is-collapsed body.hm-app-body .hm-figma-sidebar-user__identity,
+body.hm-app-body.hm-sidebar-collapsed .hm-figma-sidebar-user__row,
+body.hm-app-body.hm-sidebar-collapsed .hm-figma-sidebar-user__identity {
+    justify-content: center;
+}
+
+@media (max-width: 1199.98px) {
+    body.hm-app-body .sidebar.sidebar-default {
+        width: var(--hm-sidebar-width);
+        max-width: var(--hm-sidebar-width);
+    }
+}
+
+/*
+ * Desktop hover expansion
+ *
+ * A manually collapsed sidebar remains an icon rail, but opening it should
+ * not require a click: hovering the rail (or tabbing into it) temporarily
+ * reveals the complete, already-authorised navigation tree.  The main area
+ * deliberately remains at rail width so this is an overlay, not a layout
+ * jump.  Touch and mobile layouts keep their existing toggle behaviour.
+ */
+@media (min-width: 1200px) {
+    html.hm-sidebar-is-collapsed body.hm-app-body .sidebar:is(:hover, :focus-within),
+    body.hm-app-body.hm-sidebar-collapsed .sidebar:is(:hover, :focus-within) {
+        --sidebar-width: var(--hm-sidebar-width) !important;
+        width: var(--hm-sidebar-width) !important;
+        max-width: var(--hm-sidebar-width) !important;
+        overflow: visible !important;
+        z-index: 1060;
+        box-shadow: 8px 0 22px rgba(15, 23, 42, .12);
+    }
+
+    html.hm-sidebar-is-collapsed body.hm-app-body .sidebar:is(:hover, :focus-within) .sidebar-header,
+    body.hm-app-body.hm-sidebar-collapsed .sidebar:is(:hover, :focus-within) .sidebar-header {
+        min-height: 85px;
+        padding: 24px 20px;
+    }
+
+    html.hm-sidebar-is-collapsed body.hm-app-body .sidebar:is(:hover, :focus-within) .hm-figma-sidebar__topbar,
+    body.hm-app-body.hm-sidebar-collapsed .sidebar:is(:hover, :focus-within) .hm-figma-sidebar__topbar {
+        justify-content: space-between;
+        gap: 12px;
+    }
+
+    html.hm-sidebar-is-collapsed body.hm-app-body .sidebar:is(:hover, :focus-within) .hm-figma-sidebar__topbar .navbar-brand.hm-hope-logo,
+    body.hm-app-body.hm-sidebar-collapsed .sidebar:is(:hover, :focus-within) .hm-figma-sidebar__topbar .navbar-brand.hm-hope-logo {
+        width: auto;
+        flex: 1 1 auto;
+    }
+
+    html.hm-sidebar-is-collapsed body.hm-app-body .sidebar:is(:hover, :focus-within) .hm-figma-sidebar__toggle,
+    body.hm-app-body.hm-sidebar-collapsed .sidebar:is(:hover, :focus-within) .hm-figma-sidebar__toggle {
+        display: inline-flex;
+    }
+
+    html.hm-sidebar-is-collapsed body.hm-app-body .sidebar:is(:hover, :focus-within) .sidebar-body,
+    body.hm-app-body.hm-sidebar-collapsed .sidebar:is(:hover, :focus-within) .sidebar-body {
+        padding-inline: 24px;
+        max-height: calc(100dvh - 85px - 67px) !important;
+    }
+
+    html.hm-sidebar-is-collapsed body.hm-app-body .sidebar:is(:hover, :focus-within) .hm-sidebar-search,
+    body.hm-app-body.hm-sidebar-collapsed .sidebar:is(:hover, :focus-within) .hm-sidebar-search {
+        display: block;
+    }
+
+    html.hm-sidebar-is-collapsed body.hm-app-body .sidebar:is(:hover, :focus-within) .navbar-nav.iq-main-menu,
+    body.hm-app-body.hm-sidebar-collapsed .sidebar:is(:hover, :focus-within) .navbar-nav.iq-main-menu {
+        gap: 16px;
+    }
+
+    html.hm-sidebar-is-collapsed body.hm-app-body .sidebar:is(:hover, :focus-within) .nav-item .nav-link,
+    body.hm-app-body.hm-sidebar-collapsed .sidebar:is(:hover, :focus-within) .nav-item .nav-link {
+        justify-content: flex-start;
+        padding: 10px 8px;
+        min-height: 46px;
+        background: transparent !important;
+    }
+
+    html.hm-sidebar-is-collapsed body.hm-app-body .sidebar:is(:hover, :focus-within) .nav-item .nav-link .item-name,
+    html.hm-sidebar-is-collapsed body.hm-app-body .sidebar:is(:hover, :focus-within) .nav-item .nav-link .right-icon,
+    html.hm-sidebar-is-collapsed body.hm-app-body .sidebar:is(:hover, :focus-within) .nav-link.static-item .default-icon,
+    body.hm-app-body.hm-sidebar-collapsed .sidebar:is(:hover, :focus-within) .nav-item .nav-link .item-name,
+    body.hm-app-body.hm-sidebar-collapsed .sidebar:is(:hover, :focus-within) .nav-item .nav-link .right-icon,
+    body.hm-app-body.hm-sidebar-collapsed .sidebar:is(:hover, :focus-within) .nav-link.static-item .default-icon {
+        opacity: 1 !important;
+        visibility: visible !important;
+        width: auto !important;
+        overflow: visible !important;
+    }
+
+    html.hm-sidebar-is-collapsed body.hm-app-body .sidebar:is(:hover, :focus-within) .sidebar-base .sidebar-list .navbar-nav .nav-item .nav-link:not(.disabled) span.item-name,
+    html[dir="rtl"].hm-sidebar-is-collapsed body.hm-app-body .sidebar:is(:hover, :focus-within) .sidebar-base .sidebar-list .navbar-nav .nav-item .nav-link:not(.disabled) span.item-name,
+    body.hm-app-body.hm-sidebar-collapsed .sidebar:is(:hover, :focus-within) .sidebar-base .sidebar-list .navbar-nav .nav-item .nav-link:not(.disabled) span.item-name {
+        width: auto !important;
+        margin: 0 !important;
+    }
+
+    html.hm-sidebar-is-collapsed body.hm-app-body .sidebar:is(:hover, :focus-within) .sub-nav,
+    body.hm-app-body.hm-sidebar-collapsed .sidebar:is(:hover, :focus-within) .sub-nav {
+        display: block !important;
+    }
+
+    html.hm-sidebar-is-collapsed body.hm-app-body .sidebar:is(:hover, :focus-within) .hm-figma-sidebar-user__meta,
+    html.hm-sidebar-is-collapsed body.hm-app-body .sidebar:is(:hover, :focus-within) .hm-figma-sidebar-user__logout,
+    body.hm-app-body.hm-sidebar-collapsed .sidebar:is(:hover, :focus-within) .hm-figma-sidebar-user__meta,
+    body.hm-app-body.hm-sidebar-collapsed .sidebar:is(:hover, :focus-within) .hm-figma-sidebar-user__logout {
+        display: block;
+    }
+
+    html.hm-sidebar-is-collapsed body.hm-app-body .sidebar:is(:hover, :focus-within) .sidebar-footer.hm-figma-sidebar-user,
+    body.hm-app-body.hm-sidebar-collapsed .sidebar:is(:hover, :focus-within) .sidebar-footer.hm-figma-sidebar-user {
+        padding: 16px 20px;
+        justify-content: flex-start;
+    }
+
+    html.hm-sidebar-is-collapsed body.hm-app-body .sidebar:is(:hover, :focus-within) .hm-figma-sidebar-user__row,
+    html.hm-sidebar-is-collapsed body.hm-app-body .sidebar:is(:hover, :focus-within) .hm-figma-sidebar-user__identity,
+    body.hm-app-body.hm-sidebar-collapsed .sidebar:is(:hover, :focus-within) .hm-figma-sidebar-user__row,
+    body.hm-app-body.hm-sidebar-collapsed .sidebar:is(:hover, :focus-within) .hm-figma-sidebar-user__identity {
+        justify-content: flex-start;
+    }
+}
+
+/* Keep long page names readable inside the fixed sidebar. */
+body.hm-app-body .sidebar .navbar-nav > .nav-item > .nav-link:not(.static-item),
+body.hm-app-body .sidebar .navbar-nav > .nav-item > .nav-link:not(.disabled),
+body.hm-app-body .sidebar .sub-nav .nav-item .nav-link {
+    height: auto;
+    min-height: 40px;
+    align-items: center;
+}
+
+body.hm-app-body .sidebar .navbar-nav > .nav-item > .nav-link:not(.static-item),
+body.hm-app-body .sidebar .navbar-nav > .nav-item > .nav-link:not(.disabled) {
+    min-height: 46px;
+}
+
+body.hm-app-body .sidebar .nav-link .item-name,
+html[dir="rtl"] body.hm-app-body .sidebar .nav-link .item-name {
+    display: block;
+    flex: 1 1 auto;
+    min-width: 0;
+    white-space: normal !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
+    line-height: 1.35;
+    overflow-wrap: anywhere;
+}
+
+body.hm-app-body .sidebar .nav-link > .icon {
+    flex: 0 0 20px;
+}
+
+body.hm-app-body .sidebar .nav-link .right-icon {
+    flex: 0 0 20px;
+    width: 20px;
+    min-width: 20px;
+    text-align: center;
+}
+
+/*
+ * The logout dialog is rendered between the sidebar and the main element.
+ * Therefore the usual adjacent-sibling selector (+) cannot reserve the
+ * sidebar width. Use the general-sibling selector so the page never slides
+ * underneath the fixed sidebar.
+ */
+@media (min-width: 1200px) {
+    html[dir="ltr"] body.hm-app-body .sidebar ~ .main-content,
+    html:not([dir="rtl"]) body.hm-app-body .sidebar ~ .main-content {
+        margin-left: var(--hm-sidebar-width) !important;
+        margin-right: 0 !important;
+        width: calc(100% - var(--hm-sidebar-width)) !important;
+        max-width: calc(100% - var(--hm-sidebar-width)) !important;
+        min-width: 0;
+    }
+
+    html[dir="rtl"] body.hm-app-body .sidebar ~ .main-content {
+        margin-right: var(--hm-sidebar-width) !important;
+        margin-left: 0 !important;
+        width: calc(100% - var(--hm-sidebar-width)) !important;
+        max-width: calc(100% - var(--hm-sidebar-width)) !important;
+        min-width: 0;
+    }
+
+    html.hm-sidebar-is-collapsed[dir="ltr"] body.hm-app-body .sidebar ~ .main-content,
+    body.hm-app-body.hm-sidebar-collapsed[dir="ltr"] .sidebar ~ .main-content,
+    html.hm-sidebar-is-collapsed:not([dir="rtl"]) body.hm-app-body .sidebar ~ .main-content,
+    body.hm-app-body.hm-sidebar-collapsed:not([dir="rtl"]) .sidebar ~ .main-content {
+        margin-left: var(--hm-sidebar-mini-width) !important;
+        margin-right: 0 !important;
+        width: calc(100% - var(--hm-sidebar-mini-width)) !important;
+        max-width: calc(100% - var(--hm-sidebar-mini-width)) !important;
+    }
+
+    html[dir="rtl"].hm-sidebar-is-collapsed body.hm-app-body .sidebar ~ .main-content,
+    html[dir="rtl"] body.hm-app-body.hm-sidebar-collapsed .sidebar ~ .main-content {
+        margin-right: var(--hm-sidebar-mini-width) !important;
+        margin-left: 0 !important;
+        width: calc(100% - var(--hm-sidebar-mini-width)) !important;
+        max-width: calc(100% - var(--hm-sidebar-mini-width)) !important;
+    }
+}
+
+@media (max-width: 1199.98px) {
+    body.hm-app-body .sidebar ~ .main-content {
+        width: 100%;
+        max-width: 100%;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+    }
+
+    /* The logout dialog sits between the sidebar and main element, so the
+       framework's adjacent-sibling mobile rules do not match this shell. */
+    html[dir="rtl"] body.hm-app-body .hm-figma-sidebar {
+        left: auto !important;
+        right: calc(-1 * var(--hm-sidebar-width)) !important;
+        transform: none !important;
+    }
+
+    html[dir="ltr"] body.hm-app-body .hm-figma-sidebar,
+    html:not([dir="rtl"]) body.hm-app-body .hm-figma-sidebar {
+        left: calc(-1 * var(--hm-sidebar-width)) !important;
+        right: auto !important;
+        transform: none !important;
+    }
+
+    html[dir="rtl"] body.hm-sidebar-mobile-open.hm-app-body .hm-figma-sidebar,
+    html[dir="ltr"] body.hm-sidebar-mobile-open.hm-app-body .hm-figma-sidebar,
+    html:not([dir="rtl"]) body.hm-sidebar-mobile-open.hm-app-body .hm-figma-sidebar {
+        left: auto !important;
+        right: 0 !important;
+    }
+
+    body.hm-app-body .main-content {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+    }
+
+    html,
+    body.hm-app-body {
+        overflow-x: hidden;
+    }
+}
+
+/*
+ * Final responsive ownership.
+ *
+ * Hope UI's resize plugin may leave `sidebar-mini`/`on-resize` on the
+ * element for one paint. Those classes describe a desktop icon rail, while
+ * this application uses a full off-canvas drawer below 1200px. Keep the
+ * mobile state deterministic even before hm-sidebar-toggle.js runs; this
+ * removes the brief, misaligned icon rail seen after navigation/refresh.
+ */
+@media (max-width: 1199.98px) {
+    body.hm-app-body .sidebar.sidebar-default,
+    body.hm-app-body .sidebar.sidebar-default.sidebar-mini,
+    body.hm-app-body .sidebar.sidebar-default.on-resize,
+    body.hm-app-body .sidebar.sidebar-default.sidebar-mini.on-resize {
+        width: var(--hm-sidebar-width) !important;
+        max-width: var(--hm-sidebar-width) !important;
+        min-width: var(--hm-sidebar-width) !important;
+    }
+
+    /* Closed drawer: keep it completely outside the viewport. */
+    html[dir="rtl"] body.hm-app-body .sidebar.sidebar-default,
+    html[dir="rtl"] body.hm-app-body.hm-sidebar-collapsed .sidebar.sidebar-default {
+        left: auto !important;
+        right: 0 !important;
+        transform: translateX(100%) !important;
+    }
+
+    html[dir="ltr"] body.hm-app-body .sidebar.sidebar-default,
+    html:not([dir="rtl"]) body.hm-app-body .sidebar.sidebar-default,
+    html[dir="ltr"] body.hm-app-body.hm-sidebar-collapsed .sidebar.sidebar-default,
+    html:not([dir="rtl"]) body.hm-app-body.hm-sidebar-collapsed .sidebar.sidebar-default {
+        left: 0 !important;
+        right: auto !important;
+        transform: translateX(-100%) !important;
+    }
+
+    /* Open drawer always wins over stale framework/collapse classes. */
+    html[dir="rtl"] body.hm-app-body.hm-sidebar-mobile-open .sidebar.sidebar-default {
+        left: auto !important;
+        right: 0 !important;
+        transform: translateX(0) !important;
+    }
+
+    html[dir="ltr"] body.hm-app-body.hm-sidebar-mobile-open .sidebar.sidebar-default,
+    html:not([dir="rtl"]) body.hm-app-body.hm-sidebar-mobile-open .sidebar.sidebar-default {
+        left: 0 !important;
+        right: auto !important;
+        transform: translateX(0) !important;
+    }
+
+    html.hm-sidebar-preload body.hm-app-body .sidebar,
+    html.hm-sidebar-preload body.hm-app-body .sidebar * {
+        transition: none !important;
+        animation: none !important;
+    }
+
+    body.hm-app-body.hm-sidebar-mobile-open .sidebar .nav-item .nav-link {
+        justify-content: flex-start !important;
+        min-height: 46px !important;
+        padding: 10px 8px !important;
+    }
+
+    body.hm-app-body.hm-sidebar-mobile-open .sidebar .nav-item .nav-link .item-name,
+    body.hm-app-body.hm-sidebar-mobile-open .sidebar .nav-item .nav-link .right-icon,
+    body.hm-app-body.hm-sidebar-mobile-open .sidebar .nav-link.static-item .default-icon {
+        width: auto !important;
+        min-width: 0 !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+        overflow: visible !important;
+    }
+}

@@ -95,18 +95,19 @@ class EmergencyReceptionWorkflowTest extends TestCase
         $this->assertNull($service->find('escape', $id));
     }
 
-    public function test_other_branches_and_super_admin_are_denied(): void
+    public function test_other_branches_are_denied_but_super_admin_can_audit(): void
     {
         $service = app(EmergencyReceptionService::class);
-        foreach ([[2, 2], [1, 3]] as [$branch, $level]) {
-            session(['hr_branch_id' => $branch, 'hr_user_level' => $level]);
-            try {
-                $service->list('escape', []);
-                $this->fail('Expected access denial');
-            } catch (HttpException $exception) {
-                $this->assertSame(403, $exception->getStatusCode());
-            }
+        session(['hr_branch_id' => 2, 'hr_user_level' => 2]);
+        try {
+            $service->list('escape', []);
+            $this->fail('Expected access denial');
+        } catch (HttpException $exception) {
+            $this->assertSame(403, $exception->getStatusCode());
         }
+
+        session(['hr_branch_id' => 2, 'hr_user_level' => 3]);
+        $this->assertCount(0, $service->list('escape', []));
     }
 
     public function test_every_attachment_enabled_emergency_workflow_uses_parent_scoped_protected_downloads(): void

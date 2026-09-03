@@ -78,7 +78,10 @@ return [
     |
     */
 
-    'locale' => env('APP_LOCALE', 'en'),
+    // Arabic is the application's default UI language. Users can still
+    // switch to English from the language menu; the session locale takes
+    // precedence when one has been selected.
+    'locale' => env('APP_LOCALE', 'ar'),
 
     'fallback_locale' => env('APP_FALLBACK_LOCALE', 'en'),
 

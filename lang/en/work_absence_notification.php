@@ -9,7 +9,7 @@ return [
     'notifications_list_subtitle' => 'Browse and review absence notification requests',
     'service_title' => 'Absence from work notification service',
     'service_subtitle' => 'Search absence notifications and review submitted documents',
-    'filters_title' => 'Filter notifications',
+    'filters_title' => 'Search and filter',
     'new_notification' => 'New notification',
     'total_records' => ':count records',
     'notification_details' => 'Absence Notification Details',

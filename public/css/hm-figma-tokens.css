@@ -1,0 +1,104 @@
+/* Shared Figma tokens — file iSWZv3mAjNs7RjuhrnXtUl (Page 1).
+   Extracted from get_design_context on 1:593, 1:961, 1:2424.
+   Figma has no published variables; values are raw from frames. */
+
+:root {
+    --hm-font: "Noto Kufi Arabic", "Noto Sans Arabic", sans-serif;
+
+    --hm-page: #f7f8fc;
+    --hm-surface: #ffffff;
+    --hm-primary: #6366f1;
+    --hm-primary-cta: #625ceb;
+    --hm-primary-deep: #5b3fe4;
+    --hm-dark: #302a58;
+    --hm-ink: #171827;
+    --hm-title: #171521;
+    --hm-heading: #29264f;
+    --hm-price: #292052;
+    --hm-muted: #64748b;
+    --hm-muted-2: #8c8a98;
+    --hm-body-soft: #5a5771;
+    --hm-note: #77748a;
+    --hm-placeholder: #302a58;
+
+    --hm-line: #e7e6ee;
+    --hm-line-2: #e8edf4;
+    --hm-line-3: #e9e8f1;
+    --hm-line-4: #e9e6f2;
+    --hm-line-row: #f0eff5;
+    --hm-line-pkg: #f1effa;
+    --hm-divider: #e2e8f0;
+
+    --hm-soft: #f1edfe;
+    --hm-tint: #f5f2ff;
+    --hm-chip: #eeeafe;
+    --hm-chip-2: #f0ecff;
+    --hm-chip-3: #f3f1ff;
+    --hm-chip-4: #f7f6ff;
+    --hm-note-bg: #f7f5ff;
+    --hm-table-head: #fafafd;
+
+    --hm-danger: #e46a6a;
+    --hm-on-primary: #ffffff;
+
+    --hm-radius-6: 6px;
+    --hm-radius-10: 10px;
+    --hm-radius-11: 11px;
+    --hm-radius-12: 12px;
+    --hm-radius-13: 13px;
+    --hm-radius-14: 14px;
+    --hm-radius-16: 16px;
+    --hm-radius-20: 20px;
+    --hm-radius-24: 24px;
+    --hm-radius-pill: 9999px;
+
+    --hm-space-4: 4px;
+    --hm-space-6: 6px;
+    --hm-space-8: 8px;
+    --hm-space-12: 12px;
+    --hm-space-16: 16px;
+    --hm-space-20: 20px;
+    --hm-space-24: 24px;
+    --hm-space-32: 32px;
+
+    --hm-size-tool: 40px;
+    --hm-size-hero: 56px;
+    --hm-size-icon-sm: 44px;
+    --hm-size-icon-xs: 36px;
+    --hm-size-input: 52px;
+    --hm-size-btn: 46px;
+    --hm-size-search-btn: 80px;
+    --hm-size-reset-btn: 134px;
+    --hm-size-pager: 36px;
+    --hm-size-avatar: 40px;
+    --hm-size-dot: 7px;
+    --hm-size-notify: 8px;
+
+    --hm-shadow-card: 0 8px 15px rgba(40, 30, 80, 0.05);
+    --hm-shadow-table: 0 2px 12px rgba(41, 38, 79, 0.05);
+    --hm-shadow-stat: 0 2px 12px rgba(30, 58, 138, 0.04);
+    --hm-shadow-cta: 0 4px 6px rgba(98, 92, 235, 0.16);
+    --hm-shadow-tab: 0 4px 6px rgba(98, 92, 235, 0.28);
+    --hm-shadow-pkg: 0 8px 30px rgba(57, 42, 120, 0.06);
+    --hm-shadow-pkg-icon: 0 8px 20px rgba(20, 12, 60, 0.28);
+
+    --hm-content: 100%;
+    --hm-card: 370px;
+    --hm-gap: 16px;
+}
+
+.hm-fm {
+    font-family: var(--hm-font);
+    --fm-primary: var(--hm-primary);
+    --fm-primary-cta: var(--hm-primary-cta);
+    --fm-primary-deep: var(--hm-primary-deep);
+    --fm-dark: var(--hm-dark);
+    --fm-ink: var(--hm-ink);
+    --fm-title: var(--hm-title);
+    --fm-muted: var(--hm-muted);
+    --fm-line: var(--hm-line);
+    --fm-soft: var(--hm-soft);
+    --fm-tint: var(--hm-tint);
+    --fm-chip: var(--hm-chip);
+    --fm-shadow: var(--hm-shadow-card);
+}

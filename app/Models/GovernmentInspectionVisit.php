@@ -118,6 +118,11 @@ class GovernmentInspectionVisit extends Model
         return $this->hasMany(GovernmentInspectionVisitReplySubmission::class, 'government_inspection_visits_id');
     }
 
+    public function replies(): HasMany
+    {
+        return $this->hasMany(GovernmentInspectionVisitReply::class, 'government_inspection_visits_id');
+    }
+
     public function displayNumber(): string
     {
         return '#'.(string) $this->visit_number;

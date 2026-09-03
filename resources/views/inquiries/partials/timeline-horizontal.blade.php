@@ -1,57 +1,117 @@
 @php
     $timelineCount = count($timeline);
-    $gradientStops = [];
-
-    if ($timelineCount > 0) {
-        foreach ($timeline as $index => $event) {
-            $percent = $timelineCount === 1 ? 0 : round(($index / ($timelineCount - 1)) * 100, 1);
-            $color = $event['status_color'] ?? '#2456e8';
-            $gradientStops[] = $color.' '.$percent.'%';
-        }
-    }
-
-    $timelineGradient = $timelineCount > 0
-        ? 'linear-gradient(90deg, '.implode(', ', $gradientStops).')'
-        : 'linear-gradient(90deg, #2456e8, #0d43b8)';
+    $currentIndex = $timelineCount - 1;
+    $currentStatusId = (int) ($inquiry->status ?? 0);
+    $lastEventCompleted = $timelineCount > 0 && $currentStatusId === 6;
+    $completedCount = $timelineCount === 0
+        ? 0
+        : max(0, $timelineCount - ($lastEventCompleted ? 0 : 1));
+    $progress = $timelineCount > 0
+        ? (int) round(($completedCount / $timelineCount) * 100)
+        : 0;
 @endphp
 
-<article class="inq-timeline-card" id="inquiry-timeline">
+<article class="inq-timeline-card inq-timeline-card--vertical" id="inquiry-timeline">
     <div class="inq-timeline-card__head">
-        <span class="inq-timeline-card__icon" aria-hidden="true"><i class="bi bi-clock-history"></i></span>
-        <div>
+        <span class="inq-timeline-card__icon" aria-hidden="true">
+            <i class="bi bi-clock-history"></i>
+        </span>
+        <div class="inq-timeline-card__heading">
             <h2>{{ __('inquiries.timeline') }}</h2>
             <p>{{ __('inquiries.timeline_subtitle') }}</p>
         </div>
+        @if ($timelineCount > 0)
+            <div class="inq-timeline-progress" aria-label="{{ __('inquiries.timeline_progress', ['completed' => $completedCount, 'total' => $timelineCount]) }}">
+                <div class="inq-timeline-progress__copy">
+                    <span>{{ __('inquiries.timeline_progress', ['completed' => $completedCount, 'total' => $timelineCount]) }}</span>
+                    <strong>{{ $progress }}%</strong>
+                </div>
+                <div class="inq-timeline-progress__bar" role="progressbar" aria-valuenow="{{ $progress }}" aria-valuemin="0" aria-valuemax="100">
+                    <span style="width: {{ $progress }}%"></span>
+                </div>
+            </div>
+        @endif
     </div>
 
     @if ($timelineCount > 0)
-        <div class="inq-timeline-wrap">
-            <div
-                class="inq-timeline {{ $timelineCount === 1 ? 'inq-timeline--single' : '' }}"
-                style="grid-template-columns: repeat({{ $timelineCount }}, minmax(160px, 1fr)); --inq-timeline-gradient: {{ $timelineGradient }};"
-            >
-                @foreach ($timeline as $event)
+        <div class="inq-timeline-wrap inq-timeline-wrap--vertical">
+            <div class="inq-workflow">
+                <div class="inq-workflow__line" aria-hidden="true">
+                    <span style="height: {{ $progress }}%"></span>
+                </div>
+
+                @foreach ($timeline as $index => $event)
                     @php
-                        $statusColor = $event['status_color'] ?? '#2456e8';
+                        $eventStatusId = (int) ($event['status_id'] ?? 0);
+                        $isCurrent = $index === $currentIndex && ! $lastEventCompleted;
+                        $isCompleted = $index < $currentIndex || $lastEventCompleted;
+                        $stateClass = $isCurrent ? 'is-current' : ($isCompleted ? 'is-completed' : 'is-pending');
+                        $eventIcon = match ($eventStatusId) {
+                            3 => 'bi-search',
+                            4 => 'bi-telephone',
+                            5 => 'bi-bell-slash',
+                            6 => 'bi-flag',
+                            999999 => 'bi-arrow-left-right',
+                            default => 'bi-inbox',
+                        };
+                        $stateLabel = $isCurrent
+                            ? __('inquiries.timeline_current')
+                            : ($isCompleted ? __('inquiries.timeline_completed') : __('inquiries.timeline_pending'));
                     @endphp
-                    <div class="inq-timeline-step">
-                        <div
-                            class="inq-timeline-step__dot"
-                            style="--inq-step-color: {{ $statusColor }};"
-                            aria-hidden="true"
-                        >
-                            <i class="bi bi-check-lg"></i>
+
+                    <article class="inq-workflow__event {{ $stateClass }}">
+                        <div class="inq-workflow__marker" aria-label="{{ $stateLabel }}">
+                            @if ($isCompleted)
+                                <i class="bi bi-check-lg" aria-hidden="true"></i>
+                            @else
+                                <i class="bi {{ $eventIcon }}" aria-hidden="true"></i>
+                            @endif
                         </div>
-                        <div class="inq-timeline-step__title">{{ $event['message'] }}</div>
-                        <div class="inq-timeline-step__date">
-                            <span>{{ $event['date'] }}</span>
-                            <span>{{ $event['time'] }}</span>
+
+                        <div class="inq-workflow__content">
+                            <div class="inq-workflow__topline">
+                                <span class="inq-workflow__stage">
+                                    <b>{{ $index + 1 }}</b>
+                                    {{ __('inquiries.timeline_stage', ['number' => $index + 1]) }}
+                                </span>
+                                <span class="inq-workflow__state">
+                                    @if ($isCurrent)
+                                        <i class="bi bi-record-circle" aria-hidden="true"></i>
+                                    @elseif ($isCompleted)
+                                        <i class="bi bi-check2" aria-hidden="true"></i>
+                                    @endif
+                                    {{ $stateLabel }}
+                                </span>
+                            </div>
+
+                            <div class="inq-workflow__main">
+                                <span class="inq-workflow__event-icon" aria-hidden="true">
+                                    <i class="bi {{ $eventIcon }}"></i>
+                                </span>
+                                <div class="inq-workflow__copy">
+                                    <h3>{{ $event['message'] }}</h3>
+                                    <div class="inq-workflow__date">
+                                        <i class="bi bi-calendar3" aria-hidden="true"></i>
+                                        <span>{{ $event['date'] }}</span>
+                                        <span class="inq-workflow__separator" aria-hidden="true"></span>
+                                        <i class="bi bi-clock" aria-hidden="true"></i>
+                                        <span>{{ $event['time'] }}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="inq-workflow__meta">
+                                <span class="inq-workflow__meta-item">
+                                    <i class="bi bi-person" aria-hidden="true"></i>
+                                    <strong>{{ $event['actor_name'] ?: '—' }}</strong>
+                                </span>
+                                <span class="inq-workflow__meta-item">
+                                    <i class="bi bi-building" aria-hidden="true"></i>
+                                    <span>{{ $event['department'] ?: '—' }}</span>
+                                </span>
+                            </div>
                         </div>
-                        <div class="inq-timeline-step__meta">
-                            <span class="inq-timeline-step__actor">{{ $event['actor_name'] ?: '—' }}</span>
-                            <span class="inq-timeline-step__department">{{ $event['department'] ?: '—' }}</span>
-                        </div>
-                    </div>
+                    </article>
                 @endforeach
             </div>
         </div>

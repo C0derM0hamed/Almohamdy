@@ -2,18 +2,28 @@
 @section('title', __('training.'.$mode))
 @section('sidebar_heading', __('training.'.$mode))
 @section('sidebar_subheading', __('training.subtitle'))
+@section('figma_page_header', 'true')
+@push('workflow_styles')
+    <link href="{{ asset('css/hm-figma-workflows.css') }}?v={{ filemtime(public_path('css/hm-figma-workflows.css')) }}" rel="stylesheet">
+@endpush
 @section('content')
-<div class="hm-module-page" data-module="training-management">
-    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
-        <div><h1 class="h3 mb-1">{{ __('training.'.$mode) }}</h1><p class="text-muted mb-0">{{ __('training.subtitle') }}</p></div>
-        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newTraining"><i class="bi bi-plus-lg"></i> {{ __('training.new') }}</button>
-    </div>
+<div class="hm-fm hm-workflow" data-module="training-management">
+    @include('layouts.partials.figma-module-header', [
+        'crumbs' => [['label' => __('training.'.$mode)]],
+        'title' => __('training.'.$mode),
+        'subtitle' => __('training.subtitle'),
+        'heroIconSrc' => asset($mode === 'coordination' ? 'images/figma/workflows/training-coordination.svg' : 'images/figma/workflows/training-management.svg'),
+        'heroIconSize' => 32,
+        'actionModal' => '#newTraining',
+        'actionLabel' => __('training.new'),
+        'actionIconSrc' => asset('images/figma/technical-failures/add.svg'),
+    ])
     @if(session('success'))<div class="alert alert-success">{{ session('success') }}</div>@endif
-    <div class="card mb-4"><div class="card-body">
+    <div class="card mb-4"><div class="card-body" data-filter-title="{{ __('training.search') }}">
         <form method="GET" class="row g-3 align-items-end">
             <div class="col-md-2"><label class="form-label">{{ __('training.from') }}</label><input type="date" class="form-control" name="from" value="{{ $filters['from'] ?? '' }}"></div>
             <div class="col-md-2"><label class="form-label">{{ __('training.to') }}</label><input type="date" class="form-control" name="to" value="{{ $filters['to'] ?? '' }}"></div>
-            <div class="col-md-3"><label class="form-label">{{ __('training.status') }}</label><select class="form-select" name="status"><option value="">{{ __('training.all') }}</option>@foreach($statuses as $status)<option value="{{ $status->id }}" @selected((string)($filters['status'] ?? '') === (string)$status->id)>{{ $status->name_ar }}</option>@endforeach</select></div>
+            <div class="col-md-3"><label class="form-label">{{ __('training.status') }}</label><select class="form-select" name="status"><option value="">{{ __('training.all') }}</option>@foreach($statuses as $status)<option value="{{ $status->id }}" @selected((string)($filters['status'] ?? '') === (string)$status->id)>{{ \App\Support\LocaleText::localizedValue($status->name_ar ?? null, $status->name_en ?? null) }}</option>@endforeach</select></div>
             <div class="col-md-3"><label class="form-label">{{ __('training.employee_search') }}</label><input class="form-control" name="employee" value="{{ $filters['employee'] ?? '' }}"></div>
             <div class="col-md-2 d-flex flex-wrap gap-2"><button class="btn btn-dark flex-grow-1">{{ __('training.search') }}</button><a href="{{ route($routes['index']) }}" class="btn btn-outline-secondary">{{ __('training.reset') }}</a></div>
         </form>
@@ -22,7 +32,7 @@
         <thead><tr><th>{{ __('training.date') }}</th><th>{{ __('training.employee') }}</th><th>{{ __('training.job_title') }}</th><th>{{ __('training.employee_number') }}</th><th>{{ __('training.status') }}</th><th>{{ __('training.actions') }}</th></tr></thead>
         <tbody>@forelse($trainings as $training)<tr>
             <td>{{ $training->created_at }}</td><td>{{ $training->employee?->displayName() ?? '—' }}</td><td>{{ $training->employee?->jobTitle?->localizedName() ?? '—' }}</td><td>{{ $training->employee?->hr_username ?? '—' }}</td>
-            <td><span class="badge bg-primary-subtle text-primary">{{ $training->currentStatus?->name_ar ?? $training->status }}</span></td>
+            <td><span class="badge bg-primary-subtle text-primary">{{ \App\Support\LocaleText::localizedValue($training->currentStatus?->name_ar ?? null, $training->currentStatus?->name_en ?? null) ?: $training->status }}</span></td>
             <td><a class="btn btn-sm btn-outline-primary" href="{{ route($routes['show'], $training->id) }}">{{ __('training.details') }}</a></td>
         </tr>@empty<tr><td colspan="6" class="text-center py-5 text-muted">{{ __('training.empty') }}</td></tr>@endforelse</tbody>
     </table></div>@if($trainings->hasPages())<div class="card-footer">{{ $trainings->links() }}</div>@endif</div>

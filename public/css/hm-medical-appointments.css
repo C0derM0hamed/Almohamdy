@@ -1,0 +1,700 @@
+/* Medical appointments — focused Figma-style workspace */
+.hm-medical-appointments {
+    --ma-ink: #25243b;
+    --ma-muted: #78829a;
+    --ma-primary: #625cf2;
+    --ma-primary-dark: #5149dc;
+    --ma-soft: #f0efff;
+    --ma-line: #e8e8f2;
+    width: 100%;
+    max-width: 1480px;
+    margin-inline: auto;
+    padding-block: 12px 40px;
+    color: var(--ma-ink);
+}
+
+.hm-ma-hero {
+    padding: 18px 4px 26px;
+}
+
+.hm-ma-hero h1 {
+    color: var(--ma-ink);
+    font-size: clamp(24px, 2vw, 32px);
+    font-weight: 800;
+    letter-spacing: -.02em;
+}
+
+.hm-ma-hero p {
+    color: var(--ma-muted) !important;
+    font-size: 15px;
+}
+
+.hm-ma-hero .fm-btn {
+    min-height: 48px;
+    padding-inline: 22px;
+    box-shadow: 0 10px 20px rgba(98, 92, 242, .22);
+}
+
+.hm-ma-status-grid {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 14px;
+    margin-bottom: 24px;
+}
+
+.hm-ma-status-card {
+    position: relative;
+    min-height: 132px;
+    padding: 20px;
+    overflow: hidden;
+    border: 1px solid rgba(98, 92, 242, .08);
+    border-radius: 20px;
+    background: #fff;
+    box-shadow: 0 8px 24px rgba(44, 39, 93, .06);
+}
+
+.hm-ma-status-card::after {
+    position: absolute;
+    inset-inline-end: -25px;
+    bottom: -35px;
+    width: 110px;
+    height: 110px;
+    border-radius: 50%;
+    background: var(--ma-soft);
+    content: '';
+}
+
+.hm-ma-status-icon {
+    display: grid;
+    width: 40px;
+    height: 40px;
+    margin-bottom: 14px;
+    place-items: center;
+    border-radius: 12px;
+    background: var(--ma-soft);
+    color: var(--ma-primary);
+    font-size: 18px;
+}
+
+.hm-ma-status-card .small {
+    position: relative;
+    z-index: 1;
+    display: block;
+    color: var(--ma-muted) !important;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.hm-ma-status-value {
+    position: relative;
+    z-index: 1;
+    margin-top: 7px;
+    color: var(--ma-ink);
+    font-size: 30px;
+    font-weight: 800;
+    line-height: 1;
+}
+
+.hm-ma-filter-card,
+.hm-ma-list-card {
+    border: 1px solid var(--ma-line);
+    border-radius: 24px;
+    background: #fff;
+    box-shadow: 0 10px 30px rgba(44, 39, 93, .055);
+}
+
+.hm-ma-filter-card {
+    margin-bottom: 24px;
+}
+
+.hm-ma-filter-card .card-body {
+    padding: 24px;
+}
+
+.hm-ma-filter-heading,
+.hm-ma-list-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.hm-ma-filter-heading h2,
+.hm-ma-list-heading h2 {
+    margin: 0;
+    color: var(--ma-ink);
+    font-size: 20px;
+    font-weight: 800;
+}
+
+.hm-ma-filter-heading p,
+.hm-ma-list-heading p {
+    margin: 5px 0 0;
+    color: var(--ma-muted);
+    font-size: 13px;
+}
+
+.hm-ma-filter-heading > i {
+    display: grid;
+    width: 42px;
+    height: 42px;
+    place-items: center;
+    border-radius: 13px;
+    background: var(--ma-soft);
+    color: var(--ma-primary);
+    font-size: 19px;
+}
+
+.hm-ma-filter-form {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 16px;
+    align-items: end;
+}
+
+.hm-ma-filter-form > [class*="col-md-"] {
+    width: auto;
+    padding: 0;
+}
+
+.hm-ma-filter-form > .col-md-2 { grid-column: span 1; }
+.hm-ma-filter-form > .col-md-3 { grid-column: span 2; }
+
+.hm-medical-appointments .form-label {
+    margin-bottom: 8px;
+    color: #4a4a68;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.hm-medical-appointments .form-control,
+.hm-medical-appointments .form-select {
+    min-height: 48px;
+    border: 1px solid var(--ma-line);
+    border-radius: 14px;
+    color: var(--ma-ink);
+    background-color: #fff;
+    box-shadow: none;
+}
+
+.hm-medical-appointments .form-control:focus,
+.hm-medical-appointments .form-select:focus {
+    border-color: var(--ma-primary);
+    box-shadow: 0 0 0 3px rgba(98, 92, 242, .12);
+}
+
+.hm-ma-filter-form .btn {
+    min-height: 48px;
+    border-radius: 14px;
+    font-weight: 700;
+}
+
+.hm-ma-filter-form .btn-dark {
+    border-color: var(--ma-primary);
+    background: var(--ma-primary);
+}
+
+.hm-ma-filter-form .btn-dark:hover {
+    border-color: var(--ma-primary-dark);
+    background: var(--ma-primary-dark);
+}
+
+.hm-ma-list-heading {
+    margin: 0;
+    padding: 22px 24px;
+    border-bottom: 1px solid var(--ma-line);
+}
+
+.hm-ma-list-count {
+    display: inline-flex;
+    min-width: 38px;
+    height: 32px;
+    align-items: center;
+    justify-content: center;
+    padding-inline: 10px;
+    border-radius: 999px;
+    background: var(--ma-soft);
+    color: var(--ma-primary);
+    font-size: 13px;
+    font-weight: 800;
+}
+
+.hm-ma-table {
+    min-width: 1060px;
+    margin: 0;
+}
+
+.hm-ma-table thead th {
+    padding: 16px 18px;
+    border: 0;
+    background: #fafaff;
+    color: #7a7c92;
+    font-size: 12px;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+.hm-ma-table tbody td {
+    padding: 17px 18px;
+    border-color: #f0f0f6;
+    color: #4a4a68;
+    font-size: 13px;
+    white-space: nowrap;
+}
+
+.hm-ma-table tbody tr {
+    transition: background-color .16s ease;
+}
+
+.hm-ma-table tbody tr:hover {
+    background: #fbfbff;
+}
+
+.hm-ma-table tbody td:first-child a {
+    color: var(--ma-primary);
+    font-weight: 800;
+    text-decoration: none;
+}
+
+.hm-ma-table .badge {
+    padding: 7px 10px;
+    border-radius: 999px;
+    background: var(--ma-soft) !important;
+    color: var(--ma-primary) !important;
+    font-weight: 700;
+}
+
+.hm-ma-table .btn {
+    border-radius: 10px;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.hm-ma-list-card > .table-responsive {
+    border-radius: 0 0 24px 24px;
+}
+
+@media (max-width: 1199.98px) {
+    .hm-medical-appointments { padding-inline: 14px; }
+    .hm-ma-status-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+@media (max-width: 767.98px) {
+    .hm-medical-appointments { padding-block: 8px 28px; }
+    .hm-ma-hero { padding-block: 10px 20px; }
+    .hm-ma-status-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+    .hm-ma-status-card { min-height: 112px; padding: 15px; border-radius: 16px; }
+    .hm-ma-filter-card .card-body { padding: 16px; }
+    .hm-ma-filter-form { display: flex; flex-wrap: wrap; }
+    .hm-ma-filter-form > [class*="col-md-"] { flex: 1 1 100%; }
+    .hm-ma-filter-heading h2, .hm-ma-list-heading h2 { font-size: 17px; }
+    .hm-ma-list-heading { padding: 17px 16px; }
+}
+
+/* Medical appointments use the same visual language as the Clinic Doctors
+   directory.  Keep the appointment-specific behaviour above, but make the
+   page shell, controls and data card use the shared dd components. */
+.hm-dd.hm-medical-appointments {
+    width: 100%;
+    max-width: var(--hm-content, 1142px);
+    margin-inline-end: auto;
+    padding: 0 0 40px;
+    color: var(--dd-text);
+}
+
+.hm-dd.hm-medical-appointments .hm-ma-hero {
+    min-height: 132px;
+    margin-bottom: 18px;
+    padding: 24px 30px;
+}
+
+.hm-dd.hm-medical-appointments .hm-ma-hero h1 {
+    margin: 0 0 8px;
+    color: var(--dd-text);
+    font-size: 32px;
+    font-weight: 800;
+    line-height: 1.15;
+}
+
+.hm-dd.hm-medical-appointments .hm-ma-hero p {
+    margin: 0;
+    color: var(--dd-muted) !important;
+    font-size: 15px;
+}
+
+.hm-dd.hm-medical-appointments .hm-ma-hero .dd-hero-icon {
+    color: var(--brand-blue-2);
+}
+
+.hm-dd.hm-medical-appointments .hm-ma-create {
+    min-height: 44px;
+    color: #fff;
+    background: linear-gradient(135deg, #315ff0, #0b46ca);
+    box-shadow: 0 10px 20px rgba(36, 86, 232, .18);
+}
+
+.hm-dd.hm-medical-appointments .hm-ma-status-grid {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 0;
+    margin: 0 0 24px;
+    padding: 22px 26px;
+}
+
+.hm-dd.hm-medical-appointments .hm-ma-status-card {
+    min-height: 72px;
+    padding: 0 20px;
+    border: 0;
+    border-inline-end: 1px solid var(--dd-line);
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+}
+
+.hm-dd.hm-medical-appointments .hm-ma-status-card:last-child {
+    border-inline-end: 0;
+}
+
+.hm-dd.hm-medical-appointments .hm-ma-status-card::after {
+    display: none;
+}
+
+.hm-dd.hm-medical-appointments .hm-ma-status-icon {
+    width: 48px;
+    height: 48px;
+    margin: 0;
+    border-radius: 15px;
+    background: var(--brand-blue-soft);
+    color: var(--brand-blue-2);
+    font-size: 18px;
+}
+
+.hm-dd.hm-medical-appointments .hm-ma-status-card small {
+    color: #5f6d83;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.hm-dd.hm-medical-appointments .hm-ma-status-value {
+    margin: 3px 0 0;
+    color: var(--dd-text);
+    font-size: 26px;
+    line-height: 1.15;
+}
+
+.hm-dd.hm-medical-appointments .hm-ma-status-card p {
+    margin: 2px 0 0;
+    color: var(--dd-muted);
+    font-size: 12px;
+}
+
+.hm-dd.hm-medical-appointments .hm-ma-filter-card {
+    margin-bottom: 24px;
+    padding: 26px 28px 28px;
+}
+
+.hm-dd.hm-medical-appointments .hm-ma-filter-form {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+}
+
+.hm-dd.hm-medical-appointments .hm-ma-filter-form .dd-input,
+.hm-dd.hm-medical-appointments .hm-ma-filter-form .dd-form-select {
+    min-height: 46px;
+    height: 46px;
+}
+
+.hm-dd.hm-medical-appointments .hm-ma-filter-form .dd-form-select {
+    padding-inline: 12px 36px;
+}
+
+.hm-dd.hm-medical-appointments .hm-ma-list-card {
+    margin-bottom: 30px;
+    border-radius: var(--dd-radius);
+}
+
+.hm-dd.hm-medical-appointments .hm-ma-list-heading {
+    display: flex;
+    min-height: 78px;
+    margin: 0;
+    padding: 16px 24px;
+    border-bottom: 1px solid var(--dd-line);
+}
+
+.hm-dd.hm-medical-appointments .hm-ma-list-heading > div:nth-child(2) {
+    flex: 1;
+}
+
+.hm-dd.hm-medical-appointments .hm-ma-list-heading p {
+    margin: 5px 0 0;
+    color: var(--dd-muted);
+    font-size: 13px;
+}
+
+.hm-dd.hm-medical-appointments .hm-ma-list-count {
+    min-width: 36px;
+    height: 30px;
+    background: var(--brand-blue-soft);
+    color: var(--brand-blue-2);
+}
+
+.hm-dd.hm-medical-appointments .hm-ma-table {
+    min-width: 1060px;
+}
+
+.hm-dd.hm-medical-appointments .hm-ma-table thead th {
+    padding: 15px 18px;
+    border: 0;
+    background: #f4f8ff;
+    color: var(--brand-blue);
+    font-size: 12px;
+}
+
+.hm-dd.hm-medical-appointments .hm-ma-table tbody td {
+    padding: 16px 18px;
+    border-color: var(--dd-line);
+    color: #41516d;
+}
+
+.hm-dd.hm-medical-appointments .hm-ma-table tbody tr:hover {
+    background: #f8fbff;
+}
+
+.hm-dd.hm-medical-appointments .hm-ma-table tbody td:first-child a {
+    color: var(--brand-blue-2);
+}
+
+.hm-dd.hm-medical-appointments .hm-ma-table .badge {
+    background: var(--brand-blue-soft) !important;
+    color: var(--brand-blue-2) !important;
+}
+
+.hm-dd.hm-medical-appointments .hm-ma-table .btn-outline-primary {
+    border-color: var(--brand-blue-2);
+    color: var(--brand-blue-2);
+}
+
+.hm-dd.hm-medical-appointments .hm-ma-table .btn-outline-primary:hover {
+    background: var(--brand-blue-2);
+    color: #fff;
+}
+
+.hm-dd.hm-medical-appointments .card-footer {
+    border-top: 1px solid var(--dd-line);
+    background: #fff;
+}
+
+@media (max-width: 1100px) {
+    .hm-dd.hm-medical-appointments .hm-ma-status-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 20px 0;
+    }
+
+    .hm-dd.hm-medical-appointments .hm-ma-status-card:nth-child(3n) {
+        border-inline-end: 0;
+    }
+
+    .hm-dd.hm-medical-appointments .hm-ma-status-card:nth-child(n+4) {
+        padding-top: 18px;
+    }
+}
+
+@media (max-width: 900px) {
+    .hm-dd.hm-medical-appointments .hm-ma-filter-form {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 575.98px) {
+    .hm-dd.hm-medical-appointments {
+        padding-inline: 0;
+    }
+
+    .hm-dd.hm-medical-appointments .hm-ma-hero {
+        align-items: flex-start;
+        flex-direction: column;
+        padding: 20px;
+    }
+
+    .hm-dd.hm-medical-appointments .hm-ma-hero h1 {
+        font-size: 26px;
+    }
+
+    .hm-dd.hm-medical-appointments .hm-ma-status-grid,
+    .hm-dd.hm-medical-appointments .hm-ma-filter-form {
+        grid-template-columns: 1fr;
+    }
+
+    .hm-dd.hm-medical-appointments .hm-ma-status-card,
+    .hm-dd.hm-medical-appointments .hm-ma-status-card:nth-child(3n) {
+        padding: 0;
+        border-inline-end: 0;
+        border-bottom: 1px solid var(--dd-line);
+    }
+
+    .hm-dd.hm-medical-appointments .hm-ma-status-card:last-child {
+        border-bottom: 0;
+    }
+}
+
+/* Shared details/timeline screens for the Medical Procedure section. */
+.main-content > .modal {
+    z-index: 1080;
+}
+
+.main-content > .modal.show {
+    display: block;
+}
+
+.main-content > .modal .modal-dialog {
+    pointer-events: auto;
+}
+
+.hm-dd.hm-medical-appointments .hm-ma-detail-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.25fr) minmax(320px, .75fr);
+    gap: 24px;
+    margin-top: 24px;
+}
+
+.hm-dd.hm-medical-appointments .hm-ma-info-card,
+.hm-dd.hm-medical-appointments .hm-ma-action-card,
+.hm-dd.hm-medical-appointments .hm-ma-documents-card,
+.hm-dd.hm-medical-appointments .hm-ma-timeline-item {
+    margin-bottom: 0;
+}
+
+.hm-dd.hm-medical-appointments .hm-ma-detail-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    margin: 0;
+}
+
+.hm-dd.hm-medical-appointments .hm-ma-detail-list > div {
+    display: grid;
+    gap: 7px;
+    min-height: 78px;
+    padding: 16px 22px;
+    border-bottom: 1px solid var(--dd-line);
+    border-inline-end: 1px solid var(--dd-line);
+}
+
+.hm-dd.hm-medical-appointments .hm-ma-detail-list > div:nth-child(even) {
+    border-inline-end: 0;
+}
+
+.hm-dd.hm-medical-appointments .hm-ma-detail-list dt {
+    color: var(--brand-blue-2);
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.hm-dd.hm-medical-appointments .hm-ma-detail-list dd {
+    margin: 0;
+    color: #1f3150;
+    font-size: 14px;
+    font-weight: 650;
+}
+
+.hm-dd.hm-medical-appointments .hm-ma-detail-list .badge {
+    display: inline-flex;
+    width: fit-content;
+    padding: 6px 10px;
+    border-radius: 999px;
+    background: var(--brand-blue-soft);
+    color: var(--brand-blue-2);
+}
+
+.hm-dd.hm-medical-appointments .hm-ma-action-body {
+    padding: 22px 24px 26px;
+}
+
+.hm-dd.hm-medical-appointments .hm-ma-action-body form,
+.hm-dd.hm-medical-appointments .hm-ma-action-body .dd-form-field {
+    display: grid;
+    gap: 8px;
+}
+
+.hm-dd.hm-medical-appointments .hm-ma-action-body .dd-form-field + .dd-form-field {
+    margin-top: 16px;
+}
+
+.hm-dd.hm-medical-appointments .hm-ma-action-body .dd-btn {
+    margin-top: 20px;
+}
+
+.hm-dd.hm-medical-appointments .hm-ma-documents-card {
+    margin-top: 24px;
+}
+
+.hm-dd.hm-medical-appointments .hm-ma-document-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 22px 24px 26px;
+}
+
+.hm-dd.hm-medical-appointments .hm-ma-timeline-stats {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    margin: 24px 0;
+}
+
+.hm-dd.hm-medical-appointments .hm-ma-timeline-stats .dd-stat b {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.hm-dd.hm-medical-appointments .hm-ma-timeline-list {
+    display: grid;
+    gap: 16px;
+}
+
+.hm-dd.hm-medical-appointments .hm-ma-timeline-item {
+    padding: 20px 24px;
+}
+
+.hm-dd.hm-medical-appointments .hm-ma-timeline-item__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    color: var(--brand-blue);
+}
+
+.hm-dd.hm-medical-appointments .hm-ma-timeline-item time {
+    color: var(--dd-muted);
+    font-size: 13px;
+    font-weight: 650;
+}
+
+.hm-dd.hm-medical-appointments .hm-ma-timeline-item p {
+    margin: 14px 0 0;
+    padding-top: 14px;
+    border-top: 1px solid var(--dd-line);
+    color: #556578;
+    line-height: 1.8;
+}
+
+@media (max-width: 900px) {
+    .hm-dd.hm-medical-appointments .hm-ma-detail-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .hm-dd.hm-medical-appointments .hm-ma-detail-list,
+    .hm-dd.hm-medical-appointments .hm-ma-timeline-stats {
+        grid-template-columns: 1fr;
+    }
+
+    .hm-dd.hm-medical-appointments .hm-ma-detail-list > div,
+    .hm-dd.hm-medical-appointments .hm-ma-detail-list > div:nth-child(even) {
+        border-inline-end: 0;
+    }
+
+    .hm-dd.hm-medical-appointments .hm-ma-detail-list > div:last-child {
+        border-bottom: 0;
+    }
+}

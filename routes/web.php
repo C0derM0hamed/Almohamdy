@@ -10,11 +10,13 @@ use App\Http\Controllers\Branch\DashboardController as BranchDashboardController
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LocaleController;
 use App\Http\Controllers\Module\AdmissionCalculator\AdmissionCalculatorController;
+use App\Http\Controllers\Module\ClinicsDirectory\ClinicsDirectoryController;
 use App\Http\Controllers\Module\Complaints\ComplaintController;
 use App\Http\Controllers\Module\Complaints\ComplaintsDashboardController;
 use App\Http\Controllers\Module\CorporateCommunications\CorporateCommunicationController;
 use App\Http\Controllers\Module\CorporateCommunications\CorporateCommunicationDashboardController;
 use App\Http\Controllers\Module\CorporateCommunications\CorporateCommunicationOutgoingLetterController;
+use App\Http\Controllers\Module\DepartmentPerformanceReport\DepartmentPerformanceReportController;
 use App\Http\Controllers\Module\DoctorsDirectory\DoctorController;
 use App\Http\Controllers\Module\DoctorsDirectory\SpecialityController;
 use App\Http\Controllers\Module\DoctorsDirectoryAdmin\DashboardController as DoctorsDirectoryAdminDashboardController;
@@ -52,10 +54,13 @@ use App\Http\Controllers\Module\WorkAbsenceNotification\DashboardController as W
 use App\Http\Controllers\Module\WorkAbsenceNotification\NotificationController as WorkAbsenceNotificationController;
 use App\Http\Controllers\PublicForms\CorrespondenceDepartmentReplyController;
 use App\Http\Controllers\PublicForms\DataRequestDepartmentReplyController;
+use App\Http\Controllers\PublicForms\GovAccountNoticePublicController;
 use App\Http\Controllers\PublicForms\GovernmentCircularFormalController;
 use App\Http\Controllers\PublicForms\InspectionVisitDepartmentReplyController;
 use App\Http\Controllers\PublicForms\MedicalAppointmentPublicController;
 use App\Http\Controllers\PublicForms\OutgoingLetterReviseController;
+use App\Services\Auth\LoginService;
+use App\Services\Auth\OtpService;
 use App\Support\CorporateCommunications\CorporateCommunicationPermissions;
 use App\Support\EmployeeLeave\EmployeeLeavePermissions;
 use App\Support\Training\TrainingPermissions;
@@ -65,6 +70,10 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/lang/ar', [LocaleController::class, 'arabic'])->name('lang.ar');
 Route::get('/lang/en', [LocaleController::class, 'english'])->name('lang.en');
+
+Route::get('/gov-account-notices/view/{token}', [GovAccountNoticePublicController::class, 'show'])
+    ->where('token', '[A-Fa-f0-9]{64}')
+    ->name('public.gov-account-notices.view');
 
 Route::prefix('public')->name('public.')->group(function () {
     Route::get('/government-circulars/formal/{token}', [GovernmentCircularFormalController::class, 'show'])
@@ -111,15 +120,19 @@ Route::prefix('public')->name('public.')->group(function () {
 require __DIR__.'/legacy-office.php';
 require __DIR__.'/emergency-reception.php';
 require __DIR__.'/legacy-workflows.php';
+require __DIR__.'/legacy-sidebar.php';
+require __DIR__.'/admission-inpatient.php';
+require __DIR__.'/licenses.php';
+require __DIR__.'/gov-accounts.php';
 
 Route::get('/portal', function () {
     return view('portal');
 })->name('portal');
 
 Route::get('/', function () {
-    if (app(\App\Services\Auth\LoginService::class)->isAuthenticated()) {
+    if (app(LoginService::class)->isAuthenticated()) {
         return redirect()->to(
-            app(\App\Services\Auth\OtpService::class)->dashboardRouteForLevel((int) session('hr_user_level'))
+            app(OtpService::class)->dashboardRouteForLevel((int) session('hr_user_level'))
         );
     }
 
@@ -176,8 +189,8 @@ Route::middleware('auth.session')->group(function () {
     Route::get('/transferal_pdf.php', function (Request $request) {
         return app(TransferalController::class)->pdf($request->integer('id'));
     })->name('legacy.transferal-pdf');
-    Route::get('/admission_calculator.php', fn () => redirect()->route('modules.admission-calculator.index', 'standard'))->name('legacy.admission-calculator');
-    Route::get('/manual_admission_calculator.php', fn () => redirect()->route('modules.admission-calculator.index', 'manual'))->name('legacy.manual-admission-calculator');
+    Route::get('/admission_calculator.php', fn () => redirect()->route('modules.admission-inpatient.calculator.index', 'standard'))->name('legacy.admission-calculator');
+    Route::get('/manual_admission_calculator.php', fn () => redirect()->route('modules.admission-inpatient.calculator.index', 'manual'))->name('legacy.manual-admission-calculator');
     Route::get('/Pulse_status.php', fn () => redirect()->route('modules.medical-referrals.index', 'pulse-status'))->name('legacy.pulse-status');
     Route::get('/bed_reservation.php', fn () => redirect()->route('modules.medical-referrals.index', 'bed-reservation'))->name('legacy.bed-reservation');
     Route::get('/accept_referral.php', fn () => redirect()->route('modules.medical-referrals.index', 'accept-referral'))->name('legacy.accept-referral');
@@ -205,11 +218,15 @@ Route::middleware('auth.session')->group(function () {
     Route::get('/companies_groups.php', fn () => redirect()->route('modules.system-admin.reference.index', 'companies'))->name('legacy.companies')->middleware('admin');
     Route::get('/adm_reg_branch.php', fn () => redirect()->route('modules.system-admin.reference.index', 'branches'))->name('legacy.branches')->middleware('admin');
     Route::get('/branches_departments.php', fn () => redirect()->route('modules.system-admin.reference.index', 'departments'))->name('legacy.departments')->middleware('admin');
+    Route::get('/notice_type.php', fn () => redirect()->route('modules.system-admin.reference.index', 'notice-types'))->name('legacy.notice-types')->middleware('admin');
     Route::get('/branches_needs.php', fn () => redirect()->route('modules.system-admin.reference.index', 'needs'))->name('legacy.needs')->middleware('admin');
-    Route::get('/lawsuit.php', fn () => redirect()->route('modules.legal-claims.index'))->name('legacy.lawsuit')->middleware('admin');
+    Route::get('/lawsuit.php', fn () => redirect()->route('modules.legal-claims.index'))->name('legacy.lawsuit');
     Route::get('/lawsuit_pdf.php', function (Request $request) {
         return app(LegalClaimController::class)->pdf($request->integer('id'));
-    })->name('legacy.lawsuit-pdf')->middleware('admin');
+    })->name('legacy.lawsuit-pdf');
+    Route::get('/lawsuit_claim_sheets_pdf.php', function (Request $request) {
+        return app(LegalClaimController::class)->claimSheetPdf($request->integer('id'));
+    })->name('legacy.lawsuit-claim-sheet-pdf');
     Route::get('/complaints.php', fn () => redirect()->route('modules.complaints.index'))
         ->name('legacy.complaints')
         ->middleware('permission:complaints');
@@ -256,6 +273,10 @@ Route::middleware('auth.session')->group(function () {
     Route::get('/rep_1.php', fn () => redirect()->route('modules.emergency-reports.index'))
         ->name('legacy.emergency-report')
         ->middleware('admin');
+    Route::get('/rep_2.php', fn (Request $request) => redirect()->route('modules.department-reports.index', ['department' => 'collection'] + $request->query()))
+        ->name('legacy.collection-report');
+    Route::get('/rep_3.php', fn (Request $request) => redirect()->route('modules.department-reports.index', ['department' => 'legal'] + $request->query()))
+        ->name('legacy.legal-report');
     Route::get('/emergency_follow_up.php', fn () => redirect()->route('modules.emergency-follow-up.index'))
         ->name('legacy.emergency-follow-up');
     Route::get('/emergency_follow_up_notice_record.php', function (Request $request) {
@@ -297,6 +318,14 @@ Route::middleware('auth.session')->group(function () {
             Route::get('/{section}/{entry}/attachment', [EmergencyPerformanceReportController::class, 'attachment'])
                 ->name('attachment')->whereNumber('entry');
         });
+        Route::prefix('department-reports')->name('department-reports.')->group(function () {
+            Route::get('/{department}', [DepartmentPerformanceReportController::class, 'index'])
+                ->name('index')->whereIn('department', ['collection', 'legal']);
+            Route::get('/{department}/pdf', [DepartmentPerformanceReportController::class, 'pdf'])
+                ->name('pdf')->whereIn('department', ['collection', 'legal']);
+            Route::get('/{department}/{section}/{entry}/attachment', [DepartmentPerformanceReportController::class, 'attachment'])
+                ->name('attachment')->whereIn('department', ['collection', 'legal'])->whereNumber('entry');
+        });
         Route::prefix('emergency-follow-up')->name('emergency-follow-up.')->group(function () {
             Route::get('/', [EmergencyFollowUpController::class, 'index'])->name('index');
             Route::get('/create', [EmergencyFollowUpController::class, 'create'])->name('create');
@@ -325,6 +354,9 @@ Route::middleware('auth.session')->group(function () {
             Route::get('/{type}/create', [AdmissionCalculatorController::class, 'create'])->name('create')->whereIn('type', ['standard', 'manual']);
             Route::post('/{type}', [AdmissionCalculatorController::class, 'store'])->name('store')->whereIn('type', ['standard', 'manual']);
             Route::get('/{type}/{id}/pdf', [AdmissionCalculatorController::class, 'pdf'])->name('pdf')->whereIn('type', ['standard', 'manual'])->whereNumber('id');
+            Route::get('/{type}/{id}/edit', [AdmissionCalculatorController::class, 'edit'])->name('edit')->whereIn('type', ['standard', 'manual'])->whereNumber('id');
+            Route::put('/{type}/{id}', [AdmissionCalculatorController::class, 'update'])->name('update')->whereIn('type', ['standard', 'manual'])->whereNumber('id');
+            Route::post('/{type}/{id}/sms', [AdmissionCalculatorController::class, 'sms'])->name('sms')->whereIn('type', ['standard', 'manual'])->whereNumber('id');
             Route::get('/{type}/{id}', [AdmissionCalculatorController::class, 'show'])->name('show')->whereIn('type', ['standard', 'manual'])->whereNumber('id');
             Route::delete('/{type}/{id}', [AdmissionCalculatorController::class, 'destroy'])->name('destroy')->whereIn('type', ['standard', 'manual'])->whereNumber('id');
         });
@@ -344,10 +376,12 @@ Route::middleware('auth.session')->group(function () {
             Route::post('/{type}/{id}/{stage}', [EmployeeRequestController::class, 'reply'])->name('reply')->whereIn('type', ['permission', 'duty', 'resignation'])->whereIn('stage', ['branch', 'hr'])->whereNumber('id');
             Route::get('/{type}/{id}', [EmployeeRequestController::class, 'show'])->name('show')->whereIn('type', ['permission', 'duty', 'resignation'])->whereNumber('id');
         });
-        Route::prefix('legal-claims')->name('legal-claims.')->middleware('admin')->group(function () {
+        Route::prefix('legal-claims')->name('legal-claims.')->group(function () {
             Route::get('/', [LegalClaimController::class, 'index'])->name('index');
             Route::get('/create', [LegalClaimController::class, 'create'])->name('create');
+            Route::get('/payment-guarantee', [LegalClaimController::class, 'guarantee'])->name('payment-guarantee');
             Route::post('/', [LegalClaimController::class, 'store'])->name('store');
+            Route::get('/{claim}/claim-sheet-pdf', [LegalClaimController::class, 'claimSheetPdf'])->name('claim-sheet-pdf')->whereNumber('claim');
             Route::get('/{claim}/pdf', [LegalClaimController::class, 'pdf'])->name('pdf')->whereNumber('claim');
             Route::get('/{claim}/download/{kind}/{child?}', [LegalClaimController::class, 'download'])->name('download')->whereNumber('claim')->whereNumber('child');
             Route::post('/{claim}/actions', [LegalClaimController::class, 'action'])->name('actions.store')->whereNumber('claim');
@@ -370,6 +404,9 @@ Route::middleware('auth.session')->group(function () {
         Route::prefix('system-administration')->name('system-admin.')->middleware('admin')->group(function () {
             Route::get('/', [SystemAdministrationDashboardController::class, 'index'])->name('dashboard');
             Route::get('/packages', [SystemAdministrationServicePackageController::class, 'index'])->name('packages.index');
+            Route::get('/packages/create', [SystemAdministrationServicePackageController::class, 'create'])->name('packages.create');
+            Route::post('/packages', [SystemAdministrationServicePackageController::class, 'store'])->name('packages.store');
+            Route::post('/packages/import', [SystemAdministrationServicePackageController::class, 'import'])->name('packages.import');
             Route::get('/packages/{package}/edit', [SystemAdministrationServicePackageController::class, 'edit'])
                 ->name('packages.edit')
                 ->whereNumber('package');
@@ -382,10 +419,21 @@ Route::middleware('auth.session')->group(function () {
             Route::delete('/packages/{package}', [SystemAdministrationServicePackageController::class, 'destroy'])
                 ->name('packages.destroy')
                 ->whereNumber('package');
+            Route::post('/packages/{package}/attachments', [SystemAdministrationServicePackageController::class, 'attachment'])
+                ->name('packages.attachments.store')
+                ->whereNumber('package');
+            Route::get('/packages/{package}/attachments/{attachment}', [SystemAdministrationServicePackageController::class, 'downloadAttachment'])
+                ->name('packages.attachments.download')
+                ->whereNumber(['package', 'attachment']);
+            Route::delete('/packages/{package}/attachments/{attachment}', [SystemAdministrationServicePackageController::class, 'destroyAttachment'])
+                ->name('packages.attachments.destroy')
+                ->whereNumber(['package', 'attachment']);
             Route::prefix('reference')->name('reference.')->group(function () {
-                Route::get('/{type}', [ReferenceAdminController::class, 'index'])->name('index')->whereIn('type', ['groups', 'job-titles', 'governmental-services', 'companies', 'branches', 'departments', 'needs', 'service-types', 'work-areas', 'inquiries', 'complaint-closing-reasons', 'complaint-letter-receivers', 'complaint-statuses', 'post-types', 'medical-terminology', 'service-codes']);
-                Route::get('/{type}/create', [ReferenceAdminController::class, 'create'])->name('create')->whereIn('type', ['groups', 'job-titles', 'governmental-services', 'companies', 'branches', 'departments', 'needs', 'service-types', 'work-areas', 'inquiries', 'complaint-closing-reasons', 'complaint-letter-receivers', 'complaint-statuses', 'post-types', 'medical-terminology', 'service-codes']);
-                Route::post('/{type}', [ReferenceAdminController::class, 'store'])->name('store')->whereIn('type', ['groups', 'job-titles', 'governmental-services', 'companies', 'branches', 'departments', 'needs', 'service-types', 'work-areas', 'inquiries', 'complaint-closing-reasons', 'complaint-letter-receivers', 'complaint-statuses', 'post-types', 'medical-terminology', 'service-codes']);
+                Route::get('/groups/{group}/permissions', [ReferenceAdminController::class, 'groupPermissions'])->name('group-permissions')->whereNumber('group');
+                Route::put('/groups/{group}/permissions', [ReferenceAdminController::class, 'updateGroupPermissions'])->name('group-permissions.update')->whereNumber('group');
+                Route::get('/{type}', [ReferenceAdminController::class, 'index'])->name('index')->whereIn('type', ['groups', 'job-titles', 'governmental-services', 'companies', 'branches', 'departments', 'notice-types', 'needs', 'service-types', 'work-areas', 'inquiries', 'complaint-closing-reasons', 'complaint-letter-receivers', 'complaint-statuses', 'post-types', 'medical-terminology', 'service-codes']);
+                Route::get('/{type}/create', [ReferenceAdminController::class, 'create'])->name('create')->whereIn('type', ['groups', 'job-titles', 'governmental-services', 'companies', 'branches', 'departments', 'notice-types', 'needs', 'service-types', 'work-areas', 'inquiries', 'complaint-closing-reasons', 'complaint-letter-receivers', 'complaint-statuses', 'post-types', 'medical-terminology', 'service-codes']);
+                Route::post('/{type}', [ReferenceAdminController::class, 'store'])->name('store')->whereIn('type', ['groups', 'job-titles', 'governmental-services', 'companies', 'branches', 'departments', 'notice-types', 'needs', 'service-types', 'work-areas', 'inquiries', 'complaint-closing-reasons', 'complaint-letter-receivers', 'complaint-statuses', 'post-types', 'medical-terminology', 'service-codes']);
                 Route::get('/{type}/{reference}/edit', [ReferenceAdminController::class, 'edit'])->name('edit')->whereNumber('reference');
                 Route::put('/{type}/{reference}', [ReferenceAdminController::class, 'update'])->name('update')->whereNumber('reference');
                 Route::patch('/{type}/{reference}/publish', [ReferenceAdminController::class, 'publish'])->name('publish')->whereNumber('reference');
@@ -399,6 +447,9 @@ Route::middleware('auth.session')->group(function () {
             Route::get('/{user}', [UserPermissionController::class, 'show'])->name('show')->whereNumber('user');
             Route::get('/{user}/edit', [UserPermissionController::class, 'edit'])->name('edit')->whereNumber('user');
             Route::put('/{user}', [UserPermissionController::class, 'update'])->name('update')->whereNumber('user');
+            Route::get('/{user}/permissions', [UserPermissionController::class, 'editPermissions'])->name('permissions.edit')->whereNumber('user');
+            Route::put('/{user}/permissions', [UserPermissionController::class, 'updatePermissions'])->name('permissions.update')->whereNumber('user');
+            Route::get('/{user}/permissions/history', [UserPermissionController::class, 'permissionHistory'])->name('permissions.history')->whereNumber('user');
         });
         Route::prefix('doctors-directory-admin')->name('doctors-admin.')->middleware('admin')->group(function () {
             Route::get('/', [DoctorsDirectoryAdminDashboardController::class, 'index'])->name('dashboard');
@@ -465,6 +516,11 @@ Route::middleware('auth.session')->group(function () {
         });
         Route::get('/clinics', fn () => redirect()->route('modules.service-locations.index'))
             ->name('clinics');
+        Route::prefix('clinics-directory')->name('clinics-directory.')->group(function () {
+            Route::get('/', [ClinicsDirectoryController::class, 'index'])->name('index');
+            Route::patch('/{doctor}/publish', [ClinicsDirectoryController::class, 'toggle'])->name('toggle')->whereNumber('doctor');
+            Route::delete('/{doctor}', [ClinicsDirectoryController::class, 'destroy'])->name('destroy')->whereNumber('doctor');
+        });
         Route::get('/hospital-services', [HospitalServicesDashboardController::class, 'index'])
             ->name('hospital-services');
         Route::prefix('hospital-services')->name('services.')->group(function () {
@@ -586,6 +642,15 @@ Route::middleware('auth.session')->group(function () {
                 Route::get('/{visit}/notices/{submission}/download', [GovernmentInspectionVisitController::class, 'downloadNotice'])
                     ->name('notices.download')
                     ->whereNumber(['visit', 'submission']);
+                Route::get('/{visit}/findings/{finding}/download', [GovernmentInspectionVisitController::class, 'downloadFindingFile'])
+                    ->name('findings.download')
+                    ->whereNumber(['visit', 'finding']);
+                Route::get('/{visit}/returned/{returned}/download', [GovernmentInspectionVisitController::class, 'downloadReturnedFile'])
+                    ->name('returned.download')
+                    ->whereNumber(['visit', 'returned']);
+                Route::get('/{visit}/pdf', [GovernmentInspectionVisitController::class, 'pdf'])
+                    ->name('pdf')
+                    ->whereNumber('visit');
                 Route::get('/{visit}/receipt', [GovernmentInspectionVisitController::class, 'receipt'])
                     ->name('receipt')
                     ->whereNumber('visit');

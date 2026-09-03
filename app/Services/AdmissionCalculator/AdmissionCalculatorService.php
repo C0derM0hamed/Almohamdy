@@ -65,7 +65,7 @@ class AdmissionCalculatorService
     public function find(string $type, int $id): ?object
     {
         $this->authorizeBranch();
-        return DB::table($this->table($type).' as c')->leftJoin('admission_rooms as room', 'room.id', '=', 'c.room')->leftJoin('admission_nationality as nationality', 'nationality.id', '=', 'c.nationality')->where('c.id', $id)->where('c.branch_id', self::BRANCH_ID)->where('c.companies_groups_id', $this->companyId())->select('c.*', 'room.name_ar as room_name_ar', 'room.price as room_price_lookup', 'nationality.name_ar as nationality_name_ar')->first();
+        return DB::table($this->table($type).' as c')->leftJoin('admission_rooms as room', 'room.id', '=', 'c.room')->leftJoin('admission_nationality as nationality', 'nationality.id', '=', 'c.nationality')->where('c.id', $id)->where('c.branch_id', self::BRANCH_ID)->where('c.companies_groups_id', $this->companyId())->select('c.*', 'room.name_ar as room_name_ar', 'room.name_en as room_name_en', 'room.price as room_price_lookup', 'nationality.name_ar as nationality_name_ar', 'nationality.name_en as nationality_name_en')->first();
     }
 
     public function delete(string $type, int $id): void

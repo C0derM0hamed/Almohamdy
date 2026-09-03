@@ -5,7 +5,10 @@
     --hm-primary-soft: #eef1ff;
     --hm-body-bg: #f5f6fa;
     --hm-sidebar-width: 19rem;
-    --hm-content-pad-x: clamp(0.65rem, 1vw, 1rem);
+    /* Bootstrap rows use a 1rem negative gutter. Keep the shell gutter in
+       sync so responsive pages do not acquire a fractional horizontal
+       scrollbar at desktop widths. */
+    --hm-content-pad-x: 1rem;
     --hm-content-pad-y: 1rem;
 }
 
@@ -854,11 +857,21 @@ html[dir="rtl"] .hm-hope-lang {
     margin-inline-start: auto;
     display: inline-flex;
     align-items: center;
-    transition: transform 0.2s ease;
+    -webkit-transform: none !important;
+    -ms-transform: none !important;
+    transform: none !important;
 }
 
-.sidebar .nav-link[aria-expanded="true"] .right-icon {
-    transform: rotate(180deg);
+.sidebar .nav-link .right-icon .hm-sidebar-chevron-open {
+    display: none;
+}
+
+.sidebar .nav-link[aria-expanded="true"] .right-icon .hm-sidebar-chevron-closed {
+    display: none;
+}
+
+.sidebar .nav-link[aria-expanded="true"] .right-icon .hm-sidebar-chevron-open {
+    display: inline-block;
 }
 
 .sidebar .sub-nav {
@@ -944,6 +957,6 @@ body.hm-sidebar-collapsed .sidebar .sub-nav {
 
 @media (max-width: 767.98px) {
     :root {
-        --hm-content-pad-x: 0.5rem;
+        --hm-content-pad-x: 1rem;
     }
 }

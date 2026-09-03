@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Storage;
 
 class ServicePackageAttachment extends Model
 {
@@ -22,6 +23,10 @@ class ServicePackageAttachment extends Model
 
     public function url(): string
     {
+        if (Storage::disk('public')->exists((string) $this->file_name)) {
+            return Storage::disk('public')->url((string) $this->file_name);
+        }
+
         $base = trim((string) config('hm.hospital_services.attachments_path', '/files'), '/');
 
         return asset($base.'/'.ltrim((string) $this->file_name, '/'));

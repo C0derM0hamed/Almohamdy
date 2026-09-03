@@ -314,7 +314,14 @@ class MedicalAppointmentService
 
     private function scopedQuery(): Builder
     {
-        return MedicalAppointment::query()
+        $query = MedicalAppointment::query();
+
+        // حساب مدير النظام العام مخصص لمراجعة وإدارة سجلات كل الفروع والشركات.
+        if ((int) session('hr_user_level', 0) === 3) {
+            return $query;
+        }
+
+        return $query
             ->where('branch_id', $this->branchId())
             ->where('companies_groups_id', $this->companyId());
     }

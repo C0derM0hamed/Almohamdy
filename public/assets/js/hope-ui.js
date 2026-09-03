@@ -274,7 +274,7 @@ if (typeof AOS !== typeof undefined) {
 const resizePlugins = () => {
   // sidebar-mini
   const tabs = document.querySelectorAll('.nav')
-  const sidebarResponsive = document.querySelector('.sidebar-default')
+  const sidebarResponsive = document.querySelector('.sidebar-default:not([data-hm-sidebar-owned])')
   if (window.innerWidth < 1025) {
     Array.from(tabs, (elem) => {
       if (!elem.classList.contains('flex-column') && elem.classList.contains('nav-tabs') && elem.classList.contains('nav-pills')) {
@@ -326,7 +326,7 @@ const sidebarToggle = (elem) => {
 }
 
 const sidebarToggleBtn = document.querySelectorAll('[data-toggle="sidebar"]')
-const sidebar = document.querySelector('.sidebar-default')
+const sidebar = document.querySelector('.sidebar-default:not([data-hm-sidebar-owned])')
 if (sidebar !== null) {
   const sidebarActiveItem = sidebar.querySelectorAll('.active')
   Array.from(sidebarActiveItem, (elem) => {

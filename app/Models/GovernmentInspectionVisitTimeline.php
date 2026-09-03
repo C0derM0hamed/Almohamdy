@@ -31,7 +31,7 @@ class GovernmentInspectionVisitTimeline extends Model
         return $this->belongsTo(GovernmentInspectionVisit::class, 'government_inspection_visits_id');
     }
 
-    public function status(): BelongsTo
+    public function statusRelation(): BelongsTo
     {
         return $this->belongsTo(GovernmentInspectionStatus::class, 'status_id');
     }

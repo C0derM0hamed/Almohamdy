@@ -1,43 +1,44 @@
 @extends('layouts.app')
 
 @php
-    $specialityIconSvg = \App\Support\DoctorsDirectory\SpecialityIcon::svgFor($speciality);
-    $isRtl = app()->getLocale() === 'ar';
+    $departmentName = app()->getLocale() === 'ar'
+        ? preg_replace('/^\s*عيادات\s+/u', '', $speciality->localizedName())
+        : $speciality->localizedName();
 @endphp
 
 @section('title', $speciality->localizedName())
 
 @section('sidebar_heading', $speciality->localizedName())
 @section('sidebar_subheading', __('doctors_directory.speciality_overview_subtitle'))
+@section('figma_page_header', true)
 
-@push('styles')
+@push('workflow_styles')
     <link href="{{ asset('css/hm-doctors-redesign.css') }}?v={{ filemtime(public_path('css/hm-doctors-redesign.css')) }}" rel="stylesheet">
 @endpush
 
 @section('content')
-    <div class="hm-dd hm-dd--overview">
-        @include('doctors-directory.partials.dd-breadcrumb', [
-            'variant' => 'bar',
-            'items' => [
+    <div class="hm-fm hm-dd hm-dd--overview hm-dd--speciality-figma">
+        @include('layouts.partials.figma-module-header', [
+            'crumbs' => [
+                ['label' => __('dashboard.modules')],
                 ['label' => __('doctors_directory.title'), 'url' => route('modules.doctors.specialities.index')],
-                ['label' => $speciality->localizedName(), 'chip' => true],
+                ['label' => $speciality->localizedName()],
             ],
+            'title' => $speciality->localizedName(),
+            'subtitle' => '',
+            'heroIconSrc' => asset('images/figma/doctors/speciality-hero.svg'),
+            'heroIconSize' => 32,
         ])
 
         <section class="dd-panel dd-specialty">
-            <div class="dd-title-line">
-                <span class="dd-title-icon" aria-hidden="true">
-                    <svg viewBox="0 0 24 24">{!! $specialityIconSvg !!}</svg>
-                </span>
-                <h2>{{ $speciality->localizedName() }}</h2>
-            </div>
-
             @if ($overviewContent->intro)
                 <div class="dd-description-card" dir="rtl">
+                    <h2>{{ __('doctors_directory.department_named', ['name' => $departmentName]) }}</h2>
                     <p>{{ $overviewContent->intro }}</p>
                 </div>
             @elseif (! $overviewContent->hasContent())
                 <div class="dd-description-card" dir="rtl">
+                    <h2>{{ __('doctors_directory.department_named', ['name' => $departmentName]) }}</h2>
                     <p>{{ __('doctors_directory.no_speciality_description') }}</p>
                 </div>
             @endif
@@ -54,6 +55,9 @@
                     @foreach ($overviewContent->units as $unit)
                         <div class="dd-unit-row">
                             <span class="dd-unit-no">{{ $unit->number }}</span>
+                            <span class="dd-unit-icon" aria-hidden="true">
+                                <svg viewBox="0 0 24 24">{!! \App\Support\DoctorsDirectory\SpecialityIcon::svgForText($unit->text) !!}</svg>
+                            </span>
                             <span>{{ $unit->text }}</span>
                         </div>
                     @endforeach
@@ -72,21 +76,17 @@
                                 <span class="dd-branch-photo" style="background-image:url('{{ $hospital->imageUrl }}');"></span>
                             @else
                                 <span class="dd-branch-photo dd-branch-photo--placeholder" aria-hidden="true">
-                                    <svg viewBox="0 0 24 24"><path d="M4 21V5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v16"/><path d="M9 21v-6h6v6M8 7h.01M12 7h.01M16 7h.01M8 11h.01M12 11h.01M16 11h.01"/></svg>
+                                    <img src="{{ asset('images/figma/locations/card-building.svg') }}" alt="" width="54" height="54">
                                 </span>
                             @endif
                             <span class="dd-branch-info">
                                 <span class="dd-branch-name">{{ $hospital->title }}</span>
                                 <span class="dd-doctor-count">
-                                    <svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                                    <img src="{{ asset('images/figma/doctors/branch-doctors.svg') }}" alt="" width="18" height="18">
                                     <strong>{{ $hospital->doctorCount }}</strong> {{ __('doctors_directory.doctor_count') }}
                                 </span>
                                 <span class="dd-arrow" aria-hidden="true">
-                                    @if ($isRtl)
-                                        <svg viewBox="0 0 24 24"><path d="M19 12H5M11 5l-7 7 7 7"/></svg>
-                                    @else
-                                        <svg viewBox="0 0 24 24"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
-                                    @endif
+                                    <img src="{{ asset('images/figma/doctors/branch-arrow.svg') }}" alt="" width="18" height="18">
                                 </span>
                             </span>
                         </a>

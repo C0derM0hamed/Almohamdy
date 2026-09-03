@@ -3,9 +3,14 @@
 return [
 
     'title' => 'Services',
-    'dashboard' => 'Services Dashboard',
+    'dashboard' => 'All services',
     'dashboard_subtitle' => 'Browse hospital services, bookings, forms, and company agreements.',
     'dashboard_search_placeholder' => 'Search service...',
+    'search_title' => 'Search',
+    'all_services' => 'All services',
+    'view_services' => 'View services',
+    'filters_subtitle' => 'Set search criteria to find the required service',
+    'section_services' => ':section services',
     'section_default_description' => 'Browse and manage hospital services in this section.',
     'section_page_subtitle' => 'Browse and manage services and packages in this section.',
 
@@ -58,11 +63,13 @@ return [
     'search_placeholder' => 'Search by code or name…',
     'code_search_placeholder' => 'Search by service code...',
     'section_search_placeholder' => 'Search sections…',
-    'filters_title' => 'Search & filter',
+    'filters_title' => 'Search and filter',
+    'results_summary' => 'Showing :shown of :total',
     'view_details' => 'View details',
     'close' => 'Close',
     'currency' => 'SAR',
     'services_count' => ':count services',
+    'partnerships_count' => ':count partnerships',
 
     'fields' => [
         'section' => 'Service',

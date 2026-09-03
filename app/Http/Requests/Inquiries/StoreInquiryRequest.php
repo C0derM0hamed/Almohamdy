@@ -4,6 +4,7 @@ namespace App\Http\Requests\Inquiries;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Schema;
 
 class StoreInquiryRequest extends FormRequest
 {
@@ -29,8 +30,12 @@ class StoreInquiryRequest extends FormRequest
 
         return [
             'enquirer' => ['required', 'string', 'max:100'],
-            'mobile' => ['required', 'regex:/^[0-9]{10}$/'],
-            'inquired_section' => ['required', 'integer', Rule::exists('branches', 'id')->where('publish', 1)],
+            'mobile' => ['required', 'regex:/^05[0-9]{8}$/'],
+            'inquired_section' => ['required', 'integer', Rule::exists('branches', 'id')->where(function ($query): void {
+                if (Schema::hasColumn('branches', 'publish')) {
+                    $query->where('publish', 1);
+                }
+            })],
             'job_title' => [
                 'required',
                 'integer',

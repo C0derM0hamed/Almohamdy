@@ -324,3 +324,232 @@ html[dir="rtl"] .hm-clinician-popup-card__footer {
         width: 100%;
     }
 }
+
+/* Logout confirmation — same overlay language as the application dialogs. */
+body.hm-logout-confirm-open {
+    overflow: hidden;
+}
+
+.hm-logout-confirm {
+    position: fixed;
+    inset: 0;
+    z-index: 12050;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.22s ease;
+}
+
+.hm-logout-confirm[hidden] {
+    display: none;
+}
+
+.hm-logout-confirm.is-visible {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.hm-logout-confirm__backdrop {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    border: 0;
+    background: var(--hm-overlay-bg);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    cursor: default;
+}
+
+.hm-logout-confirm__center {
+    position: relative;
+    z-index: 1;
+    width: min(100%, 27rem);
+}
+
+.hm-logout-confirm__card {
+    overflow: hidden;
+    border: 1px solid rgba(226, 232, 240, 0.95);
+    border-radius: 20px;
+    background: #fff;
+    box-shadow: 0 28px 64px -16px rgba(7, 27, 61, 0.32), 0 0 0 1px rgba(255, 255, 255, 0.08) inset;
+    transform: translateY(14px) scale(0.98);
+    transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.hm-logout-confirm.is-visible .hm-logout-confirm__card {
+    transform: translateY(0) scale(1);
+}
+
+.hm-logout-confirm__accent {
+    height: 4px;
+    background: linear-gradient(90deg, #3a57e8 0%, #6d5dfc 55%, #1aa053 100%);
+}
+
+.hm-logout-confirm__header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1.25rem 1.35rem 1rem;
+    border-bottom: 1px solid #eef2f7;
+    background: linear-gradient(180deg, #fff 0%, #fafbfd 100%);
+}
+
+.hm-logout-confirm__heading {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.8rem;
+    min-width: 0;
+}
+
+.hm-logout-confirm__icon {
+    display: inline-grid;
+    place-items: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    flex-shrink: 0;
+    border-radius: 13px;
+    background: linear-gradient(135deg, #eef1ff 0%, #f5f7ff 100%);
+    color: #3a57e8;
+    font-size: 1.2rem;
+    box-shadow: inset 0 0 0 1px rgba(58, 87, 232, 0.12);
+}
+
+.hm-logout-confirm__header h2 {
+    margin: 0;
+    color: #232d42;
+    font-size: 1.05rem;
+    font-weight: 800;
+    line-height: 1.45;
+}
+
+.hm-logout-confirm__header p {
+    margin: 0.3rem 0 0;
+    color: #6b7280;
+    font-size: 0.78rem;
+    line-height: 1.5;
+}
+
+.hm-logout-confirm__close {
+    display: inline-grid;
+    place-items: center;
+    width: 2rem;
+    height: 2rem;
+    flex-shrink: 0;
+    padding: 0;
+    border: 1px solid #e2e8f0;
+    border-radius: 9px;
+    background: #fff;
+    color: #64748b;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.hm-logout-confirm__close:hover,
+.hm-logout-confirm__close:focus-visible {
+    border-color: #cbd5e1;
+    background: #f8fafc;
+    color: #3a57e8;
+    outline: none;
+}
+
+.hm-logout-confirm__body {
+    padding: 1.2rem 1.35rem 1.1rem;
+    background: #fff;
+}
+
+.hm-logout-confirm__body p {
+    margin: 0;
+    color: #4b5563;
+    font-size: 0.9rem;
+    line-height: 1.8;
+}
+
+.hm-logout-confirm__actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 0.65rem;
+    padding: 0.9rem 1.35rem 1.1rem;
+    border-top: 1px solid #eef2f7;
+    background: #fafbfd;
+}
+
+.hm-logout-confirm__button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    min-width: 6.75rem;
+    min-height: 2.5rem;
+    padding: 0.5rem 1rem;
+    border-radius: 9px;
+    font: inherit;
+    font-size: 0.84rem;
+    font-weight: 700;
+    line-height: 1.3;
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease, border-color 0.15s ease;
+}
+
+.hm-logout-confirm__button:hover {
+    transform: translateY(-1px);
+}
+
+.hm-logout-confirm__button--cancel {
+    border: 1px solid #dbe2eb;
+    background: #fff;
+    color: #536174;
+}
+
+.hm-logout-confirm__button--cancel:hover,
+.hm-logout-confirm__button--cancel:focus-visible {
+    border-color: #b9c5d4;
+    background: #f8fafc;
+    outline: none;
+}
+
+.hm-logout-confirm__button--submit {
+    border: 1px solid #3a57e8;
+    background: #3a57e8;
+    color: #fff;
+    box-shadow: 0 6px 14px rgba(58, 87, 232, 0.2);
+}
+
+.hm-logout-confirm__button--submit:hover,
+.hm-logout-confirm__button--submit:focus-visible {
+    border-color: #2f49cb;
+    background: #2f49cb;
+    outline: none;
+}
+
+.hm-logout-confirm__button--submit:disabled {
+    cursor: wait;
+    opacity: 0.7;
+    transform: none;
+}
+
+@media (max-width: 575.98px) {
+    .hm-logout-confirm {
+        padding: 0.75rem;
+    }
+
+    .hm-logout-confirm__header,
+    .hm-logout-confirm__body,
+    .hm-logout-confirm__actions {
+        padding-inline: 1rem;
+    }
+
+    .hm-logout-confirm__actions {
+        flex-wrap: wrap;
+    }
+
+    .hm-logout-confirm__button {
+        flex: 1 1 8rem;
+    }
+}

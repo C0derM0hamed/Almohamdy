@@ -3,15 +3,23 @@
 namespace App\Services\LegacyWorkflows;
 
 use App\Services\Auth\LegacyScopeService;
+use App\Services\Pdf\ArabicPdfService;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use RuntimeException;
 
 class MedicalAgreementService
 {
-    public function __construct(private readonly LegacyScopeService $legacyScopes) {}
+    public function __construct(
+        private readonly LegacyScopeService $legacyScopes,
+        private readonly YakeenClient $yakeen,
+        private readonly SadqClient $sadq,
+        private readonly ArabicPdfService $pdf,
+    ) {}
 
     public const STANDARD = 'standard';
 
@@ -122,6 +130,7 @@ class MedicalAgreementService
             abort_if($duplicateExists, 422, 'لا يمكن إنشاء طلب جديد بنفس رقم الهوية ورقم الجوال إلا بعد مرور ساعة.');
         }
 
+        $data = $this->applyYakeenResults($variant, $data);
         $record = [
             'branch_id' => $this->branchId(),
             'companies_groups_id' => $this->companyId(),
@@ -152,11 +161,18 @@ class MedicalAgreementService
 
         if ($variant === self::STANDARD) {
             $record += ['sms_tocken' => Str::random(32), 'status' => 0, 'type' => 1, 'payment_type' => 0, 'deserved_amount' => '0'];
-        } else {
-            $record += ['reference_number' => $reference, 'status' => 0, 'type' => 1, 'payment_type' => 0, 'deserved_amount' => '0'];
+            return (int) DB::table($table)->insertGetId($record);
         }
 
-        return (int) DB::table($table)->insertGetId($record);
+        $record += ['reference_number' => $reference, 'status' => 0, 'type' => 1, 'payment_type' => 0, 'deserved_amount' => '0'];
+
+        // Feature tests intentionally do not make external calls. Production always
+        // goes through the same Sadq flow as the legacy page.
+        if (app()->environment('testing')) {
+            return (int) DB::table($table)->insertGetId($record);
+        }
+
+        return $this->createSadqEnvelope($record, $data);
     }
 
     public function find(string $variant, int $id): ?object
@@ -184,6 +200,121 @@ class MedicalAgreementService
         return $record;
     }
 
+    /**
+     * Return a presentation-neutral timeline for the agreement popup.
+     * Keeping this mapping here prevents legacy database/API values from
+     * leaking into the UI and lets all agreement variants use one component.
+     *
+     * @return array<string, mixed>|null
+     */
+    public function timeline(string $variant, int $id): ?array
+    {
+        $agreement = $this->find($variant, $id);
+        if ($agreement === null) {
+            return null;
+        }
+
+        $patientName = trim((string) ($agreement->patient_name_ar ?: $agreement->patient_name_en));
+        $creatorName = trim((string) ($agreement->creator_name ?? '').' '.(string) ($agreement->creator_last_name ?? ''));
+        $events = [[
+            'title' => 'إنشاء الاتفاقية',
+            'description' => 'تم إنشاء الاتفاقية وإدخال بيانات المريض والمتعهد.',
+            'date' => (string) ($agreement->created_at ?? ''),
+            'status' => 'completed',
+            'status_label' => 'مكتمل',
+            'icon' => 'bi-file-earmark-text',
+            'meta' => array_values(array_filter([
+                $creatorName !== '' ? ['label' => 'مدخل البيانات', 'value' => $creatorName] : null,
+                trim((string) ($agreement->patient_file_number ?? '')) !== '' ? ['label' => 'رقم الملف', 'value' => (string) $agreement->patient_file_number] : null,
+            ])),
+        ]];
+
+        if ($variant === self::STANDARD) {
+            $isAuthenticated = trim((string) ($agreement->emdha_output ?? '')) !== '';
+            $events[] = [
+                'title' => $isAuthenticated ? 'اعتماد الاتفاقية' : 'بانتظار الاعتماد',
+                'description' => $isAuthenticated
+                    ? 'تم اعتماد الاتفاقية إلكترونيًا.'
+                    : 'لم يتم اعتماد الاتفاقية إلكترونيًا حتى الآن.',
+                'date' => $isAuthenticated ? (string) ($agreement->updated_at ?? $agreement->created_at ?? '') : '',
+                'status' => $isAuthenticated ? 'completed' : 'pending',
+                'status_label' => $isAuthenticated ? 'مكتمل' : 'قيد الانتظار',
+                'icon' => $isAuthenticated ? 'bi-patch-check' : 'bi-hourglass-split',
+                'meta' => [],
+            ];
+        } else {
+            foreach ($agreement->transactions as $transaction) {
+                $state = $this->timelineTransactionState($transaction->signStatus ?? null, $transaction->error_message ?? null, $transaction->RejectReason ?? null);
+                $events[] = [
+                    'title' => $state['title'],
+                    'description' => $state['description'],
+                    'date' => (string) ($transaction->created_at ?? $agreement->created_at ?? ''),
+                    'status' => $state['status'],
+                    'status_label' => $state['status_label'],
+                    'icon' => $state['icon'],
+                    'meta' => array_values(array_filter([
+                        trim((string) ($transaction->destination_mobile ?? '')) !== '' ? ['label' => 'جوال الموقّع', 'value' => (string) $transaction->destination_mobile] : null,
+                        trim((string) ($transaction->document_id ?? '')) !== '' ? ['label' => 'رقم المستند', 'value' => (string) $transaction->document_id] : null,
+                        trim((string) ($transaction->RejectReason ?? $transaction->error_message ?? '')) !== '' ? ['label' => 'ملاحظة', 'value' => (string) ($transaction->RejectReason ?? $transaction->error_message)] : null,
+                    ])),
+                ];
+            }
+        }
+
+        $current = end($events) ?: [];
+
+        return [
+            'agreement' => [
+                'id' => $id,
+                'patient_name' => $patientName !== '' ? $patientName : '—',
+                'patient_id' => (string) ($agreement->patient_idno ?? '—'),
+                'file_number' => (string) ($agreement->patient_file_number ?? '—'),
+                'reference' => (string) ($agreement->reference_number ?? '—'),
+                'created_at' => (string) ($agreement->created_at ?? ''),
+            ],
+            'status' => [
+                'key' => (string) ($current['status'] ?? 'pending'),
+                'label' => (string) ($current['status_label'] ?? 'قيد الانتظار'),
+            ],
+            'events' => $events,
+        ];
+    }
+
+    /** @return array{title:string,description:string,status:string,status_label:string,icon:string} */
+    private function timelineTransactionState(?string $signStatus, ?string $errorMessage, ?string $rejectReason): array
+    {
+        return match ($signStatus) {
+            'Completed' => [
+                'title' => 'اكتمال التوقيع الإلكتروني',
+                'description' => 'تم توقيع الاتفاقية واعتمادها إلكترونيًا.',
+                'status' => 'completed',
+                'status_label' => 'مكتمل',
+                'icon' => 'bi-patch-check',
+            ],
+            'Rejected' => [
+                'title' => 'رفض التوقيع الإلكتروني',
+                'description' => $rejectReason ?: 'تم رفض طلب التوقيع الإلكتروني.',
+                'status' => 'rejected',
+                'status_label' => 'مرفوض',
+                'icon' => 'bi-x-circle',
+            ],
+            'In-progress' => [
+                'title' => 'إرسال طلب التوقيع',
+                'description' => 'تم إرسال دعوة التوقيع الإلكتروني وبانتظار الإجراء.',
+                'status' => 'current',
+                'status_label' => 'قيد التوقيع',
+                'icon' => 'bi-send-check',
+            ],
+            default => [
+                'title' => 'تعذر إرسال طلب التوقيع',
+                'description' => $errorMessage ?: 'تعذر إنشاء دعوة التوقيع الإلكتروني.',
+                'status' => 'rejected',
+                'status_label' => 'تعذر الإرسال',
+                'icon' => 'bi-exclamation-triangle',
+            ],
+        };
+    }
+
     public function attach(string $variant, int $id, UploadedFile $file): void
     {
         abort_if($this->find($variant, $id) === null, 404);
@@ -209,6 +340,309 @@ class MedicalAgreementService
         abort_if($attachment === null, 404);
         Storage::disk('public')->delete((string) $attachment->file_name);
         DB::table('payment_guarantee_attachments')->where('id', $attachmentId)->where('payment_guarantee_id', $id)->delete();
+    }
+
+    /** @return array<string, mixed> */
+    public function refreshSadqStatus(string $variant, int $id): array
+    {
+        abort_if($variant === self::STANDARD, 404);
+        $agreement = $this->find($variant, $id);
+        abort_if($agreement === null, 404);
+        $transaction = DB::table('medical_services_agreement_sadq_transactions')
+            ->where('reference_number', $agreement->reference_number)->latest('id')->first();
+        abort_if($transaction === null, 422, 'لم تبدأ معاملة التوقيع الإلكتروني بعد.');
+
+        if (app()->environment('testing')) {
+            return ['status' => $transaction->status, 'signStatus' => $transaction->signStatus];
+        }
+
+        $this->sadq->authenticate();
+        $response = $this->sadq->getEnvelopeStatusByReference((string) $agreement->reference_number);
+        $status = $this->statusFromSadqResponse($response);
+        $this->updateTransactionStatus((string) $agreement->reference_number, $status['status'], $status['signStatus'], $status['rejectReason']);
+
+        return $status + ['response' => $response];
+    }
+
+    public function downloadSadqDocument(string $variant, int $id): ?string
+    {
+        abort_if($variant === self::STANDARD, 404);
+        $agreement = $this->find($variant, $id);
+        abort_if($agreement === null, 404);
+        $transaction = DB::table('medical_services_agreement_sadq_transactions')
+            ->where('reference_number', $agreement->reference_number)->latest('id')->first();
+        abort_if($transaction === null, 422, 'لم تبدأ معاملة التوقيع الإلكتروني بعد.');
+
+        $base64 = (string) ($transaction->pdfbase64 ?? '');
+        if ($base64 === '' && ($transaction->signStatus ?? '') === 'Completed' && !app()->environment('testing')) {
+            $this->sadq->authenticate();
+            $response = $this->sadq->downloadDocumentBase64((string) $transaction->document_id);
+            $base64 = $this->extractBase64($response);
+            if ($base64 !== '') {
+                DB::table('medical_services_agreement_sadq_transactions')
+                    ->where('id', $transaction->id)->update(['pdfbase64' => $base64, 'signStatus' => 'Completed', 'status' => 1]);
+            }
+        }
+
+        return $base64 !== '' ? base64_decode($this->normalizeBase64($base64), true) ?: null : null;
+    }
+
+    public function remindSadq(string $variant, int $id): void
+    {
+        abort_if($variant === self::STANDARD, 404);
+        $agreement = $this->find($variant, $id);
+        abort_if($agreement === null, 404);
+        $transaction = DB::table('medical_services_agreement_sadq_transactions')
+            ->where('reference_number', $agreement->reference_number)->latest('id')->first();
+        abort_if($transaction === null, 422, 'لم تبدأ معاملة التوقيع الإلكتروني بعد.');
+        abort_if(strtotime((string) $transaction->created_at) > time() - (2 * 60 * 60), 422, 'يمكن إعادة إرسال التذكير بعد مرور ساعتين من آخر دعوة.');
+
+        if (!app()->environment('testing')) {
+            $this->sadq->authenticate();
+            $response = $this->sadq->sendSignReminder((string) $transaction->document_id, (string) $transaction->destination_mobile, (string) $transaction->destination_email);
+            if ((string) ($response['errorCode'] ?? '0') !== '0') {
+                throw new RuntimeException((string) ($response['message'] ?? 'تعذر إعادة إرسال الدعوة.'));
+            }
+        }
+    }
+
+    /** @param array<string, mixed> $payload @return array<string, mixed> */
+    public function handleSadqCallback(array $payload): array
+    {
+        $reference = (string) ($payload['referencNumber'] ?? $payload['referenceNumber'] ?? $payload['ReferenceNumber'] ?? '');
+        $requestId = (string) ($payload['requestId'] ?? $payload['RequestId'] ?? '');
+        if ($reference === '' && $requestId === '') {
+            throw new RuntimeException('مرجع الاتفاقية أو رقم الطلب مطلوب في callback.');
+        }
+        $transaction = DB::table('medical_services_agreement_sadq_transactions')
+            ->when($reference !== '', fn ($q) => $q->where('reference_number', $reference))
+            ->when($reference === '' && $requestId !== '', fn ($q) => $q->where(function ($nested) use ($requestId): void {
+                $nested->where('document_id', $requestId)->orWhere('envelope_id', $requestId);
+            }))->latest('id')->first();
+
+        if ($transaction === null) {
+            throw new RuntimeException('لم يتم العثور على معاملة صادق بهذا المرجع.');
+        }
+
+        $rawStatus = $payload['status'] ?? $payload['Status'] ?? null;
+        $status = $this->mapSadqStatus($rawStatus);
+        $signatory = $payload['signatory'] ?? $payload['Signatory'] ?? [];
+        $rejectReason = null;
+        $authenticationType = null;
+        foreach (is_array($signatory) ? $signatory : [] as $item) {
+            if (in_array(strtoupper((string) ($item['Status'] ?? $item['status'] ?? '')), ['REJECTED', '2'], true)) {
+                $rejectReason = $item['RejectReason'] ?? $item['rejectReason'] ?? null;
+                $authenticationType = $item['AuthenticationType'] ?? $item['authenticationType'] ?? null;
+                break;
+            }
+        }
+
+        $updates = [
+            'status' => $status['status'],
+            'signStatus' => $status['signStatus'],
+            'RejectReason' => $rejectReason,
+        ];
+        if ($authenticationType !== null) {
+            $updates['AuthenticationType'] = $authenticationType;
+        }
+        $files = $payload['files'] ?? $payload['Files'] ?? [];
+        foreach (is_array($files) ? $files : [] as $file) {
+            $fileBase64 = is_array($file) ? ($file['file'] ?? $file['File'] ?? '') : '';
+            if (is_string($fileBase64) && $fileBase64 !== '') {
+                $updates['pdfbase64'] = $this->normalizeBase64($fileBase64);
+                break;
+            }
+        }
+        DB::table('medical_services_agreement_sadq_transactions')->where('id', $transaction->id)->update($updates);
+
+        return ['referenceNumber' => $transaction->reference_number, 'status' => $status['status'], 'signStatus' => $status['signStatus']];
+    }
+
+    /** @param array<string, mixed> $record @param array<string, mixed> $data */
+    private function createSadqEnvelope(array $record, array $data): int
+    {
+        $id = 0;
+        $envelopeId = null;
+        DB::beginTransaction();
+
+        try {
+            $id = (int) DB::table('medical_services_agreement_sadq')->insertGetId($record);
+            $agreement = (object) ($record + ['id' => $id, 'created_at' => $record['created_at']]);
+            $pdf = $this->pdf->loadView('legacy-workflows.medical-agreements.pdf', [
+                'variant' => self::SADQ,
+                'agreement' => $agreement,
+            ])->setPaper('a4')->output();
+            $base64 = base64_encode($pdf);
+
+            $this->sadq->authenticate();
+            $init = $this->sadq->initiateEnvelopeBase64(
+                'إتفاقية تقديم خدمات طبية-Agreement for the Provision of Medical Services.pdf',
+                $base64,
+                (string) $record['reference_number'],
+            );
+            $documentId = (string) ($init['data']['documentId'] ?? $init['data']['documentID'] ?? '');
+            $envelopeId = (string) ($init['data']['envelopeId'] ?? $init['data']['envelopId'] ?? '');
+            if ($documentId === '') {
+                throw new RuntimeException('منصة صادق لم تُرجع رقم المستند.');
+            }
+
+            $contractorIdType = (int) ($data['contractor_type'] ?? 2) === 2
+                ? (int) ($data['patient_id_type'] ?? 0)
+                : (int) ($data['contractor_id_type'] ?? 0);
+            $authenticationType = in_array($contractorIdType, [1, 2], true) ? 1 : 2;
+            $mobile = $this->normalizeMobile((string) ($record['contractor_mobile'] ?? ''));
+            $email = trim((string) ($record['email'] ?? ''));
+            $invitation = $this->sadq->sendInvitation($documentId, [[
+                'DestinationName' => trim((string) ($record['contractor_name_ar'] ?? '').' '.(string) ($record['contractor_name_en'] ?? '')),
+                'DestinationEmail' => $email,
+                'DestinationPhoneNumber' => $mobile,
+                'NationalId' => (string) ($record['contractor_idno'] ?? ''),
+                'SigneOrder' => 0,
+                'ConsentOnly' => true,
+                'Signatories' => [],
+                'AvailableTo' => config('services.sadq.available_to'),
+                'AuthenticationType' => $authenticationType,
+                'InvitationLanguage' => (int) ($record['language'] ?? 1),
+                'RedirectUrl' => '',
+                'AllowUserToAddDestination' => false,
+                'DailyNotify' => false,
+            ]], 'Dear user, please sign the document.', 'Signing Request');
+
+            $errorCode = $invitation['errorCode'] ?? 0;
+            $success = (string) $errorCode === '0';
+            DB::table('medical_services_agreement_sadq_transactions')->insert([
+                'reference_number' => $record['reference_number'],
+                'document_id' => $documentId,
+                'envelope_id' => $envelopeId !== '' ? $envelopeId : null,
+                'destination_email' => $email,
+                'destination_mobile' => $mobile,
+                'destination_idno' => (string) ($record['contractor_idno'] ?? ''),
+                'status' => $success ? 1 : 0,
+                'error_code' => $errorCode,
+                'error_message' => (string) ($invitation['message'] ?? ''),
+                // The legacy API uses 1 for Nafath; the legacy DB enum stores it as 7.
+                'AuthenticationType' => (string) ($authenticationType === 1 ? 7 : $authenticationType),
+                'InvitationLanguage' => (int) ($record['language'] ?? 1),
+                'signStatus' => $success ? 'In-progress' : null,
+            ]);
+            DB::commit();
+
+            return $id;
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            if ($envelopeId !== null && $envelopeId !== '') {
+                try {
+                    $this->sadq->cancelEnvelope($envelopeId);
+                } catch (\Throwable $cancelError) {
+                    Log::warning('Could not cancel Sadq envelope after failed creation', ['message' => $cancelError->getMessage()]);
+                }
+            }
+            throw $e;
+        }
+    }
+
+    /** @param array<string, mixed> $data @return array<string, mixed> */
+    private function applyYakeenResults(string $variant, array $data): array
+    {
+        if (!in_array($variant, [self::STANDARD, self::SADQ], true) || !isset($data['yakeen_results']) || !is_array($data['yakeen_results'])) {
+            return $data;
+        }
+
+        $patient = $data['yakeen_results']['patient'] ?? null;
+        if (is_array($patient)) {
+            $data['patient_name_ar'] = $patient['name_ar'] ?? $data['patient_name_ar'] ?? null;
+            $data['patient_name_en'] = $patient['name_en'] ?? $data['patient_name_en'] ?? null;
+            $data['patient_nationality'] = (int) ($patient['nationality'] ?? $data['patient_nationality'] ?? 0);
+            $data['patient_id_type'] = (int) ($patient['id_type'] ?? $data['patient_id_type'] ?? 0);
+            $data['date_type'] = (int) ($patient['date_type'] ?? $data['date_type'] ?? 0);
+            $data['birth_day'] = (int) ($patient['birth_day'] ?? $data['birth_day'] ?? 0);
+            $data['birth_month'] = (int) ($patient['birth_month'] ?? $data['birth_month'] ?? 0);
+            $data['birth_year'] = (int) ($patient['birth_year'] ?? $data['birth_year'] ?? 0);
+            $data['sex_code'] = (int) ($patient['sex_code'] ?? $data['sex_code'] ?? 0);
+        }
+        $contractor = $data['yakeen_results']['contractor'] ?? null;
+        if ((int) ($data['contractor_type'] ?? 2) === 1 && is_array($contractor)) {
+            $data['contractor_name_ar'] = $contractor['name_ar'] ?? $data['contractor_name_ar'] ?? null;
+            $data['contractor_name_en'] = $contractor['name_en'] ?? $data['contractor_name_en'] ?? null;
+            $data['contractor_nationality'] = (int) ($contractor['nationality'] ?? $data['contractor_nationality'] ?? 0);
+            $data['contractor_id_type'] = (int) ($contractor['id_type'] ?? $data['contractor_id_type'] ?? 0);
+        }
+
+        unset($data['yakeen_results']);
+        return $data;
+    }
+
+    private function normalizeMobile(string $mobile): string
+    {
+        $mobile = preg_replace('/\D+/', '', $mobile) ?: '';
+        if (strlen($mobile) === 12 && str_starts_with($mobile, '966')) {
+            return '+'.$mobile;
+        }
+        if (strlen($mobile) === 9) {
+            return '+966'.$mobile;
+        }
+        if (strlen($mobile) === 10 && str_starts_with($mobile, '0')) {
+            return '+966'.substr($mobile, 1);
+        }
+
+        throw new RuntimeException('رقم جوال المتعهد غير صالح لمنصة صادق.');
+    }
+
+    /** @param array<string, mixed> $response @return array<string, mixed> */
+    private function statusFromSadqResponse(array $response): array
+    {
+        $raw = data_get($response, 'data.status') ?? data_get($response, 'status') ?? data_get($response, 'data.signStatus');
+        return $this->mapSadqStatus($raw);
+    }
+
+    /** @return array<string, mixed> */
+    private function mapSadqStatus(mixed $raw): array
+    {
+        $value = strtolower(trim((string) $raw));
+        return match ($value) {
+            '1', 'completed', 'complete', 'signed' => ['status' => 1, 'signStatus' => 'Completed', 'rejectReason' => null],
+            '2', 'rejected', 'reject' => ['status' => 2, 'signStatus' => 'Rejected', 'rejectReason' => null],
+            default => ['status' => 0, 'signStatus' => 'In-progress', 'rejectReason' => null],
+        };
+    }
+
+    private function updateTransactionStatus(string $reference, int $status, string $signStatus, ?string $rejectReason): void
+    {
+        DB::table('medical_services_agreement_sadq_transactions')->where('reference_number', $reference)->update([
+            'status' => $status,
+            'signStatus' => $signStatus,
+            'RejectReason' => $rejectReason,
+        ]);
+    }
+
+    /** @param array<string, mixed> $response */
+    private function extractBase64(array $response): string
+    {
+        foreach ([
+            data_get($response, 'data.file'),
+            data_get($response, 'data.File'),
+            data_get($response, 'data.fileBase64'),
+            data_get($response, 'file'),
+            data_get($response, 'File'),
+        ] as $candidate) {
+            if (is_string($candidate) && $candidate !== '') {
+                return $candidate;
+            }
+        }
+
+        return '';
+    }
+
+    private function normalizeBase64(string $base64): string
+    {
+        if (str_starts_with($base64, 'data:')) {
+            $position = strpos($base64, 'base64,');
+            if ($position !== false) {
+                $base64 = substr($base64, $position + 7);
+            }
+        }
+
+        return (string) preg_replace('/\s+/', '', $base64);
     }
 
     public function table(string $variant): string

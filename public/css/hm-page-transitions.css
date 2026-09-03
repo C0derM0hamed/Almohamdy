@@ -130,7 +130,9 @@ html[dir="rtl"] body.hm-app-body.hm-sidebar-collapsed .hm-page-overlay__bar {
 
 body.hm-page-leaving .hm-page-overlay {
     opacity: 1;
-    pointer-events: auto;
+    /* The progress veil is decorative; it must never capture wheel/touch
+       input and make the newly loaded page appear unscrollable. */
+    pointer-events: none;
 }
 
 body.hm-page-leaving .hm-page-overlay__veil {

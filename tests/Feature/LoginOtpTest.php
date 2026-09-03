@@ -103,24 +103,13 @@ class LoginOtpTest extends TestCase
         Mail::assertSent(LoginOtpMail::class);
     }
 
-    public function test_mobile_number_login_sends_sms_otp_and_reaches_dashboard(): void
+    public function test_mobile_number_login_is_rejected(): void
     {
         $this->post('/login', ['username' => '0500000001', 'password' => 'secret-pass'])
-            ->assertOk();
+            ->assertSessionHasErrors('username');
 
-        $this->assertSame('sms', session('otp_channel'));
-        $this->assertCount(1, $this->sms->messages);
-        $this->assertNotSame('', $this->sms->code);
-
-        $digits = str_split($this->sms->code);
-        $payload = [];
-        foreach ($digits as $i => $digit) {
-            $payload['n'.($i + 1)] = $digit;
-        }
-
-        $this->post('/otp', $payload)->assertOk();
-        $this->assertTrue(session()->has('hr_user_id'));
-        $this->assertSame(1, session('hr_user_id'));
+        $this->assertFalse(session()->has('step1'));
+        $this->assertCount(0, $this->sms->messages);
     }
 
     public function test_email_identifier_login_sends_email_otp_and_reaches_dashboard(): void
@@ -149,11 +138,29 @@ class LoginOtpTest extends TestCase
         $this->assertTrue(session()->has('hr_user_id'));
     }
 
+    public function test_demo_mode_exposes_the_current_code_on_the_otp_page(): void
+    {
+        config(['hm.otp.demo_mode' => true]);
+
+        Mail::fake();
+
+        $this->post('/login', ['username' => 'LOGIN_TEST_USER', 'password' => 'secret-pass'])
+            ->assertOk();
+
+        $this->assertSame('email', session('otp_channel'));
+        $this->assertNotSame('', session('otp_demo_code'));
+
+        $this->get('/otp')
+            ->assertOk()
+            ->assertSee(__('otp.demo_code', ['code' => session('otp_demo_code')]), false);
+    }
+
     public function test_wrong_otp_is_rejected(): void
     {
-        $this->post('/login', ['username' => '0500000001', 'password' => 'secret-pass']);
+        Mail::fake();
+        $this->post('/login', ['username' => 'LOGIN_TEST_USER', 'password' => 'secret-pass']);
 
-        $wrong = str_repeat('9', strlen($this->sms->code)) === $this->sms->code ? str_repeat('1', strlen($this->sms->code)) : str_repeat('9', strlen($this->sms->code));
+        $wrong = str_repeat('9', 6);
         $digits = str_split($wrong);
         $payload = [];
         foreach ($digits as $i => $digit) {
@@ -166,11 +173,18 @@ class LoginOtpTest extends TestCase
 
     public function test_expired_otp_is_rejected(): void
     {
-        $this->post('/login', ['username' => '0500000001', 'password' => 'secret-pass']);
+        Mail::fake();
+        $this->post('/login', ['username' => 'LOGIN_TEST_USER', 'password' => 'secret-pass']);
 
         session(['otp_expires_at' => time() - 1]);
 
-        $digits = str_split($this->sms->code);
+        $code = null;
+        Mail::assertSent(LoginOtpMail::class, function (LoginOtpMail $mail) use (&$code) {
+            $code = $mail->code;
+
+            return true;
+        });
+        $digits = str_split((string) $code);
         $payload = [];
         foreach ($digits as $i => $digit) {
             $payload['n'.($i + 1)] = $digit;
@@ -182,9 +196,16 @@ class LoginOtpTest extends TestCase
 
     public function test_otp_cannot_be_reused(): void
     {
-        $this->post('/login', ['username' => '0500000001', 'password' => 'secret-pass']);
+        Mail::fake();
+        $this->post('/login', ['username' => 'LOGIN_TEST_USER', 'password' => 'secret-pass']);
 
-        $digits = str_split($this->sms->code);
+        $code = null;
+        Mail::assertSent(LoginOtpMail::class, function (LoginOtpMail $mail) use (&$code) {
+            $code = $mail->code;
+
+            return true;
+        });
+        $digits = str_split((string) $code);
         $payload = [];
         foreach ($digits as $i => $digit) {
             $payload['n'.($i + 1)] = $digit;
@@ -200,12 +221,12 @@ class LoginOtpTest extends TestCase
         $this->assertFalse(session()->has('step1'));
     }
 
-    public function test_unknown_identifier_gives_generic_response_for_both_mobile_and_email(): void
+    public function test_unknown_identifier_gives_generic_response_for_employee_number_and_email(): void
     {
-        $unknownMobile = $this->post('/login', ['username' => '0599999999', 'password' => 'whatever']);
+        $unknownEmployeeNumber = $this->post('/login', ['username' => '999999', 'password' => 'whatever']);
         $unknownEmail = $this->post('/login', ['username' => 'nobody@example.test', 'password' => 'whatever']);
 
-        $unknownMobile->assertSessionHasErrors('username');
+        $unknownEmployeeNumber->assertSessionHasErrors('username');
         $unknownEmail->assertSessionHasErrors('username');
         $this->assertSame(
             session('errors')->first('username'),
@@ -224,12 +245,19 @@ class LoginOtpTest extends TestCase
     public function test_resend_cooldown_is_enforced(): void
     {
         config(['hm.otp.resend_cooldown_seconds' => 60]);
+        Mail::fake();
 
-        $this->post('/login', ['username' => '0500000001', 'password' => 'secret-pass']);
-        $firstCode = $this->sms->code;
+        $this->post('/login', ['username' => 'LOGIN_TEST_USER', 'password' => 'secret-pass']);
+        $firstCode = null;
+        Mail::assertSent(LoginOtpMail::class, function (LoginOtpMail $mail) use (&$firstCode) {
+            $firstCode = $mail->code;
+
+            return true;
+        });
 
         $this->post('/otp/resend')->assertSessionHasErrors('otp');
-        $this->assertSame($firstCode, $this->sms->code);
+        Mail::assertSent(LoginOtpMail::class, 1);
+        $this->assertNotSame('', $firstCode);
 
         session(['code_time' => time() - 61]);
         $this->post('/otp/resend')->assertSessionDoesntHaveErrors('otp');

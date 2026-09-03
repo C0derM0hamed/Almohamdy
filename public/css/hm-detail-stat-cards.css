@@ -1,0 +1,153 @@
+/* Shared summary cards for subpages — mirrors Clinic Doctors' first stat row. */
+.hm-detail-stats {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+    width: 100%;
+    margin: 8px 0 24px;
+}
+
+.hm-detail-stats.hm-detail-stats--four {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.hm-detail-stats.hm-detail-stats--auto {
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+}
+
+.cp-timeline-modal__summary.hm-detail-stats--four {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.hm-detail-stats > .hm-detail-stat {
+    position: relative;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    gap: 16px !important;
+    min-width: 0;
+    min-height: 139px !important;
+    margin: 0 !important;
+    padding: 20px !important;
+    overflow: hidden;
+    border: 0 !important;
+    border-radius: 20px !important;
+    background: #6366f1 !important;
+    color: #fff !important;
+    box-shadow: 0 2px 12px rgba(30, 58, 138, .04) !important;
+    text-align: start;
+}
+
+.hm-detail-stats > .hm-detail-stat--dark {
+    background: #302a58 !important;
+}
+
+.hm-detail-stats > .hm-detail-stat--primary {
+    background: #6366f1 !important;
+}
+
+.hm-detail-stat__icon {
+    display: grid;
+    place-items: center;
+    flex: 0 0 48px;
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    background: #f1edfe;
+    color: #6366f1;
+    font-size: 22px;
+    line-height: 1;
+}
+
+.hm-detail-stat__icon img {
+    display: block;
+    width: 22px;
+    height: 22px;
+    object-fit: contain;
+}
+
+.hm-detail-stat__copy {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    min-width: 0;
+    gap: 12px;
+}
+
+.hm-detail-stat__label,
+.hm-detail-stat__value,
+.hm-detail-stat__meta {
+    display: block;
+    max-width: 100%;
+    margin: 0 !important;
+    color: #fff !important;
+    opacity: 1 !important;
+    text-align: start;
+    overflow-wrap: anywhere;
+}
+
+.hm-detail-stat__label {
+    font-size: 18px !important;
+    font-weight: 500 !important;
+    line-height: 21px !important;
+    letter-spacing: 0 !important;
+    text-transform: none !important;
+}
+
+.hm-detail-stat__value {
+    font-size: 24px !important;
+    font-weight: 700 !important;
+    line-height: 1.2 !important;
+}
+
+.hm-detail-stat__meta {
+    font-size: 14px !important;
+    font-weight: 500 !important;
+    line-height: 1.45 !important;
+}
+
+@media (max-width: 1199.98px) {
+    .hm-detail-stats,
+    .hm-detail-stats.hm-detail-stats--four {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 767.98px) {
+    .hm-detail-stats,
+    .hm-detail-stats.hm-detail-stats--four {
+        grid-template-columns: 1fr;
+    }
+
+    .cp-timeline-modal__summary.hm-detail-stats--four {
+        grid-template-columns: 1fr;
+    }
+
+    .hm-detail-stats > .hm-detail-stat {
+        min-height: 128px !important;
+    }
+}
+
+/* Loaded before the global Hope/Figma bridges; keep this intentional card
+   treatment above their generic white-card normalization. */
+.hm-page-root .hm-detail-stats > .hm-detail-stat {
+    border: 0 !important;
+    border-radius: 20px !important;
+    background: #6366f1 !important;
+    color: #fff !important;
+    box-shadow: 0 2px 12px rgba(30, 58, 138, .04) !important;
+}
+
+.hm-page-root .hm-detail-stats > .hm-detail-stat.hm-detail-stat--dark {
+    background: #302a58 !important;
+}
+
+.hm-page-root .hm-detail-stat :is(.hm-detail-stat__label, .hm-detail-stat__value, .hm-detail-stat__meta) {
+    color: #fff !important;
+    opacity: 1 !important;
+}
+
+.hm-page-root .hm-detail-stat .hm-detail-stat__icon {
+    background: #f1edfe !important;
+    color: #6366f1 !important;
+}

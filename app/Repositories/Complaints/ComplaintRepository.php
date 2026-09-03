@@ -8,6 +8,7 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Collection;
 
 class ComplaintRepository
@@ -233,7 +234,7 @@ class ComplaintRepository
     {
         return BranchDepartment::query()
             ->select(['id', 'name_en', 'name_ar'])
-            ->where('publish', 1)
+            ->when(Schema::hasColumn('branches_departments', 'publish'), fn (Builder $query) => $query->where('publish', 1))
             ->orderBy('name_en')
             ->get();
     }

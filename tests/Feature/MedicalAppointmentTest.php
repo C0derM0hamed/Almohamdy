@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Services\MedicalAppointment\MedicalAppointmentService;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
@@ -142,8 +143,9 @@ class MedicalAppointmentTest extends TestCase
         ]);
         DB::table('job_titles')->insert(['id' => 1, 'name_ar' => 'موظف']);
         DB::table('ra_users')->insert([
-            ['hr_id' => 1, 'hr_first_name' => 'PW_AUDIT_MEDICAL', 'hr_username' => 'PW_AUDIT_MEDICAL', 'branch_id' => 2, 'companies_groups_id' => 1, 'job_title' => 1, 'activated' => 1, 'created_at' => now(), 'updated_at' => now()],
-            ['hr_id' => 2, 'hr_first_name' => 'PW_AUDIT_OTHER', 'hr_username' => 'PW_AUDIT_OTHER', 'branch_id' => 1, 'companies_groups_id' => 1, 'job_title' => 1, 'activated' => 1, 'created_at' => now(), 'updated_at' => now()],
+            ['hr_id' => 1, 'hr_first_name' => 'PW_AUDIT_MEDICAL', 'hr_username' => 'PW_AUDIT_MEDICAL', 'hr_user_level' => 1, 'branch_id' => 2, 'companies_groups_id' => 1, 'job_title' => 1, 'activated' => 1, 'created_at' => now(), 'updated_at' => now()],
+            ['hr_id' => 2, 'hr_first_name' => 'PW_AUDIT_OTHER', 'hr_username' => 'PW_AUDIT_OTHER', 'hr_user_level' => 1, 'branch_id' => 1, 'companies_groups_id' => 1, 'job_title' => 1, 'activated' => 1, 'created_at' => now(), 'updated_at' => now()],
+            ['hr_id' => 3, 'hr_first_name' => 'PW_AUDIT_SUPER', 'hr_username' => 'PW_AUDIT_SUPER', 'hr_user_level' => 3, 'branch_id' => 1, 'companies_groups_id' => 1, 'job_title' => 1, 'activated' => 1, 'created_at' => now(), 'updated_at' => now()],
         ]);
         DB::table('specialized_clinics')->insert(['id' => 1, 'subject_ar' => 'عيادة القلب', 'subject_en' => 'Cardiology']);
         DB::table('clinicians')->insert(['id' => 1, 'specialized_clinics_id' => 1, 'name_ar' => 'د. أحمد', 'name_en' => 'Dr. Ahmed', 'mobile' => '0550000000', 'publish' => 1]);
@@ -235,6 +237,16 @@ class MedicalAppointmentTest extends TestCase
         $this->withSession($this->sessionFor(2, 1))
             ->get(route('modules.medical-appointments.index'))
             ->assertForbidden();
+
+        $superAdmin = $this->sessionFor(3, 1);
+        $this->assertDatabaseHas('book_a_medical_appointment', ['id' => 90, 'branch_id' => 1]);
+        $this->startSession();
+        session()->put($superAdmin);
+        $this->assertNotNull(app(MedicalAppointmentService::class)->find(90));
+        // المدير العام لا يُحصر في سجلات الفرع الموجود في الجلسة.
+        $this->withSession($superAdmin)->get(route('modules.medical-appointments.show', 90))->assertOk();
+        $this->withSession($superAdmin)->get(route('modules.medical-appointments.index'))
+            ->assertOk();
     }
 
     public function test_public_patient_accepts_slot_and_doctor_confirms(): void

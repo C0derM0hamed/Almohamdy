@@ -4,6 +4,19 @@ namespace App\Support;
 
 class LocaleText
 {
+    /**
+     * Return the value that should be shown in the active locale.
+     *
+     * A number of the legacy reference tables were imported with the Arabic
+     * label copied into both name_ar and name_en.  Keep the database fields
+     * independent, but transparently translate those legacy values when the
+     * English UI is active.
+     */
+    public static function localizedValue(?string $arabic, ?string $english): string
+    {
+        return self::localizedField($arabic, $english);
+    }
+
     public static function isMostlyArabic(string $text): bool
     {
         $stripped = trim(strip_tags($text));
@@ -45,9 +58,8 @@ class LocaleText
         } elseif ($english !== '' && self::isMostlyLatin($english)) {
             $candidate = $english;
         } else {
-            // English requested but no genuine English text — fall back to
-            // whatever content exists so the page is not blank.
-            $candidate = $english !== '' ? $english : $arabic;
+            $candidate = self::translateLegacyEnglish($english !== '' ? $english : $arabic)
+                ?? ($english !== '' ? $english : $arabic);
         }
 
         if ($candidate === null || $candidate === '') {
@@ -78,7 +90,77 @@ class LocaleText
             return $opdLabel;
         }
 
-        return $english !== '' ? $english : $arabic;
+        $candidate = $english !== '' ? $english : $arabic;
+        $translated = self::translateLegacyEnglish($candidate);
+
+        if ($translated !== null) {
+            return $translated;
+        }
+
+        if ($candidate !== $arabic) {
+            $translated = self::translateLegacyEnglish($arabic);
+
+            if ($translated !== null) {
+                return $translated;
+            }
+        }
+
+        return $candidate;
+    }
+
+    private static function translateLegacyEnglish(string $value): ?string
+    {
+        $normalized = self::normalize($value);
+
+        if ($normalized === '' || self::isMostlyLatin($normalized)) {
+            return $normalized !== '' ? $normalized : null;
+        }
+
+        $overrides = [
+            'تم إرسال الشكوى' => 'Complaint sent',
+            'تم إرسال بريد تذكيرى اول' => 'First reminder email sent',
+            'تم إرسال بريد تذكيرى ثاني' => 'Second reminder email sent',
+            'تم تصعيد الشكوى لعدم رد القسم المعني' => 'Complaint escalated because the responsible department did not respond',
+            'تم معالجة الشكوى' => 'Complaint processed',
+            'تم إغلاق الشكوى' => 'Complaint closed',
+            'الصباحية' => 'Morning shift',
+            'المسائية' => 'Evening shift',
+            'الليلية' => 'Night shift',
+            'مصر' => 'Egypt',
+            'السعودية' => 'Saudi Arabia',
+            'الامارات' => 'United Arab Emirates',
+            'الإمارات' => 'United Arab Emirates',
+            'سوريا' => 'Syria',
+            'الهند' => 'India',
+            'تونس' => 'Tunisia',
+            'الاردن' => 'Jordan',
+            'الأردن' => 'Jordan',
+            'مصري - بريطاني' => 'Egyptian - British',
+        ];
+
+        $catalog = (array) __('reference_data');
+        $translated = $overrides[$normalized] ?? ($catalog[$normalized] ?? null);
+
+        if (is_string($translated) && $translated !== '' && ! self::isMostlyArabic($translated)) {
+            return $translated;
+        }
+
+        // Keep an English UI even for a newly-created legacy label that is
+        // not yet in the catalogue.  Ar-PHP provides deterministic Arabic
+        // transliteration and is already part of this application.
+        try {
+            $transliterator = new \ArPHP\I18N\Arabic();
+            $transliterated = trim((string) $transliterator->ar2en($normalized));
+
+            return $transliterated !== '' ? $transliterated : null;
+        } catch (\Throwable) {
+            return null;
+        }
+    }
+
+    private static function normalize(string $value): string
+    {
+        return trim((string) (preg_replace('/\s+/u', ' ', $value) ?? $value));
     }
 
     public static function outpatientClinicLabel(?string $value): ?string

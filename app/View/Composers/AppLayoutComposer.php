@@ -26,6 +26,8 @@ class AppLayoutComposer
             'userName' => $this->navigation->userDisplayName(),
             'userInitials' => $this->navigation->userInitials(),
             'homeRoute' => $this->navigation->homeRouteName(),
+            'homeRouteParams' => $this->navigation->homeRouteParams(),
+            'homeUrl' => $this->navigation->homeUrl(),
             'currentRoute' => Route::currentRouteName(),
         ]);
     }

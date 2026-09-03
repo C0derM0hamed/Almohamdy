@@ -903,3 +903,1483 @@ html[dir="rtl"] .hm-inq .inq-breadcrumb-sep svg {
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 }
+
+/* Outgoing inquiry creation — unique Figma frame 142:8780. */
+.hm-inq-create {
+    max-width: var(--hm-content, 1142px);
+    margin-inline-end: auto;
+    padding-bottom: 24px;
+}
+
+.hm-inq-create .fm-head { padding-top: 32px; padding-bottom: 16px; }
+
+.hm-inq-create .inq-create-hero {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 32px;
+}
+
+.hm-inq-create .inq-create-hero__icon {
+    display: grid;
+    place-items: center;
+    flex: 0 0 56px;
+    width: 56px;
+    height: 56px;
+    border-radius: 16px;
+    background: var(--fm-primary, #6366f1);
+}
+
+.hm-inq-create .inq-create-hero__icon img { display: block; width: 32px; height: 32px; }
+.hm-inq-create .inq-create-hero h1 {
+    margin: 0 0 6px;
+    color: #171827;
+    font-size: 28px;
+    font-weight: 700;
+    line-height: 1.4;
+}
+
+.hm-inq-create .inq-create-hero p { margin: 0; color: #64748b; font-size: 18px; }
+
+.hm-inq-create .gc-panel {
+    padding: 24px 16px 18px;
+    border: 0;
+    border-radius: 24px;
+    box-shadow: var(--fm-shadow, 0 8px 15px rgba(40, 30, 80, .05));
+}
+
+.hm-inq-create .gc-form-grid { gap: 16px; }
+.hm-inq-create .gc-field label {
+    margin-bottom: 8px;
+    color: #302a58;
+    font-size: 16px;
+    font-weight: 400;
+}
+
+.hm-inq-create .gc-field .form-control,
+.hm-inq-create .gc-field .form-select {
+    min-height: 52px;
+    padding-inline: 16px;
+    border: 1px solid #e7e6ee;
+    border-radius: 16px;
+    background-color: #fff;
+    color: #302a58;
+    box-shadow: none;
+}
+
+.hm-inq-create .gc-field .form-select {
+    padding-inline-start: 42px;
+    background-image: url('/images/figma/inquiries/select.svg');
+    background-position: left 16px center;
+    background-size: 20px 20px;
+}
+
+html[dir="ltr"] .hm-inq-create .gc-field .form-select {
+    padding-inline-start: 16px;
+    padding-inline-end: 42px;
+    background-position: right 16px center;
+}
+
+.hm-inq-create .gc-field textarea.form-control { min-height: 52px; height: 52px; resize: vertical; }
+.hm-inq-create .gc-field .form-control:focus,
+.hm-inq-create .gc-field .form-select:focus {
+    border-color: var(--fm-primary, #6366f1);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, .1);
+}
+
+.hm-inq-create .inq-create-actions {
+    direction: ltr;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 10px;
+    margin-top: 12px;
+}
+
+.hm-inq-create .inq-create-actions .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 58px;
+    min-height: 38px;
+    padding: 8px 14px;
+    border-radius: 12px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.hm-inq-create .inq-create-actions .btn-primary {
+    border-color: var(--fm-primary, #6366f1);
+    background: var(--fm-primary, #6366f1);
+}
+
+.hm-inq-create .inq-create-actions .btn-outline-secondary { border-color: #8796b0; color: #64748b; }
+
+@media (max-width: 767.98px) {
+    .hm-inq-create .fm-head { padding-top: 16px; }
+    .hm-inq-create .inq-create-hero { align-items: flex-start; margin-bottom: 22px; }
+    .hm-inq-create .inq-create-hero h1 { font-size: 22px; }
+    .hm-inq-create .inq-create-hero p { font-size: 15px; line-height: 1.8; }
+    .hm-inq-create .gc-form-grid { grid-template-columns: 1fr; }
+    .hm-inq-create .gc-form-grid .gc-span-2 { grid-column: auto; }
+}
+
+/* Inquiry detail timeline — vertical workflow inspired by the reference design. */
+.hm-inq .inq-page-hero--details,
+.hm-inq .inq-page-hero--timeline {
+    position: relative;
+    overflow: hidden;
+    padding: 1.45rem 1.65rem;
+    background:
+        linear-gradient(90deg, rgba(255, 255, 255, .98), rgba(248, 250, 255, .98)),
+        radial-gradient(circle at 12% 20%, rgba(99, 102, 241, .08), transparent 35%);
+}
+
+.hm-inq .inq-page-hero--details::after,
+.hm-inq .inq-page-hero--timeline::after {
+    content: "";
+    position: absolute;
+    inset-inline-end: -3rem;
+    top: -5rem;
+    width: 19rem;
+    height: 14rem;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(99, 102, 241, .12), transparent 68%);
+    pointer-events: none;
+}
+
+.hm-inq .inq-page-hero--details > div,
+.hm-inq .inq-page-hero--timeline > div {
+    position: relative;
+    z-index: 1;
+}
+
+.hm-inq .inq-page-hero--timeline .inq-page-hero-art {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    min-height: 0;
+    opacity: .32;
+    pointer-events: none;
+}
+
+.hm-inq .inq-page-hero__eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: .45rem;
+    color: #6366f1;
+    font-size: .78rem;
+    font-weight: 800;
+}
+
+.hm-inq .inq-page-hero__eyebrow .bi { font-size: 1rem; }
+
+.hm-inq .inq-page-hero--details h1,
+.hm-inq .inq-page-hero--timeline h1 {
+    margin-top: .55rem;
+    color: #292052;
+    font-weight: 800;
+}
+
+.hm-inq .inq-page-hero--details p,
+.hm-inq .inq-page-hero--timeline p {
+    margin: .4rem 0 0;
+    color: #64748b;
+    font-size: .9rem;
+}
+
+.hm-inq .inq-page-hero__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: .55rem;
+    margin-top: .85rem;
+}
+
+.hm-inq .inq-page-hero__meta > span {
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+    min-height: 2rem;
+    padding: .35rem .7rem;
+    border-radius: 9px;
+    background: #f1efff;
+    color: #6366f1;
+    font-size: .76rem;
+    font-weight: 700;
+}
+
+.hm-inq .inq-page-hero__meta .inq-page-hero__status {
+    background: #eaf1ff;
+    color: #2456e8;
+}
+
+.hm-inq .inq-summary-grid {
+    gap: 1rem;
+    align-items: stretch;
+}
+
+.hm-inq .inq-summary-card {
+    position: relative;
+    flex-direction: row;
+    align-items: center;
+    gap: .85rem;
+    min-height: 5.7rem;
+    padding: 1rem 1.15rem;
+    border: 1px solid #e8edf5;
+    border-radius: 20px;
+    background: linear-gradient(180deg, #fff 0%, #fbfcff 100%);
+    box-shadow: 0 4px 14px rgba(23, 37, 84, .05);
+    overflow: hidden;
+    transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease;
+}
+
+.hm-inq .inq-summary-card::after {
+    content: "";
+    position: absolute;
+    inset-inline-end: -2rem;
+    bottom: -3rem;
+    width: 7rem;
+    height: 7rem;
+    border-radius: 50%;
+    background: rgba(99, 102, 241, .06);
+    pointer-events: none;
+}
+
+.hm-inq .inq-summary-card:hover {
+    transform: translateY(-2px);
+    border-color: rgba(99, 102, 241, .22);
+    box-shadow: 0 10px 24px rgba(23, 37, 84, .08);
+}
+
+.hm-inq .inq-summary-card__icon {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    place-items: center;
+    flex: 0 0 auto;
+    width: 2.7rem;
+    height: 2.7rem;
+    border-radius: 12px;
+    background: #f1efff;
+    color: #6366f1;
+    font-size: 1.05rem;
+}
+
+.hm-inq .inq-summary-card__copy {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    gap: .3rem;
+}
+
+.hm-inq .inq-summary-card small {
+    color: #64748b;
+    font-size: .7rem;
+    font-weight: 700;
+    letter-spacing: 0;
+    text-transform: none;
+}
+
+.hm-inq .inq-summary-card strong {
+    color: #292052;
+    font-size: .88rem;
+    font-weight: 750;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+}
+
+.hm-inq .inq-summary-card .inq-status-pill {
+    min-height: 1.8rem;
+    padding: .28rem .65rem;
+    border-radius: 8px;
+    font-size: .72rem;
+}
+
+.hm-inq .inq-timeline-card--vertical {
+    border: 1px solid #e8edf5;
+    border-radius: 20px;
+    box-shadow: 0 4px 14px rgba(23, 37, 84, .05);
+}
+
+.hm-inq .inq-timeline-card--vertical .inq-timeline-card__head {
+    display: flex;
+    align-items: center;
+    gap: .9rem;
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid #eef1f6;
+    background: #fff;
+}
+
+.hm-inq .inq-timeline-card--vertical .inq-timeline-card__icon {
+    width: 3rem;
+    height: 3rem;
+    border-radius: 14px;
+    background: #f1efff;
+    color: #6366f1;
+    font-size: 1.2rem;
+}
+
+.hm-inq .inq-timeline-card__heading { min-width: 0; }
+
+.hm-inq .inq-timeline-card--vertical .inq-timeline-card__head h2 {
+    color: #292052;
+    font-size: 1rem;
+    font-weight: 750;
+}
+
+.hm-inq .inq-timeline-card--vertical .inq-timeline-card__head p {
+    margin-top: .25rem;
+    color: #64748b;
+    font-size: .78rem;
+}
+
+.hm-inq .inq-timeline-progress {
+    width: min(18rem, 34%);
+    margin-inline-start: auto;
+}
+
+.hm-inq .inq-timeline-progress__copy {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: .6rem;
+    margin-bottom: .45rem;
+    color: #64748b;
+    font-size: .72rem;
+    font-weight: 700;
+}
+
+.hm-inq .inq-timeline-progress__copy strong {
+    color: #6366f1;
+    font-size: .82rem;
+}
+
+.hm-inq .inq-timeline-progress__bar {
+    height: .45rem;
+    overflow: hidden;
+    border-radius: 999px;
+    background: #eef1f6;
+}
+
+.hm-inq .inq-timeline-progress__bar span {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(90deg, #2187ea, #7241d3);
+    transition: width .3s ease;
+}
+
+.hm-inq .inq-timeline-wrap--vertical {
+    padding: 1.25rem 1.5rem 2rem;
+    overflow: visible;
+}
+
+.hm-inq .inq-vertical-timeline {
+    position: relative;
+    display: grid;
+    gap: 1.15rem;
+    padding: .25rem 0;
+}
+
+.hm-inq .inq-vertical-timeline__line {
+    position: absolute;
+    left: 50%;
+    top: 2.6rem;
+    bottom: 2.6rem;
+    width: 4px;
+    border-radius: 999px;
+    background: #edf0f6;
+    transform: translateX(-50%);
+}
+
+.hm-inq .inq-vertical-timeline__line > span {
+    display: block;
+    max-height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(180deg, #7541d2 0%, #5748d9 62%, #2586ea 100%);
+    transition: height .3s ease;
+}
+
+.hm-inq .inq-vertical-timeline__event {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 5.5rem minmax(0, 1fr);
+    gap: 1.5rem;
+    align-items: center;
+    min-height: 8.5rem;
+    direction: ltr;
+}
+
+.hm-inq .inq-vertical-timeline__details {
+    grid-column: 3;
+    min-width: 0;
+    direction: rtl;
+    text-align: start;
+}
+
+.hm-inq .inq-vertical-timeline__title-row {
+    display: flex;
+    align-items: flex-start;
+    gap: .7rem;
+}
+
+.hm-inq .inq-vertical-timeline__stage-number {
+    display: inline-grid;
+    place-items: center;
+    flex: 0 0 auto;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 9px;
+    background: #f1efff;
+    color: #6366f1;
+    font-size: .78rem;
+    font-weight: 800;
+}
+
+.hm-inq .inq-vertical-timeline__stage-label {
+    display: block;
+    margin-bottom: .15rem;
+    color: #94a3b8;
+    font-size: .68rem;
+    font-weight: 700;
+}
+
+.hm-inq .inq-vertical-timeline__details h3 {
+    margin: 0;
+    color: #6366f1;
+    font-size: .98rem;
+    font-weight: 800;
+    line-height: 1.7;
+}
+
+.hm-inq .inq-vertical-timeline__event.is-current .inq-vertical-timeline__details h3 { color: #1672d3; }
+.hm-inq .inq-vertical-timeline__event.is-pending .inq-vertical-timeline__details h3 { color: #475569; }
+
+.hm-inq .inq-vertical-timeline__date {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: .35rem;
+    margin-top: .55rem;
+    color: #71809a;
+    font-size: .72rem;
+    font-weight: 650;
+}
+
+.hm-inq .inq-vertical-timeline__date .bi { color: #94a3b8; }
+
+.hm-inq .inq-vertical-timeline__current-note {
+    display: inline-flex;
+    align-items: center;
+    gap: .35rem;
+    margin-top: .65rem;
+    padding: .35rem .65rem;
+    border-radius: 8px;
+    background: #eaf3ff;
+    color: #1672d3;
+    font-size: .7rem;
+    font-weight: 750;
+}
+
+.hm-inq .inq-vertical-timeline__marker {
+    grid-column: 2;
+    display: grid;
+    place-items: center;
+    direction: rtl;
+}
+
+.hm-inq .inq-vertical-timeline__marker-inner {
+    display: grid;
+    place-items: center;
+    width: 3.35rem;
+    height: 3.35rem;
+    border: 4px solid #d8dce8;
+    border-radius: 50%;
+    background: #fff;
+    color: #94a3b8;
+    box-shadow: 0 0 0 5px #f8f9fc;
+    font-size: 1.15rem;
+}
+
+.hm-inq .inq-vertical-timeline__event.is-completed .inq-vertical-timeline__marker-inner {
+    border-color: #7241d3;
+    background: linear-gradient(135deg, #7c3aed, #5423bd);
+    color: #fff;
+    box-shadow: 0 0 0 5px #f1eaff, 0 10px 20px rgba(99, 55, 202, .18);
+}
+
+.hm-inq .inq-vertical-timeline__event.is-current .inq-vertical-timeline__marker-inner {
+    border-color: #5aa5ec;
+    background: #1672d3;
+    color: #fff;
+    box-shadow: 0 0 0 5px #e4f1ff, 0 10px 20px rgba(22, 114, 211, .18);
+}
+
+.hm-inq .inq-vertical-timeline__actor {
+    grid-column: 1;
+    min-width: 0;
+    min-height: 6.2rem;
+    padding: .8rem 1rem;
+    border: 1px solid #e8edf5;
+    border-radius: 18px;
+    background: #fff;
+    box-shadow: 0 4px 14px rgba(23, 37, 84, .05);
+    direction: rtl;
+    text-align: start;
+}
+
+.hm-inq .inq-vertical-timeline__event.is-current .inq-vertical-timeline__actor {
+    border-color: #cfe4fb;
+    background: linear-gradient(180deg, #fff, #f8fbff);
+}
+
+.hm-inq .inq-vertical-timeline__state {
+    display: inline-flex;
+    align-items: center;
+    min-height: 1.55rem;
+    padding: .2rem .65rem;
+    border-radius: 999px;
+    background: #f3e8ff;
+    color: #7138c8;
+    font-size: .68rem;
+    font-weight: 800;
+}
+
+.hm-inq .inq-vertical-timeline__event.is-current .inq-vertical-timeline__state { background: #e4f1ff; color: #1672d3; }
+.hm-inq .inq-vertical-timeline__event.is-pending .inq-vertical-timeline__state { background: #f1f3f7; color: #64748b; }
+
+.hm-inq .inq-vertical-timeline__actor-main {
+    display: flex;
+    align-items: center;
+    gap: .65rem;
+    margin-top: .7rem;
+}
+
+.hm-inq .inq-vertical-timeline__actor-icon {
+    display: grid;
+    place-items: center;
+    flex: 0 0 auto;
+    width: 2.3rem;
+    height: 2.3rem;
+    border: 1px solid #dfe5ef;
+    border-radius: 50%;
+    background: #f8fafc;
+    color: #71809a;
+    font-size: 1rem;
+}
+
+.hm-inq .inq-vertical-timeline__event.is-current .inq-vertical-timeline__actor-icon { border-color: #a9d0f5; background: #eaf3ff; color: #1672d3; }
+
+.hm-inq .inq-vertical-timeline__actor-copy {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    gap: .15rem;
+}
+
+.hm-inq .inq-vertical-timeline__actor-copy strong {
+    color: #292052;
+    font-size: .82rem;
+    font-weight: 750;
+    overflow-wrap: anywhere;
+}
+
+.hm-inq .inq-vertical-timeline__actor-copy span {
+    color: #71809a;
+    font-size: .7rem;
+    line-height: 1.45;
+    overflow-wrap: anywhere;
+}
+
+@media (max-width: 900px) {
+    .hm-inq .inq-timeline-card--vertical .inq-timeline-card__head { flex-wrap: wrap; }
+    .hm-inq .inq-timeline-progress { width: 100%; margin-inline-start: 0; }
+    .hm-inq .inq-vertical-timeline__event {
+        grid-template-columns: 4.25rem minmax(0, 1fr);
+        gap: .85rem;
+        align-items: start;
+        min-height: 0;
+        direction: ltr;
+    }
+    .hm-inq .inq-vertical-timeline__line { left: 2.125rem; transform: translateX(-50%); }
+    .hm-inq .inq-vertical-timeline__details,
+    .hm-inq .inq-vertical-timeline__marker,
+    .hm-inq .inq-vertical-timeline__actor { grid-column: auto; }
+    .hm-inq .inq-vertical-timeline__details { grid-column: 2; grid-row: 1; }
+    .hm-inq .inq-vertical-timeline__marker { grid-column: 1; grid-row: 1; padding-top: .15rem; }
+    .hm-inq .inq-vertical-timeline__actor { grid-column: 2; grid-row: 2; }
+}
+
+@media (max-width: 767.98px) {
+    .hm-inq .inq-page-hero--details,
+    .hm-inq .inq-page-hero--timeline { padding: 1.15rem 1rem; }
+    .hm-inq .inq-summary-grid { grid-template-columns: 1fr; }
+    .hm-inq .inq-timeline-wrap--vertical { padding-inline: .9rem; }
+    .hm-inq .inq-vertical-timeline__marker-inner { width: 2.9rem; height: 2.9rem; }
+}
+
+/* Inquiry details — same visual system used by the first cards on Clinic Doctors. */
+.inq-detail-page {
+    width: 100%;
+    max-width: var(--hm-content, 1142px);
+    margin-inline-end: auto;
+    padding-bottom: 48px;
+    --inq-detail-primary: #6366f1;
+    --inq-detail-dark: #302a58;
+    --inq-detail-muted: #64748b;
+    --inq-detail-line: #e7e6ee;
+}
+
+.inq-detail-page .inq-detail-hero {
+    position: relative;
+}
+
+.inq-detail-page .inq-detail-hero__action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 48px;
+    margin-inline-start: auto;
+    padding: 0 18px;
+    border: 1px solid #e7e6ee;
+    border-radius: 16px;
+    background: #fff;
+    color: #5147e5;
+    font-size: 14px;
+    font-weight: 700;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: background .18s ease, border-color .18s ease, color .18s ease;
+}
+
+.inq-detail-page .inq-detail-hero__action:hover,
+.inq-detail-page .inq-detail-hero__action:focus-visible {
+    border-color: #6366f1;
+    background: #6366f1;
+    color: #fff;
+}
+
+.hm-inq .inq-summary-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+    margin: 8px 0 24px;
+}
+
+.hm-inq .inq-summary-card {
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 16px;
+    min-height: 139px;
+    padding: 20px;
+    overflow: hidden;
+    border: 0;
+    border-radius: 20px;
+    background: #6366f1;
+    color: #fff;
+    box-shadow: 0 2px 12px rgba(30, 58, 138, .04);
+}
+
+.hm-inq .inq-summary-card::after { display: none; }
+
+.hm-inq .inq-summary-card:hover {
+    transform: none;
+    border-color: transparent;
+    box-shadow: 0 2px 12px rgba(30, 58, 138, .04);
+}
+
+.hm-dd.hm-dd--figma.hm-inq .inq-summary-card--dark,
+.inq-timeline-modal-body.hm-inq .inq-summary-card--dark { background: #302a58 !important; }
+.hm-dd.hm-dd--figma.hm-inq .inq-summary-card--primary,
+.inq-timeline-modal-body.hm-inq .inq-summary-card--primary { background: #6366f1 !important; }
+
+/* The shared Hope UI bridge normalizes generic cards with !important. These
+   detail cards intentionally keep the Clinic Doctors stat-card treatment. */
+.hm-dd.hm-dd--figma.hm-inq .inq-summary-card,
+.inq-timeline-modal-body.hm-inq .inq-summary-card {
+    border: 0 !important;
+    border-radius: 20px !important;
+    box-shadow: 0 2px 12px rgba(30, 58, 138, .04) !important;
+}
+
+.hm-inq .inq-summary-card__icon {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    place-items: center;
+    flex: 0 0 48px;
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    background: #f1edfe;
+    color: #6366f1;
+    font-size: 22px;
+}
+
+.hm-inq .inq-summary-card__copy {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    min-width: 0;
+    gap: 12px;
+    text-align: start;
+}
+
+.hm-inq .inq-summary-card small,
+.hm-inq .inq-summary-card strong,
+.hm-inq .inq-summary-card__copy > span {
+    color: #fff;
+    opacity: 1;
+}
+
+.hm-inq .inq-summary-card small {
+    font-size: 18px;
+    font-weight: 500;
+    line-height: 21px;
+    letter-spacing: 0;
+    text-transform: none;
+}
+
+.hm-inq .inq-summary-card strong {
+    max-width: 100%;
+    font-size: 24px;
+    font-weight: 700;
+    line-height: 1.2;
+    overflow-wrap: anywhere;
+}
+
+.hm-inq .inq-summary-card__copy > span {
+    max-width: 100%;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1.45;
+    overflow-wrap: anywhere;
+}
+
+.hm-inq .inq-timeline-card--vertical {
+    margin-bottom: 24px;
+    border: 0;
+    border-radius: 24px;
+    background: #fff;
+    box-shadow: 0 8px 15px rgba(40, 30, 80, .05);
+}
+
+.hm-dd.hm-dd--figma.hm-inq .inq-timeline-card--vertical,
+.inq-timeline-modal-body.hm-inq .inq-timeline-card--vertical {
+    border: 0 !important;
+    border-radius: 24px !important;
+    background: #fff !important;
+    box-shadow: 0 8px 15px rgba(40, 30, 80, .05) !important;
+}
+
+.hm-inq .inq-timeline-card--vertical .inq-timeline-card__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 32px;
+    min-height: 100px;
+    padding: 24px 28px;
+    border-bottom: 1px solid #e7e6ee;
+    background: #fff;
+}
+
+.hm-inq .inq-timeline-card--vertical .inq-timeline-card__head h2 {
+    margin: 0;
+    color: #211b45;
+    font-size: 22px;
+    font-weight: 700;
+    line-height: 1.4;
+}
+
+.hm-inq .inq-timeline-card--vertical .inq-timeline-card__head p {
+    margin: 6px 0 0;
+    color: #64748b;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.hm-inq .inq-timeline-progress {
+    flex: 0 1 330px;
+    width: min(330px, 38%);
+    margin-inline-start: auto;
+}
+
+.hm-inq .inq-timeline-progress__copy {
+    margin-bottom: 10px;
+    color: #475569;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.hm-inq .inq-timeline-progress__copy strong {
+    min-width: 56px;
+    padding: 7px 12px;
+    border: 1px solid #ebe9f3;
+    border-radius: 999px;
+    background: #fff;
+    color: #302a58;
+    font-size: 14px;
+    text-align: center;
+}
+
+.hm-inq .inq-timeline-progress__bar {
+    height: 6px;
+    background: #e9eaf0;
+}
+
+.hm-inq .inq-timeline-progress__bar span {
+    background: linear-gradient(90deg, #6366f1, #8b5cf6);
+}
+
+.hm-inq .inq-timeline-wrap--vertical {
+    padding: 18px 28px 34px;
+}
+
+.hm-inq .inq-vertical-timeline {
+    gap: 0;
+    padding: 0;
+}
+
+.hm-inq .inq-vertical-timeline__line {
+    top: 70px;
+    bottom: 70px;
+    width: 4px;
+    background: #e9eaf0;
+}
+
+.hm-inq .inq-vertical-timeline__event {
+    grid-template-columns: minmax(250px, 1fr) 76px minmax(340px, 1.35fr);
+    gap: 28px;
+    min-height: 176px;
+}
+
+.hm-inq .inq-vertical-timeline__details,
+.hm-inq .inq-vertical-timeline__actor {
+    position: relative;
+}
+
+.hm-inq .inq-vertical-timeline__details,
+.hm-inq .inq-vertical-timeline__marker,
+.hm-inq .inq-vertical-timeline__actor {
+    grid-row: 1;
+}
+
+.hm-inq .inq-vertical-timeline__details::before,
+.hm-inq .inq-vertical-timeline__actor::after {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    top: 50%;
+    height: 2px;
+    background: #e5e7ef;
+    transform: translateY(-50%);
+}
+
+.hm-inq .inq-vertical-timeline__details::before {
+    right: 100%;
+    width: 66px;
+}
+
+.hm-inq .inq-vertical-timeline__actor::after {
+    left: 100%;
+    width: 66px;
+}
+
+.hm-inq .inq-vertical-timeline__title-row {
+    align-items: center;
+    gap: 14px;
+}
+
+.hm-inq .inq-vertical-timeline__stage-number {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: #6638d5;
+    color: #fff;
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.hm-inq .inq-vertical-timeline__event.is-current .inq-vertical-timeline__stage-number {
+    background: #1683e8;
+}
+
+.hm-inq .inq-vertical-timeline__event-icon {
+    display: grid;
+    place-items: center;
+    flex: 0 0 72px;
+    width: 72px;
+    height: 72px;
+    border: 1px solid #e4dff3;
+    border-radius: 18px;
+    background: #faf8ff;
+    color: #6638d5;
+    font-size: 30px;
+}
+
+.hm-inq .inq-vertical-timeline__event.is-current .inq-vertical-timeline__event-icon {
+    border-color: #d8eaff;
+    background: #f5faff;
+    color: #1683e8;
+}
+
+.hm-inq .inq-vertical-timeline__event-copy {
+    min-width: 0;
+}
+
+.hm-inq .inq-vertical-timeline__stage-label {
+    margin: 0 0 3px;
+    color: #94a3b8;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.hm-inq .inq-vertical-timeline__details h3 {
+    color: #6638d5;
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1.55;
+}
+
+.hm-inq .inq-vertical-timeline__date {
+    margin-top: 8px;
+    color: #64748b;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.hm-inq .inq-vertical-timeline__current-note {
+    margin-top: 10px;
+    padding: 8px 14px;
+    border-radius: 8px;
+    background: #eaf4ff;
+    color: #1678d2;
+    font-size: 12px;
+}
+
+.hm-inq .inq-vertical-timeline__marker-inner {
+    width: 58px;
+    height: 58px;
+    border-width: 5px;
+    font-size: 21px;
+}
+
+.hm-inq .inq-vertical-timeline__event.is-completed .inq-vertical-timeline__marker-inner {
+    border-color: #d8c7ff;
+    background: linear-gradient(135deg, #8b4bea, #5c20cf);
+    box-shadow: 0 0 0 5px #f2eaff;
+}
+
+.hm-inq .inq-vertical-timeline__event.is-current .inq-vertical-timeline__marker-inner {
+    border-color: #84bdf2;
+    background: #1683e8;
+    box-shadow: 0 0 0 5px #e7f3ff;
+}
+
+.hm-inq .inq-vertical-timeline__actor {
+    min-height: 112px;
+    padding: 16px 18px;
+    border: 1px solid #e7e6ee;
+    border-radius: 16px;
+    background: #fff;
+    box-shadow: 0 4px 12px rgba(40, 30, 80, .035);
+}
+
+.hm-inq .inq-vertical-timeline__event.is-current .inq-vertical-timeline__actor {
+    border-color: #cfe4fb;
+    background: #fbfdff;
+}
+
+.hm-inq .inq-vertical-timeline__state {
+    min-height: 26px;
+    padding: 4px 14px;
+    border-radius: 9px;
+    background: #f0e3ff;
+    color: #7138c8;
+    font-size: 12px;
+}
+
+.hm-inq .inq-vertical-timeline__actor-main {
+    margin-top: 12px;
+    gap: 12px;
+}
+
+.hm-inq .inq-vertical-timeline__actor-icon {
+    width: 38px;
+    height: 38px;
+    font-size: 17px;
+}
+
+.hm-inq .inq-vertical-timeline__actor-copy strong {
+    color: #302a58;
+    font-size: 15px;
+}
+
+.hm-inq .inq-vertical-timeline__actor-copy span {
+    color: #64748b;
+    font-size: 13px;
+}
+
+@media (max-width: 991.98px) {
+    .inq-detail-page .inq-detail-hero { flex-wrap: wrap; }
+    .inq-detail-page .inq-detail-hero__action { margin-inline-start: 72px; }
+    .hm-inq .inq-vertical-timeline__event {
+        grid-template-columns: 64px minmax(0, 1fr);
+        gap: 16px;
+        padding-block: 20px;
+    }
+    .hm-inq .inq-vertical-timeline__line { left: 32px; top: 72px; bottom: 72px; }
+    .hm-inq .inq-vertical-timeline__details { grid-column: 2; grid-row: 1; }
+    .hm-inq .inq-vertical-timeline__marker { grid-column: 1; grid-row: 1; }
+    .hm-inq .inq-vertical-timeline__actor { grid-column: 2; grid-row: 2; }
+    .hm-inq .inq-vertical-timeline__details::before,
+    .hm-inq .inq-vertical-timeline__actor::after { display: none; }
+}
+
+@media (max-width: 767.98px) {
+    .inq-detail-page { padding-bottom: 28px; }
+    .inq-detail-page .inq-detail-hero__action { width: 100%; margin-inline-start: 0; }
+    .hm-inq .inq-summary-grid { grid-template-columns: 1fr; }
+    .hm-inq .inq-summary-card { min-height: 128px; }
+    .hm-inq .inq-timeline-card--vertical .inq-timeline-card__head {
+        align-items: flex-start;
+        padding: 20px 18px;
+    }
+    .hm-inq .inq-timeline-progress { width: 100%; }
+    .hm-inq .inq-timeline-wrap--vertical { padding: 8px 14px 24px; }
+    .hm-inq .inq-vertical-timeline__event { grid-template-columns: 54px minmax(0, 1fr); gap: 10px; }
+    .hm-inq .inq-vertical-timeline__line { left: 27px; }
+    .hm-inq .inq-vertical-timeline__title-row { align-items: flex-start; gap: 10px; }
+    .hm-inq .inq-vertical-timeline__stage-number { width: 32px; height: 32px; font-size: 13px; }
+    .hm-inq .inq-vertical-timeline__event-icon { width: 48px; height: 48px; flex-basis: 48px; border-radius: 14px; font-size: 21px; }
+    .hm-inq .inq-vertical-timeline__details h3 { font-size: 15px; }
+    .hm-inq .inq-vertical-timeline__marker-inner { width: 48px; height: 48px; }
+}
+
+/* Inquiry timeline v2 — compact, unified workflow cards. */
+.hm-inq .inq-timeline-card--vertical {
+    border-color: #e6e9f2;
+    border-radius: 22px;
+    box-shadow: 0 14px 38px rgba(48, 42, 88, .07);
+}
+
+.hm-inq .inq-timeline-card--vertical .inq-timeline-card__head {
+    align-items: center;
+    padding: 22px 26px;
+    background: linear-gradient(135deg, #fff 0%, #fbfaff 55%, #f5f7ff 100%);
+}
+
+.hm-inq .inq-timeline-card--vertical .inq-timeline-card__icon {
+    display: grid;
+    place-items: center;
+    flex: 0 0 48px;
+    width: 48px;
+    height: 48px;
+    border: 1px solid #ddd8ff;
+    border-radius: 14px;
+    background: #f2efff;
+    color: #625ceb;
+    box-shadow: 0 7px 18px rgba(98, 92, 235, .12);
+}
+
+.hm-inq .inq-timeline-card--vertical .inq-timeline-card__head h2 {
+    font-size: 17px;
+    font-weight: 800;
+}
+
+.hm-inq .inq-timeline-card--vertical .inq-timeline-card__head p {
+    margin: 4px 0 0;
+    font-size: 13px;
+}
+
+.hm-inq .inq-timeline-progress__bar {
+    height: 6px;
+    background: #e9ecf4;
+}
+
+.hm-inq .inq-timeline-progress__bar span {
+    background: linear-gradient(90deg, #625ceb, #2587e8);
+}
+
+.hm-inq .inq-timeline-wrap--vertical {
+    padding: 28px 30px 34px;
+    background: #fbfcff;
+}
+
+.hm-inq .inq-workflow {
+    position: relative;
+    display: grid;
+    gap: 18px;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.hm-inq .inq-workflow__line {
+    position: absolute;
+    z-index: 0;
+    inset-inline-start: 23px;
+    top: 28px;
+    bottom: 28px;
+    width: 2px;
+    overflow: hidden;
+    border-radius: 999px;
+    background: #e3e7f0;
+    transform: translateX(50%);
+}
+
+html[dir="ltr"] .hm-inq .inq-workflow__line {
+    transform: translateX(-50%);
+}
+
+.hm-inq .inq-workflow__line > span {
+    display: block;
+    width: 100%;
+    max-height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(180deg, #6f4bd8 0%, #625ceb 55%, #2787e8 100%);
+}
+
+.hm-inq .inq-workflow__event {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: 46px minmax(0, 1fr);
+    gap: 18px;
+    align-items: start;
+    direction: rtl;
+}
+
+html[dir="ltr"] .hm-inq .inq-workflow__event {
+    direction: ltr;
+}
+
+.hm-inq .inq-workflow__marker {
+    display: grid;
+    place-items: center;
+    width: 46px;
+    height: 46px;
+    border: 4px solid #fff;
+    border-radius: 50%;
+    background: #eef1f6;
+    color: #8290a8;
+    box-shadow: 0 0 0 1px #dfe4ed, 0 7px 16px rgba(48, 42, 88, .08);
+    font-size: 16px;
+}
+
+.hm-inq .inq-workflow__event.is-completed .inq-workflow__marker {
+    background: linear-gradient(135deg, #7d48dc, #5c2bc7);
+    color: #fff;
+    box-shadow: 0 0 0 4px #eee8ff, 0 8px 18px rgba(98, 56, 202, .2);
+}
+
+.hm-inq .inq-workflow__event.is-current .inq-workflow__marker {
+    background: linear-gradient(135deg, #2792ee, #1474d2);
+    color: #fff;
+    box-shadow: 0 0 0 4px #e3f1ff, 0 8px 18px rgba(22, 116, 210, .22);
+}
+
+.hm-inq .inq-workflow__content {
+    min-width: 0;
+    padding: 18px 20px 16px;
+    border: 1px solid #e5e8f0;
+    border-radius: 16px;
+    background: #fff;
+    box-shadow: 0 5px 16px rgba(48, 42, 88, .045);
+    direction: rtl;
+    text-align: start;
+    transition: border-color .18s ease, box-shadow .18s ease, transform .18s ease;
+}
+
+html[dir="ltr"] .hm-inq .inq-workflow__content {
+    direction: ltr;
+}
+
+.hm-inq .inq-workflow__event.is-completed .inq-workflow__content {
+    border-inline-start: 3px solid #7444d4;
+}
+
+.hm-inq .inq-workflow__event.is-current .inq-workflow__content {
+    border-color: #b9dcfb;
+    border-inline-start: 3px solid #2587e8;
+    background: linear-gradient(135deg, #fff 0%, #f7fbff 100%);
+    box-shadow: 0 9px 24px rgba(37, 135, 232, .1);
+}
+
+.hm-inq .inq-workflow__content:hover {
+    border-color: #cfd5e3;
+    box-shadow: 0 10px 26px rgba(48, 42, 88, .08);
+    transform: translateY(-1px);
+}
+
+.hm-inq .inq-workflow__topline {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 14px;
+}
+
+.hm-inq .inq-workflow__stage,
+.hm-inq .inq-workflow__state {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    min-height: 28px;
+    padding: 4px 10px;
+    border-radius: 9px;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.hm-inq .inq-workflow__stage {
+    background: #f4f2ff;
+    color: #625ceb;
+}
+
+.hm-inq .inq-workflow__stage b {
+    display: grid;
+    place-items: center;
+    width: 20px;
+    height: 20px;
+    border-radius: 6px;
+    background: #625ceb;
+    color: #fff;
+    font-size: 11px;
+}
+
+.hm-inq .inq-workflow__state {
+    background: #f1f3f7;
+    color: #64748b;
+}
+
+.hm-inq .inq-workflow__event.is-completed .inq-workflow__state {
+    background: #f1eaff;
+    color: #7040cc;
+}
+
+.hm-inq .inq-workflow__event.is-current .inq-workflow__state {
+    background: #e5f2ff;
+    color: #1676d5;
+}
+
+.hm-inq .inq-workflow__main {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.hm-inq .inq-workflow__event-icon {
+    display: grid;
+    place-items: center;
+    flex: 0 0 44px;
+    width: 44px;
+    height: 44px;
+    border: 1px solid #e1ddff;
+    border-radius: 13px;
+    background: #f5f3ff;
+    color: #625ceb;
+    font-size: 18px;
+}
+
+.hm-inq .inq-workflow__event.is-current .inq-workflow__event-icon {
+    border-color: #c7e2fb;
+    background: #ebf5ff;
+    color: #1676d5;
+}
+
+.hm-inq .inq-workflow__copy {
+    min-width: 0;
+}
+
+.hm-inq .inq-workflow__copy h3 {
+    margin: 0;
+    color: #302a58;
+    font-size: 16px;
+    font-weight: 800;
+    line-height: 1.6;
+}
+
+.hm-inq .inq-workflow__event.is-current .inq-workflow__copy h3 {
+    color: #146fc6;
+}
+
+.hm-inq .inq-workflow__date {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 7px;
+    margin-top: 6px;
+    color: #71809a;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.hm-inq .inq-workflow__date .bi {
+    color: #9aa6b8;
+}
+
+.hm-inq .inq-workflow__separator {
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: #c5ccd8;
+}
+
+.hm-inq .inq-workflow__meta {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px 24px;
+    margin-top: 15px;
+    padding-top: 13px;
+    border-top: 1px solid #edf0f5;
+}
+
+.hm-inq .inq-workflow__meta-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+    color: #68778f;
+    font-size: 12px;
+}
+
+.hm-inq .inq-workflow__meta-item .bi {
+    display: grid;
+    place-items: center;
+    width: 26px;
+    height: 26px;
+    border-radius: 8px;
+    background: #f3f5f9;
+    color: #7c88a0;
+}
+
+.hm-inq .inq-workflow__meta-item strong {
+    color: #302a58;
+    font-weight: 750;
+}
+
+/* Keep the detail header and summary cards inside the available workspace in RTL. */
+.inq-detail-page,
+.inq-detail-page .dd-figma-head,
+.inq-detail-page .dd-figma-head__row,
+.inq-detail-page .dd-figma-head__page {
+    min-width: 0;
+    max-width: 100%;
+}
+
+.inq-detail-page .inq-summary-grid {
+    width: 100%;
+    min-width: 0;
+}
+
+.inq-detail-page .inq-summary-card {
+    min-width: 0;
+    direction: rtl;
+}
+
+.inq-detail-page .inq-summary-card__copy {
+    flex: 1 1 0%;
+    width: auto;
+    min-width: 0;
+    align-items: flex-start;
+    overflow: hidden;
+    text-align: start;
+}
+
+.inq-detail-page .inq-summary-card__icon {
+    flex: 0 0 48px;
+}
+
+.inq-detail-page .inq-workflow-wrap,
+.inq-detail-page .inq-timeline-wrap--vertical {
+    min-width: 0;
+}
+
+.inq-detail-page .inq-workflow {
+    width: 100%;
+    max-width: 1080px;
+}
+
+.inq-detail-page .inq-summary-card__copy > * {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+html[dir="ltr"] .inq-detail-page .inq-summary-card {
+    direction: ltr;
+}
+
+@media (max-width: 767.98px) {
+    .hm-inq .inq-timeline-card--vertical .inq-timeline-card__head {
+        padding: 18px;
+    }
+
+    .hm-inq .inq-timeline-card--vertical .inq-timeline-card__icon {
+        flex-basis: 42px;
+        width: 42px;
+        height: 42px;
+    }
+
+    .hm-inq .inq-timeline-wrap--vertical {
+        padding: 22px 14px 26px;
+    }
+
+    .hm-inq .inq-workflow {
+        gap: 14px;
+    }
+
+    .hm-inq .inq-workflow__event {
+        grid-template-columns: 40px minmax(0, 1fr);
+        gap: 10px;
+    }
+
+    .hm-inq .inq-workflow__line {
+        inset-inline-start: 20px;
+    }
+
+    .hm-inq .inq-workflow__marker {
+        width: 40px;
+        height: 40px;
+        font-size: 14px;
+    }
+
+    .hm-inq .inq-workflow__content {
+        padding: 15px 14px 14px;
+        border-radius: 14px;
+    }
+
+    .hm-inq .inq-workflow__topline {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 7px;
+    }
+
+    .hm-inq .inq-workflow__event-icon {
+        flex-basis: 38px;
+        width: 38px;
+        height: 38px;
+        font-size: 16px;
+    }
+
+    .hm-inq .inq-workflow__copy h3 {
+        font-size: 14px;
+    }
+
+    .hm-inq .inq-workflow__meta {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 8px;
+    }
+}

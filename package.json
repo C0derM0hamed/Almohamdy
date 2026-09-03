@@ -5,7 +5,9 @@
     "scripts": {
         "build": "vite build",
         "dev": "vite",
-        "test:e2e": "playwright test"
+        "test:e2e": "playwright test",
+        "review:license-screenshots": "playwright test tests/e2e/license-client-review-screenshots.spec.cjs --project=desktop",
+        "review:license-pdf": "node scripts/generate-license-review-pdf.mjs"
     },
     "devDependencies": {
         "@playwright/test": "^1.62.1",

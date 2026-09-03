@@ -326,6 +326,39 @@ body.hm-auth-body {
     }
 }
 
+/* Use the available desktop half for the auth form instead of the narrow
+   Hope UI column/card defaults. */
+@media (min-width: 992px) {
+    .hm-hope-auth__form-col {
+        padding-inline: clamp(1.5rem, 4vw, 4rem);
+    }
+
+    .hm-hope-auth__form-col > .row > [class*="col-"] {
+        flex: 0 0 100%;
+        width: 100%;
+        max-width: 100%;
+        padding-inline: 0;
+    }
+
+    .hm-hope-auth .hm-hope-auth__card {
+        width: 100%;
+        padding-inline: clamp(1.5rem, 3vw, 3rem) !important;
+    }
+
+    .hm-hope-auth .form-control,
+    .hm-hope-auth .hm-hope-login-mode .btn,
+    .hm-hope-auth form .btn-primary {
+        min-height: 3.25rem;
+        font-size: 1.05rem;
+    }
+
+    .hm-hope-auth .form-label,
+    .hm-hope-auth .form-check-label,
+    .hm-hope-auth form > .d-flex > a {
+        font-size: 1rem;
+    }
+}
+
 /* Login verifying overlay */
 .hm-auth-verify-overlay {
     position: fixed;

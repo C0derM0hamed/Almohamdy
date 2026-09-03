@@ -18,6 +18,8 @@ class ReferenceAdminController extends Controller
     public function update(Request $request, string $type, int $reference): RedirectResponse { $spec = $this->service->spec($type); $this->service->update($type, $reference, $request->validate($this->rules($spec))); return redirect()->route('modules.system-admin.reference.index', $type)->with('success', __('system_administration.reference.saved')); }
     public function publish(string $type, int $reference): RedirectResponse { $this->service->toggle($type, $reference); return back()->with('success', __('system_administration.reference.status_changed')); }
     public function destroy(string $type, int $reference): RedirectResponse { $this->service->delete($type, $reference); return back()->with('success', __('system_administration.reference.deleted')); }
+    public function groupPermissions(int $group): View { return view('system-administration.reference.group-permissions', $this->service->groupPermissionData($group) + ['homeRoute' => 'modules.system-admin.dashboard']); }
+    public function updateGroupPermissions(Request $request, int $group): RedirectResponse { $this->service->replaceGroupPermissions($group, $request->input('permissions', [])); return redirect()->route('modules.system-admin.reference.group-permissions', $group)->with('success', 'تم تحديث صلاحيات المجموعة.'); }
     private function rules(array $spec): array
     {
         $required = $spec['required'] ?? [];

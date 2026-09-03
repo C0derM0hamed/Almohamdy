@@ -3,9 +3,14 @@
 return [
 
     'title' => 'الخدمات',
-    'dashboard' => 'لوحة الخدمات',
-    'dashboard_subtitle' => 'استعرض خدمات المستشفى والحجوزات والنماذج واتفاقيات الشركات.',
+    'dashboard' => 'كل الخدمات',
+    'dashboard_subtitle' => 'استعرض خدمات المستشفى والحجوزات والنماذج واتفاقيات الشركات',
     'dashboard_search_placeholder' => 'بحث في الخدمات…',
+    'search_title' => 'البحث',
+    'all_services' => 'كل الخدمات',
+    'view_services' => 'عرض الخدمات',
+    'filters_subtitle' => 'حدّد معايير البحث للعثور على الخدمة المطلوبة',
+    'section_services' => 'خدمات :section',
     'section_default_description' => 'استعرض وأدر خدمات المستشفى في هذا القسم.',
     'section_page_subtitle' => 'استعرض وأدر الخدمات والباقات في هذا القسم.',
 
@@ -54,15 +59,17 @@ return [
     ],
 
     'search' => 'بحث',
-    'reset' => 'استعادة',
+    'reset' => 'إعادة تعيين',
     'search_placeholder' => 'بحث بالرمز أو الاسم…',
     'code_search_placeholder' => 'رمز الخدمة',
     'section_search_placeholder' => 'بحث في الأقسام…',
-    'filters_title' => 'بحث وتصفية',
+    'filters_title' => 'البحث والتصفية',
+    'results_summary' => 'عرض :shown من أصل :total',
     'view_details' => 'عرض التفاصيل',
     'close' => 'إغلاق',
     'currency' => 'ريال',
     'services_count' => ':count خدمة',
+    'partnerships_count' => ':count شراكات',
 
     'fields' => [
         'section' => 'الخدمات',

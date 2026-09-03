@@ -31,7 +31,20 @@ class EmployeeRequestService
     {
         $this->authorizeBranch(); $cfg = $this->config($type);
         $row = DB::table($cfg['request'].' as r')->leftJoin('ra_users as u', 'u.hr_id', '=', 'r.emp_id')->where('r.id', $id)->where('r.branch_id', self::BRANCH_ID)->where('r.companies_groups_id', $this->companyId())->select('r.*', 'u.hr_username', 'u.hr_first_name', 'u.hr_last_name')->first();
-        if ($row) { $row->branch_reply = DB::table($cfg['branch'])->where('vac_id', $id)->latest('id')->first(); $row->hr_reply = DB::table($cfg['hr'])->where('vac_id', $id)->latest('id')->first(); }
+        if ($row) {
+            $row->branch_reply = DB::table($cfg['branch'].' as reply')
+                ->leftJoin('order_status as status', 'status.id', '=', 'reply.status_id')
+                ->where('reply.vac_id', $id)
+                ->select('reply.*', 'status.name_ar as status_name_ar')
+                ->latest('reply.id')
+                ->first();
+            $row->hr_reply = DB::table($cfg['hr'].' as reply')
+                ->leftJoin('order_status as status', 'status.id', '=', 'reply.status_id')
+                ->where('reply.vac_id', $id)
+                ->select('reply.*', 'status.name_ar as status_name_ar')
+                ->latest('reply.id')
+                ->first();
+        }
         return $row;
     }
 

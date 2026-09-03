@@ -176,6 +176,7 @@ return [
 
     'validation' => [
         'confirm_details' => 'Please confirm the visit details declaration.',
+        'invalid_branch' => 'The selected branch is not available for your scope.',
         'reply_time_required' => 'A response deadline is required when violations exist.',
         'violations_required' => 'Add at least one violation when violation status is Yes.',
         'notes_required' => 'Add at least one observation/note when notes status is Yes.',
@@ -184,6 +185,16 @@ return [
         'return_reasons_required' => 'Enter at least one return reason for the selected findings.',
         'invalid_finding' => 'One or more findings do not belong to this visit.',
         'status_unchanged' => 'Please choose a different status.',
+    ],
+
+    'replies' => [
+        'title' => 'Legacy replies',
+        'empty' => 'No legacy replies are recorded for this visit.',
+        'reply' => 'Reply',
+        'date' => 'Reply date',
+        'source' => 'Source',
+        'department' => 'Department',
+        'management' => 'Management',
     ],
 
 ];

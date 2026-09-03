@@ -8,6 +8,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Barryvdh\DomPDF\PDF as DompdfPdf;
 use DOMDocument;
 use DOMXPath;
+use Illuminate\Support\Facades\File;
 
 final class ArabicPdfService
 {
@@ -30,8 +31,19 @@ final class ArabicPdfService
         $html = view($view, $data)->render();
         $html = $this->prepareHtml($html);
 
+        // Dompdf generates UFM/AFM metrics when it first sees an embedded
+        // font. Never let it write those runtime artifacts into vendor/
+        // (production deploys commonly make vendor read-only).
+        $fontCache = storage_path('fonts');
+        $tempDir = storage_path('app/dompdf-tmp');
+        File::ensureDirectoryExists($fontCache);
+        File::ensureDirectoryExists($tempDir);
+
         return Pdf::setOptions([
             'defaultFont' => 'ArabicPdf',
+            'fontDir' => $fontCache,
+            'fontCache' => $fontCache,
+            'tempDir' => $tempDir,
             'chroot' => base_path(),
             'isRemoteEnabled' => false,
         ])->loadHTML($html, 'UTF-8');

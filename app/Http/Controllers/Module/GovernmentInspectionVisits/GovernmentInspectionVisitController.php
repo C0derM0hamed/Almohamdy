@@ -9,6 +9,7 @@ use App\Http\Requests\GovernmentInspectionVisits\StoreGovernmentInspectionVisitA
 use App\Http\Requests\GovernmentInspectionVisits\StoreGovernmentInspectionVisitRequest;
 use App\Http\Requests\GovernmentInspectionVisits\UpdateGovernmentInspectionVisitStatusRequest;
 use App\Services\GovernmentInspectionVisits\GovernmentInspectionVisitService;
+use App\Services\Pdf\ArabicPdfService;
 use App\Support\ProtectedFileDownload;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
@@ -22,6 +23,7 @@ class GovernmentInspectionVisitController extends Controller
     public function __construct(
         private readonly GovernmentInspectionVisitService $visits,
         private readonly ProtectedFileDownload $downloads,
+        private readonly ArabicPdfService $pdf,
     ) {}
 
     public function index(GovernmentInspectionVisitIndexRequest $request): View
@@ -88,7 +90,7 @@ class GovernmentInspectionVisitController extends Controller
             ),
             'departmentReplyUrl' => $this->visits->departmentReplyUrl(
                 $record,
-                1,
+                null,
                 (int) $record->status === 7,
             ),
             'homeRoute' => $this->homeRouteName(),
@@ -119,6 +121,47 @@ class GovernmentInspectionVisitController extends Controller
         abort_if($file === null, 404);
 
         return $this->downloads->download($file->file_name, __('inspection_visits.notices.title'), ['files']);
+    }
+
+    public function downloadFindingFile(int $visit, int $finding): BinaryFileResponse
+    {
+        $record = $this->visits->findForDetail($visit);
+        abort_if($record === null, 404);
+
+        $file = $record->findings->firstWhere('id', $finding);
+        abort_if($file === null || blank($file->uploaded_file), 404);
+
+        return $this->downloads->download($file->uploaded_file, __('inspection_visits.fields.finding_title'), [
+            'files',
+            'government_reporting',
+            'inspection-visits/replies',
+        ]);
+    }
+
+    public function downloadReturnedFile(int $visit, int $returned): BinaryFileResponse
+    {
+        $record = $this->visits->findForDetail($visit);
+        abort_if($record === null, 404);
+
+        $file = $record->returnedItems->firstWhere('id', $returned);
+        abort_if($file === null || blank($file->uploaded_file), 404);
+
+        return $this->downloads->download($file->uploaded_file, __('inspection_visits.returns.title'), [
+            'files',
+            'government_reporting',
+            'inspection-visits/replies',
+        ]);
+    }
+
+    public function pdf(int $visit): mixed
+    {
+        $record = $this->visits->findForDetail($visit);
+        abort_if($record === null, 404);
+
+        return $this->pdf
+            ->loadView('inspection-visits.pdf', ['visit' => $record])
+            ->setPaper('a4')
+            ->download('government-inspection-visit-'.$visit.'.pdf');
     }
 
     public function receipt(int $visit): View
