@@ -14,6 +14,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class LicenseFinanceController extends Controller
@@ -26,10 +27,14 @@ class LicenseFinanceController extends Controller
 
     public function index(Request $request): View
     {
+        if (! $request->filled('department_id') && $request->filled('branch_id')) {
+            $request->merge(['department_id' => $request->input('branch_id')]);
+        }
         $filters = $request->validate([
             'search' => ['nullable', 'string', 'max:200'],
             'status' => ['nullable', Rule::in(['received', 'in_progress', 'needs_documents', 'paid'])],
             'branch_id' => ['nullable', 'integer', Rule::exists('branches', 'id')],
+            'department_id' => ['nullable', 'integer', Rule::exists('branches', 'id')],
             'from_date' => ['nullable', 'date'],
             'to_date' => ['nullable', 'date', 'after_or_equal:from_date'],
             'per_page' => ['nullable', 'integer', 'min:10', 'max:100'],
@@ -92,7 +97,7 @@ class LicenseFinanceController extends Controller
         return $this->backTo($paymentRequest, 'attachment_uploaded');
     }
 
-    public function downloadAttachment(int $paymentRequest, int $attachment): StreamedResponse
+    public function downloadAttachment(int $paymentRequest, int $attachment): StreamedResponse|BinaryFileResponse
     {
         $payment = $this->payments->findOrFail($paymentRequest);
         abort_if($payment->attachments->firstWhere('id', $attachment) === null, 404);

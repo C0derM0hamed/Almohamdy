@@ -17,6 +17,7 @@ use App\Support\GovAccounts\GovAccountPermissions;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 class GovAccountRepository
@@ -44,7 +45,7 @@ class GovAccountRepository
 
     public function requestOrFail(int $id): GovAccountRequest
     {
-        return $this->scopedRequests()->with(['employee', 'department', 'authority', 'service', 'role', 'requestedRole', 'account', 'undertakings.user', 'timeline', 'attachments'])->findOrFail($id);
+        return $this->scopedRequests()->with(['hospitalBranch', 'parentDepartment', 'employee', 'department.parentDepartment', 'authority', 'service', 'role', 'requestedRole', 'account', 'undertakings.user', 'timeline', 'attachments'])->findOrFail($id);
     }
 
     /** @return Builder<GovAccount> */
@@ -71,12 +72,12 @@ class GovAccountRepository
 
     public function accountOrFail(int $id): GovAccount
     {
-        return $this->scopedAccounts()->with(['employee', 'authority', 'service', 'role', 'sourceRequest', 'requests'])->findOrFail($id);
+        return $this->scopedAccounts()->with(['hospitalBranch', 'employee', 'authority', 'service', 'role', 'sourceRequest.department.parentDepartment', 'requests'])->findOrFail($id);
     }
 
     public function accounts(array $filters = []): LengthAwarePaginator
     {
-        return $this->scopedAccounts()->with(['employee', 'authority', 'service', 'role', 'sourceRequest'])
+        return $this->scopedAccounts()->with(['hospitalBranch', 'employee', 'authority', 'service', 'role', 'sourceRequest.department.parentDepartment'])
             ->when($filters['employee_user_id'] ?? null, fn (Builder $query, $value) => $query->where('employee_user_id', $value))
             ->when($filters['department_id'] ?? null, fn (Builder $query, $value) => $query->whereHas('sourceRequest', fn (Builder $source) => $source->where('department_id', $value)))
             ->when($filters['authority_id'] ?? null, fn (Builder $query, $value) => $query->where('authority_id', $value))
@@ -91,7 +92,7 @@ class GovAccountRepository
         $this->authorizeAny(GovAccountPermissions::HR);
         $search = trim((string) $search);
 
-        return $this->scopedAccounts()->whereNot('status', 'closed')->with(['employee', 'authority', 'service', 'role'])
+        return $this->scopedAccounts()->whereNot('status', 'closed')->with(['hospitalBranch', 'employee', 'authority', 'service', 'role', 'sourceRequest.department.parentDepartment'])
             ->when($search !== '', function (Builder $query) use ($search): void {
                 $query->whereHas('employee', fn (Builder $user) => $user->where('hr_first_name', 'like', '%'.$search.'%')->orWhere('hr_last_name', 'like', '%'.$search.'%')->orWhere('hr_username', 'like', '%'.$search.'%'));
             })->latest('id')->paginate(20)->withQueryString();
@@ -100,12 +101,12 @@ class GovAccountRepository
     public function employeeRequestOrFail(int $id): GovAccountRequest
     {
         return GovAccountRequest::query()->where('companies_groups_id', $this->companyId())
-            ->where('employee_user_id', (int) session('hr_user_id', 0))->with(['authority', 'service', 'role', 'undertakings'])->findOrFail($id);
+            ->where('employee_user_id', (int) session('hr_user_id', 0))->with(['hospitalBranch', 'department.parentDepartment', 'authority', 'service', 'role', 'undertakings'])->findOrFail($id);
     }
 
     public function requests(array $filters = []): LengthAwarePaginator
     {
-        return $this->scopedRequests()->with(['employee', 'department', 'authority', 'service', 'role'])
+        return $this->scopedRequests()->with(['hospitalBranch', 'employee', 'department.parentDepartment', 'authority', 'service', 'role'])
             ->when($filters['type'] ?? null, fn (Builder $query, $value) => $query->where('type', $value))
             ->when($filters['status'] ?? null, fn (Builder $query, $value) => $query->where('status', $value))
             ->when($filters['employee_user_id'] ?? null, fn (Builder $query, $value) => $query->where('employee_user_id', $value))
@@ -144,14 +145,14 @@ class GovAccountRepository
         return GovAccountRequest::query()->where('companies_groups_id', $this->companyId())
             ->where('employee_user_id', (int) session('hr_user_id', 0))->where('status', 'awaiting_employee')
             ->whereHas('undertakings', fn (Builder $query) => $query->where('kind', 'employee')->where('status', 'pending')->where('user_id', (int) session('hr_user_id', 0)))
-            ->with(['authority', 'service', 'role'])->latest('id')->get();
+            ->with(['hospitalBranch', 'department.parentDepartment', 'authority', 'service', 'role'])->latest('id')->get();
     }
 
     /** @return Collection<int,GovAccount> */
     public function accountsForCurrentUser(): Collection
     {
         return GovAccount::query()->where('companies_groups_id', $this->companyId())->where('employee_user_id', (int) session('hr_user_id', 0))
-            ->with(['authority', 'service', 'role'])->latest('id')->get();
+            ->with(['hospitalBranch', 'authority', 'service', 'role', 'sourceRequest.department.parentDepartment'])->latest('id')->get();
     }
 
     public function headedDepartmentIds(): array
@@ -164,10 +165,12 @@ class GovAccountRepository
     {
         $companyId = $this->companyId();
 
+        $hospitalDepartmentIds = DB::table('branches')->where('companies_groups_id', $companyId)->pluck('id');
         $departments = BranchDepartment::query()
             ->when(! GovAccountPermissions::isAdministrator($this->permissions), fn (Builder $query) => $query->whereIn('id', $this->headedDepartmentIds()))
-            ->when(Schema::hasColumn('branches_departments', 'branch_id'), fn (Builder $query) => $query->where('branch_id', (int) session('hr_branch_id', 0)))
-            ->when(Schema::hasColumn('branches_departments', 'publish'), fn (Builder $query) => $query->where('publish', 1))->orderBy('name_en')->get();
+            ->when(Schema::hasColumn('branches_departments', 'branch_id'), fn (Builder $query) => $query->whereIn('branch_id', $hospitalDepartmentIds))
+            ->when(Schema::hasColumn('branches_departments', 'publish'), fn (Builder $query) => $query->where('publish', 1))
+            ->with('parentDepartment')->orderBy('name_en')->get();
 
         return [
             'authorities' => GovAccountAuthority::query()->where('companies_groups_id', $companyId)->where('publish', true)->orderBy('ranking')->get(),

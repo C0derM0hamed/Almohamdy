@@ -38,7 +38,13 @@ class GovAccountAdminTest extends GovAccountModuleTestCase
     {
         $this->grant(10, 'gov_accounts_admin');
         $this->actAsGovAccountUser(10);
-        $this->get(route('modules.gov-accounts.admin.index'))->assertOk()->assertSee(__('gov_accounts.admin.title'));
+        $this->get(route('modules.gov-accounts.admin.index'))
+            ->assertOk()
+            ->assertSee(__('gov_accounts.admin.title'))
+            ->assertSee('lic-admin-card', false)
+            ->assertSee('lic-admin-card__count', false)
+            ->assertDontSee('gov-admin-card', false)
+            ->assertDontSee('gov-admin-intro', false);
         $this->post(route('modules.gov-accounts.admin.authorities.store'), ['name_ar' => 'جهة اختبار', 'name_en' => 'Test Authority', 'ranking' => 5, 'publish' => 1])->assertRedirect();
         $authorityId = (int) DB::table('gov_account_authorities')->where('name_en', 'Test Authority')->value('id');
         $this->post(route('modules.gov-accounts.admin.services.store'), ['authority_id' => $authorityId, 'name_ar' => 'خدمة اختبار', 'name_en' => 'Test Service', 'ranking' => 3, 'publish' => 1])->assertRedirect();

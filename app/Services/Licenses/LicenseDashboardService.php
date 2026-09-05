@@ -29,11 +29,12 @@ class LicenseDashboardService
                 'under_renewal' => $this->statusCount($base, 'under_renewal'),
                 'expired' => $this->statusCount($base, 'expired'),
             ],
-            'byBranch' => $this->byBranch($base),
+            'byDepartment' => $this->byDepartment($base),
+            'byBranch' => $this->byDepartment($base),
             'byAuthority' => $this->byReference($base, 'license_authorities', 'license_authority_id'),
             'byType' => $this->byReference($base, 'license_types', 'license_type_id'),
             'expiryBuckets' => $this->expiryBuckets($base),
-            'topCritical' => (clone $base)->with(['authority', 'type', 'status', 'renewalStage', 'responsibleUser', 'branches'])
+            'topCritical' => (clone $base)->with(['authority', 'type', 'status', 'renewalStage', 'responsibleUser', 'hospitalBranch', 'departments'])
                 ->orderByRaw('CASE WHEN expiry_date < ? THEN 0 WHEN expiry_date <= ? THEN 1 ELSE 2 END', [today()->toDateString(), today()->addDays(30)->toDateString()])
                 ->orderBy('expiry_date')->limit(10)->get()
                 ->each(fn ($license) => $license->setAttribute('days_remaining', today()->diffInDays($license->expiry_date, false))),
@@ -46,7 +47,7 @@ class LicenseDashboardService
         return (clone $base)->whereHas('status', fn (Builder $status) => $status->where('code', $code))->count();
     }
 
-    private function byBranch(Builder $base): Collection
+    private function byDepartment(Builder $base): Collection
     {
         return DB::query()->fromSub((clone $base)->select('licenses.id'), 'visible_licenses')
             ->join('license_branches', 'license_branches.license_id', '=', 'visible_licenses.id')

@@ -17,6 +17,11 @@ class GovAccountNotice extends Model
         return ['targeting' => 'array', 'event_date' => 'date', 'sent_at' => 'datetime', 'publish' => 'boolean'];
     }
 
+    public function hospitalBranch(): BelongsTo
+    {
+        return $this->belongsTo(CompanyGroup::class, 'companies_groups_id');
+    }
+
     public function authority(): BelongsTo
     {
         return $this->belongsTo(GovAccountAuthority::class, 'authority_id');

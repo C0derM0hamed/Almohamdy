@@ -17,8 +17,14 @@ class StoreLicenseRequest extends FormRequest
 
     protected function prepareForValidation(): void
     {
+        $departmentIds = $this->has('department_ids')
+            ? (array) $this->input('department_ids', [])
+            : (array) $this->input('branch_ids', []);
+        $departmentIds = array_values(array_unique(array_filter(array_map('intval', $departmentIds))));
+
         $this->merge([
-            'branch_ids' => array_values(array_unique(array_filter(array_map('intval', (array) $this->input('branch_ids', []))))),
+            'department_ids' => $departmentIds,
+            'branch_ids' => $departmentIds,
             'license_number' => trim((string) $this->input('license_number', '')),
             'title' => trim((string) $this->input('title', '')),
             'notes' => trim((string) $this->input('notes', '')),
@@ -32,8 +38,8 @@ class StoreLicenseRequest extends FormRequest
             'type_id' => ['required', 'integer', Rule::exists('license_types', 'id')],
             'license_number' => ['nullable', 'string', 'max:150', 'regex:/^\d+$/'],
             'title' => ['nullable', 'string', 'max:255'],
-            'branch_ids' => ['required', 'array', 'min:1'],
-            'branch_ids.*' => ['required', 'integer', 'distinct', Rule::exists('branches', 'id')],
+            'department_ids' => ['required', 'array', 'min:1'],
+            'department_ids.*' => ['required', 'integer', 'distinct', Rule::exists('branches', 'id')],
             'responsible_user_id' => ['required', 'integer', Rule::exists('ra_users', 'hr_id')],
             'issue_date' => ['required', 'date'],
             'expiry_date' => ['required', 'date', 'after:issue_date'],
@@ -55,16 +61,16 @@ class StoreLicenseRequest extends FormRequest
     {
         $validator->after(function (Validator $validator): void {
             $companyId = (int) session('companies_groups_id', 0);
-            $branchIds = (array) $this->input('branch_ids', []);
-            $allowedBranches = DB::table('branches')
-                ->whereIn('id', $branchIds)
+            $departmentIds = (array) $this->input('department_ids', []);
+            $allowedDepartments = DB::table('branches')
+                ->whereIn('id', $departmentIds)
                 ->where('companies_groups_id', $companyId)
                 ->when((int) session('hr_user_level', 0) !== 3 && (int) session('hr_branch_id', 0) > 0,
                     fn ($query) => $query->where('id', (int) session('hr_branch_id')))
                 ->count();
 
-            if ($allowedBranches !== count($branchIds)) {
-                $validator->errors()->add('branch_ids', __('licenses.validation.invalid_branch'));
+            if ($allowedDepartments !== count($departmentIds)) {
+                $validator->errors()->add('department_ids', __('licenses.validation.invalid_department'));
             }
 
             foreach ([['license_authorities', 'authority_id'], ['license_types', 'type_id']] as [$table, $field]) {
@@ -91,7 +97,7 @@ class StoreLicenseRequest extends FormRequest
             'license_type_id' => (int) $this->input('type_id'),
             'license_number' => $this->filled('license_number') ? (string) $this->input('license_number') : null,
             'title' => $this->filled('title') ? (string) $this->input('title') : null,
-            'branch_ids' => array_map('intval', (array) $this->input('branch_ids')),
+            'department_ids' => array_map('intval', (array) $this->input('department_ids')),
             'responsible_user_id' => (int) $this->input('responsible_user_id'),
             'issue_date' => $this->date('issue_date')?->toDateString(),
             'expiry_date' => $this->date('expiry_date')?->toDateString(),

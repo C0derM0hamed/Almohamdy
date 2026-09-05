@@ -115,7 +115,7 @@ class GovAccountRequestController extends Controller
     {
         $this->service->cancel($this->repository->requestOrFail($request));
 
-        return $this->showRedirect($request);
+        return redirect()->route('modules.gov-accounts.requests.show', $request)->with('success', __('gov_accounts.flash.request_cancelled'));
     }
 
     public function attachment(StoreGovAccountAttachmentRequest $form, int $request): RedirectResponse

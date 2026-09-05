@@ -22,6 +22,16 @@ class GovAccountRequest extends Model
         return $this->belongsTo(User::class, 'employee_user_id', 'hr_id');
     }
 
+    public function hospitalBranch(): BelongsTo
+    {
+        return $this->belongsTo(CompanyGroup::class, 'companies_groups_id');
+    }
+
+    public function parentDepartment(): BelongsTo
+    {
+        return $this->belongsTo(Department::class, 'branch_id');
+    }
+
     public function department(): BelongsTo
     {
         return $this->belongsTo(BranchDepartment::class, 'department_id');

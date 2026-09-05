@@ -7,11 +7,13 @@ use App\Models\LicenseNotification;
 use App\Models\LicensePaymentRequest;
 use App\Repositories\Licenses\LicenseRepository;
 use App\Services\Pdf\ArabicPdfService;
+use Barryvdh\DomPDF\PDF as DompdfPdf;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\LazyCollection;
 use Illuminate\Support\Collection;
 use InvalidArgumentException;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class LicenseExportService
@@ -26,24 +28,34 @@ class LicenseExportService
     {
         $format = strtolower($format);
         $report = (string) ($filters['report'] ?? 'licenses');
-        $query = $this->repository->filteredQuery($filters)->with(['authority', 'type', 'status', 'renewalStage', 'responsibleUser', 'branches'])->orderBy('expiry_date');
-        $filename = 'licenses-'.now()->format('Y-m-d-His');
+        $query = $this->repository->filteredQuery($filters)->with(['authority', 'type', 'status', 'renewalStage', 'responsibleUser', 'hospitalBranch', 'departments'])->orderBy('expiry_date');
+        $stamp = now()->format('Y-m-d-His');
+        $asciiName = 'licenses-report-'.$stamp;
 
         if ($report !== 'licenses') {
             $table = $this->reportTable($report, $query);
+            $asciiName .= '-'.$report;
 
             return match ($format) {
-                'csv' => $this->tabularCsv($table, $filename.'-'.$report.'.csv'),
-                'xls', 'excel' => $this->tabularExcel($table, $filename.'-'.$report.'.xls'),
-                'pdf' => $this->pdf->loadView('licenses.reports.tabular-pdf', $table)->download($filename.'-'.$report.'.pdf'),
+                'csv' => $this->tabularCsv($table, $asciiName.'.csv'),
+                'xls', 'excel' => $this->tabularExcel($table, $asciiName.'.xls'),
+                'pdf' => $this->pdfDownload(
+                    $this->pdf->loadView('licenses.reports.tabular-pdf', $table)->setPaper('a4', 'landscape'),
+                    $asciiName.'.pdf',
+                    $table['title'].'-'.$stamp.'.pdf',
+                ),
                 default => throw new InvalidArgumentException('Unsupported license export format.'),
             };
         }
 
         return match ($format) {
-            'csv' => $this->csv($query, $filename.'.csv'),
-            'xls', 'excel' => $this->excel($query, $filename.'.xls'),
-            'pdf' => $this->pdf->loadView('licenses.pdf', ['licenses' => $query->get(), 'isListReport' => true])->download($filename.'.pdf'),
+            'csv' => $this->csv($query, $asciiName.'.csv'),
+            'xls', 'excel' => $this->excel($query, $asciiName.'.xls'),
+            'pdf' => $this->pdfDownload(
+                $this->pdf->loadView('licenses.pdf', ['licenses' => $query->get(), 'isListReport' => true])->setPaper('a4', 'landscape'),
+                $asciiName.'.pdf',
+                __('licenses.pdf.list_title').'-'.$stamp.'.pdf',
+            ),
             default => throw new InvalidArgumentException('Unsupported license export format.'),
         };
     }
@@ -51,9 +63,37 @@ class LicenseExportService
     public function recordPdf(License $license): Response
     {
         $record = $this->repository->findOrFailForDetail((int) $license->getKey());
+        $stamp = now()->format('Y-m-d');
 
-        return $this->pdf->loadView('licenses.pdf', ['license' => $record, 'licenses' => collect([$record]), 'isListReport' => false])
-            ->download('license-'.$record->getKey().'.pdf');
+        return $this->pdfDownload(
+            $this->pdf->loadView('licenses.pdf', ['license' => $record, 'licenses' => collect([$record]), 'isListReport' => false])->setPaper('a4', 'portrait'),
+            'license-'.$record->getKey().'-'.$stamp.'.pdf',
+            __('licenses.pdf.record_title').'-'.$record->getKey().'.pdf',
+        );
+    }
+
+    private function pdfDownload(DompdfPdf $pdf, string $asciiFilename, string $utf8Filename): Response
+    {
+        $asciiFilename = $this->safeFilename($asciiFilename);
+        $utf8Filename = $this->safeFilename($utf8Filename);
+        $response = $pdf->download($asciiFilename);
+        $response->headers->set(
+            'Content-Disposition',
+            $response->headers->makeDisposition(
+                ResponseHeaderBag::DISPOSITION_ATTACHMENT,
+                $utf8Filename,
+                $asciiFilename,
+            ),
+        );
+
+        return $response;
+    }
+
+    private function safeFilename(string $filename): string
+    {
+        $clean = str_replace(["\r", "\n", '/', '\\'], '', $filename);
+
+        return $clean !== '' ? $clean : 'licenses-report.pdf';
     }
 
     /** @return list<string> */
@@ -61,7 +101,7 @@ class LicenseExportService
     {
         return [
             __('licenses.columns.id'), __('licenses.columns.number'), __('licenses.columns.title'),
-            __('licenses.columns.authority'), __('licenses.columns.type'), __('licenses.columns.branches'),
+            __('licenses.columns.authority'), __('licenses.columns.type'), __('licenses.columns.hospital_branch'), __('licenses.columns.departments'),
             __('licenses.columns.responsible'), __('licenses.columns.issue_date'), __('licenses.columns.expiry_date'),
             __('licenses.columns.status'), __('licenses.columns.renewal_stage'),
         ];
@@ -73,7 +113,8 @@ class LicenseExportService
         return [
             (string) $license->getKey(), (string) ($license->license_number ?: '—'), (string) ($license->title ?: '—'),
             $license->authority?->localizedName() ?? '—', $license->type?->localizedName() ?? '—',
-            $license->branches->map(fn ($branch) => app()->getLocale() === 'ar' ? $branch->name_ar : $branch->name_en)->filter()->implode(', '),
+            $license->hospitalBranch?->localizedName() ?? '—',
+            $license->departments->map(fn ($department) => $department->localizedName())->filter()->implode(', '),
             $license->responsibleUser?->displayName() ?? '—', $this->date($license->issue_date), $this->date($license->expiry_date),
             $license->status?->localizedName() ?? '—', $license->renewalStage?->localizedName() ?? '—',
         ];

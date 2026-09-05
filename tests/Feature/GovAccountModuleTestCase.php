@@ -33,6 +33,12 @@ abstract class GovAccountModuleTestCase extends TestCase
 
     protected function createLegacySchema(): void
     {
+        Schema::create('companies_groups', function (Blueprint $table): void {
+            $table->increments('id');
+            $table->string('name_ar');
+            $table->string('name_en');
+        });
+
         Schema::create('ra_users', function (Blueprint $table): void {
             $table->increments('hr_id');
             $table->string('hr_first_name')->nullable();
@@ -89,10 +95,14 @@ abstract class GovAccountModuleTestCase extends TestCase
 
     protected function seedLegacyData(): void
     {
+        DB::table('companies_groups')->insert([
+            ['id' => 1, 'name_ar' => 'مستشفى النزهة', 'name_en' => 'Al-Nuzha Hospital'],
+            ['id' => 2, 'name_ar' => 'مستشفى السويدي', 'name_en' => 'Al-Suwaidi Hospital'],
+        ]);
         DB::table('branches')->insert([
-            ['id' => 1, 'name_ar' => 'فرع 1', 'name_en' => 'Branch 1', 'companies_groups_id' => 1, 'publish' => true, 'ranking' => 1],
-            ['id' => 2, 'name_ar' => 'فرع 2', 'name_en' => 'Branch 2', 'companies_groups_id' => 1, 'publish' => true, 'ranking' => 2],
-            ['id' => 3, 'name_ar' => 'شركة أخرى', 'name_en' => 'Other Company', 'companies_groups_id' => 2, 'publish' => true, 'ranking' => 1],
+            ['id' => 1, 'name_ar' => 'الطوارئ', 'name_en' => 'Emergency', 'companies_groups_id' => 1, 'publish' => true, 'ranking' => 1],
+            ['id' => 2, 'name_ar' => 'المختبر', 'name_en' => 'Laboratory', 'companies_groups_id' => 1, 'publish' => true, 'ranking' => 2],
+            ['id' => 3, 'name_ar' => 'الشؤون القانونية', 'name_en' => 'Legal Affairs', 'companies_groups_id' => 2, 'publish' => true, 'ranking' => 1],
         ]);
         DB::table('branches_departments')->insert([
             ['id' => 1, 'branch_id' => 1, 'name_ar' => 'الطبية', 'name_en' => 'Medical', 'publish' => true],

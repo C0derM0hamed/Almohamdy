@@ -10,12 +10,12 @@
     ])
     @include('licenses.partials.feedback')
     <section class="lic-panel"><div class="lic-table-wrap"><table class="lic-table"><thead><tr>
-        @if($reference === 'department-heads')<th>{{ __('gov_accounts.fields.department') }}</th><th>{{ __('gov_accounts.fields.user') }}</th>
+        @if($reference === 'department-heads')<th>{{ __('gov_accounts.fields.branch') }}</th><th>{{ __('gov_accounts.fields.department_unit') }}</th><th>{{ __('gov_accounts.fields.user') }}</th>
         @else @if($reference === 'services')<th>{{ __('gov_accounts.fields.authority') }}</th>@endif<th>{{ __('gov_accounts.fields.name_ar') }}</th><th>{{ __('gov_accounts.fields.name_en') }}</th><th>{{ __('gov_accounts.fields.ranking') }}</th>@endif
         <th>{{ __('gov_accounts.fields.publish') }}</th><th>{{ __('gov_accounts.actions.actions') }}</th>
     </tr></thead><tbody>
     @forelse($items as $item)<tr>
-        @if($reference === 'department-heads')<td>{{ $item->department?->localizedName() ?? '—' }}</td><td>{{ $item->user?->displayName() ?? '—' }}</td>
+        @if($reference === 'department-heads')<td>{{ $item->hospitalBranch?->localizedName() ?? '—' }}</td><td>{{ $item->department?->hierarchyLabel() ?? '—' }}</td><td>{{ $item->user?->displayName() ?? '—' }}</td>
         @else @if($reference === 'services')<td>{{ $item->authority?->localizedName() ?? '—' }}</td>@endif<td>{{ $item->name_ar }}</td><td>{{ $item->name_en }}</td><td>{{ (int)$item->ranking }}</td>@endif
         <td>{{ $item->publish ? __('gov_accounts.enabled') : __('gov_accounts.disabled') }}</td><td><div class="lic-table__actions">
             <a class="lic-btn lic-btn--sm" href="{{ route('modules.gov-accounts.admin.'.$reference.'.edit', $item) }}">{{ __('gov_accounts.actions.edit') }}</a>

@@ -278,11 +278,6 @@ return [
                 ],
             ],
             [
-                'type' => 'group',
-                'label_key' => 'corporate_communication',
-                'icon' => 'bi-journal-bookmark',
-                'children' => [
-                    [
                         'type' => 'group',
                         'label_key' => 'licenses',
                         'icon' => 'bi-patch-check',
@@ -348,8 +343,8 @@ return [
                                 'permission' => 'licenses_admin',
                             ],
                         ],
-                    ],
-                    [
+            ],
+            [
                         'type' => 'group',
                         'label_key' => 'gov_accounts',
                         'icon' => 'bi-person-vcard',
@@ -409,7 +404,12 @@ return [
                                 'permission' => 'gov_accounts_admin',
                             ],
                         ],
-                    ],
+            ],
+            [
+                'type' => 'group',
+                'label_key' => 'corporate_communication',
+                'icon' => 'bi-journal-bookmark',
+                'children' => [
                     [
                         'label_key' => 'government_circulars',
                         'route' => 'modules.government-circulars.index',

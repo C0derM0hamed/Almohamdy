@@ -7,6 +7,13 @@ use Illuminate\Validation\Rule;
 
 class LicenseIndexRequest extends FormRequest
 {
+    protected function prepareForValidation(): void
+    {
+        if (! $this->filled('department_id') && $this->filled('branch_id')) {
+            $this->merge(['department_id' => $this->input('branch_id')]);
+        }
+    }
+
     public function authorize(): bool
     {
         return true;
@@ -16,6 +23,7 @@ class LicenseIndexRequest extends FormRequest
     {
         return [
             'search' => ['nullable', 'string', 'max:200'],
+            'department_id' => ['nullable', 'integer', Rule::exists('branches', 'id')],
             'branch_id' => ['nullable', 'integer', Rule::exists('branches', 'id')],
             'authority_id' => ['nullable', 'integer', Rule::exists('license_authorities', 'id')],
             'type_id' => ['nullable', 'integer', Rule::exists('license_types', 'id')],
@@ -34,7 +42,7 @@ class LicenseIndexRequest extends FormRequest
     {
         return [
             'search' => trim((string) $this->input('search', '')),
-            'branch_id' => $this->integerOrNull('branch_id'),
+            'department_id' => $this->integerOrNull('department_id'),
             'authority_id' => $this->integerOrNull('authority_id'),
             'type_id' => $this->integerOrNull('type_id'),
             'responsible_user_id' => $this->integerOrNull('responsible_user_id'),

@@ -50,7 +50,13 @@ class GovAccountDashboardTest extends GovAccountModuleTestCase
         $this->assertSame(3, $metrics['requests']['total']);
         $this->assertSame(1, $metrics['requests_by_type']['close']);
         $this->assertSame(['sent' => 1, 'recipients' => 2, 'viewed' => 1, 'view_rate' => 50.0], $metrics['notices']);
-        $this->get(route('modules.gov-accounts.dashboard'))->assertOk()->assertSee('Official Accounts Dashboard')->assertSee('50%');
+        $this->get(route('modules.gov-accounts.dashboard'))
+            ->assertOk()
+            ->assertSee('Official Accounts Dashboard')
+            ->assertSee('50%')
+            ->assertSee('gov-breakdown', false)
+            ->assertSee(__('gov_accounts.dashboard.requests_by_status'))
+            ->assertSee(__('gov_accounts.dashboard.requests_by_type'));
     }
 
     public function test_dashboard_requires_view_or_process_permission(): void
@@ -70,14 +76,51 @@ class GovAccountDashboardTest extends GovAccountModuleTestCase
 
         $this->get(route('modules.gov-accounts.accounts.index', ['employee_user_id' => 11, 'status' => 'active']))
             ->assertOk()->assertSee($matching->username)->assertDontSee($excluded->username);
-        $this->get(route('modules.gov-accounts.requests.index', ['created_by' => 10, 'department_id' => 1, 'date_from' => now()->subDay()->toDateString(), 'date_to' => now()->addDay()->toDateString()]))
-            ->assertOk()->assertSee('name="created_by"', false)->assertSee((string) $review->id);
+        $indexHtml = $this->get(route('modules.gov-accounts.requests.index', ['created_by' => 10, 'department_id' => 1, 'date_from' => now()->subDay()->toDateString(), 'date_to' => now()->addDay()->toDateString()]))
+            ->assertOk()
+            ->assertSee('name="created_by"', false)
+            ->assertSee((string) $review->id)
+            ->assertSee('id="govRequestQuickViewModal"', false)
+            ->assertSee('data-license-preview-open', false)
+            ->assertSee('data-bs-target="#govRequestQuickViewModal"', false)
+            ->getContent();
+        $this->assertDoesNotMatchRegularExpression(
+            '/<a class="lic-btn[^"]*" href="[^"]*\/modules\/gov-accounts\/requests\/'.$review->id.'"/',
+            $indexHtml
+        );
         $this->get(route('modules.gov-accounts.accounts.show', $matching))
             ->assertOk()->assertDontSee('Create lifecycle request');
         $this->get(route('modules.gov-accounts.requests.show', $review))
             ->assertOk()
+            ->assertSee('lic-summary-grid', false)
+            ->assertSee('gov-file-list', false)
+            ->assertDontSee('lic-table-wrap', false)
             ->assertDontSee('action="'.route('modules.gov-accounts.requests.approve', $review).'"', false)
-            ->assertDontSee('action="'.route('modules.gov-accounts.requests.reject', $review).'"', false);
+            ->assertDontSee('action="'.route('modules.gov-accounts.requests.reject', $review).'"', false)
+            ->assertDontSee('action="'.route('modules.gov-accounts.requests.cancel', $review).'"', false)
+            ->assertDontSee('action="'.route('modules.gov-accounts.requests.attachments.store', $review).'"', false);
+    }
+
+    public function test_processor_request_show_keeps_review_actions_inside_the_action_hub(): void
+    {
+        $this->grant(1, 'gov_accounts.process', 'gov_accounts.view');
+        $review = GovAccountRequest::query()->create($this->requestAttributes(11, 1, 1, 'close', 'under_review'));
+        $this->actAsGovAccountUser(1);
+        session(['locale' => 'en']);
+
+        $this->get(route('modules.gov-accounts.requests.show', $review))
+            ->assertOk()
+            ->assertSee('lic-summary-grid', false)
+            ->assertSee('lic-action-hub', false)
+            ->assertSee('action="'.route('modules.gov-accounts.requests.approve', $review).'"', false)
+            ->assertSee('action="'.route('modules.gov-accounts.requests.reject', $review).'"', false)
+            ->assertSee('action="'.route('modules.gov-accounts.requests.cancel', $review).'"', false)
+            ->assertSee('id="govRequestOperationApprove"', false)
+            ->assertSee('data-bs-target="#govRequestOperationApprove"', false)
+            ->assertSee('gov-file-list', false)
+            ->assertSee('action="'.route('modules.gov-accounts.requests.attachments.store', $review).'"', false)
+            ->assertDontSee('id="govRequestOperationAttachment"', false)
+            ->assertDontSee('lic-table-wrap', false);
     }
 
     private function makeAccount(int $employeeId, int $branchId, int $departmentId, string $status): GovAccount

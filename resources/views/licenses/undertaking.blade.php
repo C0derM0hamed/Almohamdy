@@ -33,19 +33,13 @@
             <section class="lic-panel mt-4 text-start" aria-labelledby="undertakingAttachmentsTitle">
                 <h2 id="undertakingAttachmentsTitle" class="lic-panel__title"><i class="bi bi-paperclip"></i>{{ __('licenses.undertaking.attachments_title') }}</h2>
                 <p class="lic-help mb-3">{{ __('licenses.undertaking.attachments_help') }}</p>
-                <ul class="list-group list-group-flush">
-                    @foreach ($attachments->sortByDesc('id') as $attachment)
-                        <li class="list-group-item d-flex flex-wrap justify-content-between align-items-center gap-2 px-0">
-                            <div>
-                                <strong>{{ $attachment->original_name }}</strong>
-                                @if ($attachment->description)<div class="small text-muted">{{ $attachment->description }}</div>@endif
-                            </div>
-                            <a class="lic-btn lic-btn--sm" href="{{ $url('modules.licenses.attachments.download', [$recordId, $attachment->getRouteKey()]) }}">
-                                <i class="bi bi-download"></i>{{ __('licenses.download') }}
-                            </a>
-                        </li>
-                    @endforeach
-                </ul>
+                @include('licenses.partials.file-cards', [
+                    'files' => $attachments->sortByDesc('id'),
+                    'empty' => __('licenses.attachments.empty'),
+                    'downloadUrl' => fn ($file) => $url('modules.licenses.attachments.download', [$recordId, $file->getRouteKey()]),
+                    'subtitle' => fn ($file) => $file->description,
+                    'nameAsLink' => true,
+                ])
             </section>
         @endif
 

@@ -35,19 +35,19 @@ class GovAccountExportService
 
     private function accounts(array $filters): array
     {
-        $query = $this->repository->scopedAccounts()->with(['employee', 'authority', 'service', 'role', 'sourceRequest'])
+        $query = $this->repository->scopedAccounts()->with(['hospitalBranch', 'employee', 'authority', 'service', 'role', 'sourceRequest.department.parentDepartment'])
             ->when($filters['status'], fn (Builder $q, $value) => $q->where('status', $value))
             ->when($filters['employee_user_id'], fn (Builder $q, $value) => $q->where('employee_user_id', $value))
             ->when($filters['authority_id'], fn (Builder $q, $value) => $q->where('authority_id', $value))
             ->when($filters['service_id'], fn (Builder $q, $value) => $q->where('service_id', $value))->orderBy('id');
 
-        return [[__('gov_accounts.export.id'), __('gov_accounts.fields.employee'), __('gov_accounts.fields.department'), __('gov_accounts.fields.authority'), __('gov_accounts.fields.service'), __('gov_accounts.fields.role'), __('gov_accounts.fields.username'), __('gov_accounts.fields.status'), __('gov_accounts.export.created_at')],
-            $query->cursor()->map(fn (GovAccount $account): array => [(string) $account->id, $account->employee?->displayName() ?? '—', $account->sourceRequest?->department?->localizedName() ?? (string) ($account->sourceRequest?->department_id ?? '—'), $account->authority?->localizedName() ?? '—', $account->service?->localizedName() ?? '—', $account->role?->localizedName() ?? '—', (string) $account->username, __('gov_accounts.account_statuses.'.$account->status), $account->created_at?->format('Y-m-d H:i') ?? '—'])];
+        return [[__('gov_accounts.export.id'), __('gov_accounts.fields.employee'), __('gov_accounts.fields.branch'), __('gov_accounts.fields.department_unit'), __('gov_accounts.fields.authority'), __('gov_accounts.fields.service'), __('gov_accounts.fields.role'), __('gov_accounts.fields.username'), __('gov_accounts.fields.status'), __('gov_accounts.export.created_at')],
+            $query->cursor()->map(fn (GovAccount $account): array => [(string) $account->id, $account->employee?->displayName() ?? '—', $account->hospitalBranch?->localizedName() ?? '—', $account->sourceRequest?->department?->hierarchyLabel() ?? (string) ($account->sourceRequest?->department_id ?? '—'), $account->authority?->localizedName() ?? '—', $account->service?->localizedName() ?? '—', $account->role?->localizedName() ?? '—', (string) $account->username, __('gov_accounts.account_statuses.'.$account->status), $account->created_at?->format('Y-m-d H:i') ?? '—'])];
     }
 
     private function requests(array $filters): array
     {
-        $query = $this->repository->scopedRequests()->with(['employee', 'department', 'authority', 'service', 'role'])
+        $query = $this->repository->scopedRequests()->with(['hospitalBranch', 'employee', 'department.parentDepartment', 'authority', 'service', 'role'])
             ->when($filters['status'], fn (Builder $q, $value) => $q->where('status', $value))
             ->when($filters['type'], fn (Builder $q, $value) => $q->where('type', $value))
             ->when($filters['employee_user_id'], fn (Builder $q, $value) => $q->where('employee_user_id', $value))
@@ -56,8 +56,8 @@ class GovAccountExportService
             ->when($filters['date_from'], fn (Builder $q, $value) => $q->whereDate('created_at', '>=', $value))
             ->when($filters['date_to'], fn (Builder $q, $value) => $q->whereDate('created_at', '<=', $value))->orderBy('id');
 
-        return [[__('gov_accounts.export.id'), __('gov_accounts.fields.employee'), __('gov_accounts.fields.department'), __('gov_accounts.export.type'), __('gov_accounts.fields.authority'), __('gov_accounts.fields.service'), __('gov_accounts.fields.status'), __('gov_accounts.fields.round'), __('gov_accounts.export.created_at')],
-            $query->cursor()->map(fn (GovAccountRequest $request): array => [(string) $request->id, $request->employee?->displayName() ?? '—', $request->department?->localizedName() ?? '—', __('gov_accounts.types.'.$request->type), $request->authority?->localizedName() ?? '—', $request->service?->localizedName() ?? '—', __('gov_accounts.statuses.'.$request->status), (string) $request->round, $request->created_at?->format('Y-m-d H:i') ?? '—'])];
+        return [[__('gov_accounts.export.id'), __('gov_accounts.fields.employee'), __('gov_accounts.fields.branch'), __('gov_accounts.fields.department_unit'), __('gov_accounts.export.type'), __('gov_accounts.fields.authority'), __('gov_accounts.fields.service'), __('gov_accounts.fields.status'), __('gov_accounts.fields.round'), __('gov_accounts.export.created_at')],
+            $query->cursor()->map(fn (GovAccountRequest $request): array => [(string) $request->id, $request->employee?->displayName() ?? '—', $request->hospitalBranch?->localizedName() ?? '—', $request->department?->hierarchyLabel() ?? '—', __('gov_accounts.types.'.$request->type), $request->authority?->localizedName() ?? '—', $request->service?->localizedName() ?? '—', __('gov_accounts.statuses.'.$request->status), (string) $request->round, $request->created_at?->format('Y-m-d H:i') ?? '—'])];
     }
 
     private function notices(array $filters): array
@@ -68,10 +68,10 @@ class GovAccountExportService
                 ->when($filters['service_id'], fn (Builder $q, $value) => $q->where('service_id', $value))
                 ->when($filters['date_from'], fn (Builder $q, $value) => $q->whereDate('event_date', '>=', $value))
                 ->when($filters['date_to'], fn (Builder $q, $value) => $q->whereDate('event_date', '<=', $value));
-        })->with(['notice.authority', 'notice.service', 'user'])->orderBy('id');
+        })->with(['notice.hospitalBranch', 'notice.authority', 'notice.service', 'user'])->orderBy('id');
 
-        return [[__('gov_accounts.export.notice'), __('gov_accounts.fields.authority'), __('gov_accounts.fields.service'), __('gov_accounts.fields.event_date'), __('gov_accounts.fields.employee'), __('gov_accounts.fields.email'), __('gov_accounts.fields.status'), __('gov_accounts.fields.viewed_at'), __('gov_accounts.export.view_count')],
-            $query->cursor()->map(fn (GovAccountNoticeRecipient $recipient): array => [$recipient->notice?->title ?? '—', $recipient->notice?->authority?->localizedName() ?? '—', $recipient->notice?->service?->localizedName() ?? '—', $recipient->notice?->event_date?->format('Y-m-d') ?? '—', $recipient->user?->displayName() ?? '—', (string) $recipient->email, $recipient->viewed_at ? __('gov_accounts.notices.viewed') : __('gov_accounts.notices.not_viewed'), $recipient->viewed_at?->format('Y-m-d H:i') ?? '—', (string) $recipient->view_count])];
+        return [[__('gov_accounts.export.notice'), __('gov_accounts.fields.branch'), __('gov_accounts.fields.authority'), __('gov_accounts.fields.service'), __('gov_accounts.fields.event_date'), __('gov_accounts.fields.employee'), __('gov_accounts.fields.email'), __('gov_accounts.fields.status'), __('gov_accounts.fields.viewed_at'), __('gov_accounts.export.view_count')],
+            $query->cursor()->map(fn (GovAccountNoticeRecipient $recipient): array => [$recipient->notice?->title ?? '—', $recipient->notice?->hospitalBranch?->localizedName() ?? '—', $recipient->notice?->authority?->localizedName() ?? '—', $recipient->notice?->service?->localizedName() ?? '—', $recipient->notice?->event_date?->format('Y-m-d') ?? '—', $recipient->user?->displayName() ?? '—', (string) $recipient->email, $recipient->viewed_at ? __('gov_accounts.notices.viewed') : __('gov_accounts.notices.not_viewed'), $recipient->viewed_at?->format('Y-m-d H:i') ?? '—', (string) $recipient->view_count])];
     }
 
     private function csv(array $headers, iterable $rows, string $filename): StreamedResponse

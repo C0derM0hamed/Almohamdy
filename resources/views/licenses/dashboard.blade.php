@@ -19,7 +19,7 @@
         $field = app()->getLocale() === 'ar' ? 'name_ar' : 'name_en';
         return data_get($item, $field) ?: data_get($item, 'name') ?: '—';
     };
-    $filters = array_merge(['branch_id'=>'','authority_id'=>'','type_id'=>'','status_id'=>'','expiry_from'=>'','expiry_to'=>''], $filters ?? request()->only(['branch_id','authority_id','type_id','status_id','expiry_from','expiry_to']));
+    $filters = array_merge(['department_id'=>'','authority_id'=>'','type_id'=>'','status_id'=>'','expiry_from'=>'','expiry_to'=>''], $filters ?? request()->only(['department_id','authority_id','type_id','status_id','expiry_from','expiry_to']));
     $metrics = array_merge(['total'=>0,'active'=>0,'near_expiry'=>0,'under_renewal'=>0,'expired'=>0], $kpis ?? $metrics ?? []);
     $finance = array_merge(['open'=>0,'paid'=>0,'needs_documents'=>0,'in_progress'=>0,'average_close_days'=>0], $financeKpis ?? $financeMetrics ?? []);
     $risks = $topRisks ?? $criticalLicenses ?? collect();
@@ -37,7 +37,7 @@
         <h2 id="dashboardFiltersTitle" class="lic-toolbar__title"><i class="bi bi-funnel"></i>{{ __('licenses.filters.title') }}</h2>
         <form method="GET" action="{{ $url('modules.licenses.dashboard') }}"><div class="lic-filter-grid">
             @foreach ([
-                ['branch_id',__('licenses.filters.branch'),$branchOptions ?? $branches ?? collect()],
+                ['department_id',__('licenses.filters.department'),$departmentOptions ?? $departments ?? $branchOptions ?? $branches ?? collect()],
                 ['authority_id',__('licenses.filters.authority'),$authorityOptions ?? $authorities ?? collect()],
                 ['type_id',__('licenses.filters.type'),$typeOptions ?? $types ?? collect()],
                 ['status_id',__('licenses.filters.status'),$statusOptions ?? $statuses ?? collect()],
@@ -50,14 +50,14 @@
         </div></form>
     </section>
 
-    <section class="lic-stat-grid" aria-label="{{ __('licenses.dashboard') }}">
+    <section class="lic-stat-grid lic-stat-grid--compact" aria-label="{{ __('licenses.dashboard') }}">
         @foreach ([['total','bi-files',''],['active','bi-check-circle','active'],['near_expiry','bi-clock-history','warning'],['under_renewal','bi-arrow-repeat','violet'],['expired','bi-exclamation-octagon','danger']] as [$key,$icon,$tone])
-            <article class="lic-stat {{ $tone ? 'lic-stat--'.$tone : '' }}"><span class="lic-stat__icon" aria-hidden="true"><i class="bi {{ $icon }}"></i></span><span class="lic-stat__copy"><span class="lic-stat__label">{{ __('licenses.dashboard_cards.'.$key) }}</span><strong class="lic-stat__value">{{ (int)($metrics[$key] ?? 0) }}</strong><span class="lic-stat__hint">{{ __('licenses.dashboard_cards.'.$key) }}</span></span></article>
+            <article class="lic-stat {{ $tone ? 'lic-stat--'.$tone : '' }}"><span class="lic-stat__icon" aria-hidden="true"><i class="bi {{ $icon }}"></i></span><span class="lic-stat__copy"><span class="lic-stat__label">{{ __('licenses.dashboard_cards.'.$key) }}</span><strong class="lic-stat__value">{{ (int)($metrics[$key] ?? 0) }}</strong></span></article>
         @endforeach
     </section>
 
     <section class="lic-chart-grid" aria-label="{{ __('licenses.dashboard') }}">
-        @foreach ([['branchChart','by_branch','doughnut'],['authorityChart','by_authority','bar'],['typeChart','by_type','bar'],['expiryChart','expiry_windows','line']] as [$id,$key,$type])
+        @foreach ([['departmentChart','by_department','doughnut'],['authorityChart','by_authority','bar'],['typeChart','by_type','bar'],['expiryChart','expiry_windows','line']] as [$id,$key,$type])
             <article class="lic-panel lic-chart"><h2 class="lic-panel__title">{{ __('licenses.charts.'.$key) }}</h2><canvas id="{{ $id }}" data-chart-key="{{ $key }}" data-chart-type="{{ $type }}" role="img" aria-label="{{ __('licenses.charts.'.$key) }}"></canvas></article>
         @endforeach
     </section>

@@ -12,6 +12,7 @@ use App\Services\Auth\PermissionService;
 use App\Support\GovAccounts\GovAccountPermissions;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Validation\ValidationException;
 
@@ -33,7 +34,7 @@ class GovAccountAdminService
 
         return $class::query()->where('companies_groups_id', $this->companyId())
             ->when($reference === 'services', fn ($query) => $query->with('authority'))
-            ->when($reference === 'department-heads', fn ($query) => $query->with(['department', 'user']))
+            ->when($reference === 'department-heads', fn ($query) => $query->with(['hospitalBranch', 'department.parentDepartment', 'user']))
             ->when($reference !== 'department-heads', fn ($query) => $query->orderBy('ranking'))
             ->orderBy('id')->paginate(25);
     }
@@ -83,10 +84,11 @@ class GovAccountAdminService
     public function options(): array
     {
         $this->authorize();
+        $departmentIds = DB::table('branches')->where('companies_groups_id', $this->companyId())->pluck('id');
         $departments = BranchDepartment::query()
-            ->when(Schema::hasColumn('branches_departments', 'branch_id'), fn ($query) => $query->where('branch_id', (int) session('hr_branch_id', 0)))
+            ->when(Schema::hasColumn('branches_departments', 'branch_id'), fn ($query) => $query->whereIn('branch_id', $departmentIds))
             ->when(Schema::hasColumn('branches_departments', 'publish'), fn ($query) => $query->where('publish', 1))
-            ->orderBy('name_en')->get();
+            ->with('parentDepartment')->orderBy('name_en')->get();
 
         return [
             'authorities' => GovAccountAuthority::query()->where('companies_groups_id', $this->companyId())->where('publish', true)->orderBy('ranking')->get(),
@@ -103,7 +105,7 @@ class GovAccountAdminService
         if ($reference === 'department-heads') {
             $departmentQuery = BranchDepartment::query()->whereKey($payload['department_id']);
             if (Schema::hasColumn('branches_departments', 'branch_id')) {
-                $departmentQuery->where('branch_id', (int) session('hr_branch_id', 0));
+                $departmentQuery->whereIn('branch_id', DB::table('branches')->where('companies_groups_id', $this->companyId())->pluck('id'));
             }
             if (! $departmentQuery->exists()
                 || ! User::query()->whereKey($payload['user_id'])->where('companies_groups_id', $this->companyId())->exists()) {

@@ -52,7 +52,17 @@ class GovAccountNoticeTest extends GovAccountModuleTestCase
         $this->assertNotNull($notice->fresh()->sent_at);
         $this->assertSame(2, DB::table('gov_account_notifications')->where('notice_id', $notice->id)->where('channel', 'inapp')->count());
         Mail::assertSent(GovAccountNoticeMail::class, 2);
-        $this->get(route('modules.gov-accounts.notices.show', $notice))->assertOk()->assertSee('Not viewed')->assertSee('user11@example.test');
+        $indexHtml = $this->get(route('modules.gov-accounts.notices.index'))
+            ->assertOk()
+            ->assertSee('id="govNoticeQuickViewModal"', false)
+            ->assertSee('data-license-preview-open', false)
+            ->assertSee('data-bs-target="#govNoticeQuickViewModal"', false)
+            ->getContent();
+        $this->assertDoesNotMatchRegularExpression(
+            '/<a class="lic-btn[^"]*" href="[^"]*\/modules\/gov-accounts\/notices\/'.$notice->id.'"/',
+            $indexHtml
+        );
+        $this->get(route('modules.gov-accounts.notices.show', $notice))->assertOk()->assertSee('Not viewed')->assertSee('user11@example.test')->assertSee('lic-summary-grid', false);
     }
 
     public function test_all_specific_department_and_service_targeting_are_scoped_and_unique(): void

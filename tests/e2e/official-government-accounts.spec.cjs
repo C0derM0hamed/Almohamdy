@@ -43,6 +43,11 @@ test('Official Government Accounts desktop/mobile Arabic/English verification', 
   });
   await login(page);
   await page.goto('/lang/en');
+  await page.goto('/dashboard');
+  if (testInfo.project.name === 'mobile') await page.locator('main [data-hm-sidebar-toggle]').first().click();
+  else await page.locator('#hmAppSidebar').hover();
+  await expect(page.locator('a[href="#sidebar-gov-accounts"]')).toBeVisible();
+  await expect(page.locator('#sidebar-corporate-communication #sidebar-gov-accounts')).toHaveCount(0);
 
   for (const [path, text] of [
     ['/modules/gov-accounts/dashboard', 'Official Accounts Dashboard'],
@@ -70,6 +75,10 @@ test('Official Government Accounts desktop/mobile Arabic/English verification', 
     await expect(page.locator('body')).toContainText(text);
     await expectResponsive(page);
   }
+
+  await page.goto('/modules/gov-accounts/requests/create');
+  await expect(page.locator('input[readonly]')).not.toHaveValue('');
+  await expect(page.locator('select[name="department_id"] option').nth(1)).not.toHaveText('—');
 
   const title = `Playwright official-account training ${Date.now()} ${testInfo.project.name}`;
   await page.goto('/modules/gov-accounts/notices/create');

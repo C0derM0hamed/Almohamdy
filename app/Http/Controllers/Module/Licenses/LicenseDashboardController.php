@@ -34,7 +34,8 @@ class LicenseDashboardController extends Controller
             'topRisks' => $critical,
             'financeKpis' => $finance,
             'charts' => [
-                'by_branch' => $this->chart($metrics['byBranch']),
+                'by_department' => $this->chart($metrics['byDepartment']),
+                'by_branch' => $this->chart($metrics['byDepartment']),
                 'by_authority' => $this->chart($metrics['byAuthority']),
                 'by_type' => $this->chart($metrics['byType']),
                 'expiry_windows' => [

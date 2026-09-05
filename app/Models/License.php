@@ -69,6 +69,18 @@ class License extends Model
         return $this->belongsTo(User::class, 'created_by', 'hr_id');
     }
 
+    public function hospitalBranch(): BelongsTo
+    {
+        return $this->belongsTo(CompanyGroup::class, 'companies_groups_id');
+    }
+
+    public function departments(): BelongsToMany
+    {
+        return $this->belongsToMany(Department::class, 'license_branches', 'license_id', 'branch_id')
+            ->withTimestamps();
+    }
+
+    /** @deprecated Use departments(); retained for legacy integrations. */
     public function branches(): BelongsToMany
     {
         return $this->belongsToMany(Branch::class, 'license_branches', 'license_id', 'branch_id')

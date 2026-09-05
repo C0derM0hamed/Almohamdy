@@ -21,6 +21,11 @@ class GovAccountDepartmentHead extends Model
         return $this->belongsTo(BranchDepartment::class, 'department_id');
     }
 
+    public function hospitalBranch(): BelongsTo
+    {
+        return $this->belongsTo(CompanyGroup::class, 'companies_groups_id');
+    }
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id', 'hr_id');

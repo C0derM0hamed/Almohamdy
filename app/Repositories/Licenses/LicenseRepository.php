@@ -2,7 +2,7 @@
 
 namespace App\Repositories\Licenses;
 
-use App\Models\Branch;
+use App\Models\Department;
 use App\Models\License;
 use App\Models\LicenseAttachment;
 use App\Models\LicenseAuthority;
@@ -32,11 +32,11 @@ class LicenseRepository
             ->where('companies_groups_id', (int) session('companies_groups_id', 0))
             ->where('publish', true);
 
-        $branchId = (int) session('hr_branch_id', 0);
+        $departmentId = (int) session('hr_branch_id', 0);
         if (! $this->permissions->isAdmin()
             && ! LicensePermissions::isAdministrator($this->permissions)
-            && $branchId > 0) {
-            $query->whereHas('branches', fn (Builder $branchQuery) => $branchQuery->where('branches.id', $branchId));
+            && $departmentId > 0) {
+            $query->whereHas('departments', fn (Builder $departmentQuery) => $departmentQuery->where('branches.id', $departmentId));
         }
 
         if (! LicensePermissions::isAdministrator($this->permissions)
@@ -65,8 +65,8 @@ class LicenseRepository
                             ->orWhere('name_en', 'like', '%'.$search.'%'));
                 });
             })
-            ->when(isset($filters['branch_id']), fn (Builder $query) => $query
-                ->whereHas('branches', fn (Builder $relation) => $relation->where('branches.id', (int) $filters['branch_id'])))
+            ->when(isset($filters['department_id']), fn (Builder $query) => $query
+                ->whereHas('departments', fn (Builder $relation) => $relation->where('branches.id', (int) $filters['department_id'])))
             ->when(isset($filters['authority_id']), fn (Builder $query) => $query->where('license_authority_id', (int) $filters['authority_id']))
             ->when(isset($filters['type_id']), fn (Builder $query) => $query->where('license_type_id', (int) $filters['type_id']))
             ->when(isset($filters['responsible_user_id']), fn (Builder $query) => $query->where('responsible_user_id', (int) $filters['responsible_user_id']))
@@ -88,7 +88,7 @@ class LicenseRepository
     public function paginateFiltered(array $filters, int $perPage): LengthAwarePaginator
     {
         $query = $this->filteredQuery($filters)->with([
-            'authority', 'type', 'status', 'renewalStage', 'responsibleUser', 'branches',
+            'authority', 'type', 'status', 'renewalStage', 'responsibleUser', 'hospitalBranch', 'departments',
         ]);
 
         match ((string) ($filters['sort'] ?? 'expiry_asc')) {
@@ -105,7 +105,7 @@ class LicenseRepository
     {
         return $this->scopedQuery($financeContext)
             ->with([
-                'authority', 'type', 'status', 'renewalStage', 'responsibleUser', 'branches',
+                'authority', 'type', 'status', 'renewalStage', 'responsibleUser', 'hospitalBranch', 'departments',
                 'undertakings.user', 'renewals', 'comments.user', 'attachments.uploader',
                 'timelineEntries.creator', 'paymentRequests.status', 'paymentRequests.requester',
                 'paymentRequests.events.creator', 'notifications',
@@ -133,10 +133,16 @@ class LicenseRepository
         return $license;
     }
 
-    /** @param list<int> $branchIds */
+    /** @param list<int> $departmentIds */
+    public function syncDepartments(License $license, array $departmentIds): void
+    {
+        $license->departments()->sync($departmentIds);
+    }
+
+    /** @deprecated Use syncDepartments(). */
     public function syncBranches(License $license, array $branchIds): void
     {
-        $license->branches()->sync($branchIds);
+        $this->syncDepartments($license, $branchIds);
     }
 
     public function statusId(string $code): int
@@ -254,12 +260,18 @@ class LicenseRepository
         return LicenseRenewalStage::query()->when($publishedOnly, fn (Builder $query) => $query->where('publish', true))->orderBy('ranking')->get();
     }
 
-    public function branchOptions(): Collection
+    public function departmentOptions(): Collection
     {
-        return Branch::query()->where('companies_groups_id', (int) session('companies_groups_id', 0))
+        return Department::query()->where('companies_groups_id', (int) session('companies_groups_id', 0))
             ->when((int) session('hr_user_level', 0) !== 3 && (int) session('hr_branch_id', 0) > 0,
                 fn (Builder $query) => $query->whereKey((int) session('hr_branch_id')))
             ->orderBy('id')->get();
+    }
+
+    /** @deprecated Use departmentOptions(). */
+    public function branchOptions(): Collection
+    {
+        return $this->departmentOptions();
     }
 
     public function responsibleUserOptions(): Collection

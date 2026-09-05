@@ -8,6 +8,7 @@ use App\Http\Requests\Licenses\AssignLicenseRequest;
 use App\Http\Requests\Licenses\CompleteLicenseRenewalRequest;
 use App\Http\Requests\Licenses\LicenseIndexRequest;
 use App\Http\Requests\Licenses\RejectLicenseUndertakingRequest;
+use App\Http\Requests\Licenses\StartLicenseRenewalRequest;
 use App\Http\Requests\Licenses\StoreExternalCommunicationRequest;
 use App\Http\Requests\Licenses\StoreLicenseAttachmentRequest;
 use App\Http\Requests\Licenses\StoreLicenseCommentRequest;

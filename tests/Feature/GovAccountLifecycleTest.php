@@ -76,6 +76,18 @@ class GovAccountLifecycleTest extends GovAccountModuleTestCase
         $this->assertSame(3, GovAccountRequest::query()->where('account_id', $account->id)->whereIn('type', ['modify', 'suspend', 'close'])->count());
     }
 
+    public function test_processor_cancel_reverts_in_flight_account_status(): void
+    {
+        $account = $this->makeAccount();
+        $request = $this->createLifecycle($account, ['type' => 'suspend', 'justification' => 'Raised in error']);
+        $this->assertDatabaseHas('gov_accounts', ['id' => $account->id, 'status' => 'suspension_requested']);
+
+        $this->actAsGovAccountUser(1);
+        $this->post(route('modules.gov-accounts.requests.cancel', $request))->assertRedirect();
+        $this->assertDatabaseHas('gov_account_requests', ['id' => $request->id, 'status' => 'cancelled']);
+        $this->assertDatabaseHas('gov_accounts', ['id' => $account->id, 'status' => 'active']);
+    }
+
     protected function makeAccount(int $companyId = 1, int $branchId = 1, int $employeeId = 11): GovAccount
     {
         $source = GovAccountRequest::query()->create(['companies_groups_id' => $companyId, 'branch_id' => $branchId, 'type' => 'create', 'status' => 'completed', 'origin' => 'department', 'employee_user_id' => $employeeId, 'department_id' => $companyId === 1 ? 1 : 3, 'authority_id' => $this->authorityId, 'service_id' => $this->serviceId, 'role_id' => $this->roleId, 'justification' => 'Existing account', 'round' => 1, 'created_by' => 10]);

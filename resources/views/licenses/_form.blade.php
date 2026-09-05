@@ -9,10 +9,10 @@
     };
     $authoritiesList = $authorityOptions ?? $authorities ?? collect();
     $typesList = $typeOptions ?? $licenseTypes ?? $types ?? collect();
-    $branchesList = $branchOptions ?? $branches ?? collect();
+    $departmentsList = $departmentOptions ?? $departments ?? $branchOptions ?? $branches ?? collect();
     $responsiblesList = $responsibleOptions ?? $users ?? $responsibleUsers ?? collect();
     $stagesList = $stageOptions ?? $renewalStages ?? $stages ?? collect();
-    $selectedBranches = collect(old('branch_ids', $record?->branches?->pluck('id')->all() ?? []))->map(fn ($id) => (string) $id)->all();
+    $selectedDepartments = collect(old('department_ids', old('branch_ids', $record?->departments?->pluck('id')->all() ?? $record?->branches?->pluck('id')->all() ?? [])))->map(fn ($id) => (string) $id)->all();
     $dateValue = static function ($value) {
         if (! $value) return '';
         return $value instanceof \DateTimeInterface ? $value->format('Y-m-d') : substr((string) $value, 0, 10);
@@ -21,6 +21,11 @@
 
 <p class="lic-help mb-3">{{ __('licenses.required_hint') }}</p>
 <div class="lic-form-grid">
+    <div class="lic-field lic-field--span-2">
+        <label for="hospital_branch_display">{{ __('licenses.fields.hospital_branch') }}</label>
+        <input id="hospital_branch_display" type="text" class="form-control" value="{{ $hospitalBranch?->localizedName() ?? $record?->hospitalBranch?->localizedName() ?? '—' }}" readonly>
+    </div>
+
     <div class="lic-field">
         <label for="authority_id">{{ __('licenses.fields.authority') }} <span class="lic-required" aria-hidden="true">*</span></label>
         <select id="authority_id" name="authority_id" class="form-select @error('authority_id') is-invalid @enderror" required aria-describedby="authority_id_error">
@@ -56,17 +61,17 @@
     </div>
 
     <fieldset class="lic-field lic-field--span-2">
-        <legend class="lic-label">{{ __('licenses.fields.branches') }} <span class="lic-required" aria-hidden="true">*</span></legend>
-        <div class="lic-checkbox-grid @error('branch_ids') border-danger @enderror">
-            @foreach ($branchesList as $branch)
-                <label class="lic-checkbox" for="branch_{{ $branch->id }}">
-                    <input id="branch_{{ $branch->id }}" type="checkbox" name="branch_ids[]" value="{{ $branch->id }}" @checked(in_array((string) $branch->id, $selectedBranches, true))>
-                    <span>{{ $nameOf($branch) }}</span>
+        <legend class="lic-label">{{ __('licenses.fields.departments') }} <span class="lic-required" aria-hidden="true">*</span></legend>
+        <div class="lic-checkbox-grid @error('department_ids') border-danger @enderror">
+            @foreach ($departmentsList as $department)
+                <label class="lic-checkbox" for="department_{{ $department->id }}">
+                    <input id="department_{{ $department->id }}" type="checkbox" name="department_ids[]" value="{{ $department->id }}" @checked(in_array((string) $department->id, $selectedDepartments, true))>
+                    <span>{{ $nameOf($department) }}</span>
                 </label>
             @endforeach
         </div>
-        @error('branch_ids')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
-        @error('branch_ids.*')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
+        @error('department_ids')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
+        @error('department_ids.*')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
     </fieldset>
 
     <div class="lic-field">

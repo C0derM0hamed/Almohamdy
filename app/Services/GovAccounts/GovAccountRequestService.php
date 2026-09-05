@@ -2,6 +2,7 @@
 
 namespace App\Services\GovAccounts;
 
+use App\Models\BranchDepartment;
 use App\Models\GovAccount;
 use App\Models\GovAccountAttachment;
 use App\Models\GovAccountAuthority;
@@ -17,6 +18,7 @@ use App\Support\GovAccounts\GovAccountPermissions;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
@@ -24,7 +26,7 @@ class GovAccountRequestService
 {
     public const CREATE_TRANSITIONS = [
         'draft' => ['awaiting_employee', 'cancelled'],
-        'awaiting_employee' => ['under_review'],
+        'awaiting_employee' => ['under_review', 'cancelled'],
         'under_review' => ['approved', 'rejected', 'cancelled'],
         'rejected' => ['under_review', 'cancelled'],
         'approved' => ['submitted_to_authority'],
@@ -41,10 +43,11 @@ class GovAccountRequestService
     {
         $this->assertCanRequest((int) $payload['department_id']);
         $this->assertReferences($payload);
+        $parentDepartmentId = $this->resolveParentDepartmentId((int) $payload['department_id']);
 
-        return DB::transaction(function () use ($payload): GovAccountRequest {
+        return DB::transaction(function () use ($payload, $parentDepartmentId): GovAccountRequest {
             $request = GovAccountRequest::query()->create($payload + [
-                'companies_groups_id' => $this->companyId(), 'branch_id' => (int) session('hr_branch_id', 0),
+                'companies_groups_id' => $this->companyId(), 'branch_id' => $parentDepartmentId,
                 'type' => 'create', 'status' => 'draft', 'origin' => 'department', 'round' => 1,
                 'created_by' => $this->userId(),
             ]);
@@ -110,6 +113,7 @@ class GovAccountRequestService
         }
         $this->assertCanRequest((int) $payload['department_id']);
         $this->assertReferences($payload);
+        $payload['branch_id'] = $this->resolveParentDepartmentId((int) $payload['department_id']);
         $before = $request->only(['employee_user_id', 'department_id', 'authority_id', 'service_id', 'role_id', 'justification', 'notes']);
         $request->update($payload);
         $this->timeline($request, 'updated', __('gov_accounts.timeline.updated'), ['before' => $before, 'after' => $request->only(array_keys($before))]);
@@ -235,11 +239,14 @@ class GovAccountRequestService
         } else {
             $this->assertHeadOwns($request);
         }
-        $this->transition($request, 'cancelled');
-        $this->revertLifecycleAccount($request);
-        $this->timeline($request, 'cancelled', __('gov_accounts.timeline.cancelled'));
 
-        return $request;
+        return DB::transaction(function () use ($request): GovAccountRequest {
+            $this->transition($request, 'cancelled');
+            $this->revertLifecycleAccount($request);
+            $this->timeline($request, 'cancelled', __('gov_accounts.timeline.cancelled'));
+
+            return $request;
+        });
     }
 
     public function storeAttachment(GovAccountRequest $request, UploadedFile $file, string $context, ?string $description): GovAccountAttachment
@@ -335,6 +342,23 @@ class GovAccountRequestService
         }
         abort_unless($this->permissions->can(GovAccountPermissions::REQUEST), 403);
         abort_unless(GovAccountDepartmentHead::query()->where('companies_groups_id', $this->companyId())->where('department_id', $departmentId)->where('user_id', $this->userId())->where('publish', true)->exists(), 403);
+    }
+
+    private function resolveParentDepartmentId(int $unitId): int
+    {
+        if (! Schema::hasColumn('branches_departments', 'branch_id')) {
+            return (int) session('hr_branch_id', 0);
+        }
+
+        $unit = BranchDepartment::query()->whereKey($unitId)->firstOrFail();
+        $parentId = (int) $unit->branch_id;
+        $valid = DB::table('branches')->where('id', $parentId)
+            ->where('companies_groups_id', $this->companyId())->exists();
+        if (! $valid) {
+            throw ValidationException::withMessages(['department_id' => __('gov_accounts.validation.invalid_scope')]);
+        }
+
+        return $parentId;
     }
 
     private function assertHeadOwns(GovAccountRequest $request): void

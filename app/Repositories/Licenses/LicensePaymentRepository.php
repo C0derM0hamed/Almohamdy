@@ -41,7 +41,7 @@ class LicensePaymentRepository
                     $query->whereHas('status', fn (Builder $relation) => $relation->where('code', $status));
                 }
             })
-            ->when(isset($filters['branch_id']), fn (Builder $query) => $query->whereHas('license.branches', fn (Builder $branches) => $branches->where('branches.id', (int) $filters['branch_id'])))
+            ->when(isset($filters['department_id']), fn (Builder $query) => $query->whereHas('license.departments', fn (Builder $departments) => $departments->where('branches.id', (int) $filters['department_id'])))
             ->when(isset($filters['license_id']), fn (Builder $query) => $query->where('license_id', (int) $filters['license_id']))
             ->when(isset($filters['from_date']), fn (Builder $query) => $query->whereDate('created_at', '>=', $filters['from_date']))
             ->when(isset($filters['to_date']), fn (Builder $query) => $query->whereDate('created_at', '<=', $filters['to_date']))
@@ -63,7 +63,7 @@ class LicensePaymentRepository
     public function findForDetail(int $id): ?LicensePaymentRequest
     {
         return $this->scopedQuery()->with([
-            'license.authority', 'license.type', 'license.branches', 'license.responsibleUser',
+            'license.authority', 'license.type', 'license.hospitalBranch', 'license.departments', 'license.responsibleUser',
             'status', 'requester', 'renewal', 'events.status', 'events.creator', 'attachments.uploader',
         ])->whereKey($id)->first();
     }

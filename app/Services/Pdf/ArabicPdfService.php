@@ -106,7 +106,7 @@ final class ArabicPdfService
 
             $xpath = new DOMXPath($document);
             $nodes = $xpath->query(
-                '//text()[not(ancestor::script) and not(ancestor::style) and not(ancestor::textarea)]',
+                '//text()[not(ancestor::script) and not(ancestor::style) and not(ancestor::textarea) and not(ancestor::title) and not(ancestor::head)]',
             );
 
             if ($nodes !== false) {
@@ -115,7 +115,7 @@ final class ArabicPdfService
                         continue;
                     }
 
-                    $node->nodeValue = $this->shape($node->nodeValue);
+                    $node->nodeValue = $this->shape($node->nodeValue, $this->shapeWidth($node));
                 }
             }
 
@@ -126,7 +126,19 @@ final class ArabicPdfService
         }
     }
 
-    private function shape(?string $text): string
+    private function shapeWidth(\DOMNode $node): int
+    {
+        for ($current = $node->parentNode; $current; $current = $current->parentNode) {
+            $name = strtolower((string) $current->nodeName);
+            if (in_array($name, ['td', 'th', 'h1', 'h2', 'h3'], true)) {
+                return 10000;
+            }
+        }
+
+        return 50;
+    }
+
+    private function shape(?string $text, int $maxChars = 50): string
     {
         if ($text === null || $text === '') {
             return (string) $text;
@@ -138,7 +150,7 @@ final class ArabicPdfService
 
         try {
             // Keep Western digits unchanged: this is visual shaping only.
-            return $this->arabic->utf8Glyphs($text, 50, false);
+            return $this->arabic->utf8Glyphs($text, $maxChars, false);
         } finally {
             restore_error_handler();
         }

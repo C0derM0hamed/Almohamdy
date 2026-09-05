@@ -59,6 +59,8 @@
     $canProcessUi = (bool) ($canProcess ?? $permissions['process'] ?? $canAdminUi || (string) data_get($responsible, 'hr_id', data_get($responsible, 'id')) === (string) session('hr_user_id'));
     $canFinanceUi = (bool) ($canFinance ?? $permissions['finance'] ?? $canAdminUi);
     $title = $license->title ?: $nameOf($license->licenseType ?? $license->type ?? null);
+    $openRenewal = $renewals->first(fn ($renewal) => ! $renewal->completed_at);
+    $oldOperation = old('_operation');
 @endphp
 
 <div class="hm-licenses">
@@ -70,15 +72,6 @@
     @include('licenses.partials.page-header', ['title' => $title ?: __('licenses.show'), 'subtitle' => $license->license_number ?: '#'.$license->id, 'icon' => 'bi-patch-check', 'actions' => new \Illuminate\Support\HtmlString($actions)])
     @include('licenses.partials.feedback')
 
-    <nav class="lic-tabs lic-no-print" aria-label="{{ __('licenses.show') }}">
-        @foreach ([
-            'summary'=>'summary','responsibility'=>'responsibility','renewal'=>'renewal','comments'=>'comments',
-            'attachments'=>'attachments','payments'=>'payments','history'=>'history','timeline'=>'timeline','notifications'=>'notifications',
-        ] as $anchor => $label)
-            <a class="lic-tab" href="#{{ $anchor }}">{{ __('licenses.sections.'.$label) }}</a>
-        @endforeach
-    </nav>
-
     <section id="summary" class="lic-panel lic-anchor" aria-labelledby="summaryTitle">
         <div class="lic-panel__head">
             <h2 id="summaryTitle" class="lic-panel__title"><i class="bi bi-card-list"></i>{{ __('licenses.sections.summary') }}</h2>
@@ -89,6 +82,7 @@
                 __('licenses.fields.license_number') => $license->license_number ?: '#'.$license->id,
                 __('licenses.fields.type') => $nameOf($license->licenseType ?? $license->type ?? null),
                 __('licenses.fields.authority') => $nameOf($license->authority ?? null),
+                __('licenses.fields.hospital_branch') => $nameOf($license->hospitalBranch ?? null),
                 __('licenses.fields.responsible') => $nameOf($responsible),
                 __('licenses.fields.issue_date') => $dateOf($license->issue_date),
                 __('licenses.fields.expiry_date') => $dateOf($license->expiry_date),
@@ -99,15 +93,48 @@
             @endforeach
         </div>
         <div class="mt-3">
-            <span class="lic-label">{{ __('licenses.fields.branches') }}</span>
-            <div class="lic-chip-list">@forelse (($license->branches ?? collect()) as $branch)<span class="lic-chip"><i class="bi bi-building"></i>{{ $nameOf($branch) }}</span>@empty — @endforelse</div>
+            <span class="lic-label">{{ __('licenses.fields.departments') }}</span>
+            @include('licenses.partials.department-chips', ['departments' => $license->departments ?? $license->branches ?? collect()])
         </div>
         @if ($license->notes)<div class="mt-3"><span class="lic-label">{{ __('licenses.fields.notes') }}</span><p class="mb-0 text-break" style="white-space:pre-line">{{ $license->notes }}</p></div>@endif
     </section>
 
-    <div class="lic-two-column">
+    @if($canProcessUi || $canAdminUi)
+        <section class="lic-panel lic-action-hub lic-no-print" aria-labelledby="licenseActionsTitle">
+            <div class="lic-panel__head"><h2 id="licenseActionsTitle" class="lic-panel__title"><i class="bi bi-sliders"></i>{{ __('licenses.sections.actions') }}</h2></div>
+            <div class="lic-action-grid">
+                @if($canProcessUi)
+                    <button class="lic-btn lic-action-button" type="button" data-bs-toggle="modal" data-bs-target="#licenseOperationStage"><i class="bi bi-signpost"></i>{{ __('licenses.renewal.update_stage') }}</button>
+                    @if($openRenewal)
+                        <button class="lic-btn lic-action-button" type="button" data-bs-toggle="modal" data-bs-target="#licenseOperationRenewalComplete"><i class="bi bi-check2-circle"></i>{{ __('licenses.renewal.complete') }}</button>
+                    @else
+                        <button class="lic-btn lic-action-button" type="button" data-bs-toggle="modal" data-bs-target="#licenseOperationRenewalStart"><i class="bi bi-play-circle"></i>{{ __('licenses.renewal.start') }}</button>
+                    @endif
+                    <button class="lic-btn lic-action-button" type="button" data-bs-toggle="modal" data-bs-target="#licenseOperationPayment"><i class="bi bi-cash-stack"></i>{{ __('licenses.payments.create') }}</button>
+                    <button class="lic-btn lic-action-button" type="button" data-license-open-panel="attachments"><i class="bi bi-paperclip"></i>{{ __('licenses.attachments.upload') }}</button>
+                    <button class="lic-btn lic-action-button" type="button" data-bs-toggle="modal" data-bs-target="#licenseOperationComment"><i class="bi bi-chat-left-text"></i>{{ __('licenses.comments.add') }}</button>
+                    <button class="lic-btn lic-action-button" type="button" data-bs-toggle="modal" data-bs-target="#licenseOperationExternal"><i class="bi bi-envelope-paper"></i>{{ __('licenses.external.add') }}</button>
+                @endif
+                @if($canAdminUi)<button class="lic-btn lic-action-button" type="button" data-bs-toggle="modal" data-bs-target="#licenseOperationAssignment"><i class="bi bi-person-gear"></i>{{ __('licenses.assignment.reassign') }}</button>@endif
+            </div>
+        </section>
+    @endif
+
+    <nav class="lic-tabs lic-no-print" role="tablist" aria-label="{{ __('licenses.show') }}">
+        @foreach (['responsibility','comments','attachments','payments','history','timeline','notifications'] as $anchor)
+            <a class="lic-tab" data-license-tab role="tab" aria-controls="{{ $anchor }}" href="#{{ $anchor }}">{{ __('licenses.sections.'.$anchor) }}</a>
+        @endforeach
+    </nav>
+
+    @if($oldOperation === 'attachment')
+        <span hidden data-license-initial-panel="attachments"></span>
+    @elseif($oldOperation)
+        <span hidden data-license-open-operation="licenseOperation{{ Illuminate\Support\Str::studly($oldOperation) }}"></span>
+    @endif
+
+    <div class="lic-two-column lic-read-workspace">
         <div class="lic-stack">
-            <section id="responsibility" class="lic-panel lic-anchor" aria-labelledby="undertakingTitle">
+            <section id="responsibility" data-license-panel role="tabpanel" class="lic-panel lic-anchor" aria-labelledby="undertakingTitle">
                 <div class="lic-panel__head"><h2 id="undertakingTitle" class="lic-panel__title"><i class="bi bi-shield-check"></i>{{ __('licenses.sections.responsibility') }}</h2>
                     @php $undertakingStatus = data_get($currentUndertaking, 'status', 'pending'); @endphp
                     <span class="lic-status {{ $undertakingStatus === 'accepted' ? 'lic-status--active' : ($undertakingStatus === 'escalated' ? 'lic-status--expired' : 'lic-status--near_expiry') }}">{{ __('licenses.undertaking.'.$undertakingStatus) }}</span>
@@ -125,12 +152,13 @@
                 @endif
             </section>
 
-            <section id="renewal" class="lic-panel lic-anchor" aria-labelledby="renewalTitle">
+            <section id="renewal" class="lic-operation-sources lic-no-print" aria-labelledby="renewalTitle">
                 <h2 id="renewalTitle" class="lic-panel__title"><i class="bi bi-arrow-repeat"></i>{{ __('licenses.sections.renewal') }}</h2>
                 @if ($canProcessUi)
                     <div class="lic-form-grid">
-                        <form method="POST" action="{{ $url('modules.licenses.stage', $recordId) }}" class="lic-field lic-field--span-2">
+                        <form method="POST" action="{{ $url('modules.licenses.stage', $recordId) }}" class="lic-field lic-field--span-2" data-license-operation-form="licenseOperationStage">
                             @csrf
+                            <input type="hidden" name="_operation" value="stage">
                             <label for="renewal_stage_id">{{ __('licenses.renewal.update_stage') }}</label>
                             <div class="d-flex flex-wrap gap-2">
                                 <select id="renewal_stage_id" name="renewal_stage_id" required class="form-select flex-grow-1 @error('renewal_stage_id') is-invalid @enderror">
@@ -139,14 +167,16 @@
                                 <button class="lic-btn lic-btn--primary" type="submit">{{ __('licenses.renewal.update_stage') }}</button>
                             </div>
                         </form>
-                        <form method="POST" action="{{ $url('modules.licenses.renewal.start', $recordId) }}" class="lic-field">
+                        <form method="POST" action="{{ $url('modules.licenses.renewal.start', $recordId) }}" class="lic-field" data-license-operation-form="licenseOperationRenewalStart">
                             @csrf
+                            <input type="hidden" name="_operation" value="renewal_start">
                             <label for="renewal_notes">{{ __('licenses.renewal.start') }}</label>
                             <textarea id="renewal_notes" name="notes" class="form-control" placeholder="{{ __('licenses.fields.notes') }}">{{ old('notes') }}</textarea>
                             <button class="lic-btn mt-2" type="submit"><i class="bi bi-play-circle"></i>{{ __('licenses.renewal.start') }}</button>
                         </form>
-                        <form method="POST" action="{{ $url('modules.licenses.renewal.complete', $recordId) }}" enctype="multipart/form-data" class="lic-field">
+                        <form method="POST" action="{{ $url('modules.licenses.renewal.complete', $recordId) }}" enctype="multipart/form-data" class="lic-field" data-license-operation-form="licenseOperationRenewalComplete">
                             @csrf
+                            <input type="hidden" name="_operation" value="renewal_complete">
                             <input type="hidden" name="old_expiry_date" value="{{ $dateOf($license->expiry_date) }}">
                             <label for="new_expiry_date">{{ __('licenses.renewal.new_expiry_date') }} <span class="lic-required">*</span></label>
                             <input id="new_expiry_date" type="date" name="new_expiry_date" min="{{ $dateOf($license->expiry_date) }}" required class="form-control @error('new_expiry_date') is-invalid @enderror">
@@ -161,49 +191,61 @@
                 @endif
             </section>
 
-            <section id="comments" class="lic-panel lic-anchor" aria-labelledby="commentsTitle">
+            <section id="comments" data-license-panel role="tabpanel" class="lic-panel lic-anchor" aria-labelledby="commentsTitle">
                 <h2 id="commentsTitle" class="lic-panel__title"><i class="bi bi-chat-left-text"></i>{{ __('licenses.sections.comments') }}</h2>
                 @forelse ($comments->sortByDesc('id') as $comment)
                     <article class="lic-comment"><div class="lic-comment__meta"><span class="lic-comment__author">{{ $nameOf($comment->user ?? $comment->author ?? null) }}</span><time>{{ $dateOf($comment->created_at, true) }}</time></div><p class="lic-comment__body">{{ $comment->body }}</p></article>
                 @empty <div class="lic-empty">{{ __('licenses.comments.empty') }}</div> @endforelse
                 @if ($canProcessUi)
-                    <form method="POST" action="{{ $url('modules.licenses.comments.store', $recordId) }}" class="mt-3">
+                    <form method="POST" action="{{ $url('modules.licenses.comments.store', $recordId) }}" class="mt-3" data-license-operation-form="licenseOperationComment">
                         @csrf
+                        <input type="hidden" name="_operation" value="comment">
                         <div class="lic-field"><label for="comment_body">{{ __('licenses.comments.add') }}</label><textarea id="comment_body" name="body" required maxlength="5000" placeholder="{{ __('licenses.comments.placeholder') }}" class="form-control @error('body') is-invalid @enderror">{{ old('body') }}</textarea>@error('body')<div class="invalid-feedback">{{ $message }}</div>@enderror</div>
                         <button class="lic-btn lic-btn--primary mt-2" type="submit"><i class="bi bi-send"></i>{{ __('licenses.comments.add') }}</button>
                     </form>
                 @endif
             </section>
 
-            <section id="attachments" class="lic-panel lic-anchor" aria-labelledby="attachmentsTitle">
-                <h2 id="attachmentsTitle" class="lic-panel__title"><i class="bi bi-paperclip"></i>{{ __('licenses.sections.attachments') }}</h2>
-                <div class="lic-table-wrap"><table class="lic-table"><thead><tr><th>{{ __('licenses.attachments.file') }}</th><th>{{ __('licenses.attachments.context') }}</th><th>{{ __('licenses.fields.description') }}</th><th>{{ __('licenses.attachments.uploaded_by') }}</th><th>{{ __('licenses.attachments.uploaded_at') }}</th><th>{{ __('licenses.actions') }}</th></tr></thead><tbody>
-                @forelse ($attachments->sortByDesc('id') as $attachment)
-                    <tr><td>{{ $attachment->original_name }}</td><td>{{ __('licenses.attachments.contexts.'.$attachment->context) }}</td><td>{{ $attachment->description ?: '—' }}</td><td>{{ $nameOf($attachment->uploader ?? $attachment->user ?? null) }}</td><td>{{ $dateOf($attachment->uploaded_at ?? $attachment->created_at, true) }}</td><td><a class="lic-btn lic-btn--sm" href="{{ $url('modules.licenses.attachments.download', [$recordId, $attachment->getRouteKey()]) }}"><i class="bi bi-download"></i>{{ __('licenses.download') }}</a></td></tr>
-                @empty <tr><td colspan="6" class="lic-empty">{{ __('licenses.attachments.empty') }}</td></tr> @endforelse
-                </tbody></table></div>
+            <section id="attachments" data-license-panel role="tabpanel" class="lic-panel lic-anchor" aria-labelledby="attachmentsTitle">
+                <div class="lic-panel__head">
+                    <h2 id="attachmentsTitle" class="lic-panel__title"><i class="bi bi-paperclip"></i>{{ __('licenses.sections.attachments') }}</h2>
+                    <span class="lic-file-count">{{ $attachments->count() }}</span>
+                </div>
                 @if ($canProcessUi)
-                    <form method="POST" action="{{ $url('modules.licenses.attachments.store', $recordId) }}" enctype="multipart/form-data" class="lic-form-grid mt-3">
+                    <form method="POST" action="{{ $url('modules.licenses.attachments.store', $recordId) }}" enctype="multipart/form-data" class="lic-file-upload lic-file-upload--stack">
                         @csrf
-                        <div class="lic-field"><label for="attachment_file">{{ __('licenses.attachments.file') }} <span class="lic-required">*</span></label><input id="attachment_file" type="file" name="file" accept=".pdf,.png,.jpg,.jpeg,.xls,.xlsx" required class="form-control"></div>
-                        <div class="lic-field"><label for="attachment_context">{{ __('licenses.attachments.context') }}</label><select id="attachment_context" name="context" class="form-select">@foreach(['license','renewal'] as $context)<option value="{{ $context }}">{{ __('licenses.attachments.contexts.'.$context) }}</option>@endforeach</select></div>
-                        <div class="lic-field lic-field--span-2"><label for="attachment_description">{{ __('licenses.fields.description') }}</label><input id="attachment_description" type="text" name="description" maxlength="500" class="form-control"></div>
-                        <div class="lic-field--span-2"><p class="lic-help">{{ __('licenses.attachments.allowed') }}</p><button class="lic-btn lic-btn--primary" type="submit"><i class="bi bi-upload"></i>{{ __('licenses.attachments.upload') }}</button></div>
+                        <input type="hidden" name="_operation" value="attachment">
+                        <div class="lic-form-grid">
+                            <div class="lic-field"><label for="attachment_file">{{ __('licenses.attachments.file') }} <span class="lic-required">*</span></label><input id="attachment_file" type="file" name="file" accept=".pdf,.png,.jpg,.jpeg,.xls,.xlsx" required class="form-control"></div>
+                            <div class="lic-field"><label for="attachment_context">{{ __('licenses.attachments.context') }}</label><select id="attachment_context" name="context" class="form-select">@foreach(['license','renewal'] as $context)<option value="{{ $context }}">{{ __('licenses.attachments.contexts.'.$context) }}</option>@endforeach</select></div>
+                            <div class="lic-field lic-field--span-2"><label for="attachment_description">{{ __('licenses.fields.description') }}</label><input id="attachment_description" type="text" name="description" maxlength="500" class="form-control"></div>
+                            <div class="lic-field lic-field--span-2"><p class="lic-help mb-2">{{ __('licenses.attachments.allowed') }}</p><button class="lic-btn lic-btn--primary" type="submit"><i class="bi bi-upload"></i>{{ __('licenses.attachments.upload') }}</button></div>
+                        </div>
                     </form>
                 @endif
+                @include('licenses.partials.file-cards', [
+                    'files' => $attachments->sortByDesc('id'),
+                    'downloadUrl' => fn ($file) => $url('modules.licenses.attachments.download', [$recordId, $file->getRouteKey()]),
+                    'subtitle' => fn ($file) => trim(implode(' · ', array_filter([
+                        __('licenses.attachments.contexts.'.($file->context ?: 'license')),
+                        $file->description,
+                        $nameOf($file->uploader ?? $file->user ?? null),
+                    ]))),
+                ])
             </section>
 
-            <section id="payments" class="lic-panel lic-anchor" aria-labelledby="paymentsTitle">
+            <section id="payments" data-license-panel role="tabpanel" class="lic-panel lic-anchor" aria-labelledby="paymentsTitle">
                 <h2 id="paymentsTitle" class="lic-panel__title"><i class="bi bi-cash-stack"></i>{{ __('licenses.sections.payments') }}</h2>
-                <div class="lic-table-wrap"><table class="lic-table"><thead><tr><th>{{ __('licenses.payments.request_number') }}</th><th>{{ __('licenses.payments.amount') }}</th><th>{{ __('licenses.payments.status') }}</th><th>{{ __('licenses.payments.requested_at') }}</th><th>{{ __('licenses.actions') }}</th></tr></thead><tbody>
+                <div class="lic-table-wrap"><table class="lic-table lic-table--stack"><thead><tr><th>{{ __('licenses.payments.request_number') }}</th><th>{{ __('licenses.payments.amount') }}</th><th>{{ __('licenses.payments.status') }}</th><th>{{ __('licenses.payments.requested_at') }}</th><th>{{ __('licenses.actions') }}</th></tr></thead><tbody>
                 @forelse ($payments->sortByDesc('id') as $payment)
                     @php $paymentStatus = $payment->statusRelation ?? $payment->status ?? null; @endphp
                     <tr><td>#{{ $payment->id }}</td><td class="lic-sensitive">{{ number_format((float) $payment->amount, 2) }} {{ $payment->currency ?: 'SAR' }}</td><td><span class="lic-status">{{ $nameOf($paymentStatus) }}</span></td><td>{{ $dateOf($payment->created_at, true) }}</td><td>@if($canFinanceUi)<a class="lic-btn lic-btn--sm" href="{{ $url('modules.licenses.finance.show', $payment->getRouteKey()) }}">{{ __('licenses.view') }}</a>@else — @endif</td></tr>
                 @empty <tr><td colspan="5" class="lic-empty">{{ __('licenses.payments.empty') }}</td></tr> @endforelse
                 </tbody></table></div>
                 @if ($canProcessUi)
-                    <form method="POST" action="{{ $url('modules.licenses.payment-requests.store', $recordId) }}" enctype="multipart/form-data" class="lic-form-grid mt-3">
+                    <form method="POST" action="{{ $url('modules.licenses.payment-requests.store', $recordId) }}" enctype="multipart/form-data" class="lic-form-grid mt-3" data-license-operation-form="licenseOperationPayment">
                         @csrf
+                        <input type="hidden" name="_operation" value="payment">
                         <div class="lic-field"><label for="payment_amount">{{ __('licenses.payments.amount') }} <span class="lic-required">*</span></label><input id="payment_amount" type="number" name="amount" min="0.01" step="0.01" required value="{{ old('amount') }}" class="form-control"></div>
                         <div class="lic-field"><label for="payment_currency">{{ __('licenses.payments.currency') }}</label><input id="payment_currency" type="text" name="currency" value="{{ old('currency', 'SAR') }}" maxlength="3" class="form-control lic-sensitive"></div>
                         <div class="lic-field"><label for="bank_name">{{ __('licenses.payments.bank_name') }}</label><input id="bank_name" type="text" name="bank_name" value="{{ old('bank_name') }}" maxlength="255" class="form-control"></div>
@@ -216,14 +258,14 @@
                 @endif
             </section>
 
-            <section id="history" class="lic-panel lic-anchor" aria-labelledby="historyTitle">
+            <section id="history" data-license-panel role="tabpanel" class="lic-panel lic-anchor" aria-labelledby="historyTitle">
                 <h2 id="historyTitle" class="lic-panel__title"><i class="bi bi-clock-history"></i>{{ __('licenses.sections.history') }}</h2>
-                <div class="lic-table-wrap"><table class="lic-table"><thead><tr><th>{{ __('licenses.renewal.previous_expiry') }}</th><th>{{ __('licenses.renewal.new_expiry') }}</th><th>{{ __('licenses.renewal.started_at') }}</th><th>{{ __('licenses.renewal.completed_at') }}</th><th>{{ __('licenses.fields.notes') }}</th></tr></thead><tbody>
+                <div class="lic-table-wrap"><table class="lic-table lic-table--stack"><thead><tr><th>{{ __('licenses.renewal.previous_expiry') }}</th><th>{{ __('licenses.renewal.new_expiry') }}</th><th>{{ __('licenses.renewal.started_at') }}</th><th>{{ __('licenses.renewal.completed_at') }}</th><th>{{ __('licenses.fields.notes') }}</th></tr></thead><tbody>
                 @forelse ($renewals->sortByDesc('id') as $renewal)<tr><td>{{ $dateOf($renewal->previous_expiry_date) }}</td><td>{{ $dateOf($renewal->new_expiry_date) }}</td><td>{{ $dateOf($renewal->started_at, true) }}</td><td>{{ $dateOf($renewal->completed_at, true) }}</td><td>{{ $renewal->notes ?: '—' }}</td></tr>@empty<tr><td colspan="5" class="lic-empty">{{ __('licenses.renewal.empty') }}</td></tr>@endforelse
                 </tbody></table></div>
             </section>
 
-            <section id="timeline" class="lic-panel lic-anchor" aria-labelledby="timelineTitle">
+            <section id="timeline" data-license-panel role="tabpanel" class="lic-panel lic-anchor" aria-labelledby="timelineTitle">
                 <h2 id="timelineTitle" class="lic-panel__title"><i class="bi bi-signpost-split"></i>{{ __('licenses.sections.timeline') }}</h2>
                 <ol class="lic-timeline">
                     @forelse ($timeline->sortByDesc('id') as $entry)
@@ -233,9 +275,9 @@
                 </ol>
             </section>
 
-            <section id="notifications" class="lic-panel lic-anchor" aria-labelledby="notificationsTitle">
+            <section id="notifications" data-license-panel role="tabpanel" class="lic-panel lic-anchor" aria-labelledby="notificationsTitle">
                 <h2 id="notificationsTitle" class="lic-panel__title"><i class="bi bi-bell"></i>{{ __('licenses.sections.notifications') }}</h2>
-                <div class="lic-table-wrap"><table class="lic-table"><thead><tr><th>{{ __('licenses.notifications.event') }}</th><th>{{ __('licenses.notifications.recipient') }}</th><th>{{ __('licenses.notifications.channel') }}</th><th>{{ __('licenses.notifications.delivery') }}</th><th>{{ __('licenses.notifications.sent_at') }}</th></tr></thead><tbody>
+                <div class="lic-table-wrap"><table class="lic-table lic-table--stack"><thead><tr><th>{{ __('licenses.notifications.event') }}</th><th>{{ __('licenses.notifications.recipient') }}</th><th>{{ __('licenses.notifications.channel') }}</th><th>{{ __('licenses.notifications.delivery') }}</th><th>{{ __('licenses.notifications.sent_at') }}</th></tr></thead><tbody>
                 @forelse ($notifications->sortByDesc('id') as $notification)
                     <tr><td>{{ __('licenses.timeline.events.'.($notification->event_type ?: 'reminder_sent')) }}</td><td>{{ $nameOf($notification->recipientUser ?? $notification->recipient ?? null) }}</td><td>{{ strtoupper($notification->channel ?: 'in-app') }}</td><td>{{ __('licenses.notifications.'.($notification->delivery_status ?: $notification->status ?: 'delivered')) }}</td><td>{{ $dateOf($notification->sent_at ?? $notification->created_at, true) }}</td></tr>
                 @empty <tr><td colspan="5" class="lic-empty">{{ __('licenses.notifications.empty') }}</td></tr> @endforelse
@@ -243,15 +285,15 @@
             </section>
         </div>
 
-        <aside class="lic-stack lic-no-print">
+        <aside class="lic-stack lic-operation-sources lic-no-print">
             @if ($canAdminUi)
                 <section class="lic-panel"><h2 class="lic-panel__title"><i class="bi bi-person-gear"></i>{{ __('licenses.sections.assignment') }}</h2><p class="lic-help">{{ __('licenses.assignment.warning') }}</p>
-                    <form method="POST" action="{{ $url('modules.licenses.assign', $recordId) }}">@csrf<div class="lic-field"><label for="new_responsible_user_id">{{ __('licenses.fields.new_responsible') }}</label><select id="new_responsible_user_id" name="responsible_user_id" required class="form-select"><option value="">—</option>@foreach($responsiblesList as $user)<option value="{{ $user->hr_id ?? $user->id }}">{{ $nameOf($user) }}</option>@endforeach</select></div><button class="lic-btn mt-2" type="submit"><i class="bi bi-person-check"></i>{{ __('licenses.assignment.reassign') }}</button></form>
+                    <form method="POST" action="{{ $url('modules.licenses.assign', $recordId) }}" data-license-operation-form="licenseOperationAssignment">@csrf<input type="hidden" name="_operation" value="assignment"><div class="lic-field"><label for="new_responsible_user_id">{{ __('licenses.fields.new_responsible') }}</label><select id="new_responsible_user_id" name="responsible_user_id" required class="form-select"><option value="">—</option>@foreach($responsiblesList as $user)<option value="{{ $user->hr_id ?? $user->id }}">{{ $nameOf($user) }}</option>@endforeach</select></div><button class="lic-btn mt-2" type="submit"><i class="bi bi-person-check"></i>{{ __('licenses.assignment.reassign') }}</button></form>
                 </section>
             @endif
             @if ($canProcessUi)
                 <section class="lic-panel"><h2 class="lic-panel__title"><i class="bi bi-envelope-paper"></i>{{ __('licenses.sections.external') }}</h2>
-                    <form method="POST" action="{{ $url('modules.licenses.external-communications.store', $recordId) }}" enctype="multipart/form-data">@csrf
+                    <form method="POST" action="{{ $url('modules.licenses.external-communications.store', $recordId) }}" enctype="multipart/form-data" data-license-operation-form="licenseOperationExternal">@csrf<input type="hidden" name="_operation" value="external">
                         <div class="lic-field mb-2"><label for="external_reference">{{ __('licenses.external.reference_no') }}</label><input id="external_reference" name="reference_no" maxlength="100" class="form-control lic-sensitive"></div>
                         <div class="lic-field mb-2"><label for="external_date">{{ __('licenses.external.letter_date') }}</label><input id="external_date" type="date" name="letter_date" class="form-control"></div>
                         <div class="lic-field mb-2"><label for="external_authority">{{ __('licenses.external.authority') }}</label><input id="external_authority" name="authority" maxlength="255" class="form-control"></div>
@@ -263,5 +305,18 @@
             @endif
         </aside>
     </div>
+
+    @include('licenses.partials.departments-modal')
+    @if($canProcessUi)
+        @include('licenses.partials.operation-modal', ['id'=>'licenseOperationStage','title'=>__('licenses.renewal.update_stage'),'icon'=>'bi-signpost','size'=>'modal-sm'])
+        @include('licenses.partials.operation-modal', ['id'=>'licenseOperationRenewalStart','title'=>__('licenses.renewal.start'),'icon'=>'bi-play-circle'])
+        @include('licenses.partials.operation-modal', ['id'=>'licenseOperationRenewalComplete','title'=>__('licenses.renewal.complete'),'icon'=>'bi-check2-circle','size'=>'modal-lg'])
+        @include('licenses.partials.operation-modal', ['id'=>'licenseOperationPayment','title'=>__('licenses.payments.create'),'icon'=>'bi-cash-stack','size'=>'modal-lg'])
+        @include('licenses.partials.operation-modal', ['id'=>'licenseOperationComment','title'=>__('licenses.comments.add'),'icon'=>'bi-chat-left-text'])
+        @include('licenses.partials.operation-modal', ['id'=>'licenseOperationExternal','title'=>__('licenses.external.add'),'icon'=>'bi-envelope-paper'])
+    @endif
+    @if($canAdminUi)@include('licenses.partials.operation-modal', ['id'=>'licenseOperationAssignment','title'=>__('licenses.assignment.reassign'),'icon'=>'bi-person-gear','size'=>'modal-sm'])@endif
 </div>
 @endsection
+
+@push('scripts')<script src="{{ asset('js/hm-licenses.js') }}?v={{ filemtime(public_path('js/hm-licenses.js')) }}"></script>@endpush

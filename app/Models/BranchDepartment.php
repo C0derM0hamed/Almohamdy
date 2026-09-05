@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class BranchDepartment extends Model
 {
@@ -19,5 +20,24 @@ class BranchDepartment extends Model
         }
 
         return trim((string) ($this->name_en ?: $this->name_ar));
+    }
+
+    public function parentDepartment(): BelongsTo
+    {
+        return $this->belongsTo(Department::class, 'branch_id');
+    }
+
+    public function hierarchyLabel(): string
+    {
+        $unit = $this->localizedName();
+        $parent = $this->relationLoaded('parentDepartment')
+            ? $this->parentDepartment?->localizedName()
+            : null;
+
+        if (! $parent || mb_strtolower(trim($parent)) === mb_strtolower(trim($unit))) {
+            return $unit;
+        }
+
+        return $parent.' — '.$unit;
     }
 }

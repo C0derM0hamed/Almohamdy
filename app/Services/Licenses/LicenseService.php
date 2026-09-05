@@ -3,6 +3,7 @@
 namespace App\Services\Licenses;
 
 use App\Models\License;
+use App\Models\CompanyGroup;
 use App\Models\LicenseAttachment;
 use App\Models\LicenseComment;
 use App\Models\LicenseRenewal;
@@ -18,6 +19,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class LicenseService
@@ -48,10 +50,10 @@ class LicenseService
     public function store(array $payload, array $attachments = []): License
     {
         $this->assertPayloadScope($payload);
-        $branchIds = array_values(array_unique(array_map('intval', $payload['branch_ids'])));
-        unset($payload['branch_ids']);
+        $departmentIds = array_values(array_unique(array_map('intval', (array) ($payload['department_ids'] ?? $payload['branch_ids'] ?? []))));
+        unset($payload['department_ids'], $payload['branch_ids']);
 
-        $license = DB::transaction(function () use ($payload, $branchIds, $attachments): License {
+        $license = DB::transaction(function () use ($payload, $departmentIds, $attachments): License {
             $license = $this->repository->create($payload + [
                 'companies_groups_id' => (int) session('companies_groups_id', 0),
                 'status_id' => $this->repository->statusId('active'),
@@ -59,7 +61,7 @@ class LicenseService
                 'publish' => true,
                 'created_by' => (int) session('hr_user_id', 0),
             ]);
-            $this->repository->syncBranches($license, $branchIds);
+            $this->repository->syncDepartments($license, $departmentIds);
             $this->createPendingUndertaking($license, (int) $license->responsible_user_id);
             $this->recordTimeline($license, 'created', __('licenses.timeline.created'));
             $this->recordTimeline($license, 'assigned', __('licenses.timeline.assigned'), [
@@ -83,14 +85,14 @@ class LicenseService
     {
         $this->assertAdministrator();
         $this->assertPayloadScope($payload, (int) $license->companies_groups_id);
-        $branchIds = array_values(array_unique(array_map('intval', $payload['branch_ids'])));
-        unset($payload['branch_ids']);
+        $departmentIds = array_values(array_unique(array_map('intval', (array) ($payload['department_ids'] ?? $payload['branch_ids'] ?? []))));
+        unset($payload['department_ids'], $payload['branch_ids']);
         $oldResponsible = (int) $license->responsible_user_id;
         $oldExpiry = $this->dateString($license->expiry_date);
 
-        DB::transaction(function () use ($license, $payload, $branchIds, $oldResponsible, $oldExpiry): void {
+        DB::transaction(function () use ($license, $payload, $departmentIds, $oldResponsible, $oldExpiry): void {
             $this->repository->update($license, $payload);
-            $this->repository->syncBranches($license, $branchIds);
+            $this->repository->syncDepartments($license, $departmentIds);
             $this->recordTimeline($license, 'updated', __('licenses.timeline.updated'), ['changes' => $license->getChanges()]);
 
             if ($oldResponsible !== (int) $license->responsible_user_id) {
@@ -395,11 +397,13 @@ class LicenseService
     public function options(): array
     {
         return [
+            'hospitalBranch' => CompanyGroup::query()->find((int) session('companies_groups_id', 0)),
             'authorities' => $this->repository->authorityOptions(),
             'types' => $this->repository->typeOptions(),
             'statuses' => $this->repository->statusOptions(),
             'stages' => $this->repository->stageOptions(),
-            'branches' => $this->repository->branchOptions(),
+            'departments' => $this->repository->departmentOptions(),
+            'branches' => $this->repository->departmentOptions(),
             'responsibleUsers' => $this->repository->responsibleUserOptions(),
         ];
     }
@@ -440,19 +444,41 @@ class LicenseService
         $path = $this->normalizeAttachmentPath((string) $attachment->file_path);
         abort_if($path === null, 404);
 
+        $filename = $this->attachmentDownloadName($attachment);
+        $asciiName = $this->asciiAttachmentDownloadName($filename);
         $headers = [
             'Content-Type' => $attachment->mime ?: 'application/octet-stream',
             'X-Content-Type-Options' => 'nosniff',
+            'Content-Disposition' => (new ResponseHeaderBag)->makeDisposition(
+                ResponseHeaderBag::DISPOSITION_ATTACHMENT,
+                $filename,
+                $asciiName,
+            ),
         ];
 
         if (Storage::disk('local')->exists($path)) {
-            return Storage::disk('local')->download($path, $attachment->original_name, $headers);
+            return Storage::disk('local')->download($path, $asciiName, $headers);
         }
 
         $legacyPath = storage_path('app/'.$path);
         abort_unless(is_file($legacyPath), 404);
 
-        return response()->download($legacyPath, $attachment->original_name, $headers);
+        return response()->download($legacyPath, $asciiName, $headers);
+    }
+
+    private function attachmentDownloadName(LicenseAttachment $attachment): string
+    {
+        $name = str_replace(["\r", "\n", '/', '\\'], '', trim((string) $attachment->original_name));
+
+        return $name !== '' ? $name : 'attachment-'.$attachment->getKey();
+    }
+
+    private function asciiAttachmentDownloadName(string $filename): string
+    {
+        $ascii = preg_replace('/[^\x20-\x7E]/', '-', $filename) ?: '';
+        $ascii = trim($ascii, '.- ');
+
+        return $ascii !== '' ? $ascii : 'attachment.bin';
     }
 
     private function normalizeAttachmentPath(string $filePath): ?string
@@ -492,10 +518,10 @@ class LicenseService
     private function assertPayloadScope(array $payload, ?int $companyId = null): void
     {
         $companyId ??= (int) session('companies_groups_id', 0);
-        $branchIds = array_values(array_unique(array_map('intval', (array) ($payload['branch_ids'] ?? []))));
-        if ($branchIds === [] || DB::table('branches')->whereIn('id', $branchIds)
-            ->where('companies_groups_id', $companyId)->count() !== count($branchIds)) {
-            throw ValidationException::withMessages(['branch_ids' => __('licenses.validation.invalid_branch')]);
+        $departmentIds = array_values(array_unique(array_map('intval', (array) ($payload['department_ids'] ?? $payload['branch_ids'] ?? []))));
+        if ($departmentIds === [] || DB::table('branches')->whereIn('id', $departmentIds)
+            ->where('companies_groups_id', $companyId)->count() !== count($departmentIds)) {
+            throw ValidationException::withMessages(['department_ids' => __('licenses.validation.invalid_department')]);
         }
         if (! DB::table('license_authorities')->where('id', (int) ($payload['license_authority_id'] ?? 0))
             ->where('companies_groups_id', $companyId)->exists()
@@ -529,8 +555,8 @@ class LicenseService
     /** @param array<string,mixed> $meta */
     private function recordTimeline(License $license, string $eventType, ?string $notice = null, array $meta = []): mixed
     {
-        $branchId = $license->relationLoaded('branches')
-            ? $license->branches->first()?->getKey()
+        $branchId = $license->relationLoaded('departments')
+            ? $license->departments->first()?->getKey()
             : DB::table('license_branches')->where('license_id', $license->getKey())->value('branch_id');
 
         return $this->repository->timeline([

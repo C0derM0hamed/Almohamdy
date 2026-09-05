@@ -220,7 +220,7 @@ class LicenseNotificationService
                     ->where('publish', true);
                 $branchId = (int) session('hr_branch_id', 0);
                 if (! $this->permissions->isAdmin() && $branchId > 0) {
-                    $query->whereHas('branches', fn ($branches) => $branches->where('branches.id', $branchId));
+                    $query->whereHas('departments', fn ($departments) => $departments->where('branches.id', $branchId));
                 }
             });
     }

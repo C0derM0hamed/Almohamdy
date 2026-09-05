@@ -23,11 +23,11 @@
         if (! $value) return '—';
         return $value instanceof \DateTimeInterface ? $value->format('Y-m-d') : substr((string) $value, 0, 10);
     };
-    $filters = array_merge(['search'=>'','branch_id'=>'','authority_id'=>'','type_id'=>'','responsible_user_id'=>'','status_id'=>'','expiry_from'=>'','expiry_to'=>'','expiry_window'=>''], $filters ?? request()->only(['search','branch_id','authority_id','type_id','responsible_user_id','status_id','expiry_from','expiry_to','expiry_window']));
+    $filters = array_merge(['search'=>'','department_id'=>'','authority_id'=>'','type_id'=>'','responsible_user_id'=>'','status_id'=>'','expiry_from'=>'','expiry_to'=>'','expiry_window'=>''], $filters ?? request()->only(['search','department_id','authority_id','type_id','responsible_user_id','status_id','expiry_from','expiry_to','expiry_window']));
     $items = $licenses ?? collect();
     $authoritiesList = $authorityOptions ?? $authorities ?? collect();
     $typesList = $typeOptions ?? $licenseTypes ?? collect();
-    $branchesList = $branchOptions ?? $branches ?? collect();
+    $departmentsList = $departmentOptions ?? $departments ?? $branchOptions ?? $branches ?? collect();
     $responsiblesList = $responsibleOptions ?? $users ?? collect();
     $statusesList = $statusOptions ?? $statuses ?? collect();
     $metrics = array_merge(['total'=>method_exists($items, 'total') ? $items->total() : count($items), 'active'=>0, 'near_expiry'=>0, 'under_renewal'=>0, 'expired'=>0], $statusCounters ?? $counters ?? $kpis ?? []);
@@ -56,7 +56,7 @@
     ])
     @include('licenses.partials.feedback')
 
-    <section class="lic-stat-grid" aria-label="{{ __('licenses.dashboard') }}">
+    <section class="lic-stat-grid lic-stat-grid--compact" aria-label="{{ __('licenses.dashboard') }}">
         @foreach ([
             ['total','bi-files',''], ['active','bi-check-circle','active'], ['near_expiry','bi-clock-history','warning'],
             ['under_renewal','bi-arrow-repeat','violet'], ['expired','bi-exclamation-octagon','danger'],
@@ -67,7 +67,6 @@
                 <span class="lic-stat__copy">
                     <span class="lic-stat__label">{{ __('licenses.dashboard_cards.'.$key) }}</span>
                     <strong class="lic-stat__value">{{ (int) ($metrics[$key] ?? 0) }}</strong>
-                    <span class="lic-stat__hint">{{ __('licenses.dashboard_cards.'.$key) }}</span>
                 </span>
             </a>
         @endforeach
@@ -82,7 +81,7 @@
                     <input id="licenseSearch" type="search" name="search" maxlength="150" value="{{ $filters['search'] }}" placeholder="{{ __('licenses.filters.search_placeholder') }}" class="form-control">
                 </div>
                 @foreach ([
-                    ['branch_id', __('licenses.filters.branch'), $branchesList],
+                    ['department_id', __('licenses.filters.department'), $departmentsList],
                     ['authority_id', __('licenses.filters.authority'), $authoritiesList],
                     ['type_id', __('licenses.filters.type'), $typesList],
                     ['responsible_user_id', __('licenses.filters.responsible'), $responsiblesList],
@@ -152,7 +151,7 @@
             <table class="lic-table lic-table--licenses">
                 <thead><tr>
                     <th>{{ __('licenses.fields.license_number') }}</th><th>{{ __('licenses.fields.type') }}</th>
-                    <th>{{ __('licenses.fields.authority') }}</th><th>{{ __('licenses.fields.branches') }}</th>
+                    <th>{{ __('licenses.fields.authority') }}</th><th>{{ __('licenses.fields.departments') }}</th>
                     <th>{{ __('licenses.fields.responsible') }}</th><th>{{ __('licenses.fields.expiry_date') }}</th>
                     <th>{{ __('licenses.fields.status') }}</th><th>{{ __('licenses.fields.renewal_stage') }}</th><th>{{ __('licenses.actions') }}</th>
                 </tr></thead>
@@ -172,17 +171,31 @@
                         $statusLabel = $nameOf($status);
                         $responsible = $item->responsibleUser ?? $item->responsible ?? null;
                         $itemTitle = $item->title ?: $nameOf($item->licenseType ?? $item->type ?? null);
+                        $previewDetails = [
+                            'number' => $item->license_number ?: '#'.$item->id,
+                            'title' => $itemTitle,
+                            'type' => $nameOf($item->licenseType ?? $item->type ?? null),
+                            'authority' => $nameOf($item->authority ?? null),
+                            'hospital_branch' => $nameOf($item->hospitalBranch ?? null),
+                            'departments' => ($item->departments ?? $item->branches ?? collect())->map(fn ($department) => $nameOf($department))->values()->all(),
+                            'responsible' => $nameOf($responsible),
+                            'expiry_date' => $dateOf($item->expiry_date),
+                            'status' => $statusLabel,
+                            'status_key' => $alertStatusKey,
+                            'renewal_stage' => $nameOf($item->renewalStage ?? $item->stage ?? null),
+                            'url' => $url('modules.licenses.show', $item->getRouteKey()),
+                        ];
                     @endphp
                     <tr>
-                        <td><a class="lic-table__primary lic-sensitive" href="{{ $url('modules.licenses.show', $item->getRouteKey()) }}">{{ $item->license_number ?: '#'.$item->id }}</a><span class="lic-table__sub">{{ $itemTitle }}</span></td>
+                        <td><button type="button" class="lic-table__primary lic-table__primary--button lic-sensitive" data-bs-toggle="modal" data-bs-target="#licenseQuickViewModal" data-license-preview='@json($previewDetails)'>{{ $item->license_number ?: '#'.$item->id }}</button><span class="lic-table__sub">{{ $itemTitle }}</span></td>
                         <td>{{ $nameOf($item->licenseType ?? $item->type ?? null) }}</td>
                         <td>{{ $nameOf($item->authority ?? null) }}</td>
-                        <td><div class="lic-chip-list">@forelse (($item->branches ?? collect()) as $branch)<span class="lic-chip">{{ $nameOf($branch) }}</span>@empty — @endforelse</div></td>
+                        <td>@include('licenses.partials.department-chips', ['departments' => $item->departments ?? $item->branches ?? collect(), 'visibleLimit' => 1])</td>
                         <td>{{ $nameOf($responsible) }}</td>
                         <td class="lic-sensitive">{{ $dateOf($item->expiry_date) }}</td>
                         <td><span class="lic-status lic-status--{{ $alertStatusKey }}" title="{{ $statusLabel }}">{{ $statusLabel }}</span></td>
                         <td>{{ $nameOf($item->renewalStage ?? $item->stage ?? null) }}</td>
-                        <td><div class="lic-table__actions"><a class="lic-btn lic-btn--sm" href="{{ $url('modules.licenses.show', $item->getRouteKey()) }}"><i class="bi bi-eye"></i>{{ __('licenses.view') }}</a>@if($canAdminUi)<a class="lic-btn lic-btn--sm" href="{{ $url('modules.licenses.edit', $item->getRouteKey()) }}" aria-label="{{ __('licenses.edit') }}"><i class="bi bi-pencil"></i></a>@endif</div></td>
+                        <td><div class="lic-table__actions"><button type="button" class="lic-btn lic-btn--sm" data-bs-toggle="modal" data-bs-target="#licenseQuickViewModal" data-license-preview='@json($previewDetails)' aria-haspopup="dialog"><i class="bi bi-eye"></i>{{ __('licenses.view') }}</button>@if($canAdminUi)<a class="lic-btn lic-btn--sm" href="{{ $url('modules.licenses.edit', $item->getRouteKey()) }}" aria-label="{{ __('licenses.edit') }}"><i class="bi bi-pencil"></i></a>@endif</div></td>
                     </tr>
                 @empty
                     <tr><td colspan="9" class="lic-empty">{{ array_filter($filters) ? __('licenses.no_results') : __('licenses.empty') }}</td></tr>
@@ -194,5 +207,12 @@
             <div class="lic-pagination"><span>{{ __('licenses.results', ['count' => $items->total()]) }}</span>{{ $items->withQueryString()->links('pagination.hm') }}</div>
         @endif
     </section>
+    @include('licenses.partials.departments-modal')
 </div>
 @endsection
+
+@push('modals')
+    @include('licenses.partials.quick-view-modal')
+@endpush
+
+@push('scripts')<script src="{{ asset('js/hm-licenses.js') }}?v={{ filemtime(public_path('js/hm-licenses.js')) }}"></script>@endpush

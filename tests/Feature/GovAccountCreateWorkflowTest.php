@@ -79,6 +79,35 @@ class GovAccountCreateWorkflowTest extends GovAccountModuleTestCase
         $this->assertSame(2, DB::table('gov_accounts')->where('employee_user_id', 11)->where('authority_id', $this->authorityId)->count());
     }
 
+    public function test_head_and_processor_can_cancel_allowed_request_states(): void
+    {
+        $draft = $this->createDraft();
+        $this->get(route('modules.gov-accounts.requests.show', $draft))
+            ->assertOk()
+            ->assertSee('action="'.route('modules.gov-accounts.requests.cancel', $draft).'"', false);
+        $this->post(route('modules.gov-accounts.requests.cancel', $draft))->assertRedirect();
+        $this->assertDatabaseHas('gov_account_requests', ['id' => $draft->id, 'status' => 'cancelled']);
+        $this->assertDatabaseHas('gov_account_timeline', ['request_id' => $draft->id, 'event_type' => 'cancelled']);
+
+        $waiting = $this->createDraft();
+        $this->post(route('modules.gov-accounts.requests.submit', $waiting), ['manager_undertaking' => 1])->assertRedirect();
+        $this->post(route('modules.gov-accounts.requests.cancel', $waiting))->assertRedirect();
+        $this->assertDatabaseHas('gov_account_requests', ['id' => $waiting->id, 'status' => 'cancelled']);
+
+        $review = $this->createDraft();
+        $this->post(route('modules.gov-accounts.requests.submit', $review), ['manager_undertaking' => 1]);
+        $this->actAsGovAccountUser(11);
+        $this->post(route('modules.gov-accounts.undertakings.accept', $review), ['employee_undertaking' => 1]);
+        $this->actAsGovAccountUser(10);
+        $this->post(route('modules.gov-accounts.requests.cancel', $review))->assertForbidden();
+        $this->actAsGovAccountUser(1);
+        $this->get(route('modules.gov-accounts.requests.show', $review))
+            ->assertOk()
+            ->assertSee('action="'.route('modules.gov-accounts.requests.cancel', $review).'"', false);
+        $this->post(route('modules.gov-accounts.requests.cancel', $review))->assertRedirect();
+        $this->assertDatabaseHas('gov_account_requests', ['id' => $review->id, 'status' => 'cancelled']);
+    }
+
     public function test_scope_transition_and_attachment_guards_block_idor_and_invalid_actions(): void
     {
         $request = $this->createDraft();
@@ -105,7 +134,7 @@ class GovAccountCreateWorkflowTest extends GovAccountModuleTestCase
     private function createDraft(): GovAccountRequest
     {
         $this->actAsGovAccountUser(10);
-        $this->post(route('modules.gov-accounts.requests.store'), $this->requestPayload())->assertRedirect();
+        $this->post(route('modules.gov-accounts.requests.store'), $this->requestPayload())->assertSessionHasNoErrors()->assertRedirect();
 
         return GovAccountRequest::query()->latest('id')->firstOrFail();
     }

@@ -158,6 +158,16 @@ class LicenseModuleAlertFinanceReportingTest extends LicenseModuleTestCase
         ]);
 
         $this->actAsLicenseUser(20);
+        $this->get(route('modules.licenses.finance.show', $payment))
+            ->assertOk()
+            ->assertSee('lic-action-hub', false)
+            ->assertSee('financeOperationStatus', false)
+            ->assertSee('financeOperationDocuments', false)
+            ->assertSee('financeOperationComment', false)
+            ->assertSee('financeAttachments', false)
+            ->assertSee('lic-file-list', false)
+            ->assertDontSee('financeOperationAttachment', false)
+            ->assertDontSee('lic-table-wrap', false);
         $finance = app(LicensePaymentService::class);
         $inProgress = $finance->updateStatus($payment, 'in_progress', 'Finance started processing');
         $this->assertSame('in_progress', $inProgress->status?->code);
@@ -231,7 +241,7 @@ class LicenseModuleAlertFinanceReportingTest extends LicenseModuleTestCase
         $this->assertSame(1, $metrics['finance']['open']);
         $this->assertSame(1, $metrics['finance']['paid']);
         $this->assertSame(4.0, $metrics['finance']['average_close_hours']);
-        $this->assertSame(4, (int) $metrics['byBranch']->first()->total);
+        $this->assertSame(4, (int) $metrics['byDepartment']->first()->total);
 
         $response = app(LicenseExportService::class)->download([], 'csv');
         ob_start();
@@ -289,5 +299,125 @@ class LicenseModuleAlertFinanceReportingTest extends LicenseModuleTestCase
             ->assertOk()->assertSee($license->license_number)->assertDontSee($otherBranch->license_number);
         $notifications->markReadForCurrentUser($notificationId);
         $this->assertSame(0, $notifications->unreadCountForCurrentUser());
+    }
+
+    public function test_license_pdf_export_fits_landscape_and_uses_a_safe_download_name(): void
+    {
+        $this->grant(10, 'licenses.view', 'licenses.export');
+        $this->actAsLicenseUser(10);
+        $this->makeLicense(ownerId: 10, branchIds: [1, 2], title: 'PDF Export License');
+
+        app()->setLocale('ar');
+        $response = app(LicenseExportService::class)->download([], 'pdf');
+        $disposition = (string) $response->headers->get('content-disposition');
+
+        $this->assertSame('application/pdf', $response->headers->get('content-type'));
+        $this->assertMatchesRegularExpression('/filename="?licenses-report-\d{4}-\d{2}-\d{2}-\d{6}\.pdf"?/', $disposition);
+        $this->assertStringContainsString("filename*=utf-8''", $disposition);
+        $this->assertStringContainsString(rawurlencode('تقرير التراخيص النظامية'), $disposition);
+
+        ob_start();
+        $response->sendContent();
+        $pdf = (string) ob_get_clean();
+        $this->assertStringStartsWith('%PDF-', $pdf);
+        $this->assertStringContainsString('841.890 595.280', $pdf);
+    }
+
+    public function test_license_index_shows_one_department_chip_and_quick_view_modal(): void
+    {
+        $this->grant(10, 'licenses.view');
+        $this->actAsLicenseUser(10);
+        $license = $this->makeLicense(ownerId: 10, branchIds: [1, 2], title: 'Quick View License');
+
+        $html = $this->get(route('modules.licenses.index'))
+            ->assertOk()
+            ->assertSee('id="licenseQuickViewModal"', false)
+            ->assertSee('data-license-preview-open', false)
+            ->assertSee(__('licenses.quick_view.more_details'))
+            ->assertSee($license->license_number)
+            ->assertSee('data-bs-target="#licenseQuickViewModal"', false)
+            ->getContent();
+
+        $this->assertDoesNotMatchRegularExpression(
+            '/lic-table__actions">\s*<a class="lic-btn[^"]*" href="[^"]*\/modules\/licenses\/'.$license->id.'"/',
+            $html
+        );
+        preg_match_all('/<div class="lic-chip-list lic-chip-list--compact">(.*?)<\/div>/s', $html, $lists);
+        $this->assertNotEmpty($lists[1]);
+        foreach ($lists[1] as $listHtml) {
+            $this->assertSame(1, preg_match_all('/<span class="lic-chip">/', $listHtml));
+            $this->assertStringContainsString('lic-chip--more', $listHtml);
+            $this->assertStringContainsString('+1', $listHtml);
+        }
+    }
+
+    public function test_finance_index_opens_quick_view_modal_instead_of_direct_show_link(): void
+    {
+        $this->grant(10, 'licenses.view', 'licenses.process');
+        $this->grant(20, 'licenses_finance');
+        $license = $this->makeLicense(ownerId: 10, title: 'Finance Quick View License');
+        $payment = LicensePaymentRequest::query()->create([
+            'license_id' => $license->id,
+            'amount' => 1250,
+            'currency' => 'SAR',
+            'bank_name' => 'Quick View Bank',
+            'invoice_number' => 'INV-QV-12',
+            'status_id' => LicensePaymentRequestStatus::query()->where('code', 'received')->value('id'),
+            'requested_by' => 10,
+        ]);
+
+        $this->actAsLicenseUser(20);
+        $html = $this->get(route('modules.licenses.finance.index'))
+            ->assertOk()
+            ->assertSee('id="licenseFinanceQuickViewModal"', false)
+            ->assertSee('data-license-preview-open', false)
+            ->assertSee(__('licenses.quick_view.more_details'))
+            ->assertSee('#'.$payment->id, false)
+            ->assertSee('data-bs-target="#licenseFinanceQuickViewModal"', false)
+            ->getContent();
+
+        $this->assertDoesNotMatchRegularExpression(
+            '/<a class="lic-btn[^"]*" href="[^"]*\/modules\/licenses\/finance\/'.$payment->id.'"/',
+            $html
+        );
+        $this->assertDoesNotMatchRegularExpression(
+            '/lic-table__primary[^"]*" href="[^"]*\/modules\/licenses\/finance\/'.$payment->id.'"/',
+            $html
+        );
+    }
+
+    public function test_finance_attachment_download_stays_as_a_file_and_uses_the_download_attribute(): void
+    {
+        $license = $this->makeLicense(ownerId: 10, title: 'Finance Download License');
+        $this->grant(10, 'licenses.view', 'licenses.process');
+        $this->grant(20, 'licenses_finance');
+        $this->actAsLicenseUser(10);
+        $pdf = UploadedFile::fake()->createWithContent(
+            'uat-proof.pdf',
+            (string) file_get_contents(base_path('tests/fixtures/uat-proof.pdf')),
+        );
+        $payment = app(LicensePaymentService::class)->create($license, [
+            'amount' => 1250,
+            'currency' => 'SAR',
+            'invoice_number' => 'INV-DL-12',
+        ], [$pdf]);
+        $attachment = $payment->attachments()->firstOrFail();
+
+        $this->actAsLicenseUser(20);
+        $this->get(route('modules.licenses.finance.show', $payment))
+            ->assertOk()
+            ->assertSee('download="'.$attachment->original_name.'"', false)
+            ->assertSee('lic-file-card', false)
+            ->assertDontSee('lic-table-wrap', false);
+
+        $response = $this->get(route('modules.licenses.finance.attachments.download', [$payment, $attachment]));
+        $response->assertOk();
+        $disposition = (string) $response->headers->get('content-disposition');
+        $this->assertStringContainsString('attachment', $disposition);
+        $this->assertStringContainsString('uat-proof.pdf', $disposition);
+        $body = $response->streamedContent();
+        $this->assertStringStartsWith('%PDF-', $body);
+        $this->assertStringNotContainsString('<html', $body);
+        $this->assertGreaterThan(1000, strlen($body));
     }
 }

@@ -52,7 +52,7 @@ async function ensureSidebarExpanded(page) {
 
     sidebar.classList.remove('sidebar-mini', 'on-resize');
 
-    ['#sidebar-corporate-communication', '#sidebar-licenses'].forEach((selector) => {
+    ['#sidebar-licenses'].forEach((selector) => {
       const group = document.querySelector(selector);
       if (!group) return;
       group.classList.add('show');
@@ -218,10 +218,13 @@ test.describe('License Management Client Review Screenshots', () => {
     await snap(page, '21-finance-queue', { expandSidebar: true });
     meta.screenshots.push('21-finance-queue');
 
-    const financeLink = page.locator('main a[href*="/modules/licenses/finance/"]').first();
-    if (await financeLink.count()) {
-      meta.paymentHref = await financeLink.getAttribute('href');
-      await financeLink.click();
+    const financePreview = page.locator('main [data-bs-target="#licenseFinanceQuickViewModal"]').first();
+    if (await financePreview.count()) {
+      await financePreview.click();
+      await expect(page.locator('#licenseFinanceQuickViewModal')).toBeVisible({ timeout: 15_000 });
+      const moreDetails = page.locator('#licenseFinanceQuickViewModal [data-license-preview-open]');
+      meta.paymentHref = await moreDetails.getAttribute('href');
+      await moreDetails.click();
       await page.waitForURL(/\/modules\/licenses\/finance\/\d+/, { timeout: 15_000 });
       await page.waitForSelector('.lic-panel__title', { timeout: 15_000 });
       await page.waitForSelector('#payment_status', { timeout: 15_000 });

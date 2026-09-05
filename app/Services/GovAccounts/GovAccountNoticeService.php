@@ -35,14 +35,14 @@ class GovAccountNoticeService
     {
         $this->authorize();
 
-        return $this->scoped()->with(['authority', 'service'])->latest('id')->paginate(20)->withQueryString();
+        return $this->scoped()->with(['hospitalBranch', 'authority', 'service'])->latest('id')->paginate(20)->withQueryString();
     }
 
     public function noticeOrFail(int $id): GovAccountNotice
     {
         $this->authorize();
 
-        return $this->scoped()->with(['authority', 'service', 'recipients.user', 'attachments', 'timeline'])->findOrFail($id);
+        return $this->scoped()->with(['hospitalBranch', 'authority', 'service', 'recipients.user', 'attachments', 'timeline'])->findOrFail($id);
     }
 
     public function options(): array
@@ -53,7 +53,7 @@ class GovAccountNoticeService
         $departments = BranchDepartment::query()
             ->when(Schema::hasColumn('branches_departments', 'branch_id'), fn (Builder $query) => $query->whereIn('branch_id', $branchIds))
             ->when(Schema::hasColumn('branches_departments', 'publish'), fn (Builder $query) => $query->where('publish', true))
-            ->orderBy('name_en')->get();
+            ->with('parentDepartment')->orderBy('name_en')->get();
 
         return [
             'authorities' => GovAccountAuthority::query()->where('companies_groups_id', $companyId)->where('publish', true)->orderBy('ranking')->get(),
@@ -164,7 +164,7 @@ class GovAccountNoticeService
                 'view_count' => $recipient->view_count + 1,
             ]);
 
-            return $recipient->fresh(['notice.authority', 'notice.service', 'user']);
+            return $recipient->fresh(['notice.hospitalBranch', 'notice.authority', 'notice.service', 'user']);
         });
     }
 
