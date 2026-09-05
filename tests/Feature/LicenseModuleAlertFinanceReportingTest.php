@@ -321,6 +321,8 @@ class LicenseModuleAlertFinanceReportingTest extends LicenseModuleTestCase
         $pdf = (string) ob_get_clean();
         $this->assertStringStartsWith('%PDF-', $pdf);
         $this->assertStringContainsString('841.890 595.280', $pdf);
+        $this->assertGreaterThan(2_000, strlen($pdf), 'The generated PDF must contain rendered page content.');
+        $this->assertDoesNotMatchRegularExpression('/\/Length\s+8\s*>>\s*stream\s*endstream/s', $pdf);
     }
 
     public function test_license_index_shows_one_department_chip_and_quick_view_modal(): void

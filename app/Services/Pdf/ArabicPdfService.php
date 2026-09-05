@@ -119,7 +119,22 @@ final class ArabicPdfService
                 }
             }
 
-            return $document->saveHTML() ?: $html;
+            $prepared = $document->saveHTML();
+            if ($prepared === false) {
+                return $html;
+            }
+
+            // libxml behaves differently across PHP versions: some builds
+            // serialize the UTF-8 hint as a processing instruction after the
+            // doctype, while others turn it into a comment. Dompdf 3 renders
+            // an entirely blank page when the processing instruction remains.
+            // The document already carries a UTF-8 meta tag, so strip either
+            // serialized form before handing the HTML to Dompdf.
+            return preg_replace(
+                '/(?:<\?xml\s+encoding=["\']UTF-8["\']\s*\??>|<!--\?xml\s+encoding=["\']UTF-8["\']\s*\??-->)\s*/i',
+                '',
+                $prepared,
+            ) ?? $prepared;
         } finally {
             libxml_clear_errors();
             libxml_use_internal_errors($previousErrors);
